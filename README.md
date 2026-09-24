@@ -11,7 +11,7 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 
 ## Deploy
 
-🔗 **Sitio publicado:** _(pendiente — agregar link acá)_
+🔗 **Sitio publicado:** [home-bakery-4h3dign4f-trevisancata.vercel.app](https://home-bakery-4h3dign4f-trevisancata.vercel.app)
 
 ## Stack
 
