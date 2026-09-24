@@ -1,26 +1,59 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Sistema de diseño de Home Bakery (paleta provisoria).
+ *
+ * Contrastes verificados (WCAG 2.1, AA pide 4.5:1 para texto normal
+ * y 3:1 para texto grande y componentes de interfaz):
+ *   cacao       sobre crema  13.35:1   sobre rosa 11.11:1
+ *   cacao-suave sobre crema   7.27:1   sobre rosa  6.05:1
+ *   terracota   sobre crema   6.02:1   sobre rosa  5.01:1
+ *   crema       sobre cacao  13.35:1
+ *   blanco      sobre terracota 6.52:1
+ * Evitar terracota como texto sobre fondos más oscuros que rosa.
+ */
+@theme {
+  --color-crema: #fbf5ec;
+  --color-cacao: #3b2418;
+  --color-cacao-suave: #6b4a3a;
+  --color-rosa: #f6dcd6;
+  --color-terracota: #9c4225;
+
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-nunito-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-crema font-sans text-cacao antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif text-balance text-cacao;
+  }
+
+  a {
+    @apply underline-offset-4;
+  }
+
+  /* Foco visible y consistente para cualquier elemento interactivo. */
+  :focus-visible {
+    @apply rounded-sm outline-3 outline-offset-3 outline-terracota;
+  }
+
+  ::selection {
+    @apply bg-rosa text-cacao;
+  }
 }
