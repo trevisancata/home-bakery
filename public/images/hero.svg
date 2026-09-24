@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" aria-hidden="true">
+  <rect width="800" height="600" fill="#f6dcd6"/>
+  <circle cx="400" cy="270" r="132" fill="#fbf5ec"/>
+  <circle cx="400" cy="270" r="84.00000000000001" fill="none" stroke="#9c4225" stroke-width="6" stroke-dasharray="14 12"/>
+  <text x="400" y="530" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#3b2418">Mesa con tortas y budines</text>
+  <text x="400" y="566" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" fill="#6b4a3a">Imagen provisoria</text>
+</svg>
