@@ -21,6 +21,14 @@ export const site = {
   owner: {
     name: "Maggie",
     role: "Pastelera y fundadora",
+    /** Bio de Instagram: el único texto en primera persona confirmado por Maggie. */
+    instagramBio: [
+      "Soy Maggie Gatti.",
+      "Artesanal, delicado y casero.",
+      "Workshops reducidos en mi cocina.",
+      "Take away en San Isidro.",
+      "Pedidos con 48 h de anticipación.",
+    ],
     bio: [
       "Aprendí a hornear en la cocina de mi abuela, midiendo la harina a ojo y esperando que el budín se enfriara para cortarlo.",
       "Después de años horneando para amigos y familia, en 2023 nació Home Bakery: una pastelería chiquita, con recetas propias, ingredientes de estación y cero apuro.",
@@ -61,6 +69,7 @@ export const whatsappMessages = {
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
   customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
+  workshopCancellation: "¡Hola! Quería consultar por la política de cancelación de los workshops.",
   workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
 };
 
@@ -329,25 +338,24 @@ export const pages = {
     },
     faq: {
       title: "Preguntas frecuentes",
-      // TODO: revisar con Maggie las respuestas provisorias (todas menos "¿Dónde es?").
+      // TODO: completar con Maggie. Quedan afuera hasta tener las respuestas:
+      // "¿Hace falta experiencia?" y "¿Qué tengo que llevar?".
       items: [
         {
-          question: "¿Hace falta experiencia?",
-          answer: "No. Los workshops de nivel inicial están pensados para quien nunca horneó; en los de nivel intermedio conviene tener algo de práctica.",
-        },
-        {
-          question: "¿Qué tengo que llevar?",
-          answer: "Solo ganas. Los ingredientes, los utensilios y el delantal los pongo yo, y te llevás lo que horneás y las recetas.",
-        },
-        {
           question: "¿Dónde es?",
-          answer: `En la cocina de ${site.owner.name}, en ${site.city}. La dirección exacta llega con la confirmación.`,
+          answer: [
+            `En la cocina de ${site.owner.name}, en ${site.city}. La dirección exacta llega con la confirmación.`,
+          ],
         },
         {
           question: "¿Puedo cancelar o pasar mi lugar a otra persona?",
-          answer: "Podés pasarle tu lugar a otra persona avisando por WhatsApp. Si cancelás con al menos 72 h de anticipación, te devolvemos el pago.",
+          // TODO: reemplazar por la política de cancelación cuando Maggie la defina.
+          answer: [
+            { text: "Escribinos por WhatsApp", href: whatsappLink(whatsappMessages.workshopCancellation) },
+            " y te contamos la política de cancelación de cada workshop.",
+          ],
         },
-      ],
+      ] satisfies { question: string; answer: RichText }[],
     },
   },
   maggie: {
@@ -360,31 +368,25 @@ export const pages = {
       title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
       lead: `${site.name} nació en mi cocina, horneando para familia y amigos. Hoy más de 35 mil personas siguen lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien.`,
-      // TODO: revisar con Maggie (presentación provisoria armada con su bio).
-      text: `${site.owner.bio[0]} Que ${site.name} se recomiende de boca en boca es lo que más me enorgullece: cada pedido llega de alguien que ya probó algo mío.`,
+      // TODO: completar con Maggie la presentación en primera persona. Por ahora, solo su bio de Instagram.
+      text: site.owner.instagramBio.join(" "),
       portrait: ownerImage,
       detail: handsImage,
     },
-    // TODO: revisar con Maggie los textos provisorios.
+    // TODO: completar con Maggie. Por ahora, cada valor lleva un dato de su bio de Instagram.
     values: [
-      { title: "Artesanal", text: site.owner.bio[1] },
-      {
-        title: "Delicado",
-        text: "Todo se hace por encargo, para que llegue recién hecho. Manteca, huevos de campo y frutas de estación, sin premezclas ni conservantes.",
-      },
-      {
-        title: "Casero",
-        text: "Workshops reducidos en mi cocina, para que te lleves las recetas a la tuya. Me encanta ver a alguien sacar su primer budín del horno.",
-      },
+      { title: "Artesanal", text: site.leadTime + "." },
+      { title: "Delicado", text: site.pickup + "." },
+      { title: "Casero", text: site.owner.instagramBio[2] },
     ],
     timeline: {
       title: "De la cocina de casa a tu mesa",
-      // TODO: confirmar los años con Maggie (solo 2026 es seguro).
+      // TODO: completar con Maggie los años de cada etapa (solo la web, 2026, está confirmada).
       items: [
-        { year: "2019", title: "Family & friends", text: "Las primeras tortas, para cumpleaños de la familia." },
-        { year: "2023", title: "El boca a boca", text: "Los pedidos empiezan a llegar por recomendación." },
-        { year: "2024", title: "Primer workshop", text: "La cocina se abre para enseñar, una vez por mes." },
-        { year: "2026", title: `${site.name} online`, text: "Pedidos y reservas desde la web." },
+        { stage: "Family & friends", text: "Las primeras tortas, para cumpleaños de la familia." },
+        { stage: "Boca a boca", text: "Los pedidos empiezan a llegar por recomendación." },
+        { stage: "Workshops", text: "La cocina se abre para enseñar, una vez por mes." },
+        { stage: "Web 2026", text: "Pedidos y reservas desde la web." },
       ],
     },
     gallery: [

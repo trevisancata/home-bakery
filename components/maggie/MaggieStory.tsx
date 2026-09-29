@@ -24,9 +24,8 @@ export function MaggieStory() {
         </h2>
         <ol className="grid gap-6 border-t-trazo border-carbon md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {timeline.items.map((item) => (
-            <li key={item.title} className="flex flex-col gap-2.5 pt-6 lg:pt-7">
-              <span className="font-display text-30 text-chocolate lg:text-36">{item.year}</span>
-              <strong className="text-18">{item.title}</strong>
+            <li key={item.stage} className="flex flex-col gap-2.5 pt-6 lg:pt-7">
+              <span className="font-display text-30 text-chocolate lg:text-36">{item.stage}</span>
               <span className="leading-parrafo text-secundario">{item.text}</span>
             </li>
           ))}

@@ -27,7 +27,7 @@ export type Workshop = {
   featured: boolean;
 };
 
-// TODO: cargar los precios reales y revisar con Maggie qué incluye cada workshop.
+// TODO: completar con Maggie los precios y qué incluye cada workshop.
 export const workshops: Workshop[] = [
   {
     id: "budines-para-empezar",
@@ -40,7 +40,7 @@ export const workshops: Workshop[] = [
     durationMinutes: 180,
     level: "Inicial",
     price: null,
-    includes: "Ingredientes, utensilios y merienda",
+    includes: "A confirmar",
     capacity: 8,
     spotsLeft: 3,
     images: [{ alt: "Mesa de trabajo con moldes de budín, harina, huevos y limones listos para hornear" }],
@@ -58,7 +58,7 @@ export const workshops: Workshop[] = [
     durationMinutes: 150,
     level: "Inicial",
     price: null,
-    includes: "Ingredientes, utensilios y merienda",
+    includes: "A confirmar",
     capacity: 10,
     spotsLeft: 6,
     images: [{ alt: "Manos formando bollitos de masa de cookies sobre una placa con papel manteca" }],
@@ -76,7 +76,7 @@ export const workshops: Workshop[] = [
     durationMinutes: 240,
     level: "Intermedio",
     price: null,
-    includes: "Ingredientes, utensilios y merienda",
+    includes: "A confirmar",
     capacity: 6,
     spotsLeft: 6,
     images: [{ alt: "Torta de capas sobre un plato giratorio mientras se alisa la cobertura con una espátula" }],

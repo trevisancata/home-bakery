@@ -1,3 +1,4 @@
+import { Rich } from "@/components/Rich";
 import { pages } from "@/data/site";
 
 const { faq } = pages.workshops;
@@ -13,7 +14,9 @@ export function WorkshopsFaq() {
         {faq.items.map((item, index) => (
           <details key={item.question} open={index === 0} className="border-b border-borde py-5.5">
             <summary className="cursor-pointer text-17 font-medium lg:text-19">{item.question}</summary>
-            <p className="mt-3 leading-parrafo text-secundario">{item.answer}</p>
+            <p className="mt-3 leading-parrafo text-secundario">
+              <Rich text={item.answer} />
+            </p>
           </details>
         ))}
       </div>
