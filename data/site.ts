@@ -399,4 +399,12 @@ export const pages = {
       secondary: { label: "Workshops", href: "/workshops" },
     },
   },
+  notFound: {
+    metadata: { title: "Página no encontrada" },
+    eyebrow: "Error 404",
+    title: "Esta página se quedó en el horno.",
+    script: "horno",
+    text: "El link está roto o la página ya no existe. Desde el inicio encontrás la tienda, los workshops y todo lo demás.",
+    cta: { label: "Volver al inicio", href: "/" },
+  },
 };
