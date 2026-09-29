@@ -19,6 +19,9 @@
  *   crema       sobre chocolate-claro 4.54:1  (etiqueta de foto en la banda;
  *               el mockup usa crema-suave, que da 4.45:1 y no llega a AA)
  *
+ *   borde-control sobre hueso 3.00:1  (borde de chips, selects e inputs,
+ *               WCAG 1.4.11; el mockup usa #D9C8BD, que da 1.47:1)
+ *
  * Borde (#E5DDD2) y chocolate-claro (#74604A) son solo divisores
  * decorativos: no delimitan controles ni llevan texto.
  *
@@ -40,6 +43,8 @@
   --color-hueso-suave: #d9c8bd;
   --color-chocolate-claro: #74604a;
   --color-borde-suave: #ece5db;
+  /* Borde de controles de formulario: el color más cercano a #D9C8BD que llega a 3:1 sobre hueso. */
+  --color-borde-control: #998b80;
 
   /* Textos claros sobre chocolate (banda de workshop). */
   --color-crema: #eadfcf;

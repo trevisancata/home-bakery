@@ -42,7 +42,7 @@ export function ProductCatalog({ products, categories }: { products: Product[]; 
                 className={`h-11 shrink-0 rounded-full border px-5 text-14 ${
                   pressed
                     ? "border-carbon bg-chocolate font-semibold text-hueso"
-                    : "border-hueso-suave bg-hueso font-medium text-carbon hover:border-chocolate"
+                    : "border-borde-control bg-hueso font-medium text-carbon hover:border-chocolate"
                 }`}
               >
                 {chip.label}
@@ -55,7 +55,7 @@ export function ProductCatalog({ products, categories }: { products: Product[]; 
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as Sort)}
-            className="h-11 rounded-full border border-hueso-suave bg-hueso px-4 text-14 text-carbon"
+            className="h-11 rounded-full border border-borde-control bg-hueso px-4 text-14 text-carbon"
           >
             {content.sort.options.map((option) => (
               <option key={option.value} value={option.value}>
