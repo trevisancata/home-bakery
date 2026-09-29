@@ -1,56 +1,68 @@
 import Link from "next/link";
-import { navigation, site } from "@/data/site";
+import { navigation, site, ui } from "@/data/site";
+import { Logo } from "./Logo";
+
+const titleClasses = "font-label text-sm tracking-[0.2em] text-hueso uppercase";
+const linkClasses = "underline decoration-hueso/40 hover:decoration-hueso";
 
 export function Footer() {
+  const { instagram, whatsapp } = site.contact;
+
   return (
-    <footer className="bg-carbon text-hueso">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
-        <div className="lg:col-span-2">
-          <p className="font-display text-2xl">{site.name}</p>
-          <p className="mt-3 max-w-sm">{site.tagline}</p>
+    <footer data-surface="dark" className="bg-chocolate text-hueso">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-14 pb-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:pt-20">
+        <div>
+          <Logo alt={site.name} circle={false} className="w-32" />
+          <p className="mt-4 font-display text-xl">{site.tagline}</p>
         </div>
 
-        <div>
-          <h2 className="font-sans text-sm font-bold tracking-widest text-hueso uppercase">
-            Contacto
-          </h2>
-          <address className="mt-4 space-y-2 not-italic">
-            <p>
-              <a href={site.contact.whatsapp.url} className="underline hover:no-underline">
-                {site.contact.whatsapp.label} {site.contact.whatsapp.display}
-              </a>
-            </p>
-            <p>{site.city}</p>
-          </address>
-        </div>
-
-        <div>
-          <h2 className="font-sans text-sm font-bold tracking-widest text-hueso uppercase">
-            Redes
-          </h2>
+        <nav aria-label={ui.footer.navLabel}>
+          <h2 className={titleClasses}>{ui.footer.navTitle}</h2>
           <ul className="mt-4 space-y-2">
-            <li>
-              <a href={site.contact.instagram.url} className="underline hover:no-underline">
-                {site.contact.instagram.label} {site.contact.instagram.display}
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <nav aria-label="Secundaria" className="sm:col-span-2 lg:col-span-4">
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-hueso/20 pt-6">
             {navigation.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="underline hover:no-underline">
+                <Link href={item.href} className={linkClasses}>
                   {item.label}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
+
+        <div>
+          <h2 className={titleClasses}>{ui.footer.hoursTitle}</h2>
+          <dl className="mt-4 space-y-2">
+            {site.hours.map((slot) => (
+              <div key={slot.days} className="flex gap-2">
+                <dt>{slot.days}</dt>
+                <dd>{slot.time}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-4">{site.leadTime}</p>
+          <p>{site.pickup}</p>
+        </div>
+
+        <div>
+          <h2 className={titleClasses}>{ui.footer.contactTitle}</h2>
+          <address className="mt-4 space-y-2 not-italic">
+            <p>
+              <a href={instagram.url} className={linkClasses}>
+                {instagram.label} {instagram.display}
+              </a>
+            </p>
+            <p>
+              <a href={whatsapp.url} className={linkClasses}>
+                {whatsapp.label} {whatsapp.display}
+              </a>
+            </p>
+          </address>
+        </div>
       </div>
-      <p className="px-4 pb-8 text-center text-sm">
-        © {new Date().getFullYear()} {site.name}. Hecho a mano en {site.city}.
+
+      {/* pb-24: deja lugar para el botón flotante de WhatsApp. */}
+      <p className="mx-auto max-w-6xl border-t border-hueso/20 px-4 pt-6 pb-24 text-center text-sm sm:px-6">
+        {ui.footer.copyright(new Date().getFullYear())}
       </p>
     </footer>
   );

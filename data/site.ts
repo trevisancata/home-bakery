@@ -97,7 +97,7 @@ export const ui = {
     navTitle: "Navegación",
     hoursTitle: "Horarios",
     contactTitle: "Contacto",
-    madeIn: `Hecho a mano en ${site.city}.`,
+    copyright: (year: number) => `© ${year} ${site.name}. Hecho a mano en ${site.city}.`,
   },
   product: {
     order: "Encargar",

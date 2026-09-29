@@ -10,6 +10,8 @@
  *   secundario  sobre hueso  5.96:1   sobre arena  5.14:1
  *   hueso       sobre chocolate 7.62:1
  *   blanco      sobre taupe  3.19:1  (solo para el logo, que es gráfico)
+ *   blanco      sobre chocolate 8.39:1  (logo del footer)
+ *   whatsapp-oscuro sobre whatsapp 6.38:1  (botón flotante)
  *
  * Caramelo y greige no llegan a 4.5:1 con ningún color de texto de la
  * paleta: usarlos solo como fondos y bordes decorativos, nunca para texto
@@ -24,6 +26,10 @@
   --color-greige: #c4b4a1;
   --color-arena: #eae3d8;
   --color-secundario: #6b5a50;
+
+  /* Solo para el botón flotante de WhatsApp. */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-oscuro: #0b3b1e;
 
   --font-display: var(--font-gilda-display), ui-serif, Georgia, serif;
   --font-script: var(--font-mrs-saint-delafield), cursive;
