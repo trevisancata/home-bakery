@@ -136,6 +136,10 @@ const heroImage: SiteImage = {
   alt: "Mesa de madera con una torta de chocolate, un budín de limón y cookies recién horneadas",
 };
 
+const handsImage: SiteImage = {
+  alt: "Manos amasando sobre una mesada enharinada",
+};
+
 const kitchenImage: SiteImage = {
   alt: "Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido",
 };
@@ -351,37 +355,48 @@ export const pages = {
       title: site.owner.name,
       description: `La historia de ${site.name} y de ${site.owner.name}, la pastelera detrás de cada receta.`,
     },
-    eyebrow: "Nuestra historia",
-    title: `Conocé a ${site.owner.name}`,
-    script: site.owner.name,
-    intro: site.tagline,
-    story: {
-      title: "Cómo empezó todo",
-      script: "todo",
-      image: ownerImage,
+    hero: {
+      eyebrow: "Magdalena Gatti · Fundadora",
+      title: `Hola, soy ${site.owner.name}.`,
+      script: site.owner.name,
+      lead: `${site.name} nació en mi cocina, horneando para familia y amigos. Hoy más de 35 mil personas siguen lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien.`,
+      // TODO: revisar con Maggie (presentación provisoria armada con su bio).
+      text: `${site.owner.bio[0]} Que ${site.name} se recomiende de boca en boca es lo que más me enorgullece: cada pedido llega de alguien que ya probó algo mío.`,
+      portrait: ownerImage,
+      detail: handsImage,
     },
-    values: {
-      title: "Lo que nos importa",
+    // TODO: revisar con Maggie los textos provisorios.
+    values: [
+      { title: "Artesanal", text: site.owner.bio[1] },
+      {
+        title: "Delicado",
+        text: "Todo se hace por encargo, para que llegue recién hecho. Manteca, huevos de campo y frutas de estación, sin premezclas ni conservantes.",
+      },
+      {
+        title: "Casero",
+        text: "Workshops reducidos en mi cocina, para que te lleves las recetas a la tuya. Me encanta ver a alguien sacar su primer budín del horno.",
+      },
+    ],
+    timeline: {
+      title: "De la cocina de casa a tu mesa",
+      // TODO: confirmar los años con Maggie (solo 2026 es seguro).
       items: [
-        {
-          title: "Ingredientes de verdad",
-          text: "Manteca, huevos de campo y frutas de estación. Sin premezclas ni conservantes.",
-        },
-        {
-          title: "Tiempo y paciencia",
-          text: "Cada pedido se hornea en pocas cantidades, para que salga como tiene que salir.",
-        },
-        {
-          title: "Recetas compartidas",
-          text: "Nada de secretos: en los workshops enseño las mismas recetas que vendo.",
-        },
+        { year: "2019", title: "Family & friends", text: "Las primeras tortas, para cumpleaños de la familia." },
+        { year: "2023", title: "El boca a boca", text: "Los pedidos empiezan a llegar por recomendación." },
+        { year: "2024", title: "Primer workshop", text: "La cocina se abre para enseñar, una vez por mes." },
+        { year: "2026", title: `${site.name} online`, text: "Pedidos y reservas desde la web." },
       ],
     },
-    kitchen: {
-      title: "La cocina",
-      caption: `Todo se hornea en una cocina habilitada, en ${site.city}.`,
-      image: kitchenImage,
-      cta: { label: "Escribime por WhatsApp", href: whatsappLink(whatsappMessages.general) },
+    gallery: [
+      kitchenImage,
+      { alt: `${site.owner.name} decorando una torta con manga` },
+      { alt: "Mesa servida con tortas, budines y cookies" },
+    ] satisfies SiteImage[],
+    cta: {
+      title: `¿Te recomendaron ${site.name}?`,
+      text: "Ahora podés encargar directo desde acá.",
+      primary: { label: "Ver la tienda", href: "/tienda" },
+      secondary: { label: "Workshops", href: "/workshops" },
     },
   },
 };

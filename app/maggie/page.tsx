@@ -1,69 +1,43 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/Button";
-import { ImageFrame } from "@/components/ImageFrame";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
-import { pages, site, ui } from "@/data/site";
+import { MaggieHero } from "@/components/maggie/MaggieHero";
+import { MaggieStory } from "@/components/maggie/MaggieStory";
+import { pages } from "@/data/site";
 
 const content = pages.maggie;
 
 export const metadata: Metadata = content.metadata;
 
 export default function MaggiePage() {
+  const { cta } = content;
+
   return (
     <>
-      <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>
-        <p>{content.intro}</p>
-      </PageHeader>
+      <MaggieHero />
+      <MaggieStory />
 
-      <Section id="historia" title={content.story.title} script={content.story.script} tone="arena">
-        <div className="grid items-center gap-10 md:grid-cols-5 lg:gap-16">
-          <ImageFrame
-            src={content.story.image.src}
-            alt={content.story.image.alt}
-            placeholderLabel={ui.imagePending}
-            ratio="4/5"
-            sizes="(min-width: 768px) 40vw, 100vw"
-            className="mx-auto w-full max-w-sm md:col-span-2"
-          />
-          <div className="space-y-4 text-lg md:col-span-3">
-            <p className="font-label text-sm tracking-eyebrow text-chocolate uppercase">
-              {site.owner.role}
-            </p>
-            {site.owner.bio.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
+      <div className="contenedor pb-16 lg:pb-26">
+        <section
+          aria-labelledby="cta-titulo"
+          data-surface="dark"
+          className="flex flex-col gap-8 rounded-3xl bg-chocolate p-8 text-hueso lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:rounded-4xl lg:p-18"
+        >
+          <div className="flex flex-col gap-3.5">
+            <h2 id="cta-titulo" className="text-30 text-hueso lg:text-44">
+              {cta.title}
+            </h2>
+            <p className="text-17 text-crema-suave">{cta.text}</p>
           </div>
-        </div>
-      </Section>
-
-      <Section id="valores" title={content.values.title}>
-        <ul className="grid gap-6 md:grid-cols-3">
-          {content.values.items.map((value) => (
-            <li key={value.title} className="rounded-4xl bg-arena p-6 lg:p-8">
-              <h3 className="text-2xl">{value.title}</h3>
-              <p className="mt-2 text-secundario">{value.text}</p>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      <Section id="cocina" title={content.kitchen.title} tone="arena">
-        <figure>
-          <ImageFrame
-            src={content.kitchen.image.src}
-            alt={content.kitchen.image.alt}
-            placeholderLabel={ui.imagePending}
-            ratio="3/2"
-            sizes="(min-width: 768px) 768px, 100vw"
-            className="w-full max-w-3xl"
-          />
-          <figcaption className="mt-3 text-secundario">{content.kitchen.caption}</figcaption>
-        </figure>
-        <Button href={content.kitchen.cta.href} className="mt-10">
-          {content.kitchen.cta.label}
-        </Button>
-      </Section>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Button href={cta.primary.href} variant="light" size="lg">
+              {cta.primary.label}
+            </Button>
+            <Button href={cta.secondary.href} variant="outlineLight" size="lg">
+              {cta.secondary.label}
+            </Button>
+          </div>
+        </section>
+      </div>
     </>
   );
 }
