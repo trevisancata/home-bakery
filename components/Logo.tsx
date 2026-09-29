@@ -18,7 +18,7 @@ export function Logo({ alt, circle = true, className = "" }: LogoProps) {
 
   return (
     <span className={`flex items-center justify-center rounded-full bg-taupe ${className}`}>
-      <Image src={src} alt={alt} width={width} height={height} sizes="80px" loading="eager" className="h-auto w-[74%]" />
+      <Image src={src} alt={alt} width={width} height={height} sizes="80px" loading="eager" className="h-auto w-[66%]" />
     </span>
   );
 }

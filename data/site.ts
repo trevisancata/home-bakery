@@ -33,6 +33,7 @@ export const site = {
     { days: "Lun a Vie", time: "10 a 19 h" },
     { days: "Sáb", time: "9 a 13 h" },
   ],
+  closed: { days: "Dom", time: "cerrado" },
   contact: {
     whatsapp: {
       label: "WhatsApp",
@@ -67,12 +68,11 @@ export const navigation = [
   { href: "/maggie", label: "Maggie" },
 ] as const;
 
-/** Avisos de la barra superior. */
-export const announcements = [
-  site.leadTime,
-  site.pickup,
-  ...site.hours.map((slot) => `${slot.days} ${slot.time}`),
-];
+/** Avisos de la barra superior: completos en desktop, resumidos en mobile. */
+export const announcements = {
+  full: [site.leadTime, site.pickup, ...site.hours.map((slot) => `${slot.days} ${slot.time}`)],
+  short: ["48 h de anticipación", `Take away ${site.city}`],
+};
 
 /* -------------------------------------------------------------------------- */
 /* Etiquetas de la interfaz                                                   */

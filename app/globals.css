@@ -54,8 +54,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* El header es sticky: evita que tape los destinos de los anclas. */
+    /* El header es sticky (81 px mobile, 121 px desktop): evita que tape los destinos de los anclas. */
     scroll-padding-top: 6rem;
+
+    @media (width >= 64rem) {
+      scroll-padding-top: 8.5rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
