@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Workshops · Panel Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Oswald:wght@400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif;font-weight:400}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33}
+.muted{color:#6B5A50}
+.ph{background:#DCD1C3;border-radius:12px;display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;color:#5E4A33;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;border:0;background:#5E4A33;color:#FFFFFF;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer}
+.btn:hover{background:#2F2F2F;color:#FFFFFF}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:999px;border:1.5px solid #2F2F2F;background:transparent;color:#2F2F2F;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none;box-sizing:border-box;cursor:pointer}
+.card{background:#FFFFFF;border:1px solid #E5DDD2;border-radius:20px}
+.side a{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;border-radius:12px;color:#E9DCD3;text-decoration:none;font-size:15px}
+.side a:hover{background:#74604A;color:#FFFFFF}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.field input,.field select,.field textarea{height:48px;border-radius:12px;border:1px solid #B8A898;background:#FFFFFF;padding:0 14px;font-family:inherit;font-size:16px;font-weight:400;color:#2F2F2F;box-sizing:border-box}
+.field textarea{height:110px;padding:12px 14px;resize:none;line-height:1.5}
+.hint{font-size:13px;font-weight:400;color:#6B5A50}
+.sw{width:52px;height:30px;border-radius:99px;border:0;padding:3px;cursor:pointer;display:flex;flex-shrink:0}
+.sw span{width:24px;height:24px;border-radius:99px;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.chip{height:40px;padding:0 16px;border-radius:999px;border:1px solid #B8A898;background:#FFFFFF;color:#2F2F2F;font-family:inherit;font-size:14px;cursor:pointer}
+.chip-on{height:40px;padding:0 16px;border-radius:999px;border:1px solid #2F2F2F;background:#2F2F2F;color:#FFFFFF;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1350px; display: flex; background: #F5F4F0">
+<aside class="side" style="width: 260px; flex-shrink: 0; background: #5E4A33; padding: 28px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px"><div style="display: flex; align-items: center; gap: 12px"><span style="width: 52px; height: 52px; border-radius: 99px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 34px; height: auto"></span><div style="display: flex; flex-direction: column; gap: 2px"><strong style="color: #FFFFFF; font-size: 15px">Hola, Maggie</strong><span style="color: #E9DCD3; font-size: 13px">Panel de Home Bakery</span></div></div><nav aria-label="Panel" style="display: flex; flex-direction: column; gap: 4px"><a href="admin-pedidos.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/></svg>Inicio</a><a href="admin-pedidos.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Pedidos<span aria-label="3 pedidos por confirmar" style="margin-left: auto; min-width: 24px; height: 24px; border-radius: 99px; background: #F5F4F0; color: #5E4A33; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">3</span></a><a href="admin-productos.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg>Productos</a><a href="admin-workshops.html" aria-current="page" style="background: #F5F4F0; color: #2F2F2F; font-weight: 600"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16v-7H4z"/><path d="M4 15c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1.5 4 0M12 13V9"/></svg>Workshops</a><a href="admin-ajustes.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Ajustes</a></nav><a href="inicio-desktop.html" style="margin-top: auto"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Ver la web</a></aside>
+<main style="flex-grow: 1; padding: 40px 48px; display: flex; flex-direction: column; gap: 24px; min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 6px"><span class="eyebrow">Cocina de Maggie</span><h1 class="serif" style="margin: 0; font-size: 44px">Workshops</h1></div>
+<button type="button" class="btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nuevo workshop</button>
+</div>
+<div style="display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{ws}}" as="w" hint-placeholder-count="3">
+<button type="button" onClick="{{w.pick}}" style="text-align: left; background: #FFFFFF; border: {{w.border}}; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; font-family: inherit; color: #2F2F2F; cursor: pointer">
+<span class="muted" style="font-size: 13px">{{w.st}}</span>
+<strong class="serif" style="font-size: 20px">{{w.name}}</strong>
+<span style="font-size: 14px">{{w.when}}</span>
+<div style="width: 100%; height: 8px; background: #EAE3D8; border-radius: 99px"><div style="width: {{w.fill}}; height: 8px; background: #5E4A33; border-radius: 99px"></div></div>
+<span style="font-size: 13px; font-weight: 600">{{w.ins}} de {{w.cap}} lugares</span>
+</button>
+</sc-for>
+</div>
+<section class="card" aria-labelledby="wsname" style="padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 id="wsname" class="serif" style="margin: 0; font-size: 30px">{{s.name}}</h2><span class="muted">{{s.when}} · quedan {{s.left}} lugares</span></div>
+<div style="display: flex; gap: 10px"><button type="button" class="btn2" style="height: 44px; font-size: 14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/></svg>Escribir a todas</button><button type="button" class="btn2" style="height: 44px; font-size: 14px">Descargar lista</button></div>
+</div>
+<div role="tablist" aria-label="Secciones del workshop" style="display: flex; gap: 8px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2">
+<sc-if value="{{t.on}}" hint-placeholder-val="{{ false }}"><button type="button" role="tab" aria-selected="true" class="chip-on" onClick="{{t.pick}}" style="height: 44px">{{t.label}}</button></sc-if>
+<sc-if value="{{t.off}}" hint-placeholder-val="{{ true }}"><button type="button" role="tab" aria-selected="false" class="chip" onClick="{{t.pick}}" style="height: 44px">{{t.label}}</button></sc-if>
+</sc-for>
+</div>
+<sc-if value="{{tIns}}" hint-placeholder-val="{{ true }}">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px">
+<thead><tr style="text-align: left; color: #5E4A33; font-size: 13px"><th scope="col" style="padding: 10px 8px; font-weight: 600">Nombre</th><th scope="col" style="padding: 10px 8px; font-weight: 600">Pago</th><th scope="col" style="padding: 10px 8px; font-weight: 600">Experiencia</th><th scope="col" style="padding: 10px 8px; font-weight: 600">Alergias</th><th scope="col" style="padding: 10px 8px; font-weight: 600">Cómo nos conoció</th><th scope="col" style="padding: 10px 8px"><span class="sr">WhatsApp</span></th></tr></thead>
+<tbody>
+<sc-for list="{{people}}" as="p" hint-placeholder-count="7">
+<tr style="border-top: 1px solid #E5DDD2"><td style="padding: 12px 8px; font-weight: 600">{{p.name}}</td><td style="padding: 12px 8px"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: #E4EFE3; color: #1F4D2A">Pagado</span></td><td style="padding: 12px 8px">{{p.exp}}</td><td style="padding: 12px 8px">{{p.alerg}}</td><td style="padding: 12px 8px" class="muted">{{p.src}}</td><td style="padding: 12px 8px; text-align: right"><a href="#" aria-label="Escribirle por WhatsApp" style="display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/></svg></a></td></tr>
+</sc-for>
+</tbody>
+</table>
+</sc-if>
+<sc-if value="{{tDat}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<label class="field" style="grid-column: span 2">Nombre<input type="text" value="{{s.name}}"></label>
+<label class="field">Fecha<input type="date"></label>
+<label class="field">Horario<input type="text" placeholder="Ej.: 14 a 17 h"></label>
+<label class="field">Precio por persona<input type="text" inputmode="numeric" placeholder="$"></label>
+<div class="field"><span id="cupo-l">Cupo total</span><div style="display: flex; align-items: center; gap: 8px"><button type="button" aria-label="Un lugar menos" onClick="{{less}}" style="width: 48px; height: 48px; border-radius: 12px; border: 1px solid #B8A898; background: #FFFFFF; font-size: 20px; cursor: pointer">−</button><input aria-labelledby="cupo-l" aria-invalid="{{tooLow}}" type="text" value="{{cupo}}" style="width: 80px; text-align: center; border: {{cupoBorder}}"><button type="button" aria-label="Un lugar más" onClick="{{more}}" style="width: 48px; height: 48px; border-radius: 12px; border: 1px solid #B8A898; background: #FFFFFF; font-size: 20px; cursor: pointer">+</button></div>
+<sc-if value="{{tooLow}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 400; color: #B3261E">Ya hay {{s.ins}} inscriptas: el cupo no puede ser menor.</span></sc-if></div>
+<label class="field" style="grid-column: span 2">Qué se aprende e incluye<textarea placeholder="[Qué vas a aprender, qué te llevás, qué incluye]"></textarea></label>
+<label class="field" style="grid-column: span 2">Política de cancelación<textarea style="height: 80px" placeholder="[Ej.: hasta 72 h antes se devuelve el 100%]"></textarea></label>
+<div style="grid-column: span 2; display: flex; gap: 12px; justify-content: flex-end"><button type="button" class="btn2">Guardar borrador</button><button type="button" class="btn">Guardar y publicar</button></div>
+</div>
+</sc-if>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1350}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 1, tab: 'inscriptas', cupo: 10 };
+  }
+  renderVals() {
+    var self = this;
+    var WS = [
+      { id: 1, name: '[Workshop de octubre]', when: 'Sáb [fecha] · [horario]', ins: 7, cap: 10, st: 'Inscripción abierta' },
+      { id: 2, name: '[Workshop de noviembre]', when: 'Sáb [fecha] · [horario]', ins: 2, cap: 10, st: 'Inscripción abierta' },
+      { id: 3, name: 'Pastelería para el té vol. 2', when: 'Septiembre', ins: 10, cap: 10, st: 'Terminado' }
+    ];
+    var sel = WS.filter(function (w) { return w.id === self.state.sel; })[0];
+    var cupo = this.state.cupo;
+    var tooLow = cupo < sel.ins;
+    return {
+      ws: WS.map(function (w) { var on = w.id === sel.id; return { name: w.name, when: w.when, st: w.st, ins: w.ins, cap: w.cap, fill: Math.round(w.ins / w.cap * 100) + '%',
+        border: on ? '2px solid #5E4A33' : '1px solid #E5DDD2', pick: function () { self.setState({ sel: w.id, cupo: w.cap }); } }; }),
+      s: { name: sel.name, when: sel.when, ins: sel.ins, cap: sel.cap, left: sel.cap - sel.ins },
+      tIns: this.state.tab === 'inscriptas', tDat: this.state.tab === 'datos',
+      tabs: [['inscriptas', 'Inscriptas'], ['datos', 'Datos del workshop']].map(function (t) { var on = self.state.tab === t[0]; return { label: t[1], on: on, off: !on, pick: function () { self.setState({ tab: t[0] }); } }; }),
+      people: ['Ana', 'Belén', 'Camila', 'Delfina', 'Eugenia', 'Florencia', 'Guadalupe', 'Inés', 'Josefina', 'Karina'].slice(0, sel.ins).map(function (n, i) {
+        return { name: n + ' [apellido]', exp: ['Ninguna', 'Algo en casa', 'Bastante'][i % 3], alerg: i === 1 ? 'Celiaquía' : '—', src: ['Me lo recomendaron', 'Instagram', 'Ya hice un workshop'][i % 3] };
+      }),
+      cupo: cupo, tooLow: tooLow,
+      cupoBorder: tooLow ? '1.5px solid #B3261E' : '1px solid #B8A898',
+      less: function () { self.setState({ cupo: Math.max(1, cupo - 1) }); },
+      more: function () { self.setState({ cupo: cupo + 1 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

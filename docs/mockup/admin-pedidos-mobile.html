@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pedidos en el celular · Panel Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Oswald:wght@400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif;font-weight:400}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33}
+.muted{color:#6B5A50}
+.ph{background:#DCD1C3;border-radius:12px;display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;color:#5E4A33;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;border:0;background:#5E4A33;color:#FFFFFF;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer}
+.btn:hover{background:#2F2F2F;color:#FFFFFF}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:999px;border:1.5px solid #2F2F2F;background:transparent;color:#2F2F2F;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none;box-sizing:border-box;cursor:pointer}
+.card{background:#FFFFFF;border:1px solid #E5DDD2;border-radius:20px}
+.side a{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;border-radius:12px;color:#E9DCD3;text-decoration:none;font-size:15px}
+.side a:hover{background:#74604A;color:#FFFFFF}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.field input,.field select,.field textarea{height:48px;border-radius:12px;border:1px solid #B8A898;background:#FFFFFF;padding:0 14px;font-family:inherit;font-size:16px;font-weight:400;color:#2F2F2F;box-sizing:border-box}
+.field textarea{height:110px;padding:12px 14px;resize:none;line-height:1.5}
+.hint{font-size:13px;font-weight:400;color:#6B5A50}
+.sw{width:52px;height:30px;border-radius:99px;border:0;padding:3px;cursor:pointer;display:flex;flex-shrink:0}
+.sw span{width:24px;height:24px;border-radius:99px;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.chip{height:40px;padding:0 16px;border-radius:999px;border:1px solid #B8A898;background:#FFFFFF;color:#2F2F2F;font-family:inherit;font-size:14px;cursor:pointer}
+.chip-on{height:40px;padding:0 16px;border-radius:999px;border:1px solid #2F2F2F;background:#2F2F2F;color:#FFFFFF;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</helmet>
+<div style="width: 390px; height: 1600px; display: flex; flex-direction: column; background: #F5F4F0">
+<header style="position: sticky; top: 0; z-index: 10; background: #5E4A33; color: #FFFFFF; padding: 12px 16px; display: flex; align-items: center; gap: 10px">
+<span style="width: 40px; height: 40px; border-radius: 99px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 26px; height: auto"></span><h1 class="serif" style="margin: 0; font-size: 26px">Pedidos</h1>
+</header>
+<main style="flex-grow: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="overflow-x: auto; margin: 0 -16px; padding: 0 16px"><div role="tablist" aria-label="Estado de los pedidos" style="display: flex; gap: 8px; flex-wrap: nowrap; width: max-content">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<sc-if value="{{t.on}}" hint-placeholder-val="{{ false }}"><button type="button" role="tab" aria-selected="true" class="chip-on" onClick="{{t.pick}}" style="height: 44px">{{t.label}}</button></sc-if>
+<sc-if value="{{t.off}}" hint-placeholder-val="{{ true }}"><button type="button" role="tab" aria-selected="false" class="chip" onClick="{{t.pick}}" style="height: 44px">{{t.label}}</button></sc-if>
+</sc-for>
+</div></div>
+<sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><div role="status" style="background: #E4EFE3; color: #1F4D2A; border-radius: 14px; padding: 14px 18px; font-size: 15px; line-height: 1.4">{{toast}}</div></sc-if>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}"><div class="card" style="padding: 24px; text-align: center"><span class="muted">No hay pedidos en esta etapa.</span></div></sc-if>
+<sc-for list="{{list}}" as="o" hint-placeholder-count="3">
+<article class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><strong style="font-size: 17px">{{o.who}}</strong><span class="muted" style="font-size: 12px">{{o.code}} · {{o.ago}}</span></div>
+<span style="font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{o.when}}</span>
+<span style="font-size: 14px">{{o.items}}</span>
+<span style="display: flex"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; border: 1px solid #B8A898">{{o.pay}}</span></span>
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-weight: 600">{{o.total}}</span><span style="align-self: flex-start; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: {{o.bBg}}; color: {{o.bFg}}">{{o.b}}</span></div>
+<sc-if value="{{o.isConfirm}}" hint-placeholder-val="{{ true }}"><div style="display: flex; gap: 8px"><button type="button" class="btn" onClick="{{o.ok}}" style="flex-grow: 1">Confirmar</button><button type="button" class="btn2" onClick="{{o.no}}">No puedo</button></div></sc-if>
+<sc-if value="{{o.isComp}}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 8px"><a href="#" class="btn2" style="flex-grow: 1">Ver comprobante</a><button type="button" class="btn" onClick="{{o.got}}" style="flex-grow: 1">Pago recibido</button></div></sc-if>
+</article>
+</sc-for>
+</main>
+<nav aria-label="Panel" style="position: sticky; bottom: 0; background: #FFFFFF; border-top: 1px solid #E5DDD2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 6px 4px 14px"><a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; font-size: 12px; text-decoration: none; color: #6B5A50; font-weight: 400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/></svg>Inicio</a><a href="admin-pedidos-mobile.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; font-size: 12px; text-decoration: none; color: #5E4A33; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Pedidos</a><a href="admin-productos-mobile.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; font-size: 12px; text-decoration: none; color: #6B5A50; font-weight: 400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg>Productos</a><a href="admin-workshops.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; font-size: 12px; text-decoration: none; color: #6B5A50; font-weight: 400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16v-7H4z"/><path d="M4 15c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1.5 4 0M12 13V9"/></svg>Workshops</a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'confirmar', sel: 1, toast: '', orders: [
+      { id: 1, code: 'HB-0142', who: 'Sofía R.', when: 'Jue 1 oct · 17 a 18 h', items: 'Red velvet grande · Cajita de 8 cookies ×2', note: 'Dedicatoria: "Feliz cumple Juana". Retira el marido.', total: '[$ total]', st: 'confirmar', pay: 'mp', ago: 'hace 20 min' },
+      { id: 2, code: 'HB-0141', who: 'Lucía M.', when: 'Vie 2 oct · 10 a 11 h', items: 'Number cake "30"', note: 'Sin frutos secos, por favor.', total: '[$ total]', st: 'confirmar', pay: 'tr', ago: 'hace 2 h' },
+      { id: 3, code: 'HB-0140', who: 'Carolina P.', when: 'Sáb 3 oct · 9 a 10 h', items: 'Tarta de frutillas · Postres en vasito ×12', note: '', total: '[$ total]', st: 'confirmar', pay: 'mp', ago: 'ayer' },
+      { id: 4, code: 'HB-0139', who: 'Paula D.', when: 'Jue 1 oct · 15 a 16 h', items: 'Red velvet chica', note: '', total: '[$ total]', st: 'comprobante', pay: 'tr', ago: 'ayer' },
+      { id: 5, code: 'HB-0138', who: 'Valentina G.', when: 'Jue 1 oct · 11 a 12 h', items: 'Cajita de 8 cookies', note: '', total: '[$ total]', st: 'pago', pay: 'mp', ago: 'ayer' },
+      { id: 6, code: 'HB-0137', who: 'Martina L.', when: 'Mié 30 sep · 16 a 17 h', items: 'Red velvet chica', note: '', total: '[$ total]', st: 'preparar', pay: 'mp', ago: 'lun' },
+      { id: 7, code: 'HB-0135', who: 'Julieta F.', when: 'Mié 30 sep · 18 a 19 h', items: 'Dátiles rellenos ×24', note: 'Manda un Uber a retirar.', total: '[$ total]', st: 'preparar', pay: 'tr', ago: 'lun' }
+    ] };
+  }
+  renderVals() {
+    var self = this, tab = this.state.tab;
+    var TABS = [['confirmar', 'Por confirmar'], ['pago', 'Falta pagar'], ['preparar', 'Para preparar'], ['entregados', 'Entregados']];
+    var BADGE = { confirmar: ['Por confirmar', '#FFF1D6', '#7A4B00'], pago: ['Falta pagar', '#E8EEF8', '#284B7A'], comprobante: ['Revisar comprobante', '#FFE3CF', '#8A3A00'], preparar: ['Pagado · preparar', '#E4EFE3', '#1F4D2A'], entregados: ['Entregado', '#ECE8E2', '#4A4038'], rechazado: ['No se hizo', '#F6E3E1', '#8A2A21'] };
+    var PAY = { mp: 'Mercado Pago', tr: 'Transferencia' };
+    var inTab = function (o, t) { return o.st === t || (t === 'pago' && o.st === 'comprobante'); };
+    var list = this.state.orders.filter(function (o) { return inTab(o, tab); });
+    var sel = this.state.orders.filter(function (o) { return o.id === self.state.sel; })[0];
+    if (!sel || !inTab(sel, tab)) sel = list[0];
+    var move = function (id, st, msg) {
+      self.setState({ orders: self.state.orders.map(function (o) { return o.id === id ? Object.assign({}, o, { st: st }) : o; }), toast: msg, sel: null });
+    };
+    var okMsg = function (o) { return 'Confirmaste ' + o.code + '. A ' + o.who + (o.pay === 'mp' ? ' le llega el link de pago de Mercado Pago' : ' le llegan los datos para transferir') + ' por WhatsApp y email.'; };
+    var noMsg = function (o) { return 'Le avisamos a ' + o.who + ' que no podés para esa fecha. No se cobró nada.'; };
+    return {
+      toast: this.state.toast,
+      tabs: TABS.map(function (t) {
+        var n = self.state.orders.filter(function (o) { return inTab(o, t[0]); }).length;
+        return { label: t[1] + ' (' + n + ')', on: t[0] === tab, off: t[0] !== tab, pick: function () { self.setState({ tab: t[0], sel: null, toast: '' }); } };
+      }),
+      empty: list.length === 0,
+      list: list.map(function (o) {
+        var isSel = sel && o.id === sel.id;
+        return { code: o.code, who: o.who, when: o.when, items: o.items, total: o.total, ago: o.ago, pay: PAY[o.pay],
+          border: isSel ? '2px solid #5E4A33' : '1px solid #E5DDD2', pick: function () { self.setState({ sel: o.id }); },
+          b: BADGE[o.st][0], bBg: BADGE[o.st][1], bFg: BADGE[o.st][2],
+          isConfirm: o.st === 'confirmar', isComp: o.st === 'comprobante',
+          ok: function () { move(o.id, 'pago', okMsg(o)); },
+          no: function () { move(o.id, 'rechazado', noMsg(o)); },
+          got: function () { move(o.id, 'preparar', 'Confirmaste el pago de ' + o.code + '. A ' + o.who + ' le llega la dirección para retirar.'); } };
+      }),
+      has: !!sel,
+      d: sel ? { code: sel.code, who: sel.who, when: sel.when, items: sel.items, note: sel.note || 'Sin comentarios.', total: sel.total, pay: PAY[sel.pay], b: BADGE[sel.st][0], bBg: BADGE[sel.st][1], bFg: BADGE[sel.st][2] } : {},
+      dConfirm: !!sel && sel.st === 'confirmar',
+      dConfirmNote: sel ? (sel.pay === 'mp' ? 'Al confirmar, a la clienta le llega el link de pago de Mercado Pago por WhatsApp y email. El pago se acredita solo.' : 'Al confirmar, a la clienta le llegan tu alias, CBU, el monto exacto y el código del pedido, con un link para subir el comprobante.') : '',
+      dPagoMP: !!sel && sel.st === 'pago' && sel.pay === 'mp',
+      dPagoTr: !!sel && sel.st === 'pago' && sel.pay === 'tr',
+      dComp: !!sel && sel.st === 'comprobante',
+      dPrep: !!sel && sel.st === 'preparar',
+      ok: function () { if (sel) move(sel.id, 'pago', okMsg(sel)); },
+      no: function () { if (sel) move(sel.id, 'rechazado', noMsg(sel)); },
+      paid: function () { if (sel) move(sel.id, 'preparar', 'Marcaste ' + sel.code + ' como pagado.'); },
+      got: function () { if (sel) move(sel.id, 'preparar', 'Confirmaste el pago de ' + sel.code + '. A ' + sel.who + ' le llega la dirección para retirar.'); },
+      notYet: function () { if (sel) move(sel.id, 'pago', 'Le avisamos a ' + sel.who + ' que todavía no ves la transferencia.'); },
+      done: function () { if (sel) move(sel.id, 'entregados', sel.code + ' quedó como entregado.'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

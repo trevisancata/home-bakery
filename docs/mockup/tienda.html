@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tienda · Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Mrs+Saint+Delafield&amp;family=Oswald:wght@300;400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif}
+.script{font-family:'Mrs Saint Delafield',cursive;font-weight:400;color:#5E4A33;font-size:1.75em;line-height:.6;letter-spacing:0;padding:0 .08em}
+.ph{background:#DCD1C3;border-radius:20px;display:flex;align-items:flex-end;padding:16px;box-sizing:border-box;color:#5E4A33;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.btn2{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #2F2F2F;color:#2F2F2F;background:transparent;font-weight:600;font-size:14px;font-family:inherit;cursor:pointer}
+.btn2:hover{background:#5E4A33;color:#F5F4F0}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33;font-weight:400}
+.muted{color:#6B5A50}
+.nav a{color:#2F2F2F;text-decoration:none;padding:6px 0;border-bottom:1.5px solid transparent}
+.nav a:hover{border-bottom-color:#5E4A33;color:#2F2F2F}
+.chip{height:44px;padding:0 20px;border-radius:999px;border:1px solid #D9C8BD;background:#F5F4F0;color:#2F2F2F;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer}
+.chip-on{height:44px;padding:0 20px;border-radius:999px;border:1px solid #2F2F2F;background:#5E4A33;color:#F5F4F0;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1440px; height: 2100px; display: flex; flex-direction: column; background: #F5F4F0">
+
+<div style="background: #5E4A33; color: #F5F4F0; font-size: 13px; text-align: center; padding: 11px 16px">Pedidos con 48 h de anticipación · Take away en San Isidro · Lun a Vie 10 a 19 h · Sáb 9 a 13 h</div>
+<header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<nav class="nav" aria-label="Principal" style="display: flex; gap: 40px; font-size: 15px; font-weight: 500">
+<a href="inicio-desktop.html">Inicio</a>
+<a href="tienda.html" aria-current="page" style="border-bottom-color: #5E4A33">Tienda</a>
+<a href="workshops.html">Workshops</a>
+<a href="maggie.html">Maggie</a>
+</nav>
+<a href="carrito.html" aria-label="Ver carrito, 2 productos" style="position: relative; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 999px; border: 1px solid #E5DDD2; color: #2F2F2F"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span style="position: absolute; top: -2px; right: -2px; width: 20px; height: 20px; border-radius: 99px; background: #5E4A33; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center">2</span></a>
+</header>
+
+<main style="flex-grow: 1; padding: 56px 80px 96px; display: flex; flex-direction: column; gap: 36px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<span class="muted" style="font-size: 14px"><a href="inicio-desktop.html" style="color: #6B5A50">Inicio</a> / Tienda</span>
+<h1 class="serif" style="margin: 0; font-size: 64px; font-weight: 400">Tienda</h1>
+<p class="muted" style="margin: 0; font-size: 17px; line-height: 1.6; max-width: 560px">Todo se hornea por encargo, no hay stock. Al finalizar elegís el día y horario de retiro. ¿Es para un evento? <a href="https://wa.me/5491155767591">Pedí presupuesto por WhatsApp</a>.</p>
+</div>
+<div style="display: flex; gap: 24px; background: #EAE3D8; border-radius: 20px; padding: 20px 28px; font-size: 14px; line-height: 1.5">
+<div style="display: flex; flex-direction: column"><strong>Anticipación</strong><span>48 h</span></div>
+<div style="display: flex; flex-direction: column"><strong>Retiro</strong><span>Lun a Sáb, San Isidro</span></div>
+<div style="display: flex; flex-direction: column"><strong>Envío</strong><span>Desde $400.000 · 10 km</span></div>
+</div>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5DDD2; border-bottom: 1px solid #E5DDD2; padding: 18px 0">
+<div role="group" aria-label="Filtrar por categoría" style="display: flex; gap: 10px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="7">
+<sc-if value="{{c.on}}" hint-placeholder-val="{{ false }}"><button type="button" class="chip-on" aria-pressed="true" onClick="{{c.pick}}">{{c.label}}</button></sc-if>
+<sc-if value="{{c.off}}" hint-placeholder-val="{{ true }}"><button type="button" class="chip" aria-pressed="false" onClick="{{c.pick}}">{{c.label}}</button></sc-if>
+</sc-for>
+</div>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 14px" class="muted">Ordenar
+<select style="height: 44px; border-radius: 999px; border: 1px solid #D9C8BD; background: #F5F4F0; padding: 0 16px; font-family: inherit; font-size: 14px; color: #2F2F2F"><option>Destacados</option><option>Menor precio</option><option>Mayor precio</option></select>
+</label>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 48px 32px">
+<sc-for list="{{items}}" as="p" hint-placeholder-count="8">
+<article style="display: flex; flex-direction: column; gap: 10px">
+<div class="ph" style="height: 360px">Foto · {{p.name}}</div>
+<span class="eyebrow" style="font-size: 11px; margin-top: 4px">{{p.cat}}</span>
+<div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><h2 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">{{p.name}}</h2><span style="font-weight: 600">[$ precio]</span></div>
+<p class="muted" style="margin: 0; font-size: 14px">[Porciones / tamaño] · Por encargo</p>
+<button type="button" class="btn2" style="margin-top: 6px">Agregar al pedido</button>
+</article>
+</sc-for>
+</div>
+</main>
+
+<footer style="background: #5E4A33; color: #D9C8BD; padding: 36px 80px; display: flex; justify-content: space-between; font-size: 14px">
+<img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 72px; height: auto">
+<span>Lun a Vie 10 a 19 h · Sáb 9 a 13 h · Dom cerrado</span>
+<a href="https://instagram.com/homebakery.pasteleria" style="color: #F5F4F0">@homebakery.pasteleria</a>
+</footer>
+<a href="https://wa.me/5491155767591" aria-label="Escribinos por WhatsApp" style="position: fixed; right: 32px; bottom: 32px; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 24px 0 20px; border-radius: 999px; background: #25D366; color: #0B3B1E; font-weight: 600; font-size: 15px; text-decoration: none; box-shadow: 0 10px 24px rgba(46,37,32,.22)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/><path d="M9 8.6c.3 2.9 2.5 5.3 5.4 5.8l1-1.2-1.7-.9-.8.7a4 4 0 0 1-2-2l.7-.8-.8-1.7z"/></svg>¿Consultas? Escribinos</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { cat: 'Todo' }; }
+  renderVals() {
+    var labels = ['Todo', 'Tortas', 'Tartas', 'Number cakes', 'Cookies', 'Postres en vasito', 'Bocados'];
+    var all = [['Tortas', 'Red velvet'], ['Tartas', 'Tarta de frutillas'], ['Number cakes', 'Number cake'], ['Cookies', 'Cajita de 8 cookies'], ['Postres en vasito', 'Postres en vasito'], ['Bocados', 'Dátiles rellenos'], ['Tortas', 'Torta con flores'], ['Tartas', 'Pavlova de frutos rojos']];
+    var sel = this.state.cat;
+    var self = this;
+    return {
+      cats: labels.map(function (l) { return { label: l, on: l === sel, off: l !== sel, pick: function () { self.setState({ cat: l }); } }; }),
+      items: all.filter(function (c) { return sel === 'Todo' || c[0] === sel; }).map(function (c) { return { cat: c[0], name: c[1] }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

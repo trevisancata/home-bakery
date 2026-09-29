@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Inscripción al workshop · Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Mrs+Saint+Delafield&amp;family=Oswald:wght@300;400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif}
+.script{font-family:'Mrs Saint Delafield',cursive;font-weight:400;color:#5E4A33;font-size:1.75em;line-height:.6;letter-spacing:0;padding:0 .08em}
+.ph{background:#DCD1C3;border-radius:24px;display:flex;align-items:flex-end;padding:16px;box-sizing:border-box;color:#5E4A33;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:56px;padding:0 32px;border-radius:999px;background:#5E4A33;color:#F5F4F0;font-weight:600;font-size:16px;text-decoration:none}
+.btn:hover{background:#2F2F2F;color:#F5F4F0}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33;font-weight:400}
+.muted{color:#6B5A50}
+.nav a{color:#2F2F2F;text-decoration:none;padding:6px 0;border-bottom:1.5px solid transparent}
+.nav a:hover{border-bottom-color:#5E4A33;color:#2F2F2F}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+.field input,.field select,.field textarea{height:48px;border-radius:12px;border:1px solid #CFC3B5;background:#FFFFFF;padding:0 14px;font-family:inherit;font-size:15px;color:#2F2F2F}
+.field textarea{height:88px;padding:12px 14px;resize:none}
+.opt{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border:1px solid #CFC3B5;border-radius:12px;background:#FFFFFF;font-size:15px;cursor:pointer}
+.row{display:grid;grid-template-columns:140px minmax(0,1fr) 180px 200px;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid #E5DDD2}
+details{border-bottom:1px solid #E5DDD2;padding:22px 0}
+summary{font-size:19px;font-weight:500;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1500px; display: flex; flex-direction: column; background: #F5F4F0">
+
+<div style="background: #5E4A33; color: #F5F4F0; font-size: 13px; text-align: center; padding: 11px 16px">Pedidos con 48 h de anticipación · Take away en San Isidro · Lun a Vie 10 a 19 h · Sáb 9 a 13 h</div>
+<header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<nav class="nav" aria-label="Principal" style="display: flex; gap: 40px; font-size: 15px; font-weight: 500">
+<a href="inicio-desktop.html">Inicio</a>
+<a href="tienda.html">Tienda</a>
+<a href="workshops.html" aria-current="page" style="border-bottom-color: #5E4A33">Workshops</a>
+<a href="maggie.html">Maggie</a>
+</nav>
+<a href="carrito.html" aria-label="Ver carrito" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 999px; border: 1px solid #E5DDD2; color: #2F2F2F"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg></a>
+</header>
+
+<main style="flex-grow: 1; padding: 48px 80px 104px; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span class="muted" style="font-size: 14px"><a href="workshops.html" style="color: #6B5A50">Workshops</a> / Inscripción</span>
+<h1 class="serif" style="margin: 0; font-size: 56px; font-weight: 500; line-height: 1.05">{{title}}</h1>
+</div>
+<ol aria-label="Pasos de la inscripción" style="display: flex; gap: 12px; list-style: none; margin: 0; padding: 0; font-size: 14px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<sc-if value="{{s.on}}" hint-placeholder-val="{{ false }}"><li aria-current="step" style="height: 40px; padding: 0 18px; border-radius: 999px; background: #5E4A33; color: #F5F4F0; display: flex; align-items: center; font-weight: 600">{{s.label}}</li></sc-if>
+<sc-if value="{{s.off}}" hint-placeholder-val="{{ true }}"><li style="height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid #CFC3B5; display: flex; align-items: center; color: #6B5A50">{{s.label}}</li></sc-if>
+</sc-for>
+</ol>
+</div>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 56px; align-items: start">
+
+<div style="display: flex; flex-direction: column; gap: 28px">
+<sc-if value="{{isForm}}" hint-placeholder-val="{{ true }}">
+<form style="display: flex; flex-direction: column; gap: 28px" aria-describedby="req-note">
+<p id="req-note" class="muted" style="margin: 0; font-size: 14px">Los campos con * son obligatorios.</p>
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px">
+<legend class="eyebrow" style="padding: 0; margin-bottom: 16px">Tus datos</legend>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<label class="field">Nombre y apellido *<input type="text" autocomplete="name" required></label>
+<label class="field">WhatsApp *<input type="tel" autocomplete="tel" placeholder="11 ..." required></label>
+</div>
+<label class="field">Email *<input type="email" autocomplete="email" required><span class="muted" style="font-size: 13px; font-weight: 400">Te mandamos ahí la dirección y los detalles del workshop.</span></label>
+</fieldset>
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px">
+<legend class="eyebrow" style="padding: 0; margin-bottom: 12px">¿Cuánta experiencia tenés en pastelería?</legend>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+<label class="opt"><input type="radio" name="exp">Ninguna</label>
+<label class="opt"><input type="radio" name="exp">Algo en casa</label>
+<label class="opt"><input type="radio" name="exp">Bastante</label>
+</div>
+</fieldset>
+<label class="field">Alergias o restricciones alimentarias<textarea placeholder="Ej.: celiaquía, frutos secos…"></textarea></label>
+<label class="field">¿Cómo conociste Home Bakery?
+<select><option>Elegí una opción</option><option>Me lo recomendó alguien</option><option>Instagram</option><option>Ya hice un workshop</option><option>Otro</option></select>
+</label>
+<label style="display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 1.5"><input type="checkbox" required style="width: 20px; height: 20px; margin-top: 2px">Leí la <a href="workshops.html">política de cancelación</a> del workshop. *</label>
+<button type="button" onClick="{{toPay}}" style="align-self: flex-start; height: 56px; padding: 0 32px; border-radius: 999px; border: 0; background: #5E4A33; color: #F5F4F0; font-family: inherit; font-weight: 600; font-size: 16px; cursor: pointer">Continuar al pago</button>
+</form>
+</sc-if>
+
+<sc-if value="{{isPay}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 24px">
+<section aria-labelledby="rev" style="border: 1px solid #E5DDD2; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 id="rev" class="eyebrow" style="margin: 0">Tus datos</h2><button type="button" onClick="{{toForm}}" style="height: 44px; padding: 0 12px; border: 0; background: transparent; color: #5E4A33; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Editar</button></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; font-size: 15px"><span>[Nombre y apellido]</span><span>[WhatsApp]</span><span>[Email]</span><span>Experiencia: [nivel]</span></div>
+</section>
+<button type="button" onClick="{{toDone}}" style="height: 60px; border-radius: 999px; border: 0; background: #009EE3; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 17px; cursor: pointer">Pagar {{total}} con Mercado Pago</button>
+<div style="display: flex; gap: 12px; background: #EAE3D8; border-radius: 16px; padding: 16px; font-size: 14px; line-height: 1.5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>Tu lugar queda confirmado cuando se acredita el pago. Si el cupo se completa antes, no se cobra nada.</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 24px; background: #EAE3D8; border-radius: 28px; padding: 48px">
+<span style="width: 56px; height: 56px; border-radius: 99px; background: #5E4A33; color: #F5F4F0; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></span>
+<p style="margin: 0; font-size: 19px; line-height: 1.6">Te esperamos en la cocina de Maggie. Te mandamos la dirección y todo lo que tenés que saber por email y WhatsApp.</p>
+<div style="display: flex; gap: 16px"><a class="btn" href="#">Agregar a mi calendario</a><a href="workshops.html" style="display: inline-flex; align-items: center; height: 56px; padding: 0 24px; font-weight: 600">Volver a workshops</a></div>
+</div>
+</sc-if>
+</div>
+
+<aside aria-label="Resumen del workshop" style="position: sticky; top: 136px; background: #FFFFFF; border: 1px solid #E5DDD2; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column">
+<div class="ph" style="height: 200px; border-radius: 0">Foto · workshop</div>
+<div style="padding: 32px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px"><span class="eyebrow">Workshop · [Mes]</span><h2 class="serif" style="margin: 0; font-size: 32px; font-weight: 500">[Nombre del workshop]</h2></div>
+<dl style="margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<div style="display: flex; justify-content: space-between"><dt class="muted">Fecha</dt><dd style="margin: 0">[Día y fecha]</dd></div>
+<div style="display: flex; justify-content: space-between"><dt class="muted">Horario</dt><dd style="margin: 0">[Horario]</dd></div>
+<div style="display: flex; justify-content: space-between"><dt class="muted">Lugar</dt><dd style="margin: 0">Cocina de Maggie · San Isidro</dd></div>
+<div style="display: flex; justify-content: space-between"><dt class="muted">Precio por persona</dt><dd style="margin: 0">[$ precio]</dd></div>
+</dl>
+<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5DDD2; padding-top: 18px">
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Lugares</strong><span style="font-size: 13px; color: #5E4A33; font-weight: 600">Quedan {{left}}</span></div>
+<div style="display: flex; align-items: center; border: 1px solid #CFC3B5; border-radius: 999px"><button type="button" aria-label="Un lugar menos" onClick="{{less}}" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">−</button><span aria-live="polite" style="width: 28px; text-align: center; font-weight: 600">{{qty}}</span><button type="button" aria-label="Un lugar más" onClick="{{more}}" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">+</button></div>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 600"><span>Total</span><span>{{total}}</span></div>
+</div>
+</aside>
+</div>
+</main>
+
+<footer style="background: #5E4A33; color: #D9C8BD; padding: 36px 80px; display: flex; justify-content: space-between; font-size: 14px">
+<img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 72px; height: auto">
+<span>Lun a Vie 10 a 19 h · Sáb 9 a 13 h · Dom cerrado</span>
+<a href="https://instagram.com/homebakery.pasteleria" style="color: #F5F4F0">@homebakery.pasteleria</a>
+</footer>
+<a href="https://wa.me/5491155767591" aria-label="Escribinos por WhatsApp" style="position: fixed; right: 32px; bottom: 32px; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 24px 0 20px; border-radius: 999px; background: #25D366; color: #0B3B1E; font-weight: 600; font-size: 15px; text-decoration: none; box-shadow: 0 10px 24px rgba(46,37,32,.22)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/><path d="M9 8.6c.3 2.9 2.5 5.3 5.4 5.8l1-1.2-1.7-.9-.8.7a4 4 0 0 1-2-2l.7-.8-.8-1.7z"/></svg>¿Consultas? Escribinos</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"lugaresLibres":{"editor":"int","min":1,"max":20,"default":3},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { step: 1, qty: 1 }; }
+  renderVals() {
+    var self = this;
+    var left = this.props.lugaresLibres ?? 3;
+    var qty = Math.min(this.state.qty, left);
+    var step = this.state.step;
+    var labels = ['1 · Tus datos', '2 · Pago', '3 · Confirmado'];
+    return {
+      title: step === 3 ? '¡Tu lugar está confirmado!' : (step === 2 ? 'Revisá y pagá' : 'Inscribite al workshop'),
+      steps: labels.map(function (l, i) { return { label: l, on: i + 1 === step, off: i + 1 !== step }; }),
+      isForm: step === 1, isPay: step === 2, isDone: step === 3,
+      toPay: function () { self.setState({ step: 2 }); },
+      toForm: function () { self.setState({ step: 1 }); },
+      toDone: function () { self.setState({ step: 3 }); },
+      qty: qty, left: left,
+      total: qty === 1 ? '[$ precio]' : qty + ' × [$ precio]',
+      less: function () { self.setState({ qty: Math.max(1, qty - 1) }); },
+      more: function () { self.setState({ qty: Math.min(left, qty + 1) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

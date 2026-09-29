@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Estado del pedido · Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Mrs+Saint+Delafield&amp;family=Oswald:wght@300;400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif}
+.script{font-family:'Mrs Saint Delafield',cursive;font-weight:400;color:#5E4A33;font-size:1.75em;line-height:.6;letter-spacing:0;padding:0 .08em}
+.ph{background:#DCD1C3;border-radius:14px;display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;color:#5E4A33;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33;font-weight:400}
+.muted{color:#6B5A50}
+.day{width:100%;height:68px;border-radius:14px;border:1px solid #D9C8BD;background:#F5F4F0;color:#2F2F2F;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;cursor:pointer}
+.day-on{width:100%;height:68px;border-radius:14px;border:1.5px solid #2F2F2F;background:#5E4A33;color:#F5F4F0;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;font-weight:600;cursor:pointer}
+.day-off{width:100%;height:68px;border-radius:14px;border:1px dashed #D9C8BD;background:transparent;color:#8A776B;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+.field input,.field select,.field textarea{height:48px;border-radius:12px;border:1px solid #D9C8BD;background:#FFFFFF;padding:0 14px;font-family:inherit;font-size:15px;color:#2F2F2F}
+.field textarea{height:84px;padding:12px 14px;resize:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1500px; display: flex; flex-direction: column; background: #F5F4F0">
+<header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<a href="tienda.html" style="font-size: 14px; font-weight: 600">Volver a la tienda</a>
+</header>
+
+<main style="flex-grow: 1; padding: 64px 80px 96px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 72px; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 36px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<span class="eyebrow">Pedido #HB-[0000]</span>
+<h1 class="serif" style="margin: 0; font-size: 56px; font-weight: 500; line-height: 1.05">{{title}}</h1>
+<p class="muted" style="margin: 0; font-size: 18px; line-height: 1.6; max-width: 620px">{{lead}}</p>
+</div>
+
+<sc-if value="{{showPay}}" hint-placeholder-val="{{ false }}">
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; height: 56px; padding: 0 32px; border-radius: 999px; background: #5E4A33; color: #F5F4F0; font-weight: 600; font-size: 16px; text-decoration: none">Pagar con Mercado Pago</a>
+</sc-if>
+<sc-if value="{{showRetry}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 16px"><a href="carrito.html" style="display: inline-flex; align-items: center; justify-content: center; height: 56px; padding: 0 32px; border-radius: 999px; background: #5E4A33; color: #F5F4F0; font-weight: 600; font-size: 16px; text-decoration: none">Elegir otra fecha</a><a href="https://wa.me/5491155767591" style="display: inline-flex; align-items: center; justify-content: center; height: 56px; padding: 0 32px; border-radius: 999px; border: 1.5px solid #2F2F2F; color: #2F2F2F; font-weight: 600; font-size: 16px; text-decoration: none; box-sizing: border-box">Escribirle a Maggie</a></div>
+</sc-if>
+
+<sc-if value="{{showTransfer}}" hint-placeholder-val="{{ false }}">
+<section aria-labelledby="t-tr" style="background: #FFFFFF; border: 1px solid #E5DDD2; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<h2 id="t-tr" class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Datos para transferir</h2>
+<dl style="margin: 0; display: grid; grid-template-columns: 140px minmax(0, 1fr) auto; gap: 10px 16px; align-items: center; font-size: 15px">
+<dt class="muted">Alias</dt><dd style="margin: 0; font-weight: 600">[alias]</dd><button type="button" style="height: 40px; padding: 0 14px; border-radius: 99px; border: 1px solid #B8A898; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Copiar</button>
+<dt class="muted">CBU</dt><dd style="margin: 0; font-weight: 600">[CBU]</dd><button type="button" style="height: 40px; padding: 0 14px; border-radius: 99px; border: 1px solid #B8A898; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Copiar</button>
+<dt class="muted">Titular</dt><dd style="margin: 0">[Titular] · [Banco]</dd><span></span>
+<dt class="muted">Monto exacto</dt><dd style="margin: 0; font-weight: 600; font-size: 18px">[$ total]</dd><span></span>
+<dt class="muted">Referencia</dt><dd style="margin: 0">Poné <strong>HB-[0000]</strong> en el concepto</dd><span></span>
+</dl>
+<label style="position: relative; border: 1.5px dashed #A88B6C; border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 14px; color: #5E4A33; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span style="display: flex; flex-direction: column; gap: 2px"><strong>Subí el comprobante</strong><span class="muted" style="font-size: 13px">Captura o PDF · tenés [X] h para enviarlo</span></span><input type="file" accept="image/*,application/pdf" class="sr"></label>
+</section>
+</sc-if>
+
+<ol aria-label="Estado del pedido" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+<li style="display: flex; gap: 20px">
+<div style="display: flex; flex-direction: column; align-items: center">
+<sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}"><span aria-label="Completado" style="width: 36px; height: 36px; border-radius: 99px; background: #5E4A33; color: #F5F4F0; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span></sc-if>
+<sc-if value="{{s.current}}" hint-placeholder-val="{{ false }}"><span aria-label="En curso" style="width: 36px; height: 36px; border-radius: 99px; border: 2px solid #5E4A33; box-sizing: border-box; display: flex; align-items: center; justify-content: center"><span style="width: 14px; height: 14px; border-radius: 99px; background: #5E4A33"></span></span></sc-if>
+<sc-if value="{{s.todo}}" hint-placeholder-val="{{ true }}"><span aria-label="Pendiente" style="width: 36px; height: 36px; border-radius: 99px; border: 1.5px solid #CFC3B5; box-sizing: border-box"></span></sc-if>
+<sc-if value="{{s.line}}" hint-placeholder-val="{{ true }}"><span style="width: 2px; flex-grow: 1; min-height: 40px; background: #E5DDD2"></span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 4px 0 32px">
+<strong style="font-size: 18px">{{s.t}}</strong>
+<span class="muted" style="font-size: 15px; line-height: 1.5">{{s.d}}</span>
+</div>
+</li>
+</sc-for>
+</ol>
+</div>
+
+<aside aria-label="Resumen del pedido" style="background: #FFFFFF; border: 1px solid #E5DDD2; border-radius: 28px; padding: 36px; display: flex; flex-direction: column; gap: 18px">
+<h2 class="serif" style="margin: 0; font-size: 28px; font-weight: 500">Tu pedido</h2>
+<div style="display: flex; gap: 16px; align-items: center"><div class="ph" style="width: 64px; height: 64px; flex-shrink: 0">Foto</div><div style="flex-grow: 1; display: flex; flex-direction: column"><strong class="serif" style="font-size: 20px; font-weight: 500">Red velvet</strong><span class="muted" style="font-size: 13px">x1 · [Porciones]</span></div><span>[$ precio]</span></div>
+<div style="display: flex; gap: 16px; align-items: center"><div class="ph" style="width: 64px; height: 64px; flex-shrink: 0">Foto</div><div style="flex-grow: 1; display: flex; flex-direction: column"><strong class="serif" style="font-size: 20px; font-weight: 500">Cajita de 8 cookies</strong><span class="muted" style="font-size: 13px">x2</span></div><span>[$ precio]</span></div>
+<div style="border-top: 1px solid #E5DDD2; padding-top: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+<div style="display: flex; justify-content: space-between"><span class="muted">Retiro</span><span>[Día] · [Horario]</span></div>
+<div style="display: flex; justify-content: space-between"><span class="muted">Lugar</span><span>Take away · San Isidro</span></div>
+<div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 600; margin-top: 6px"><span>Total</span><span>[$ total]</span></div>
+</div>
+<a href="https://wa.me/5491155767591" style="font-size: 14px; font-weight: 600">¿Dudas? Escribile a Maggie por WhatsApp</a>
+</aside>
+</main>
+<a href="https://wa.me/5491155767591" aria-label="Escribinos por WhatsApp" style="position: fixed; right: 32px; bottom: 32px; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 24px 0 20px; border-radius: 999px; background: #25D366; color: #0B3B1E; font-weight: 600; font-size: 15px; text-decoration: none; box-shadow: 0 10px 24px rgba(46,37,32,.22)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/><path d="M9 8.6c.3 2.9 2.5 5.3 5.4 5.8l1-1.2-1.7-.9-.8.7a4 4 0 0 1-2-2l.7-.8-.8-1.7z"/></svg>¿Consultas? Escribinos</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Esperando confirmación","Confirmado, falta pagar","Comprobante enviado","Pagado","No disponible"],"default":"Esperando confirmación"},"medio":{"editor":"enum","options":["Mercado Pago","Transferencia"],"default":"Mercado Pago"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var e = this.props.estado ?? 'Esperando confirmación';
+    var tr = (this.props.medio ?? 'Mercado Pago') === 'Transferencia';
+    if (!tr && e === 'Comprobante enviado') e = 'Confirmado, falta pagar';
+    var stage = { 'Esperando confirmación': 1, 'Confirmado, falta pagar': 2, 'Comprobante enviado': 2, 'Pagado': 3, 'No disponible': 1 }[e] || 1;
+    var rejected = e === 'No disponible';
+    var defs = [
+      { t: 'Pedido enviado', d: 'Recibimos tu pedido. Te mandamos una copia por email.' },
+      { t: rejected ? 'Maggie no puede para esa fecha' : 'Confirmación de Maggie', d: rejected ? 'Elegí otro día o escribile para ver alternativas. No se cobró nada.' : 'Revisa que pueda hacerlo para el día elegido. Te avisa por WhatsApp y email.' },
+      tr ? { t: 'Pago por transferencia', d: e === 'Comprobante enviado' ? 'Recibimos tu comprobante. Maggie revisa la transferencia y te confirma.' : 'Transferís y subís el comprobante. Maggie confirma cuando ve la plata en su cuenta.' }
+         : { t: 'Pago con Mercado Pago', d: 'Se acredita al instante y te llega el comprobante por email. Tenés [X] h para pagar.' },
+      { t: 'Listo para retirar', d: 'Take away en San Isidro, el día y horario que elegiste. La dirección llega con la confirmación del pago.' }
+    ];
+    var copy = {
+      'Esperando confirmación': ['¡Listo! Tu pedido le llegó a Maggie.', tr ? 'Todavía no se cobró nada. Cuando Maggie lo confirme, te llegan los datos para transferir por WhatsApp y email.' : 'Todavía no se cobró nada. Cuando Maggie lo confirme, te llega el link de Mercado Pago por WhatsApp y email.'],
+      'Confirmado, falta pagar': ['Maggie confirmó tu pedido.', tr ? 'Transferí el monto exacto y subí el comprobante acá abajo. Tu fecha queda reservada cuando Maggie confirma el pago.' : 'Ya podés pagarlo con Mercado Pago. Tu fecha queda reservada cuando se acredita el pago.'],
+      'Comprobante enviado': ['¡Gracias! Recibimos tu comprobante.', 'Maggie revisa la transferencia y te avisa por WhatsApp y email cuando esté confirmada.'],
+      'Pagado': [tr ? '¡Pago confirmado! Nos vemos pronto.' : '¡Pago acreditado! Nos vemos pronto.', tr ? 'Maggie confirmó tu transferencia. Te mandamos la dirección y el recordatorio del retiro.' : 'Te mandamos el comprobante de Mercado Pago, la dirección y el recordatorio del retiro por email y WhatsApp.'],
+      'No disponible': ['Maggie no puede para esa fecha.', 'No se cobró nada. Podés elegir otro día o escribirle para ver alternativas.']
+    }[e];
+    return {
+      title: copy[0], lead: copy[1],
+      showPay: e === 'Confirmado, falta pagar' && !tr,
+      showTransfer: e === 'Confirmado, falta pagar' && tr,
+      showRetry: rejected,
+      steps: defs.map(function (s, i) {
+        return { t: s.t, d: s.d, done: i < stage, current: i === stage && !rejected, todo: i > stage || (rejected && i === stage), line: i < defs.length - 1 };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

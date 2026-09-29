@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Inicio · Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Mrs+Saint+Delafield&amp;family=Oswald:wght@300;400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif}
+.script{font-family:'Mrs Saint Delafield',cursive;font-weight:400;color:#5E4A33;font-size:1.75em;line-height:.6;letter-spacing:0;padding:0 .08em}
+.ph{background:#DCD1C3;border-radius:20px;display:flex;align-items:flex-end;padding:16px;box-sizing:border-box;color:#5E4A33;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 28px;border-radius:999px;background:#5E4A33;color:#F5F4F0;font-weight:600;font-size:15px;text-decoration:none}
+.btn:hover{background:#2F2F2F;color:#F5F4F0}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 28px;border-radius:999px;border:1.5px solid #2F2F2F;color:#2F2F2F;font-weight:600;font-size:15px;text-decoration:none;box-sizing:border-box}
+.btn2:hover{background:#5E4A33;color:#F5F4F0}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33;font-weight:400}
+.muted{color:#6B5A50}
+.nav a{color:#2F2F2F;text-decoration:none;padding:6px 0;border-bottom:1.5px solid transparent}
+.nav a:hover{border-bottom-color:#5E4A33;color:#2F2F2F}
+.foot a{color:#F5F4F0;text-decoration:none}
+.foot a:hover{color:#FFFFFF;text-decoration:underline}
+</style>
+</helmet>
+<div style="width: 1440px; height: 4900px; display: flex; flex-direction: column; background: #F5F4F0">
+
+<div style="background: #5E4A33; color: #F5F4F0; font-size: 13px; text-align: center; padding: 11px 16px; letter-spacing: .02em">Pedidos con 48 h de anticipación · Take away en San Isidro · Lun a Vie 10 a 19 h · Sáb 9 a 13 h</div>
+<header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<nav class="nav" aria-label="Principal" style="display: flex; gap: 40px; font-size: 15px; font-weight: 500">
+<a href="inicio-desktop.html" aria-current="page" style="border-bottom-color: #5E4A33">Inicio</a>
+<a href="tienda.html">Tienda</a>
+<a href="workshops.html">Workshops</a>
+<a href="maggie.html">Maggie</a>
+</nav>
+<a href="carrito.html" aria-label="Ver carrito" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 999px; border: 1px solid #E5DDD2; color: #2F2F2F"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg></a>
+</header>
+
+<main style="flex-grow: 1; display: flex; flex-direction: column">
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; padding: 72px 80px 96px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 28px">
+<span class="eyebrow">Pastelería y workshops · San Isidro</span>
+<h1 class="serif" style="margin: 0; font-size: 76px; line-height: 1.02; font-weight: 400; letter-spacing: -.02em">Artesanal, delicado y <span class="script">casero</span>.</h1>
+<p class="muted" style="margin: 0; font-size: 19px; line-height: 1.6; max-width: 480px">Tortas, tartas, cookies y mesas dulces por encargo, hechas por Maggie en su cocina de San Isidro. Encargá online, Maggie lo confirma y pasás a retirar.</p>
+<div style="display: flex; gap: 16px; margin-top: 8px">
+<a class="btn" href="tienda.html">Ver la tienda</a>
+<a class="btn2" href="workshops.html">Próximo workshop</a>
+</div>
+</div>
+<div style="position: relative; height: 620px">
+<div class="ph" style="position: absolute; top: 0; right: 0; width: 520px; height: 620px; border-radius: 280px 280px 24px 24px">Foto · torta protagonista</div>
+<div style="position: absolute; left: 0; bottom: 48px; width: 260px; background: #FFFFFF; border-radius: 20px; padding: 22px; box-shadow: 0 12px 32px rgba(59,42,34,.12); display: flex; flex-direction: column; gap: 8px">
+<span class="eyebrow">Próximo workshop</span>
+<span class="serif" style="font-size: 22px">[Nombre del workshop]</span>
+<span class="muted" style="font-size: 14px">[Fecha] · [Horario]</span>
+<span style="font-size: 14px; font-weight: 600; color: #5E4A33">Quedan [N] lugares</span>
+</div>
+</div>
+</section>
+
+<section id="como-pedir" style="background: #EAE3D8; padding: 88px 80px; display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 12px"><span class="eyebrow">Cómo pedir</span><h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 400">Simple, como en casa</h2></div>
+<p class="muted" style="margin: 0; max-width: 380px; font-size: 16px; line-height: 1.6">No hay stock: cada pedido se hornea para vos. Por eso te pedimos 48 h de anticipación.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px">
+<div style="background: #F5F4F0; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px"><span class="serif" style="font-size: 44px; color: #5E4A33">1</span><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Elegí y encargá</h3><p class="muted" style="margin: 0; line-height: 1.6">Armá tu pedido desde la tienda y elegí el día y horario de retiro, con al menos 48 h de anticipación.</p></div>
+<div style="background: #F5F4F0; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px"><span class="serif" style="font-size: 44px; color: #5E4A33">2</span><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Confirmamos tu pedido</h3><p class="muted" style="margin: 0; line-height: 1.6">Maggie revisa que pueda hacerlo para esa fecha y te avisa por WhatsApp y email.</p></div>
+<div style="background: #F5F4F0; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px"><span class="serif" style="font-size: 44px; color: #5E4A33">3</span><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Pagá con Mercado Pago</h3><p class="muted" style="margin: 0; line-height: 1.6">Con el pedido confirmado te llega el link de pago. Antes no se cobra nada.</p></div>
+<div style="background: #F5F4F0; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px"><span class="serif" style="font-size: 44px; color: #5E4A33">4</span><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Retirá</h3><p class="muted" style="margin: 0; line-height: 1.6">Take away en San Isidro. <br>Envíos a domicilio únicamente desde $400.000, hasta 10 km.</p></div>
+</div>
+</section>
+
+<section style="padding: 96px 80px; display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 12px"><span class="eyebrow">La tienda</span><h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 400">Los favoritos de la casa</h2></div>
+<a href="tienda.html" style="font-weight: 600; font-size: 15px">Ver todo →</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px">
+<article style="display: flex; flex-direction: column; gap: 12px"><div class="ph" style="height: 360px">Foto · red velvet</div><span class="eyebrow" style="font-size: 11px">Tortas</span><div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Red velvet</h3><span style="font-weight: 600">[$ precio]</span></div><p class="muted" style="margin: 0; font-size: 14px">[Porciones] · Por encargo</p></article>
+<article style="display: flex; flex-direction: column; gap: 12px"><div class="ph" style="height: 360px">Foto · tarta de frutillas</div><span class="eyebrow" style="font-size: 11px">Tartas</span><div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Tarta de frutillas</h3><span style="font-weight: 600">[$ precio]</span></div><p class="muted" style="margin: 0; font-size: 14px">[Porciones] · Por encargo</p></article>
+<article style="display: flex; flex-direction: column; gap: 12px"><div class="ph" style="height: 360px">Foto · cajita de 8 cookies</div><span class="eyebrow" style="font-size: 11px">Cookies</span><div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Cajita de 8 cookies</h3><span style="font-weight: 600">[$ precio]</span></div><p class="muted" style="margin: 0; font-size: 14px">Salted caramel, volcán, rocklets</p></article>
+<article style="display: flex; flex-direction: column; gap: 12px"><div class="ph" style="height: 360px">Foto · number cake</div><span class="eyebrow" style="font-size: 11px">Number cakes</span><div style="display: flex; justify-content: space-between; gap: 8px; align-items: baseline"><h3 class="serif" style="margin: 0; font-size: 26px; font-weight: 500">Number cake</h3><span style="font-weight: 600">[$ precio]</span></div><p class="muted" style="margin: 0; font-size: 14px">Tu número o inicial · Por encargo</p></article>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 80px; padding: 40px 80px 104px; align-items: center">
+<div class="ph" style="height: 560px; border-radius: 24px">Foto · Maggie en su cocina</div>
+<div style="display: flex; flex-direction: column; gap: 24px">
+<span class="eyebrow">Quién hornea</span>
+<h2 class="serif" style="margin: 0; font-size: 56px; font-weight: 400; line-height: 1.05">Hola, soy <span class="script">Maggie</span>.</h2>
+<p style="margin: 0; font-size: 19px; line-height: 1.6">Magdalena Gatti para los papeles. Home Bakery empezó cocinando para familia y amigos. Hoy más de 35 mil personas siguen mi cocina, pero casi todo sigue llegando de boca en boca.</p>
+<p class="muted" style="margin: 0; font-size: 16px; line-height: 1.7">[Dos o tres líneas en primera persona: qué te gusta hornear, de dónde vienen tus recetas, qué querés que sienta quien prueba algo tuyo.]</p>
+<a class="btn2" href="maggie.html" style="align-self: flex-start">Conocé mi historia</a>
+</div>
+</section>
+
+<section style="margin: 0 80px; background: #5E4A33; color: #F5F4F0; border-radius: 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden">
+<div style="padding: 72px; display: flex; flex-direction: column; gap: 22px">
+<span class="eyebrow" style="color: #EADFCF">Workshop del mes</span>
+<h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 400">[Nombre del workshop]</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #E9DCD3">[Qué se aprende en una línea.] Grupos reducidos, en la cocina de Maggie en San Isidro.</p>
+<div style="display: flex; gap: 32px; font-size: 15px; color: #E9DCD3"><span>[Fecha]</span><span>[Horario]</span><span>[$ precio]</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 360px"><div style="height: 8px; background: #74604A; border-radius: 99px"><div style="width: 70%; height: 8px; background: #EADFCF; border-radius: 99px"></div></div><span style="font-size: 14px; color: #EADFCF; font-weight: 600">Quedan [N] de [M] lugares</span></div>
+<a class="btn" href="inscripcion-workshop.html" style="background: #F5F4F0; color: #2F2F2F; align-self: flex-start; margin-top: 8px">Reservar mi lugar</a>
+</div>
+<div class="ph" style="border-radius: 0; height: 100%; min-height: 480px; background: #74604A; color: #E9DCD3">Foto · workshop anterior</div>
+</section>
+
+<section style="padding: 104px 80px 88px; display: flex; flex-direction: column; gap: 36px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 12px"><span class="eyebrow">Desde la cocina</span><h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 400">Seguí lo que sale del horno</h2><span class="muted" style="font-size: 16px">Recetas, tutoriales y lo que se hornea cada semana.</span></div>
+<a href="https://instagram.com/homebakery.pasteleria" style="font-weight: 600; font-size: 15px">@homebakery.pasteleria →</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+<div class="ph" style="height: 200px; border-radius: 16px">Post</div><div class="ph" style="height: 200px; border-radius: 16px">Post</div><div class="ph" style="height: 200px; border-radius: 16px">Post</div><div class="ph" style="height: 200px; border-radius: 16px">Post</div><div class="ph" style="height: 200px; border-radius: 16px">Post</div><div class="ph" style="height: 200px; border-radius: 16px">Post</div>
+</div>
+</section>
+
+<section style="margin: 0 80px 104px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+<div class="ph" style="height: 440px">Foto · mesa dulce</div>
+<div style="background: #EAE3D8; border-radius: 20px; padding: 64px; display: flex; flex-direction: column; justify-content: center; gap: 20px">
+<span class="eyebrow">A medida</span>
+<h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 500; line-height: 1.05">Mesas dulces y <span class="script">eventos</span></h2>
+<p class="muted" style="margin: 0; font-size: 17px; line-height: 1.6">Comuniones, cumpleaños y reuniones grandes: postres en vasito, tortas y bocados pensados para tu evento.</p>
+<a class="btn" href="https://wa.me/5491155767591" style="align-self: flex-start">Pedir presupuesto por WhatsApp</a>
+</div>
+</section>
+
+<section style="margin: 0 80px 104px; border: 1px solid #E5DDD2; border-radius: 32px; padding: 64px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 14px"><span class="eyebrow">Retiros</span><h2 class="serif" style="margin: 0; font-size: 34px; font-weight: 400">Pasá a buscarlo</h2><p class="muted" style="margin: 0; line-height: 1.6">Take away en la casa de Maggie, en San Isidro. La dirección exacta te llega con la confirmación del pedido.</p></div>
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 16px">
+<div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #E5DDD2"><span>Lunes a viernes</span><strong>10 a 19 h</strong></div>
+<div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #E5DDD2"><span>Sábados</span><strong>9 a 13 h</strong></div>
+<div style="display: flex; justify-content: space-between; padding: 14px 0"><span>Domingos</span><span class="muted">Cerrado</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 16px; background: #EAE3D8; border-radius: 20px; padding: 28px">
+<strong style="font-size: 16px">¿Vivís lejos?</strong>
+<p style="margin: 0; line-height: 1.6; font-size: 15px">Podés mandar un Uber o una moto a retirar. En pedidos desde <strong>$400.000</strong> hacemos envío a domicilio, hasta 10 km en Zona Norte.</p>
+</div>
+</section>
+
+</main>
+
+<footer id="contacto" class="foot" style="background: #5E4A33; color: #F5F4F0; padding: 72px 80px 36px; display: flex; flex-direction: column; gap: 56px">
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 12px"><img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 90px; height: auto"><span style="font-size: 14px; line-height: 1.6; color: #D9C8BD">Artesanal, delicado y casero. Take away en San Isidro.</span></div>
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: #F5F4F0">Tienda</strong><a href="tienda.html">Productos</a><a href="workshops.html">Workshops</a><a href="#como-pedir">Cómo pedir</a></div>
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: #F5F4F0">Retiros</strong><span>Lun a Vie · 10 a 19 h</span><span>Sáb · 9 a 13 h</span><span>Dom · cerrado</span></div>
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: #F5F4F0">Contacto</strong><a href="https://instagram.com/homebakery.pasteleria">Instagram @homebakery.pasteleria</a><a href="https://wa.me/5491155767591">WhatsApp 11 5576-7591</a></div>
+</div>
+<div style="border-top: 1px solid #74604A; padding-top: 24px; font-size: 13px; color: #D9C8BD">© 2026 Home Bakery</div>
+</footer>
+<a href="https://wa.me/5491155767591" aria-label="Escribinos por WhatsApp" style="position: fixed; right: 32px; bottom: 32px; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 24px 0 20px; border-radius: 999px; background: #25D366; color: #0B3B1E; font-weight: 600; font-size: 15px; text-decoration: none; box-shadow: 0 10px 24px rgba(46,37,32,.22)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/><path d="M9 8.6c.3 2.9 2.5 5.3 5.4 5.8l1-1.2-1.7-.9-.8.7a4 4 0 0 1-2-2l.7-.8-.8-1.7z"/></svg>¿Consultas? Escribinos</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

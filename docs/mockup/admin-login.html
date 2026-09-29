@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ingresar · Panel Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Oswald:wght@400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif;font-weight:400}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33}
+.muted{color:#6B5A50}
+.ph{background:#DCD1C3;border-radius:12px;display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;color:#5E4A33;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;border:0;background:#5E4A33;color:#FFFFFF;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer}
+.btn:hover{background:#2F2F2F;color:#FFFFFF}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:999px;border:1.5px solid #2F2F2F;background:transparent;color:#2F2F2F;font-family:inherit;font-weight:600;font-size:15px;text-decoration:none;box-sizing:border-box;cursor:pointer}
+.card{background:#FFFFFF;border:1px solid #E5DDD2;border-radius:20px}
+.side a{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;border-radius:12px;color:#E9DCD3;text-decoration:none;font-size:15px}
+.side a:hover{background:#74604A;color:#FFFFFF}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.field input,.field select,.field textarea{height:48px;border-radius:12px;border:1px solid #B8A898;background:#FFFFFF;padding:0 14px;font-family:inherit;font-size:16px;font-weight:400;color:#2F2F2F;box-sizing:border-box}
+.field textarea{height:110px;padding:12px 14px;resize:none;line-height:1.5}
+.hint{font-size:13px;font-weight:400;color:#6B5A50}
+.sw{width:52px;height:30px;border-radius:99px;border:0;padding:3px;cursor:pointer;display:flex;flex-shrink:0}
+.sw span{width:24px;height:24px;border-radius:99px;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.chip{height:40px;padding:0 16px;border-radius:999px;border:1px solid #B8A898;background:#FFFFFF;color:#2F2F2F;font-family:inherit;font-size:14px;cursor:pointer}
+.chip-on{height:40px;padding:0 16px;border-radius:999px;border:1px solid #2F2F2F;background:#2F2F2F;color:#FFFFFF;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #F5F4F0">
+<div style="background: #5E4A33; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 64px">
+<span style="width: 220px; height: 220px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 144px; height: auto"></span>
+
+</div>
+<main style="display: flex; align-items: center; justify-content: center; padding: 64px">
+<form style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px" aria-labelledby="lt">
+<div style="display: flex; flex-direction: column; gap: 8px"><h1 id="lt" class="serif" style="margin: 0; font-size: 44px">Hola, Maggie</h1></div>
+<div role="alert" style="background: #F6E3E1; color: #8A2A21; border-radius: 12px; padding: 12px 14px; font-size: 14px">El email o la contraseña no coinciden. Probá de nuevo.</div>
+<label class="field">Email<input type="email" autocomplete="email" value="maggie@[dominio]"></label>
+<label class="field">Contraseña<input type="password" autocomplete="current-password" value="••••••••"></label>
+<a href="admin-pedidos.html" class="btn" style="width: 100%; box-sizing: border-box; height: 52px">Ingresar</a>
+<a href="#" style="align-self: center; font-size: 14px; font-weight: 600; padding: 10px">¿Olvidaste tu contraseña?</a>
+<p class="hint" style="margin: 0; text-align: center">Acceso solo para administración.<br>Los clientes compran sin crear cuenta.</p>
+</form>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
