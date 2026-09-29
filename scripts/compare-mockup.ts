@@ -136,6 +136,19 @@ async function capture(page: Page, url: string, isMockup: boolean) {
     // Oculta el indicador de Next en desarrollo.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
   }
+  // Recorre la página para que carguen las imágenes con loading="lazy".
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+      window.scrollTo(0, y);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    window.scrollTo(0, 0);
+    // Las que están dentro de un elemento oculto nunca cargan: tope de 3 s.
+    const pending = [...document.images]
+      .filter((image) => !image.complete)
+      .map((image) => new Promise((done) => image.addEventListener("load", done, { once: true })));
+    await Promise.race([Promise.all(pending), new Promise((done) => setTimeout(done, 3000))]);
+  });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
   return page.screenshot({ fullPage: true, animations: "disabled" });
