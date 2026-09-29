@@ -22,6 +22,29 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 - ESLint
 - GitHub Actions para CI (lint y build en cada PR)
 
+## Páginas
+
+| Ruta         | Contenido                                                  |
+| ------------ | ---------------------------------------------------------- |
+| `/`          | Inicio: destacados, workshops, Maggie y pedidos            |
+| `/tienda`    | Productos por categoría                                    |
+| `/workshops` | Próximas fechas y cómo funcionan                           |
+| `/maggie`    | Historia, valores y la cocina                              |
+
+Las rutas viejas `/productos`, `/nosotros` y `/contacto` redirigen (308) a `/tienda`, `/maggie` e `/`.
+El contacto vive en el footer y en el botón flotante de WhatsApp.
+
+## Sistema de diseño
+
+- **Tokens** en `app/globals.css` (`@theme` de Tailwind v4): hueso, carbón, chocolate, taupe, caramelo,
+  greige, arena y texto secundario. Caramelo y greige se usan solo para fondos y bordes (no llegan a AA como texto).
+- **Tipografías** con `next/font/google`: Gilda Display (títulos), Mrs Saint Delafield (acento manuscrito),
+  Oswald (etiquetas) y DM Sans (cuerpo y botones).
+- **Componentes base** en `components/`: `Button`, `Eyebrow`, `SectionTitle` (prop `script` para la palabra
+  manuscrita) e `ImageFrame` (imagen con placeholder de marca mientras no hay foto).
+- **Contenido**: todos los datos del negocio y los textos están en `data/site.ts`. Los componentes no tienen
+  textos escritos adentro.
+
 ## Cómo correrlo en local
 
 Requisitos: **Node.js 20.9 o superior** (recomendado: la versión LTS actual) y npm.
