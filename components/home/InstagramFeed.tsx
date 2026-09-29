@@ -10,7 +10,7 @@ export function InstagramFeed() {
   const { instagram: account } = site.contact;
 
   return (
-    <section aria-labelledby="instagram-titulo" className="contenedor hidden flex-col gap-9 pt-26 pb-22 lg:flex">
+    <section aria-labelledby="instagram-titulo" className="contenedor hidden flex-col gap-9 pt-26 pb-26 lg:flex">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-3">
           <Eyebrow>{instagram.eyebrow}</Eyebrow>

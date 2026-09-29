@@ -8,7 +8,7 @@ const { pickup } = pages.home;
 /** Horarios de retiro y envíos. En mobile el título queda solo para lectores de pantalla. */
 export function Pickup() {
   return (
-    <section aria-labelledby="retiros-titulo" className="contenedor mb-12 lg:mt-26 lg:mb-26">
+    <section aria-labelledby="retiros-titulo" className="contenedor mb-12 lg:mb-26">
       <div className="flex flex-col gap-2.5 rounded-3xl border border-borde p-6 lg:grid lg:grid-cols-3 lg:gap-12 lg:rounded-4xl lg:p-16">
         <div className="flex flex-col gap-3.5">
           <Eyebrow>
