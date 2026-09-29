@@ -22,7 +22,7 @@ export default function Home() {
             <p className="mt-6 max-w-xl text-lg text-secundario">{site.description}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button href="/productos">Ver productos</Button>
-              <Button href="/workshops" variant="outline">
+              <Button href="/workshops" variant="secondary">
                 Próximos workshops
               </Button>
             </div>
@@ -54,7 +54,7 @@ export default function Home() {
           ))}
         </ul>
         <div className="mt-10">
-          <Button href="/productos" variant="outline">
+          <Button href="/productos" variant="secondary">
             Ver todos los productos
           </Button>
         </div>
@@ -88,7 +88,7 @@ export default function Home() {
           <div className="space-y-4 text-lg">
             <p>{site.owner.bio[0]}</p>
             <p>{site.owner.bio[1]}</p>
-            <Button href="/nosotros" variant="outline" className="mt-2">
+            <Button href="/nosotros" variant="secondary" className="mt-2">
               Conocé la historia
             </Button>
           </div>

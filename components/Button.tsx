@@ -1,16 +1,15 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-type Variant = "primary" | "secondary" | "outline";
+type Variant = "primary" | "secondary";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 no-underline transition-colors";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-7 py-3 text-center font-medium no-underline transition-colors";
 
+// El borde del secundario va en chocolate (no greige) para superar 3:1.
 const variants: Record<Variant, string> = {
-  primary: "bg-carbon text-hueso hover:bg-secundario",
-  secondary: "bg-chocolate text-white hover:bg-secundario",
-  outline:
-    "border-2 border-carbon text-carbon hover:bg-carbon hover:text-hueso",
+  primary: "bg-chocolate text-hueso hover:bg-carbon",
+  secondary: "border-2 border-chocolate text-chocolate hover:bg-chocolate hover:text-hueso",
 };
 
 type ButtonProps = { variant?: Variant; className?: string } & (

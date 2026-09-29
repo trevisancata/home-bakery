@@ -38,7 +38,7 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
             <dd className="text-secundario">{formatPrice(workshop.price)}</dd>
           </div>
         </dl>
-        <Button href="/contacto" variant="outline" className="mt-auto self-start">
+        <Button href="/contacto" variant="secondary" className="mt-auto self-start">
           Quiero anotarme<span className="sr-only"> a {workshop.title}</span>
         </Button>
       </div>
