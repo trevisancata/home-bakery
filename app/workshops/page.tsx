@@ -1,49 +1,33 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
-import { WorkshopCard } from "@/components/WorkshopCard";
+import { Eyebrow } from "@/components/Eyebrow";
+import { FeaturedWorkshop } from "@/components/workshops/FeaturedWorkshop";
+import { PastWorkshops } from "@/components/workshops/PastWorkshops";
+import { UpcomingDates } from "@/components/workshops/UpcomingDates";
+import { WorkshopsFaq } from "@/components/workshops/WorkshopsFaq";
 import { pages } from "@/data/site";
-import { getWorkshops } from "@/lib/data";
+import { getFeaturedWorkshop, getWorkshops } from "@/lib/data";
 
 const content = pages.workshops;
 
 export const metadata: Metadata = content.metadata;
 
 export default async function WorkshopsPage() {
-  const upcomingWorkshops = await getWorkshops();
+  const [featured, upcoming] = await Promise.all([getFeaturedWorkshop(), getWorkshops()]);
 
   return (
-    <>
-      <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>
-        <p>{content.intro}</p>
-      </PageHeader>
+    <div className="contenedor flex flex-col gap-12 pt-10 pb-16 lg:gap-18 lg:pt-16 lg:pb-26">
+      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+        <div className="flex flex-col gap-3 lg:gap-4">
+          <Eyebrow>{content.eyebrow}</Eyebrow>
+          <h1 className="text-44 leading-none lg:text-72">{content.title}</h1>
+        </div>
+        <p className="max-w-115 text-17 leading-parrafo text-secundario lg:text-18">{content.intro}</p>
+      </header>
 
-      <Section id="proximos" title={content.upcoming.title} tone="arena">
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {upcomingWorkshops.map((workshop) => (
-            <li key={workshop.id}>
-              <WorkshopCard workshop={workshop} />
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      <Section id="como-funciona" title={content.howItWorks.title}>
-        <ol className="grid gap-6 md:grid-cols-3">
-          {content.howItWorks.steps.map((step, index) => (
-            <li key={step.title} className="rounded-4xl bg-arena p-6 lg:p-8">
-              <span
-                aria-hidden="true"
-                className="flex size-12 items-center justify-center rounded-full bg-chocolate font-display text-xl text-hueso"
-              >
-                {index + 1}
-              </span>
-              <h3 className="mt-5 text-2xl">{step.title}</h3>
-              <p className="mt-2 text-secundario">{step.text}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-    </>
+      {featured && <FeaturedWorkshop workshop={featured} />}
+      {upcoming.length > 0 && <UpcomingDates workshops={upcoming} />}
+      <PastWorkshops />
+      <WorkshopsFaq />
+    </div>
   );
 }

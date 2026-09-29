@@ -26,6 +26,8 @@ type Screen = {
 const screens: Record<string, Screen> = {
   inicio: { route: "/", mockups: { 1440: "inicio-desktop.html", 390: "inicio-mobile.html" } },
   tienda: { route: "/tienda", mockups: { 1440: "tienda.html", 390: null } },
+  workshops: { route: "/workshops", mockups: { 1440: "workshops.html", 390: null } },
+  maggie: { route: "/maggie", mockups: { 1440: "maggie.html", 390: null } },
 };
 
 const viewportHeight: Record<Width, number> = { 1440: 900, 390: 844 };

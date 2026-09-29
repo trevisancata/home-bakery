@@ -21,6 +21,14 @@ export const site = {
   owner: {
     name: "Maggie",
     role: "Pastelera y fundadora",
+    /** Bio de Instagram: el único texto en primera persona confirmado por Maggie. */
+    instagramBio: [
+      "Soy Maggie Gatti.",
+      "Artesanal, delicado y casero.",
+      "Workshops reducidos en mi cocina.",
+      "Take away en San Isidro.",
+      "Pedidos con 48 h de anticipación.",
+    ],
     bio: [
       "Aprendí a hornear en la cocina de mi abuela, midiendo la harina a ojo y esperando que el budín se enfriara para cortarlo.",
       "Después de años horneando para amigos y familia, en 2023 nació Home Bakery: una pastelería chiquita, con recetas propias, ingredientes de estación y cero apuro.",
@@ -60,6 +68,9 @@ export const whatsappMessages = {
   event: "¡Hola! Quería pedir presupuesto para un evento.",
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
+  customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
+  workshopCancellation: "¡Hola! Quería consultar por la política de cancelación de los workshops.",
+  workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
 };
 
 export const navigation = [
@@ -88,6 +99,7 @@ export const ui = {
   // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
+  priceTbd: "Precio a confirmar",
   whatsappFloat: {
     label: "Escribinos por WhatsApp",
   },
@@ -106,16 +118,6 @@ export const ui = {
   },
   product: {
     order: "Encargar",
-    priceTbd: "Precio a confirmar",
-  },
-  workshop: {
-    enroll: "Quiero anotarme",
-    timeSuffix: "h",
-    duration: "Duración",
-    level: "Nivel",
-    spots: "Cupos",
-    spotsUnit: "personas",
-    price: "Precio",
   },
 };
 
@@ -141,6 +143,10 @@ const ownerImage: SiteImage = {
 
 const heroImage: SiteImage = {
   alt: "Mesa de madera con una torta de chocolate, un budín de limón y cookies recién horneadas",
+};
+
+const handsImage: SiteImage = {
+  alt: "Manos amasando sobre una mesada enharinada",
 };
 
 const kitchenImage: SiteImage = {
@@ -295,29 +301,61 @@ export const pages = {
   workshops: {
     metadata: {
       title: "Workshops",
-      description: "Workshops de pastelería artesanal en grupos reducidos, para todos los niveles.",
+      description: `Workshops de pastelería en grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
     },
-    eyebrow: "Aprendé a hornear",
-    title: "Nuestros workshops",
-    script: "workshops",
-    intro: "Encuentros en grupos chicos para aprender técnicas de pastelería casera, paso a paso y sin apuro.",
-    upcoming: { title: "Próximas fechas" },
-    howItWorks: {
-      title: "¿Cómo funcionan?",
-      steps: [
+    eyebrow: `Aprender en la cocina de ${site.owner.name}`,
+    title: "Workshops",
+    intro: `Workshops reducidos en mi cocina de ${site.city}, uno por mes. Reservás y pagás online y tu lugar queda confirmado al instante.`,
+    featured: {
+      badge: (month: string) => `Próximo · ${month}`,
+      details: { date: "Fecha", time: "Horario", includes: "Incluye", price: "Precio" },
+      spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
+      capacity: (capacity: number) => `Cupo: ${capacity}`,
+      cta: "Reservar mi lugar",
+    },
+    upcoming: {
+      title: "Próximas fechas",
+      status: { open: "Inscripción abierta", last: "Últimos lugares", soldOut: "Agotado" },
+      cta: "Reservar",
+      waitlist: "Avisarme si se libera",
+    },
+    past: {
+      title: "Así fueron los workshops",
+      script: "workshops",
+      instagram: { label: "Ver más en Instagram", href: site.contact.instagram.url },
+      // Las fotos son decorativas: el nombre va debajo de cada una.
+      items: [
+        "Mis tortas básicas",
+        "Pastelería para el té vol. 2",
+        "Diseñá tu number cake",
+        "Sin azúcar agregada y sin harinas",
+      ].map((name): { name: string; image: SiteImage } => ({ name, image: { alt: "" } })),
+    },
+    custom: {
+      title: "Workshop personalizado",
+      text: "Para tu grupo de amigas, un cumpleaños o tu equipo de trabajo. Elegís el tema y la fecha.",
+      cta: { label: "Consultar por WhatsApp", href: whatsappLink(whatsappMessages.customWorkshop) },
+    },
+    faq: {
+      title: "Preguntas frecuentes",
+      // TODO: completar con Maggie. Quedan afuera hasta tener las respuestas:
+      // "¿Hace falta experiencia?" y "¿Qué tengo que llevar?".
+      items: [
         {
-          title: "Elegí tu workshop",
-          text: "Mirá las fechas y elegí el que más te guste. Si es tu primera vez, empezá por uno de nivel inicial.",
+          question: "¿Dónde es?",
+          answer: [
+            `En la cocina de ${site.owner.name}, en ${site.city}. La dirección exacta llega con la confirmación.`,
+          ],
         },
         {
-          title: "Reservá tu lugar",
-          text: "Escribinos por WhatsApp. El lugar se confirma con una seña del 50 %.",
+          question: "¿Puedo cancelar o pasar mi lugar a otra persona?",
+          // TODO: reemplazar por la política de cancelación cuando Maggie la defina.
+          answer: [
+            { text: "Escribinos por WhatsApp", href: whatsappLink(whatsappMessages.workshopCancellation) },
+            " y te contamos la política de cancelación de cada workshop.",
+          ],
         },
-        {
-          title: "Vení con ganas",
-          text: "Los ingredientes, los utensilios y el delantal los ponemos nosotras. Vos te llevás lo que horneás y las recetas.",
-        },
-      ],
+      ] satisfies { question: string; answer: RichText }[],
     },
   },
   maggie: {
@@ -325,37 +363,50 @@ export const pages = {
       title: site.owner.name,
       description: `La historia de ${site.name} y de ${site.owner.name}, la pastelera detrás de cada receta.`,
     },
-    eyebrow: "Nuestra historia",
-    title: `Conocé a ${site.owner.name}`,
-    script: site.owner.name,
-    intro: site.tagline,
-    story: {
-      title: "Cómo empezó todo",
-      script: "todo",
-      image: ownerImage,
+    hero: {
+      eyebrow: "Magdalena Gatti · Fundadora",
+      title: `Hola, soy ${site.owner.name}.`,
+      script: site.owner.name,
+      lead: `${site.name} nació en mi cocina, horneando para familia y amigos. Hoy más de 35 mil personas siguen lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien.`,
+      // TODO: completar con Maggie la presentación en primera persona. Por ahora, solo su bio de Instagram.
+      text: site.owner.instagramBio.join(" "),
+      portrait: ownerImage,
+      detail: handsImage,
     },
-    values: {
-      title: "Lo que nos importa",
+    // TODO: completar con Maggie. Por ahora, cada valor lleva un dato de su bio de Instagram.
+    values: [
+      { title: "Artesanal", text: site.leadTime + "." },
+      { title: "Delicado", text: site.pickup + "." },
+      { title: "Casero", text: site.owner.instagramBio[2] },
+    ],
+    timeline: {
+      title: "De la cocina de casa a tu mesa",
+      // TODO: completar con Maggie los años de cada etapa (solo la web, 2026, está confirmada).
       items: [
-        {
-          title: "Ingredientes de verdad",
-          text: "Manteca, huevos de campo y frutas de estación. Sin premezclas ni conservantes.",
-        },
-        {
-          title: "Tiempo y paciencia",
-          text: "Cada pedido se hornea en pocas cantidades, para que salga como tiene que salir.",
-        },
-        {
-          title: "Recetas compartidas",
-          text: "Nada de secretos: en los workshops enseño las mismas recetas que vendo.",
-        },
+        { stage: "Family & friends", text: "Las primeras tortas, para cumpleaños de la familia." },
+        { stage: "Boca a boca", text: "Los pedidos empiezan a llegar por recomendación." },
+        { stage: "Workshops", text: "La cocina se abre para enseñar, una vez por mes." },
+        { stage: "Web 2026", text: "Pedidos y reservas desde la web." },
       ],
     },
-    kitchen: {
-      title: "La cocina",
-      caption: `Todo se hornea en una cocina habilitada, en ${site.city}.`,
-      image: kitchenImage,
-      cta: { label: "Escribime por WhatsApp", href: whatsappLink(whatsappMessages.general) },
+    gallery: [
+      kitchenImage,
+      { alt: `${site.owner.name} decorando una torta con manga` },
+      { alt: "Mesa servida con tortas, budines y cookies" },
+    ] satisfies SiteImage[],
+    cta: {
+      title: `¿Te recomendaron ${site.name}?`,
+      text: "Ahora podés encargar directo desde acá.",
+      primary: { label: "Ver la tienda", href: "/tienda" },
+      secondary: { label: "Workshops", href: "/workshops" },
     },
+  },
+  notFound: {
+    metadata: { title: "Página no encontrada" },
+    eyebrow: "Error 404",
+    title: "Esta página se quedó en el horno.",
+    script: "horno",
+    text: "El link está roto o la página ya no existe. Desde el inicio encontrás la tienda, los workshops y todo lo demás.",
+    cta: { label: "Volver al inicio", href: "/" },
   },
 };

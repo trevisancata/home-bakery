@@ -15,8 +15,10 @@ export type Workshop = {
   startsAt: string;
   durationMinutes: number;
   level: "Inicial" | "Intermedio";
-  /** Precio en pesos argentinos. */
-  price: number;
+  /** Precio en pesos argentinos; null mientras no esté confirmado. */
+  price: number | null;
+  /** Qué incluye el workshop (materiales, merienda…), en una línea. */
+  includes: string;
   capacity: number;
   spotsLeft: number;
   images: WorkshopImage[];
@@ -25,6 +27,7 @@ export type Workshop = {
   featured: boolean;
 };
 
+// TODO: completar con Maggie los precios y qué incluye cada workshop.
 export const workshops: Workshop[] = [
   {
     id: "budines-para-empezar",
@@ -36,7 +39,8 @@ export const workshops: Workshop[] = [
     startsAt: "2026-10-17T10:00:00-03:00",
     durationMinutes: 180,
     level: "Inicial",
-    price: 28000,
+    price: null,
+    includes: "A confirmar",
     capacity: 8,
     spotsLeft: 3,
     images: [{ alt: "Mesa de trabajo con moldes de budín, harina, huevos y limones listos para hornear" }],
@@ -53,7 +57,8 @@ export const workshops: Workshop[] = [
     startsAt: "2026-10-31T16:00:00-03:00",
     durationMinutes: 150,
     level: "Inicial",
-    price: 25000,
+    price: null,
+    includes: "A confirmar",
     capacity: 10,
     spotsLeft: 6,
     images: [{ alt: "Manos formando bollitos de masa de cookies sobre una placa con papel manteca" }],
@@ -70,7 +75,8 @@ export const workshops: Workshop[] = [
     startsAt: "2026-11-14T10:00:00-03:00",
     durationMinutes: 240,
     level: "Intermedio",
-    price: 38000,
+    price: null,
+    includes: "A confirmar",
     capacity: 6,
     spotsLeft: 6,
     images: [{ alt: "Torta de capas sobre un plato giratorio mientras se alisa la cobertura con una espátula" }],

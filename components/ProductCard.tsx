@@ -46,7 +46,7 @@ export function ProductCard({ product, detail, variant, headingLevel: Heading = 
       >
         <Heading className="text-21 lg:text-26">{product.name}</Heading>
         {size.price === null ? (
-          <p className="text-15 font-semibold text-secundario lg:text-16">{ui.product.priceTbd}</p>
+          <p className="text-15 font-semibold text-secundario lg:text-16">{ui.priceTbd}</p>
         ) : (
           <p className="shrink-0 text-15 font-semibold lg:text-16">{formatPrice(size.price)}</p>
         )}

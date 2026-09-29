@@ -1,3 +1,5 @@
+Respondé siempre en español (Argentina). Nunca inventes datos del negocio: precios, políticas, fechas ni textos en primera persona de Maggie. Usá placeholders o TODO.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

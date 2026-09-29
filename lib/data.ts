@@ -36,6 +36,11 @@ export async function getFeaturedWorkshop() {
   return upcoming.find((workshop) => workshop.featured) ?? upcoming[0];
 }
 
+/** Página de inscripción de un workshop. */
+export function workshopEnrollHref(slug: string) {
+  return `/workshops/${slug}/inscripcion`;
+}
+
 export async function getNextWorkshop() {
   return (await getWorkshops())[0];
 }
