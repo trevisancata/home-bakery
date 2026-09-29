@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <section aria-labelledby="hero-titulo" className="pt-10 pb-16 lg:pt-18 lg:pb-24">
-        <div className="contenedor grid items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <div className="contenedor grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <Eyebrow className="mb-4">{hero.eyebrow}</Eyebrow>
             <SectionTitle as="h1" id="hero-titulo" title={hero.title} script={hero.script} />
@@ -89,16 +89,16 @@ export default function Home() {
         script={about.script}
         tone="arena"
       >
-        <div className="grid items-center gap-10 md:grid-cols-[2fr_3fr] lg:gap-16">
+        <div className="grid items-center gap-10 md:grid-cols-5 lg:gap-16">
           <ImageFrame
             src={about.image.src}
             alt={about.image.alt}
             placeholderLabel={ui.imagePending}
             ratio="4/5"
             sizes="(min-width: 768px) 40vw, 100vw"
-            className="mx-auto w-full max-w-sm"
+            className="mx-auto w-full max-w-sm md:col-span-2"
           />
-          <div className="space-y-4 text-lg">
+          <div className="space-y-4 text-lg md:col-span-3">
             {site.owner.bio.slice(0, 2).map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}

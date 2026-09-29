@@ -14,6 +14,10 @@
  *   whatsapp-oscuro sobre whatsapp 6.38:1  (botón flotante)
  *   hueso-suave sobre chocolate 5.17:1  (texto secundario del footer)
  *   chocolate   sobre placeholder 5.57:1  (etiqueta de foto pendiente)
+ *   crema       sobre chocolate 6.37:1  (textos de la banda de workshop)
+ *   crema-suave sobre chocolate 6.25:1  (textos de la banda de workshop)
+ *   crema       sobre chocolate-claro 4.54:1  (etiqueta de foto en la banda;
+ *               el mockup usa crema-suave, que da 4.45:1 y no llega a AA)
  *
  * Borde (#E5DDD2) y chocolate-claro (#74604A) son solo divisores
  * decorativos: no delimitan controles ni llevan texto.
@@ -35,6 +39,11 @@
   --color-borde: #e5ddd2;
   --color-hueso-suave: #d9c8bd;
   --color-chocolate-claro: #74604a;
+  --color-borde-suave: #ece5db;
+
+  /* Textos claros sobre chocolate (banda de workshop). */
+  --color-crema: #eadfcf;
+  --color-crema-suave: #e9dcd3;
 
   /* Solo para el botón flotante de WhatsApp. */
   --color-whatsapp: #25d366;
@@ -44,6 +53,73 @@
   --font-script: var(--font-mrs-saint-delafield), cursive;
   --font-label: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /*
+   * Tamaños del mockup, nombrados por su valor en px. No fijan interlineado:
+   * heredan el del body (normal, como el mockup) salvo que se use leading-*.
+   */
+  --text-11: 0.6875rem;
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-17: 1.0625rem;
+  --text-19: 1.1875rem;
+  --text-21: 1.3125rem;
+  --text-22: 1.375rem;
+  --text-26: 1.625rem;
+  --text-30: 1.875rem;
+  --text-32: 2rem;
+  --text-34: 2.125rem;
+  --text-38: 2.375rem;
+  --text-44: 2.75rem;
+  --text-48: 3rem;
+  --text-56: 3.5rem;
+  --text-64: 4rem;
+  --text-76: 4.75rem;
+
+  /* "normal" es el interlineado por defecto del navegador, el del mockup. */
+  --leading-natural: normal;
+  --leading-hero: 1.02;
+  --leading-titulo: 1.05;
+  --leading-medio: 1.55;
+  --leading-parrafo: 1.6;
+  --leading-amplio: 1.7;
+
+  --tracking-titulo: -0.02em;
+  --tracking-aviso: 0.02em;
+  --tracking-foto: 0.06em;
+  --tracking-eyebrow: 0.14em;
+
+  --radius-card-sm: 1.125rem;
+  --radius-card: 1.25rem;
+  /* Arco superior de la foto principal del inicio. */
+  --radius-arco-sm: 11.25rem;
+  --radius-arco: 17.5rem;
+
+  --shadow-tarjeta: 0 12px 32px rgb(59 42 34 / 0.12);
+  --shadow-flotante: 0 10px 24px rgb(46 37 32 / 0.22);
+}
+
+/* Borde de 1.5 px de los botones secundarios y del link activo del menú. */
+@utility border-trazo {
+  border-width: 1.5px;
+}
+
+@utility border-b-trazo {
+  border-bottom-width: 1.5px;
+}
+
+/* Palabra manuscrita dentro de un título (Mrs Saint Delafield a 1.75em). */
+@utility manuscrita {
+  padding-inline: 0.08em;
+  font-family: var(--font-script);
+  font-size: 1.75em;
+  font-weight: 400;
+  line-height: 0.6;
+  letter-spacing: 0;
+  color: var(--color-chocolate);
 }
 
 /* Ancho y márgenes del mockup: lienzo de 1440 px con 80 px a los lados. */
@@ -69,7 +145,7 @@
   }
 
   body {
-    @apply bg-hueso font-sans text-carbon antialiased;
+    @apply bg-hueso font-sans leading-natural text-carbon antialiased;
   }
 
   h1,

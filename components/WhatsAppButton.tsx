@@ -9,7 +9,7 @@ export function WhatsAppButton() {
     <a
       href={site.contact.whatsapp.url}
       aria-label={ui.whatsappFloat.label}
-      className="fixed right-4 bottom-4 z-40 inline-flex size-15 items-center justify-center gap-2.5 rounded-full bg-whatsapp text-[0.9375rem] font-semibold text-whatsapp-oscuro no-underline shadow-[0_10px_24px_rgba(46,37,32,0.22)] ring-2 ring-hueso focus-visible:outline-whatsapp-oscuro md:right-8 md:bottom-8 md:h-15 md:w-auto md:pr-6 md:pl-5"
+      className="fixed right-4 bottom-4 z-40 inline-flex size-15 items-center justify-center gap-2.5 rounded-full bg-whatsapp text-15 font-semibold text-whatsapp-oscuro no-underline shadow-flotante ring-2 ring-hueso focus-visible:outline-whatsapp-oscuro md:right-8 md:bottom-8 md:h-15 md:w-auto md:pr-6 md:pl-5"
     >
       <svg
         aria-hidden="true"

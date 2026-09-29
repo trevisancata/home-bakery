@@ -20,7 +20,7 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       />
       <div className="flex flex-1 flex-col gap-3 px-3 pt-5 pb-3">
-        <p className="font-label text-xs tracking-[0.2em] text-chocolate uppercase">
+        <p className="font-label text-xs tracking-eyebrow text-chocolate uppercase">
           <time dateTime={workshop.date}>
             {formatDate(workshop.date)} {ui.workshop.timeSuffix}
           </time>

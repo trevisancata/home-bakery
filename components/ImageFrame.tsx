@@ -33,7 +33,7 @@ export function ImageFrame({
   className = "",
 }: ImageFrameProps) {
   return (
-    <div className={`relative overflow-hidden rounded-[1.125rem] bg-placeholder lg:rounded-[1.25rem] ${ratios[ratio]} ${className}`}>
+    <div className={`relative overflow-hidden rounded-card-sm bg-placeholder lg:rounded-card ${ratios[ratio]} ${className}`}>
       {src ? (
         <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
       ) : (
@@ -44,7 +44,7 @@ export function ImageFrame({
           className="absolute inset-0 flex items-end p-3 lg:p-4"
         >
           {placeholderLabel && (
-            <span aria-hidden="true" className="text-[0.6875rem] font-medium tracking-[0.06em] text-chocolate uppercase lg:text-xs">
+            <span aria-hidden="true" className="text-11 font-medium tracking-foto text-chocolate uppercase lg:text-12">
               {placeholderLabel}
             </span>
           )}

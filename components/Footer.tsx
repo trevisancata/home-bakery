@@ -2,7 +2,7 @@ import Link from "next/link";
 import { site, ui } from "@/data/site";
 import { Logo } from "./Logo";
 
-const titleClasses = "font-sans text-[0.9375rem] font-bold text-hueso";
+const titleClasses = "font-sans text-15 font-bold text-hueso";
 const linkClasses = "text-hueso underline md:no-underline hover:text-white hover:underline";
 
 /**
@@ -16,7 +16,7 @@ export function Footer() {
   return (
     <footer data-surface="dark" className="bg-chocolate text-hueso">
       <div className="contenedor flex flex-col gap-5 pt-10 pb-7 lg:gap-14 lg:pt-18 lg:pb-9">
-        <div className="flex flex-col gap-5 text-[0.9375rem] leading-[1.3] md:grid md:grid-cols-2 md:gap-12 lg:grid-cols-4">
+        <div className="flex flex-col gap-5 text-15 leading-natural md:grid md:grid-cols-2 md:gap-12 lg:grid-cols-4">
           <div className="flex flex-col gap-3">
             <Logo alt={site.name} circle={false} className="w-19.5 lg:w-22.5" />
             <p className="hidden text-sm leading-relaxed text-hueso-suave md:block">{ui.footer.description}</p>
@@ -57,7 +57,7 @@ export function Footer() {
           </div>
         </div>
 
-        <p className="border-t border-chocolate-claro pt-4 text-[0.8125rem] text-hueso-suave lg:pt-6">
+        <p className="border-t border-chocolate-claro pt-4 text-13 text-hueso-suave lg:pt-6">
           {ui.footer.copyright(new Date().getFullYear())}
         </p>
       </div>
