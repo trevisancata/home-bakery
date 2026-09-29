@@ -16,6 +16,7 @@
  *   chocolate   sobre placeholder 5.57:1  (etiqueta de foto pendiente)
  *   crema       sobre chocolate 6.37:1  (textos de la banda de workshop)
  *   crema-suave sobre chocolate 6.25:1  (textos de la banda de workshop)
+ *   abierto     sobre hueso  5.87:1  (estado "Inscripción abierta" de /workshops)
  *   crema       sobre chocolate-claro 4.54:1  (etiqueta de foto en la banda;
  *               el mockup usa crema-suave, que da 4.45:1 y no llega a AA)
  *
@@ -50,6 +51,9 @@
   --color-crema: #eadfcf;
   --color-crema-suave: #e9dcd3;
 
+  /* Estado "Inscripción abierta" en las próximas fechas de /workshops. */
+  --color-abierto: #2f6a3e;
+
   /* Solo para el botón flotante de WhatsApp. */
   --color-whatsapp: #25d366;
   --color-whatsapp-oscuro: #0b3b1e;
@@ -72,22 +76,29 @@
   --text-15: 0.9375rem;
   --text-16: 1rem;
   --text-17: 1.0625rem;
+  --text-18: 1.125rem;
   --text-19: 1.1875rem;
+  --text-20: 1.25rem;
   --text-21: 1.3125rem;
   --text-22: 1.375rem;
   --text-26: 1.625rem;
   --text-30: 1.875rem;
   --text-32: 2rem;
   --text-34: 2.125rem;
+  --text-36: 2.25rem;
   --text-38: 2.375rem;
+  --text-40: 2.5rem;
   --text-44: 2.75rem;
   --text-48: 3rem;
   --text-56: 3.5rem;
   --text-64: 4rem;
+  --text-72: 4.5rem;
   --text-76: 4.75rem;
+  --text-96: 6rem;
 
   /* "normal" es el interlineado por defecto del navegador, el del mockup. */
   --leading-natural: normal;
+  --leading-portada: 0.98;
   --leading-hero: 1.02;
   --leading-titulo: 1.05;
   --leading-medio: 1.55;
@@ -97,6 +108,7 @@
   --tracking-titulo: -0.02em;
   --tracking-aviso: 0.02em;
   --tracking-foto: 0.06em;
+  --tracking-etiqueta: 0.08em;
   --tracking-eyebrow: 0.14em;
 
   --radius-card-sm: 1.125rem;
@@ -104,18 +116,28 @@
   /* Arco superior de la foto principal del inicio. */
   --radius-arco-sm: 11.25rem;
   --radius-arco: 17.5rem;
+  /* Arco superior del retrato de /maggie. */
+  --radius-arco-retrato: 16.25rem;
+
+  /* Filas de "Próximas fechas" (mes · workshop · estado · acción) y FAQ de /workshops. */
+  --grid-template-columns-fechas: 8.75rem minmax(0, 1fr) 11.25rem 12.5rem;
+  --grid-template-columns-faq: minmax(0, 1fr) minmax(0, 2fr);
 
   --shadow-tarjeta: 0 12px 32px rgb(59 42 34 / 0.12);
   --shadow-flotante: 0 10px 24px rgb(46 37 32 / 0.22);
 }
 
-/* Borde de 1.5 px de los botones secundarios y del link activo del menú. */
+/* Borde de 1.5 px de los botones secundarios, del link activo del menú y de la línea de tiempo de /maggie. */
 @utility border-trazo {
   border-width: 1.5px;
 }
 
 @utility border-b-trazo {
   border-bottom-width: 1.5px;
+}
+
+@utility border-t-trazo {
+  border-top-width: 1.5px;
 }
 
 /* Palabra manuscrita dentro de un título (Mrs Saint Delafield a 1.75em). */

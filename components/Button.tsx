@@ -1,15 +1,17 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-type Variant = "primary" | "secondary" | "light";
-type Size = "md" | "sm";
+type Variant = "primary" | "secondary" | "light" | "outlineLight";
+type Size = "lg" | "md" | "sm";
 
 const base =
   "inline-flex items-center justify-center gap-2 rounded-full text-center font-semibold no-underline transition-colors";
 
 // Mockup: 52 px de alto, 28 px de padding (24 en mobile), 15 px. El chico
-// (tienda): 44 px de alto, 20 px de padding, 14 px.
+// (tienda): 44 px de alto, 20 px de padding, 14 px. El grande (workshops y
+// Maggie): 56 px de alto, 32 px de padding, 16 px; en mobile, como el mediano.
 const sizes: Record<Size, string> = {
+  lg: "min-h-13 px-6 py-2 text-15 lg:min-h-14 lg:px-8 lg:text-16",
   md: "min-h-13 px-6 py-2 text-15 lg:px-7",
   sm: "min-h-11 px-5 py-1.5 text-14",
 };
@@ -22,6 +24,8 @@ const variants: Record<Variant, string> = {
   secondary:
     "border-trazo border-carbon text-carbon not-disabled:hover:border-chocolate not-disabled:hover:bg-chocolate not-disabled:hover:text-hueso disabled:cursor-not-allowed disabled:border-secundario disabled:text-secundario",
   light: "bg-hueso text-carbon hover:bg-crema",
+  // Secundario sobre chocolate (CTA de /maggie): hueso 7.62:1.
+  outlineLight: "border-trazo border-hueso text-hueso hover:bg-hueso hover:text-carbon",
 };
 
 type ButtonProps = { variant?: Variant; size?: Size; className?: string } & (
