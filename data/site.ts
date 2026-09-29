@@ -120,6 +120,15 @@ export const ui = {
 /** Si la foto todavía no está, se omite `src` y se muestra el placeholder. */
 export type SiteImage = { src?: string; alt: string };
 
+/** Texto con partes en negrita o con links, para no escribir HTML en los datos. */
+export type RichText = (string | { strong: string } | { text: string; href: string })[];
+
+/** Envío a domicilio: solo en pedidos grandes y cerca. */
+const delivery = {
+  minimum: "$400.000",
+  radius: "10 km",
+};
+
 /* -------------------------------------------------------------------------- */
 /* Páginas                                                                    */
 /* -------------------------------------------------------------------------- */
@@ -142,41 +151,109 @@ export const pages = {
   },
   home: {
     hero: {
-      eyebrow: `Pastelería artesanal en ${site.city}`,
-      title: "Dulces caseros hechos con amor",
-      script: "amor",
-      text: "Tortas, budines y cookies por encargo, horneados en pocas cantidades y con ingredientes de verdad.",
+      eyebrow: `Pastelería y workshops · ${site.city}`,
+      title: "Artesanal, delicado y casero.",
+      script: "casero",
+      text: {
+        full: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}. Encargá online, ${site.owner.name} lo confirma y pasás a retirar.`,
+        short: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}.`,
+      },
       primaryCta: { label: "Ver la tienda", href: "/tienda" },
-      secondaryCta: { label: "Próximos workshops", href: "/workshops" },
+      secondaryCta: { label: "Próximo workshop", href: "/workshops" },
       image: heroImage,
+      nextWorkshop: {
+        eyebrow: "Próximo workshop",
+        spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
+      },
     },
-    featured: {
-      eyebrow: "Lo más pedido",
-      title: "Nuestros favoritos",
-      script: "favoritos",
-      intro: "Recetas propias, horneadas por encargo con ingredientes frescos.",
-      cta: { label: "Ver toda la tienda", href: "/tienda" },
+    howToOrder: {
+      eyebrow: "Cómo pedir",
+      title: "Simple, como en casa",
+      intro: "No hay stock: cada pedido se hornea para vos. Por eso te pedimos 48 h de anticipación.",
+      steps: [
+        {
+          title: { full: "Elegí y encargá", short: "Elegí y encargá" },
+          text: {
+            full: ["Armá tu pedido desde la tienda y elegí el día y horario de retiro, con al menos 48 h de anticipación."],
+            short: "Con al menos 48 h de anticipación.",
+          },
+        },
+        {
+          title: { full: "Confirmamos tu pedido", short: `${site.owner.name} lo confirma` },
+          text: {
+            full: [`${site.owner.name} revisa que pueda hacerlo para esa fecha y te avisa por WhatsApp y email.`],
+            short: "Te avisa por WhatsApp y email.",
+          },
+        },
+        {
+          title: { full: "Pagá con Mercado Pago", short: "Pagá online" },
+          text: {
+            full: ["Con el pedido confirmado te llega el link de pago. Antes no se cobra nada."],
+            short: "Te llega el link de Mercado Pago.",
+          },
+        },
+        {
+          title: { full: "Retirá", short: "Retirá o recibí" },
+          text: {
+            full: [`Take away en ${site.city}.`, `Envíos a domicilio únicamente desde ${delivery.minimum}, hasta ${delivery.radius}.`],
+            short: `Take away en ${site.city}. Envío desde ${delivery.minimum}, hasta ${delivery.radius}.`,
+          },
+        },
+      ],
     },
-    workshops: {
-      eyebrow: "Aprendé a hornear",
-      title: "Horneá con nosotras",
-      script: "nosotras",
-      intro: "Grupos reducidos, todo el material incluido y te llevás lo que horneás.",
-      cta: { label: "Ver todos los workshops", href: "/workshops" },
+    favorites: {
+      eyebrow: "La tienda",
+      title: { full: "Los favoritos de la casa", short: "Favoritos" },
+      cta: { label: "Ver todo", href: "/tienda" },
+      detail: (size: string) => `${size} · Por encargo`,
     },
     about: {
-      eyebrow: "Detrás del horno",
-      title: `Hola, soy ${site.owner.name}`,
+      eyebrow: "Quién hornea",
+      title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
+      lead: {
+        full: `Magdalena Gatti para los papeles. ${site.name} empezó cocinando para familia y amigos. Hoy más de 35 mil personas siguen mi cocina, pero casi todo sigue llegando de boca en boca.`,
+        short: `${site.name} empezó cocinando para familia y amigos, y creció de recomendación en recomendación.`,
+      },
+      text: site.owner.bio[0],
       cta: { label: "Conocé mi historia", href: "/maggie" },
       image: ownerImage,
     },
-    order: {
-      eyebrow: site.leadTime,
-      title: "¿Tenés un cumple o simplemente ganas de algo rico?",
-      script: "rico",
-      text: "Escribinos con al menos 48 horas de anticipación y armamos tu pedido.",
-      cta: { label: "Pedir por WhatsApp", href: whatsappLink(whatsappMessages.order) },
+    workshop: {
+      eyebrow: "Workshop del mes",
+      suffix: `Grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
+      spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity} lugares`,
+      cta: "Reservar mi lugar",
+    },
+    instagram: {
+      eyebrow: "Desde la cocina",
+      title: "Seguí lo que sale del horno",
+      intro: "Recetas, tutoriales y lo que se hornea cada semana.",
+      // Placeholders hasta conectar los posts reales: son decorativos.
+      posts: Array.from({ length: 6 }, (): SiteImage => ({ alt: "" })),
+    },
+    pickup: {
+      eyebrow: { full: "Retiros", short: `Take away en ${site.city}` },
+      title: "Pasá a buscarlo",
+      text: `Take away en la casa de ${site.owner.name}, en ${site.city}. La dirección exacta te llega con la confirmación del pedido.`,
+      hours: [
+        { days: { full: "Lunes a viernes", short: "Lun a Vie" }, time: site.hours[0].time },
+        { days: { full: "Sábados", short: "Sábados" }, time: site.hours[1].time },
+        { days: { full: "Domingos", short: "Domingos" }, time: "Cerrado", closed: true },
+      ],
+      farAway: {
+        title: "¿Vivís lejos?",
+        full: [
+          "Podés mandar un Uber o una moto a retirar. En pedidos desde ",
+          { strong: delivery.minimum },
+          ` hacemos envío a domicilio, hasta ${delivery.radius} en Zona Norte.`,
+        ] satisfies RichText,
+        short: [
+          "¿Vivís lejos? Mandá un Uber o una moto. Envío a domicilio desde ",
+          { strong: delivery.minimum },
+          `, hasta ${delivery.radius}.`,
+        ] satisfies RichText,
+      },
     },
   },
   tienda: {
