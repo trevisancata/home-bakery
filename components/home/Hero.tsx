@@ -36,7 +36,7 @@ export function Hero({ nextWorkshop }: { nextWorkshop?: Workshop }) {
         <p className="text-17 leading-parrafo text-secundario lg:max-w-120 lg:text-19">
           <Adaptive full={hero.text.full} short={hero.text.short} />
         </p>
-        <div className="flex flex-col gap-3 lg:mt-2 lg:flex-row lg:gap-4">
+        <div className="flex flex-col gap-3 md:flex-row lg:mt-2 lg:gap-4">
           <Button href={hero.primaryCta.href}>{hero.primaryCta.label}</Button>
           <Button href={hero.secondaryCta.href} variant="secondary">
             {hero.secondaryCta.label}

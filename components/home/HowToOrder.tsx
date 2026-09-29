@@ -18,7 +18,7 @@ export function HowToOrder() {
           <p className="hidden max-w-95 text-16 leading-parrafo text-secundario lg:block">{howToOrder.intro}</p>
         </div>
 
-        <ol className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        <ol className="grid gap-5 md:grid-cols-2 lg:gap-6 xl:grid-cols-4">
           {howToOrder.steps.map((step, index) => (
             <li
               key={step.title.full}

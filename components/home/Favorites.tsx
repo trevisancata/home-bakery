@@ -25,7 +25,7 @@ export function Favorites({ products }: { products: Product[] }) {
         </Link>
       </div>
 
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-4 lg:grid-cols-4 lg:gap-8">
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-4 lg:gap-8">
         {products.map((product) => (
           <li key={product.id}>
             <ProductCard

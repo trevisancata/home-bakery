@@ -70,7 +70,7 @@ export function ProductCatalog({ products, categories }: { products: Product[]; 
         {content.results(visible.length)}
       </p>
 
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-8 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-12">
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-12">
         {visible.map((product) => (
           <li key={product.id}>
             <ProductCard
