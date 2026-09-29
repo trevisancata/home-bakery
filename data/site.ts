@@ -93,11 +93,18 @@ export const ui = {
     label: "¿Consultas? Escribinos por WhatsApp",
   },
   footer: {
+    description: `${site.tagline}. ${site.pickup}.`,
     navLabel: "Secundaria",
-    navTitle: "Navegación",
-    hoursTitle: "Horarios",
+    navTitle: "Tienda",
+    links: [
+      { href: "/tienda", label: "Productos" },
+      { href: "/workshops", label: "Workshops" },
+      { href: "/maggie", label: "Maggie" },
+    ],
+    hoursTitle: "Retiros",
+    hoursItem: (slot: { days: string; time: string }) => `${slot.days} · ${slot.time}`,
     contactTitle: "Contacto",
-    copyright: (year: number) => `© ${year} ${site.name}. Hecho a mano en ${site.city}.`,
+    copyright: (year: number) => `© ${year} ${site.name}`,
   },
   product: {
     order: "Encargar",

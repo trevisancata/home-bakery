@@ -1,69 +1,66 @@
 import Link from "next/link";
-import { navigation, site, ui } from "@/data/site";
+import { site, ui } from "@/data/site";
 import { Logo } from "./Logo";
 
-const titleClasses = "font-label text-sm tracking-[0.2em] text-hueso uppercase";
-const linkClasses = "underline decoration-hueso/40 hover:decoration-hueso";
+const titleClasses = "text-[0.9375rem] font-bold text-hueso";
+const linkClasses = "text-hueso no-underline hover:text-white hover:underline";
 
+/**
+ * Footer en chocolate. En mobile, como en el mockup, muestra solo el logo,
+ * los contactos y el copyright; desde md suma descripción, links y horarios.
+ */
 export function Footer() {
   const { instagram, whatsapp } = site.contact;
+  const hours = [...site.hours, site.closed];
 
   return (
     <footer data-surface="dark" className="bg-chocolate text-hueso">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-14 pb-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:pt-20">
-        <div>
-          <Logo alt={site.name} circle={false} className="w-32" />
-          <p className="mt-4 font-display text-xl">{site.tagline}</p>
-        </div>
+      <div className="contenedor flex flex-col gap-5 pt-10 pb-7 lg:gap-14 lg:pt-18 lg:pb-9">
+        <div className="flex flex-col gap-5 text-[0.9375rem] md:grid md:grid-cols-2 md:gap-12 lg:grid-cols-4">
+          <div className="flex flex-col gap-3">
+            <Logo alt={site.name} circle={false} className="w-19.5 lg:w-22.5" />
+            <p className="hidden text-sm leading-relaxed text-hueso-suave md:block">{ui.footer.description}</p>
+          </div>
 
-        <nav aria-label={ui.footer.navLabel}>
-          <h2 className={titleClasses}>{ui.footer.navTitle}</h2>
-          <ul className="mt-4 space-y-2">
-            {navigation.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className={linkClasses}>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          <nav aria-label={ui.footer.navLabel} className="hidden md:block">
+            <h2 className={titleClasses}>{ui.footer.navTitle}</h2>
+            <ul className="mt-3 flex flex-col gap-3">
+              {ui.footer.links.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className={linkClasses}>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div>
-          <h2 className={titleClasses}>{ui.footer.hoursTitle}</h2>
-          <dl className="mt-4 space-y-2">
-            {site.hours.map((slot) => (
-              <div key={slot.days} className="flex gap-2">
-                <dt>{slot.days}</dt>
-                <dd>{slot.time}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-4">{site.leadTime}</p>
-          <p>{site.pickup}</p>
-        </div>
+          <div className="hidden md:block">
+            <h2 className={titleClasses}>{ui.footer.hoursTitle}</h2>
+            <ul className="mt-3 flex flex-col gap-3">
+              {hours.map((slot) => (
+                <li key={slot.days}>{ui.footer.hoursItem(slot)}</li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <h2 className={titleClasses}>{ui.footer.contactTitle}</h2>
-          <address className="mt-4 space-y-2 not-italic">
-            <p>
-              <a href={instagram.url} className={linkClasses}>
+          <div>
+            <h2 className={`hidden md:block ${titleClasses}`}>{ui.footer.contactTitle}</h2>
+            <address className="flex flex-col not-italic md:mt-3 md:gap-3">
+              <a href={instagram.url} className={`py-1.5 md:py-0 ${linkClasses}`}>
                 {instagram.label} {instagram.display}
               </a>
-            </p>
-            <p>
-              <a href={whatsapp.url} className={linkClasses}>
+              <a href={whatsapp.url} className={`py-1.5 md:py-0 ${linkClasses}`}>
                 {whatsapp.label} {whatsapp.display}
               </a>
-            </p>
-          </address>
+            </address>
+          </div>
         </div>
-      </div>
 
-      {/* pb-24: deja lugar para el botón flotante de WhatsApp. */}
-      <p className="mx-auto max-w-6xl border-t border-hueso/20 px-4 pt-6 pb-24 text-center text-sm sm:px-6">
-        {ui.footer.copyright(new Date().getFullYear())}
-      </p>
+        <p className="border-t border-chocolate-claro pt-4 text-[0.8125rem] text-hueso-suave lg:pt-6">
+          {ui.footer.copyright(new Date().getFullYear())}
+        </p>
+      </div>
     </footer>
   );
 }
