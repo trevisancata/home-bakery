@@ -1,49 +1,35 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Button } from "@/components/Button";
+import { ImageFrame } from "@/components/ImageFrame";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
-import { site } from "@/data/site";
+import { pages, site, ui } from "@/data/site";
 
-export const metadata: Metadata = {
-  title: "Nosotros",
-  description: `La historia de ${site.name} y de ${site.owner.name}, la pastelera detrás de cada receta.`,
-};
+const content = pages.maggie;
 
-const values = [
-  {
-    title: "Ingredientes de verdad",
-    text: "Manteca, huevos de campo y frutas de estación. Sin premezclas ni conservantes.",
-  },
-  {
-    title: "Tiempo y paciencia",
-    text: "Cada pedido se hornea en pocas cantidades, para que salga como tiene que salir.",
-  },
-  {
-    title: "Recetas compartidas",
-    text: "Nada de secretos: en los workshops enseño las mismas recetas que vendo.",
-  },
-];
+export const metadata: Metadata = content.metadata;
 
 export default function MaggiePage() {
   return (
     <>
-      <PageHeader eyebrow="Nuestra historia" title={`Detrás de ${site.name}`}>
-        <p>{site.tagline}</p>
+      <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>
+        <p>{content.intro}</p>
       </PageHeader>
 
-      <Section id="historia" title={`Hola, soy ${site.owner.name}`} tone="arena">
-        <div className="grid items-center gap-10 md:grid-cols-[2fr_3fr]">
-          <Image
-            src="/images/sofia.svg"
-            alt={`${site.owner.name}, fundadora de ${site.name}, sonriendo en su cocina con un delantal y un bowl de masa`}
-            width={600}
-            height={750}
+      <Section id="historia" title={content.story.title} script={content.story.script} tone="arena">
+        <div className="grid items-center gap-10 md:grid-cols-[2fr_3fr] lg:gap-16">
+          <ImageFrame
+            src={content.story.image.src}
+            alt={content.story.image.alt}
+            placeholderLabel={ui.imagePending}
+            ratio="4/5"
             sizes="(min-width: 768px) 40vw, 100vw"
-            className="mx-auto w-full max-w-sm rounded-3xl"
+            className="mx-auto w-full max-w-sm"
           />
           <div className="space-y-4 text-lg">
-            <p className="font-semibold">{site.owner.role}</p>
+            <p className="font-label text-sm tracking-[0.2em] text-chocolate uppercase">
+              {site.owner.role}
+            </p>
             {site.owner.bio.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -51,33 +37,31 @@ export default function MaggiePage() {
         </div>
       </Section>
 
-      <Section id="valores" title="Lo que nos importa">
+      <Section id="valores" title={content.values.title}>
         <ul className="grid gap-6 md:grid-cols-3">
-          {values.map((value) => (
-            <li key={value.title} className="rounded-2xl bg-white p-6 ring-1 ring-carbon/10">
-              <h3 className="text-xl">{value.title}</h3>
+          {content.values.items.map((value) => (
+            <li key={value.title} className="rounded-4xl bg-arena p-6 lg:p-8">
+              <h3 className="text-2xl">{value.title}</h3>
               <p className="mt-2 text-secundario">{value.text}</p>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section id="cocina" title="La cocina" tone="arena">
+      <Section id="cocina" title={content.kitchen.title} tone="arena">
         <figure>
-          <Image
-            src="/images/cocina.svg"
-            alt="Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido"
-            width={800}
-            height={600}
+          <ImageFrame
+            src={content.kitchen.image.src}
+            alt={content.kitchen.image.alt}
+            placeholderLabel={ui.imagePending}
+            ratio="3/2"
             sizes="(min-width: 768px) 768px, 100vw"
-            className="w-full max-w-3xl rounded-3xl"
+            className="w-full max-w-3xl"
           />
-          <figcaption className="mt-3 text-secundario">
-            Todo se hornea en una cocina habilitada, en {site.city}.
-          </figcaption>
+          <figcaption className="mt-3 text-secundario">{content.kitchen.caption}</figcaption>
         </figure>
-        <Button href={site.contact.whatsappUrl} className="mt-10">
-          Escribime
+        <Button href={content.kitchen.cta.href} className="mt-10">
+          {content.kitchen.cta.label}
         </Button>
       </Section>
     </>

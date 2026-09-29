@@ -3,7 +3,7 @@ import { DM_Sans, Gilda_Display, Mrs_Saint_Delafield, Oswald } from "next/font/g
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SkipLink } from "@/components/SkipLink";
-import { site } from "@/data/site";
+import { pages, site } from "@/data/site";
 import "./globals.css";
 
 // Gilda Display y Mrs Saint Delafield no son variables: requieren peso.
@@ -31,12 +31,12 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: `${site.name} · Pastelería casera y workshops`,
+    default: pages.layout.title,
     template: `%s · ${site.name}`,
   },
   description: site.description,
   applicationName: site.name,
-  keywords: ["pastelería casera", "tortas", "budines", "cookies", "workshops de pastelería"],
+  keywords: [...site.keywords],
   openGraph: {
     type: "website",
     locale: "es_AR",

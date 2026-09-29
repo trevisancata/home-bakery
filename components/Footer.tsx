@@ -16,13 +16,8 @@ export function Footer() {
           </h2>
           <address className="mt-4 space-y-2 not-italic">
             <p>
-              <a href={`mailto:${site.contact.email}`} className="underline hover:no-underline">
-                {site.contact.email}
-              </a>
-            </p>
-            <p>
-              <a href={site.contact.whatsappUrl} className="underline hover:no-underline">
-                WhatsApp {site.contact.whatsapp}
+              <a href={site.contact.whatsapp.url} className="underline hover:no-underline">
+                {site.contact.whatsapp.label} {site.contact.whatsapp.display}
               </a>
             </p>
             <p>{site.city}</p>
@@ -34,14 +29,11 @@ export function Footer() {
             Redes
           </h2>
           <ul className="mt-4 space-y-2">
-            {site.social.map((network) => (
-              <li key={network.name}>
-                <a href={network.url} className="underline hover:no-underline">
-                  {network.name}
-                  <span className="sr-only"> de {site.name}</span>
-                </a>
-              </li>
-            ))}
+            <li>
+              <a href={site.contact.instagram.url} className="underline hover:no-underline">
+                {site.contact.instagram.label} {site.contact.instagram.display}
+              </a>
+            </li>
           </ul>
         </div>
 

@@ -2,27 +2,20 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
-import { products, type ProductCategory } from "@/data/products";
-import { site } from "@/data/site";
+import { pages, productCategories, products } from "@/data/site";
 
-export const metadata: Metadata = {
-  title: "Tienda",
-  description: "Tortas, budines, cookies y tartas caseras por encargo.",
-};
+const content = pages.tienda;
 
-const categories: ProductCategory[] = ["Tortas", "Budines", "Cookies", "Tartas"];
+export const metadata: Metadata = content.metadata;
 
 export default function TiendaPage() {
   return (
     <>
-      <PageHeader eyebrow="Por encargo" title="Tienda">
-        <p>
-          Todo se hornea el día anterior a la entrega. Hacé tu pedido con al menos 48 horas de
-          anticipación. {site.contact.pickup}.
-        </p>
+      <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>
+        <p>{content.intro}</p>
       </PageHeader>
 
-      {categories.map((category, index) => {
+      {productCategories.map((category, index) => {
         const items = products.filter((product) => product.category === category);
         if (items.length === 0) return null;
         return (
