@@ -13,6 +13,20 @@ const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   timeZone: "America/Argentina/Buenos_Aires",
 });
 
+const dayFormatter = new Intl.DateTimeFormat("es-AR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: "America/Argentina/Buenos_Aires",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("es-AR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+  timeZone: "America/Argentina/Buenos_Aires",
+});
+
 export function formatPrice(value: number) {
   return priceFormatter.format(value);
 }
@@ -20,6 +34,16 @@ export function formatPrice(value: number) {
 /** Ej.: "sábado, 17 de octubre, 10:00". */
 export function formatDate(isoDate: string) {
   return dateFormatter.format(new Date(isoDate));
+}
+
+/** Ej.: "sábado, 17 de octubre". */
+export function formatDay(isoDate: string) {
+  return dayFormatter.format(new Date(isoDate));
+}
+
+/** Ej.: "10:00 h". */
+export function formatTime(isoDate: string) {
+  return `${timeFormatter.format(new Date(isoDate))} h`;
 }
 
 /** Ej.: 180 → "3 horas", 150 → "2 horas y media". */

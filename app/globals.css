@@ -53,6 +53,8 @@
   --font-script: var(--font-mrs-saint-delafield), cursive;
   --font-label: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Flechas y otros símbolos que DM Sans no trae: los del sistema, como el mockup. */
+  --font-simbolos: system-ui, sans-serif;
 
   /*
    * Tamaños del mockup, nombrados por su valor en px. No fijan interlineado:
@@ -145,17 +147,13 @@
   }
 
   body {
-    @apply bg-hueso font-sans leading-natural text-carbon antialiased;
+    @apply bg-hueso font-sans leading-natural text-carbon;
   }
 
   h1,
   h2,
   h3 {
-    @apply font-display font-normal text-balance text-carbon;
-  }
-
-  a {
-    @apply underline-offset-4;
+    @apply font-display font-normal text-carbon;
   }
 
   /* Foco visible y consistente para cualquier elemento interactivo. */
