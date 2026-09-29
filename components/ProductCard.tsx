@@ -38,9 +38,18 @@ export function ProductCard({ product, detail, variant, headingLevel: Heading = 
       <Eyebrow small className={`${extra} ${inicio ? "" : "mt-1"}`}>
         {product.category}
       </Eyebrow>
-      <div className="mt-1 flex flex-col gap-1.5 lg:mt-0 xl:flex-row xl:items-baseline xl:justify-between xl:gap-2">
+      {/* Sin precio, el aviso va debajo del nombre: al lado lo cortaría. */}
+      <div
+        className={`mt-1 flex flex-col gap-1.5 lg:mt-0 ${
+          size.price === null ? "" : "xl:flex-row xl:items-baseline xl:justify-between xl:gap-2"
+        }`}
+      >
         <Heading className="text-21 lg:text-26">{product.name}</Heading>
-        <p className="shrink-0 text-15 font-semibold lg:text-16">{formatPrice(size.price)}</p>
+        {size.price === null ? (
+          <p className="text-15 font-semibold text-secundario lg:text-16">{ui.product.priceTbd}</p>
+        ) : (
+          <p className="shrink-0 text-15 font-semibold lg:text-16">{formatPrice(size.price)}</p>
+        )}
       </div>
       <p className={`text-14 text-secundario ${extra}`}>{detail}</p>
       {action && <div className="flex flex-col pt-1.5">{action}</div>}

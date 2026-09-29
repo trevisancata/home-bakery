@@ -10,7 +10,17 @@ const content = pages.tienda;
 
 type Sort = (typeof content.sort.options)[number]["value"];
 
-const byPrice = (product: Product) => product.sizes[0].price;
+const priceOf = (product: Product) => product.sizes[0].price;
+
+/** Ordena por precio; los productos sin precio confirmado van siempre al final. */
+function byPrice(direction: 1 | -1) {
+  return (a: Product, b: Product) => {
+    const priceA = priceOf(a);
+    const priceB = priceOf(b);
+    if (priceA === null || priceB === null) return (priceA === null ? 1 : 0) - (priceB === null ? 1 : 0);
+    return (priceA - priceB) * direction;
+  };
+}
 
 /** Filtros por categoría, orden y grilla de productos de la tienda. */
 export function ProductCatalog({ products, categories }: { products: Product[]; categories: ProductCategory[] }) {
@@ -18,8 +28,8 @@ export function ProductCatalog({ products, categories }: { products: Product[]; 
   const [sort, setSort] = useState<Sort>("destacados");
 
   const visible = products.filter((product) => !category || product.category === category);
-  if (sort === "menor-precio") visible.sort((a, b) => byPrice(a) - byPrice(b));
-  if (sort === "mayor-precio") visible.sort((a, b) => byPrice(b) - byPrice(a));
+  if (sort === "menor-precio") visible.sort(byPrice(1));
+  if (sort === "mayor-precio") visible.sort(byPrice(-1));
 
   const chips = [{ value: null, label: content.filter.all }, ...categories.map((value) => ({ value, label: value }))];
 

@@ -18,8 +18,8 @@ export type ProductImage = { src?: string; alt: string };
 export type ProductSize = {
   /** Porciones, unidades o tamaño, tal como se muestra en la tarjeta. */
   label: string;
-  /** Precio en pesos argentinos. */
-  price: number;
+  /** Precio en pesos argentinos; null mientras no esté confirmado. */
+  price: number | null;
 };
 
 export type Product = {
@@ -38,7 +38,8 @@ export type Product = {
   highlight?: string;
 };
 
-// TODO: precios y tamaños provisorios hasta tener la lista de precios real.
+// TODO: cargar los precios reales (hasta entonces, null → "Precio a confirmar")
+// y confirmar los tamaños, que son provisorios.
 export const products: Product[] = [
   {
     id: "red-velvet",
@@ -48,8 +49,8 @@ export const products: Product[] = [
     description: "Bizcochuelo rojo aterciopelado con relleno y cobertura de frosting de queso crema.",
     images: [{ alt: "Torta red velvet cortada, con capas rojas y frosting blanco" }],
     sizes: [
-      { label: "12 porciones", price: 38000 },
-      { label: "20 porciones", price: 56000 },
+      { label: "12 porciones", price: null },
+      { label: "20 porciones", price: null },
     ],
     active: true,
     featured: true,
@@ -62,7 +63,7 @@ export const products: Product[] = [
     category: "Tartas",
     description: "Masa sablée, crema pastelera de vainilla y frutillas frescas de estación.",
     images: [{ alt: "Tarta redonda cubierta de frutillas frescas sobre crema pastelera" }],
-    sizes: [{ label: "8 porciones", price: 28000 }],
+    sizes: [{ label: "8 porciones", price: null }],
     active: true,
     featured: true,
     leadTimeHours: 48,
@@ -74,7 +75,7 @@ export const products: Product[] = [
     category: "Number cakes",
     description: "Dos capas de masa con la forma de tu número o inicial, crema y decoración de frutas, flores y macarons.",
     images: [{ alt: "Torta con forma de número decorada con crema, frutillas y flores" }],
-    sizes: [{ label: "15 porciones", price: 48000 }],
+    sizes: [{ label: "15 porciones", price: null }],
     active: true,
     featured: true,
     leadTimeHours: 48,
@@ -87,7 +88,7 @@ export const products: Product[] = [
     category: "Cookies",
     description: "Ocho cookies grandes para elegir entre salted caramel, volcán y rocklets.",
     images: [{ alt: "Caja abierta con ocho cookies grandes de distintos sabores" }],
-    sizes: [{ label: "8 unidades", price: 16000 }],
+    sizes: [{ label: "8 unidades", price: null }],
     active: true,
     featured: true,
     leadTimeHours: 48,
@@ -100,7 +101,7 @@ export const products: Product[] = [
     category: "Postres en vasito",
     description: "Vasitos individuales de chocotorta, tiramisú y lemon pie, ideales para eventos.",
     images: [{ alt: "Vasitos de postre en fila con capas de crema y galletitas" }],
-    sizes: [{ label: "12 unidades", price: 30000 }],
+    sizes: [{ label: "12 unidades", price: null }],
     active: true,
     featured: false,
     leadTimeHours: 48,
@@ -112,7 +113,7 @@ export const products: Product[] = [
     category: "Bocados",
     description: "Dátiles rellenos de pasta de maní y bañados en chocolate semiamargo.",
     images: [{ alt: "Dátiles bañados en chocolate con una pizca de sal en escamas" }],
-    sizes: [{ label: "20 unidades", price: 18000 }],
+    sizes: [{ label: "20 unidades", price: null }],
     active: true,
     featured: false,
     leadTimeHours: 48,
@@ -124,7 +125,7 @@ export const products: Product[] = [
     category: "Tortas",
     description: "Torta de vainilla y frutos rojos decorada con flores comestibles de estación.",
     images: [{ alt: "Torta blanca decorada con flores comestibles en la parte de arriba" }],
-    sizes: [{ label: "15 porciones", price: 46000 }],
+    sizes: [{ label: "15 porciones", price: null }],
     active: true,
     featured: false,
     leadTimeHours: 48,
@@ -136,7 +137,7 @@ export const products: Product[] = [
     category: "Tartas",
     description: "Merengue crocante por fuera y suave por dentro, con crema y frutos rojos.",
     images: [{ alt: "Pavlova cubierta de crema batida, frutillas, arándanos y frambuesas" }],
-    sizes: [{ label: "10 porciones", price: 32000 }],
+    sizes: [{ label: "10 porciones", price: null }],
     active: true,
     featured: false,
     leadTimeHours: 48,

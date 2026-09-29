@@ -106,6 +106,7 @@ export const ui = {
   },
   product: {
     order: "Encargar",
+    priceTbd: "Precio a confirmar",
   },
   workshop: {
     enroll: "Quiero anotarme",
