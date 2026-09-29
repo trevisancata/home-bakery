@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Gilda_Display, Mrs_Saint_Delafield, Oswald } from "next/font/google";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SkipLink } from "@/components/SkipLink";
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="es-AR" className={`${gildaDisplay.variable} ${mrsSaintDelafield.variable} ${oswald.variable} ${dmSans.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <SkipLink />
+        <AnnouncementBar />
         <Header />
         <main id="contenido" tabIndex={-1} className="flex-1 focus:outline-none">
           {children}

@@ -84,7 +84,8 @@ export const ui = {
   announcementsLabel: "Avisos",
   mainNavLabel: "Principal",
   menuButton: "Menú",
-  cart: "Carrito",
+  // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
+  cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
   whatsappFloat: {
     text: "¿Consultas? Escribinos",
