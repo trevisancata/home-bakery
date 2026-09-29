@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
-import { pages, productCategories, products } from "@/data/site";
+import { pages } from "@/data/site";
+import { getProductCategories, getProducts } from "@/lib/data";
 
 const content = pages.tienda;
 
 export const metadata: Metadata = content.metadata;
 
-export default function TiendaPage() {
+export default async function TiendaPage() {
+  const [productCategories, products] = await Promise.all([getProductCategories(), getProducts()]);
+
   return (
     <>
       <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>

@@ -1,14 +1,18 @@
-import { type Product, ui, whatsappLink, whatsappMessages } from "@/data/site";
+import { ui, whatsappLink, whatsappMessages } from "@/data/site";
+import type { Product } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import { Button } from "./Button";
 import { ImageFrame } from "./ImageFrame";
 
 export function ProductCard({ product }: { product: Product }) {
+  const [image] = product.images;
+  const [size] = product.sizes;
+
   return (
     <article className="flex h-full flex-col rounded-4xl bg-hueso p-3 ring-1 ring-greige">
       <ImageFrame
-        src={product.image.src}
-        alt={product.image.alt}
+        src={image?.src}
+        alt={image?.alt ?? ""}
         placeholderLabel={ui.imagePending}
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       />
@@ -20,8 +24,8 @@ export function ProductCard({ product }: { product: Product }) {
         <p className="text-secundario">{product.description}</p>
         <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-3">
           <p>
-            <span className="block text-xl font-medium">{formatPrice(product.price)}</span>
-            <span className="text-sm text-secundario">{product.size}</span>
+            <span className="block text-xl font-medium">{formatPrice(size.price)}</span>
+            <span className="text-sm text-secundario">{size.label}</span>
           </p>
           <Button href={whatsappLink(whatsappMessages.product(product.name))} variant="secondary">
             {ui.product.order}

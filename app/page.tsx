@@ -5,11 +5,14 @@ import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
 import { SectionTitle } from "@/components/SectionTitle";
 import { WorkshopCard } from "@/components/WorkshopCard";
-import { featuredProducts, pages, site, ui, upcomingWorkshops } from "@/data/site";
+import { pages, site, ui } from "@/data/site";
+import { getFeaturedProducts, getWorkshops } from "@/lib/data";
 
 const { hero, featured, workshops, about, order } = pages.home;
 
-export default function Home() {
+export default async function Home() {
+  const [featuredProducts, upcomingWorkshops] = await Promise.all([getFeaturedProducts(), getWorkshops()]);
+
   return (
     <>
       <section aria-labelledby="hero-titulo" className="pt-10 pb-16 lg:pt-18 lg:pb-24">

@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { WorkshopCard } from "@/components/WorkshopCard";
-import { pages, upcomingWorkshops } from "@/data/site";
+import { pages } from "@/data/site";
+import { getWorkshops } from "@/lib/data";
 
 const content = pages.workshops;
 
 export const metadata: Metadata = content.metadata;
 
-export default function WorkshopsPage() {
+export default async function WorkshopsPage() {
+  const upcomingWorkshops = await getWorkshops();
+
   return (
     <>
       <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>
