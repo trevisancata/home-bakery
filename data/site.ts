@@ -91,11 +91,10 @@ export const ui = {
     label: "Escribinos por WhatsApp",
   },
   footer: {
-    description: `${site.tagline}. ${site.pickup}.`,
     navLabel: "Secundaria",
-    navTitle: "Tienda",
+    navTitle: "Inicio",
     links: [
-      { href: "/tienda", label: "Productos" },
+      { href: "/tienda", label: "Tienda" },
       { href: "/workshops", label: "Workshops" },
       { href: "/maggie", label: "Maggie" },
     ],
