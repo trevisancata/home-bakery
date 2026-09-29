@@ -34,7 +34,7 @@ export default function WorkshopsPage() {
         </p>
       </PageHeader>
 
-      <Section id="proximos" title="Próximas fechas" tone="rosa">
+      <Section id="proximos" title="Próximas fechas" tone="arena">
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {upcomingWorkshops.map((workshop) => (
             <li key={workshop.id}>
@@ -47,12 +47,12 @@ export default function WorkshopsPage() {
       <Section id="como-funciona" title="¿Cómo funcionan?">
         <ol className="grid gap-6 md:grid-cols-3">
           {steps.map((step, index) => (
-            <li key={step.title} className="rounded-2xl bg-white p-6 ring-1 ring-cacao/10">
-              <span aria-hidden="true" className="font-serif text-4xl font-semibold text-terracota">
+            <li key={step.title} className="rounded-2xl bg-white p-6 ring-1 ring-carbon/10">
+              <span aria-hidden="true" className="font-display text-4xl text-chocolate">
                 {index + 1}
               </span>
-              <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
-              <p className="mt-2 text-cacao-suave">{step.text}</p>
+              <h3 className="mt-2 text-xl">{step.title}</h3>
+              <p className="mt-2 text-secundario">{step.text}</p>
             </li>
           ))}
         </ol>

@@ -14,12 +14,12 @@ export function PageHeader({
     <header className="px-4 pt-12 pb-10 sm:px-6 lg:pt-20">
       <div className="mx-auto max-w-6xl">
         {eyebrow && (
-          <p className="mb-3 text-sm font-bold tracking-widest text-terracota uppercase">
+          <p className="mb-3 text-sm font-bold tracking-widest text-chocolate uppercase">
             {eyebrow}
           </p>
         )}
-        <h1 className="text-4xl font-semibold sm:text-5xl">{title}</h1>
-        {children && <div className="mt-5 max-w-2xl text-lg text-cacao-suave">{children}</div>}
+        <h1 className="text-4xl sm:text-5xl">{title}</h1>
+        {children && <div className="mt-5 max-w-2xl text-lg text-secundario">{children}</div>}
       </div>
     </header>
   );

@@ -6,7 +6,7 @@ type SectionProps = {
   title: string;
   eyebrow?: string;
   intro?: ReactNode;
-  tone?: "crema" | "rosa";
+  tone?: "hueso" | "arena";
   children: ReactNode;
   className?: string;
 };
@@ -17,7 +17,7 @@ export function Section({
   title,
   eyebrow,
   intro,
-  tone = "crema",
+  tone = "hueso",
   children,
   className = "",
 }: SectionProps) {
@@ -27,19 +27,19 @@ export function Section({
     <section
       id={id}
       aria-labelledby={headingId}
-      className={`${tone === "rosa" ? "bg-rosa" : "bg-crema"} px-4 py-16 sm:px-6 lg:py-24 ${className}`}
+      className={`${tone === "arena" ? "bg-arena" : "bg-hueso"} px-4 py-16 sm:px-6 lg:py-24 ${className}`}
     >
       <div className="mx-auto max-w-6xl">
         <header className="mb-10 max-w-2xl">
           {eyebrow && (
-            <p className="mb-2 text-sm font-bold tracking-widest text-terracota uppercase">
+            <p className="mb-2 text-sm font-bold tracking-widest text-chocolate uppercase">
               {eyebrow}
             </p>
           )}
-          <h2 id={headingId} className="text-3xl font-semibold sm:text-4xl">
+          <h2 id={headingId} className="text-3xl sm:text-4xl">
             {title}
           </h2>
-          {intro && <div className="mt-4 text-lg text-cacao-suave">{intro}</div>}
+          {intro && <div className="mt-4 text-lg text-secundario">{intro}</div>}
         </header>
         {children}
       </div>

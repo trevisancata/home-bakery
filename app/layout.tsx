@@ -1,19 +1,31 @@
 import type { Metadata } from "next";
-import { Fraunces, Nunito_Sans } from "next/font/google";
+import { DM_Sans, Gilda_Display, Mrs_Saint_Delafield, Oswald } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SkipLink } from "@/components/SkipLink";
 import { site } from "@/data/site";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Gilda Display y Mrs Saint Delafield no son variables: requieren peso.
+const gildaDisplay = Gilda_Display({
+  variable: "--font-gilda-display",
   subsets: ["latin"],
-  axes: ["SOFT", "opsz"],
+  weight: "400",
 });
 
-const nunitoSans = Nunito_Sans({
-  variable: "--font-nunito-sans",
+const mrsSaintDelafield = Mrs_Saint_Delafield({
+  variable: "--font-mrs-saint-delafield",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
 });
 
@@ -36,7 +48,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-AR" className={`${fraunces.variable} ${nunitoSans.variable}`}>
+    <html lang="es-AR" className={`${gildaDisplay.variable} ${mrsSaintDelafield.variable} ${oswald.variable} ${dmSans.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <SkipLink />
         <Header />

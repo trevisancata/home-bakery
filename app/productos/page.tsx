@@ -30,7 +30,7 @@ export default function ProductosPage() {
             key={category}
             id={category.toLowerCase()}
             title={category}
-            tone={index % 2 === 0 ? "rosa" : "crema"}
+            tone={index % 2 === 0 ? "arena" : "hueso"}
             className="lg:py-16"
           >
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

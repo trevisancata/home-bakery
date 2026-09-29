@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const inputClasses =
-  "mt-2 block w-full rounded-xl border-2 border-cacao-suave bg-white px-4 py-3 text-cacao placeholder:text-cacao-suave";
+  "mt-2 block w-full rounded-xl border-2 border-secundario bg-white px-4 py-3 text-carbon placeholder:text-secundario";
 
 export default function ContactoPage() {
   return (
@@ -23,11 +23,11 @@ export default function ContactoPage() {
         </p>
       </PageHeader>
 
-      <Section id="formulario" title="Mandame tu consulta" tone="rosa">
+      <Section id="formulario" title="Mandame tu consulta" tone="arena">
         <div className="grid gap-12 lg:grid-cols-[3fr_2fr]">
           {/* Solo maquetado: el envío se implementa más adelante. */}
-          <form className="space-y-6 rounded-2xl bg-crema p-6 sm:p-8">
-            <p className="text-sm text-cacao-suave">
+          <form className="space-y-6 rounded-2xl bg-hueso p-6 sm:p-8">
+            <p className="text-sm text-secundario">
               Los campos marcados con <span aria-hidden="true">*</span>
               <span className="sr-only">asterisco</span> son obligatorios.
             </p>
@@ -59,7 +59,7 @@ export default function ContactoPage() {
                 aria-describedby="telefono-ayuda"
                 className={inputClasses}
               />
-              <p id="telefono-ayuda" className="mt-2 text-sm text-cacao-suave">
+              <p id="telefono-ayuda" className="mt-2 text-sm text-secundario">
                 Opcional. Si lo dejás, te respondo por WhatsApp.
               </p>
             </div>
@@ -81,7 +81,7 @@ export default function ContactoPage() {
                       value={option.value}
                       defaultChecked={index === 0}
                       required
-                      className="size-5 accent-terracota"
+                      className="size-5 accent-chocolate"
                     />
                     {option.label}
                   </label>
@@ -115,7 +115,7 @@ export default function ContactoPage() {
                 aria-describedby="mensaje-ayuda"
                 className={inputClasses}
               />
-              <p id="mensaje-ayuda" className="mt-2 text-sm text-cacao-suave">
+              <p id="mensaje-ayuda" className="mt-2 text-sm text-secundario">
                 Si es un pedido, contame qué producto, para cuántas personas y para qué fecha.
               </p>
             </div>
@@ -124,24 +124,24 @@ export default function ContactoPage() {
           </form>
 
           <aside aria-labelledby="otras-vias-titulo">
-            <h3 id="otras-vias-titulo" className="text-2xl font-semibold">
+            <h3 id="otras-vias-titulo" className="text-2xl">
               Otras formas de contacto
             </h3>
             <address className="mt-4 space-y-3 text-lg not-italic">
               <p>
-                <a href={`mailto:${site.contact.email}`} className="text-terracota underline hover:text-cacao">
+                <a href={`mailto:${site.contact.email}`} className="text-chocolate underline hover:text-carbon">
                   {site.contact.email}
                 </a>
               </p>
               <p>
-                <a href={site.contact.whatsappUrl} className="text-terracota underline hover:text-cacao">
+                <a href={site.contact.whatsappUrl} className="text-chocolate underline hover:text-carbon">
                   WhatsApp {site.contact.whatsapp}
                 </a>
               </p>
               <p>{site.city}</p>
             </address>
-            <p className="mt-6 text-cacao-suave">{site.contact.hours}.</p>
-            <p className="mt-2 text-cacao-suave">{site.contact.pickup}.</p>
+            <p className="mt-6 text-secundario">{site.contact.hours}.</p>
+            <p className="mt-2 text-secundario">{site.contact.pickup}.</p>
           </aside>
         </div>
       </Section>

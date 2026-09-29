@@ -4,13 +4,13 @@ import type { ComponentProps } from "react";
 type Variant = "primary" | "secondary" | "outline";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold no-underline transition-colors";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 no-underline transition-colors";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-cacao text-crema hover:bg-cacao-suave",
-  secondary: "bg-terracota text-white hover:bg-cacao-suave",
+  primary: "bg-carbon text-hueso hover:bg-secundario",
+  secondary: "bg-chocolate text-white hover:bg-secundario",
   outline:
-    "border-2 border-cacao text-cacao hover:bg-cacao hover:text-crema",
+    "border-2 border-carbon text-carbon hover:bg-carbon hover:text-hueso",
 };
 
 type ButtonProps = { variant?: Variant; className?: string } & (

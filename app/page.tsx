@@ -13,13 +13,13 @@ export default function Home() {
       <section aria-labelledby="hero-titulo" className="px-4 pt-10 pb-16 sm:px-6 lg:pt-16 lg:pb-24">
         <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
           <div>
-            <p className="mb-3 text-sm font-bold tracking-widest text-terracota uppercase">
+            <p className="mb-3 text-sm font-bold tracking-widest text-chocolate uppercase">
               Pastelería casera en {site.city}
             </p>
-            <h1 id="hero-titulo" className="text-4xl leading-tight font-semibold sm:text-5xl lg:text-6xl">
+            <h1 id="hero-titulo" className="text-4xl leading-tight sm:text-5xl lg:text-6xl">
               Tortas, budines y cookies hechos en casa, como antes.
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-cacao-suave">{site.description}</p>
+            <p className="mt-6 max-w-xl text-lg text-secundario">{site.description}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button href="/productos">Ver productos</Button>
               <Button href="/workshops" variant="outline">
@@ -44,7 +44,7 @@ export default function Home() {
         eyebrow="Lo más pedido"
         title="Productos destacados"
         intro="Recetas propias, horneadas por encargo con ingredientes frescos."
-        tone="rosa"
+        tone="arena"
       >
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredProducts.map((product) => (
@@ -75,7 +75,7 @@ export default function Home() {
         </ul>
       </Section>
 
-      <Section id="sobre-ella" eyebrow="Detrás del horno" title={`Hola, soy ${site.owner.name}`} tone="rosa">
+      <Section id="sobre-ella" eyebrow="Detrás del horno" title={`Hola, soy ${site.owner.name}`} tone="arena">
         <div className="grid items-center gap-10 md:grid-cols-[2fr_3fr]">
           <Image
             src="/images/sofia.svg"
@@ -96,8 +96,8 @@ export default function Home() {
       </Section>
 
       <section aria-labelledby="cta-titulo" className="px-4 py-16 sm:px-6 lg:py-24">
-        <div className="mx-auto max-w-4xl rounded-3xl bg-cacao px-6 py-12 text-center text-crema sm:px-12">
-          <h2 id="cta-titulo" className="text-3xl font-semibold text-crema sm:text-4xl">
+        <div className="mx-auto max-w-4xl rounded-3xl bg-carbon px-6 py-12 text-center text-hueso sm:px-12">
+          <h2 id="cta-titulo" className="text-3xl text-hueso sm:text-4xl">
             ¿Tenés un cumple, una reunión o simplemente ganas de algo rico?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg">

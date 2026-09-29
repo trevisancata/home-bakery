@@ -32,7 +32,7 @@ export default function NosotrosPage() {
         <p>{site.tagline}</p>
       </PageHeader>
 
-      <Section id="historia" title={`Hola, soy ${site.owner.name}`} tone="rosa">
+      <Section id="historia" title={`Hola, soy ${site.owner.name}`} tone="arena">
         <div className="grid items-center gap-10 md:grid-cols-[2fr_3fr]">
           <Image
             src="/images/sofia.svg"
@@ -54,15 +54,15 @@ export default function NosotrosPage() {
       <Section id="valores" title="Lo que nos importa">
         <ul className="grid gap-6 md:grid-cols-3">
           {values.map((value) => (
-            <li key={value.title} className="rounded-2xl bg-white p-6 ring-1 ring-cacao/10">
-              <h3 className="text-xl font-semibold">{value.title}</h3>
-              <p className="mt-2 text-cacao-suave">{value.text}</p>
+            <li key={value.title} className="rounded-2xl bg-white p-6 ring-1 ring-carbon/10">
+              <h3 className="text-xl">{value.title}</h3>
+              <p className="mt-2 text-secundario">{value.text}</p>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section id="cocina" title="La cocina" tone="rosa">
+      <Section id="cocina" title="La cocina" tone="arena">
         <figure>
           <Image
             src="/images/cocina.svg"
@@ -72,7 +72,7 @@ export default function NosotrosPage() {
             sizes="(min-width: 768px) 768px, 100vw"
             className="w-full max-w-3xl rounded-3xl"
           />
-          <figcaption className="mt-3 text-cacao-suave">
+          <figcaption className="mt-3 text-secundario">
             Todo se hornea en una cocina habilitada, en {site.city}.
           </figcaption>
         </figure>

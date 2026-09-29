@@ -5,7 +5,7 @@ import { Button } from "./Button";
 
 export function WorkshopCard({ workshop }: { workshop: Workshop }) {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-cacao/10">
+    <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-carbon/10">
       <Image
         src={workshop.image.src}
         alt={workshop.image.alt}
@@ -15,27 +15,27 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
         className="aspect-4/3 w-full object-cover"
       />
       <div className="flex flex-1 flex-col gap-3 p-6">
-        <p className="text-sm font-bold tracking-wide text-terracota uppercase">
+        <p className="text-sm font-bold tracking-wide text-chocolate uppercase">
           <time dateTime={workshop.date}>{formatDate(workshop.date)} h</time>
         </p>
-        <h3 className="text-xl font-semibold">{workshop.title}</h3>
-        <p className="text-cacao-suave">{workshop.description}</p>
+        <h3 className="text-xl">{workshop.title}</h3>
+        <p className="text-secundario">{workshop.description}</p>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           <div>
             <dt className="font-bold">Duración</dt>
-            <dd className="text-cacao-suave">{workshop.duration}</dd>
+            <dd className="text-secundario">{workshop.duration}</dd>
           </div>
           <div>
             <dt className="font-bold">Nivel</dt>
-            <dd className="text-cacao-suave">{workshop.level}</dd>
+            <dd className="text-secundario">{workshop.level}</dd>
           </div>
           <div>
             <dt className="font-bold">Cupos</dt>
-            <dd className="text-cacao-suave">{workshop.spots} personas</dd>
+            <dd className="text-secundario">{workshop.spots} personas</dd>
           </div>
           <div>
             <dt className="font-bold">Precio</dt>
-            <dd className="text-cacao-suave">{formatPrice(workshop.price)}</dd>
+            <dd className="text-secundario">{formatPrice(workshop.price)}</dd>
           </div>
         </dl>
         <Button href="/contacto" variant="outline" className="mt-auto self-start">

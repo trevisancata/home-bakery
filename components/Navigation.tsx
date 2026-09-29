@@ -32,7 +32,7 @@ export function Navigation() {
         aria-expanded={open}
         aria-controls={MENU_ID}
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-cacao px-4 font-semibold md:hidden"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-carbon px-4 md:hidden"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           {open ? (
@@ -46,7 +46,7 @@ export function Navigation() {
 
       <ul
         id={MENU_ID}
-        className={`${open ? "flex" : "hidden"} absolute inset-x-0 top-full flex-col gap-1 border-b border-cacao/10 bg-crema px-4 pt-2 pb-6 shadow-md md:static md:flex md:flex-row md:gap-2 md:border-0 md:p-0 md:shadow-none`}
+        className={`${open ? "flex" : "hidden"} absolute inset-x-0 top-full flex-col gap-1 border-b border-carbon/10 bg-hueso px-4 pt-2 pb-6 shadow-md md:static md:flex md:flex-row md:gap-2 md:border-0 md:p-0 md:shadow-none`}
       >
         {navigation.map((item) => {
           const current =
@@ -57,8 +57,8 @@ export function Navigation() {
                 href={item.href}
                 aria-current={current ? "page" : undefined}
                 onClick={() => setOpen(false)}
-                className={`block rounded-full px-4 py-3 font-semibold no-underline hover:bg-rosa md:py-2 ${
-                  current ? "bg-rosa text-terracota" : ""
+                className={`block rounded-full px-4 py-3 no-underline hover:bg-arena md:py-2 ${
+                  current ? "bg-arena text-chocolate" : ""
                 }`}
               >
                 {item.label}
