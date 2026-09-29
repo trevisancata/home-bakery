@@ -1,31 +1,65 @@
 @import "tailwindcss";
 
 /*
- * Sistema de diseño de Home Bakery (paleta provisoria).
+ * Sistema de diseño de Home Bakery.
  *
  * Contrastes verificados (WCAG 2.1, AA pide 4.5:1 para texto normal
  * y 3:1 para texto grande y componentes de interfaz):
- *   cacao       sobre crema  13.35:1   sobre rosa 11.11:1
- *   cacao-suave sobre crema   7.27:1   sobre rosa  6.05:1
- *   terracota   sobre crema   6.02:1   sobre rosa  5.01:1
- *   crema       sobre cacao  13.35:1
- *   blanco      sobre terracota 6.52:1
- * Evitar terracota como texto sobre fondos más oscuros que rosa.
+ *   carbon      sobre hueso 12.16:1   sobre arena 10.51:1
+ *   chocolate   sobre hueso  7.62:1   sobre arena  6.58:1
+ *   secundario  sobre hueso  5.96:1   sobre arena  5.14:1
+ *   hueso       sobre chocolate 7.62:1
+ *   blanco      sobre taupe  3.19:1  (solo para el logo, que es gráfico)
+ *   blanco      sobre chocolate 8.39:1  (logo del footer)
+ *   whatsapp-oscuro sobre whatsapp 6.38:1  (botón flotante)
+ *   hueso-suave sobre chocolate 5.17:1  (texto secundario del footer)
+ *   chocolate   sobre placeholder 5.57:1  (etiqueta de foto pendiente)
+ *
+ * Borde (#E5DDD2) y chocolate-claro (#74604A) son solo divisores
+ * decorativos: no delimitan controles ni llevan texto.
+ *
+ * Caramelo y greige no llegan a 4.5:1 con ningún color de texto de la
+ * paleta: usarlos solo como fondos y bordes decorativos, nunca para texto
+ * chico ni como único borde de un control.
  */
 @theme {
-  --color-crema: #fbf5ec;
-  --color-cacao: #3b2418;
-  --color-cacao-suave: #6b4a3a;
-  --color-rosa: #f6dcd6;
-  --color-terracota: #9c4225;
+  --color-hueso: #f5f4f0;
+  --color-carbon: #2f2f2f;
+  --color-chocolate: #5e4a33;
+  --color-taupe: #a88b6c;
+  --color-caramelo: #b99b75;
+  --color-greige: #c4b4a1;
+  --color-arena: #eae3d8;
+  --color-secundario: #6b5a50;
+  --color-placeholder: #dcd1c3;
+  --color-borde: #e5ddd2;
+  --color-hueso-suave: #d9c8bd;
+  --color-chocolate-claro: #74604a;
 
-  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
-  --font-sans: var(--font-nunito-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Solo para el botón flotante de WhatsApp. */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-oscuro: #0b3b1e;
+
+  --font-display: var(--font-gilda-display), ui-serif, Georgia, serif;
+  --font-script: var(--font-mrs-saint-delafield), cursive;
+  --font-label: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Ancho y márgenes del mockup: lienzo de 1440 px con 80 px a los lados. */
+@utility contenedor {
+  @apply mx-auto w-full max-w-360 px-4 sm:px-6 lg:px-20;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* El header es sticky (81 px mobile, 121 px desktop): evita que tape los destinos de los anclas. */
+    scroll-padding-top: 6rem;
+
+    @media (width >= 64rem) {
+      scroll-padding-top: 8.5rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -35,13 +69,13 @@
   }
 
   body {
-    @apply bg-crema font-sans text-cacao antialiased;
+    @apply bg-hueso font-sans text-carbon antialiased;
   }
 
   h1,
   h2,
   h3 {
-    @apply font-serif text-balance text-cacao;
+    @apply font-display font-normal text-balance text-carbon;
   }
 
   a {
@@ -50,10 +84,15 @@
 
   /* Foco visible y consistente para cualquier elemento interactivo. */
   :focus-visible {
-    @apply rounded-sm outline-3 outline-offset-3 outline-terracota;
+    @apply rounded-sm outline-3 outline-offset-3 outline-chocolate;
+  }
+
+  /* Sobre superficies oscuras (barra de avisos, footer) el foco va en hueso. */
+  [data-surface="dark"] :focus-visible {
+    @apply outline-hueso;
   }
 
   ::selection {
-    @apply bg-rosa text-cacao;
+    @apply bg-arena text-carbon;
   }
 }

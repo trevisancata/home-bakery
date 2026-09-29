@@ -1,16 +1,16 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-type Variant = "primary" | "secondary" | "outline";
+type Variant = "primary" | "secondary";
 
+// Mockup: 52 px de alto, 28 px de padding (24 en mobile), DM Sans 600 a 15 px.
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold no-underline transition-colors";
+  "inline-flex min-h-13 items-center justify-center gap-2 rounded-full px-6 py-2 text-center text-[0.9375rem] font-semibold no-underline transition-colors sm:px-7";
 
+// El borde del secundario va en carbón (12:1 sobre hueso), no en greige.
 const variants: Record<Variant, string> = {
-  primary: "bg-cacao text-crema hover:bg-cacao-suave",
-  secondary: "bg-terracota text-white hover:bg-cacao-suave",
-  outline:
-    "border-2 border-cacao text-cacao hover:bg-cacao hover:text-crema",
+  primary: "bg-chocolate text-hueso hover:bg-carbon",
+  secondary: "border-[1.5px] border-carbon text-carbon hover:border-chocolate hover:bg-chocolate hover:text-hueso",
 };
 
 type ButtonProps = { variant?: Variant; className?: string } & (

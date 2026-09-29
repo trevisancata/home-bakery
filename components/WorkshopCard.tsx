@@ -1,45 +1,47 @@
-import Image from "next/image";
-import type { Workshop } from "@/data/workshops";
+import { ui, type Workshop, whatsappLink, whatsappMessages } from "@/data/site";
 import { formatDate, formatPrice } from "@/lib/format";
 import { Button } from "./Button";
+import { ImageFrame } from "./ImageFrame";
 
 export function WorkshopCard({ workshop }: { workshop: Workshop }) {
+  const details = [
+    { term: ui.workshop.duration, value: workshop.duration },
+    { term: ui.workshop.level, value: workshop.level },
+    { term: ui.workshop.spots, value: `${workshop.spots} ${ui.workshop.spotsUnit}` },
+    { term: ui.workshop.price, value: formatPrice(workshop.price) },
+  ];
+
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-cacao/10">
-      <Image
+    <article className="flex h-full flex-col rounded-4xl bg-hueso p-3 ring-1 ring-greige">
+      <ImageFrame
         src={workshop.image.src}
         alt={workshop.image.alt}
-        width={800}
-        height={600}
+        placeholderLabel={ui.imagePending}
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-        className="aspect-4/3 w-full object-cover"
       />
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <p className="text-sm font-bold tracking-wide text-terracota uppercase">
-          <time dateTime={workshop.date}>{formatDate(workshop.date)} h</time>
+      <div className="flex flex-1 flex-col gap-3 px-3 pt-5 pb-3">
+        <p className="font-label text-xs tracking-[0.2em] text-chocolate uppercase">
+          <time dateTime={workshop.date}>
+            {formatDate(workshop.date)} {ui.workshop.timeSuffix}
+          </time>
         </p>
-        <h3 className="text-xl font-semibold">{workshop.title}</h3>
-        <p className="text-cacao-suave">{workshop.description}</p>
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-          <div>
-            <dt className="font-bold">Duración</dt>
-            <dd className="text-cacao-suave">{workshop.duration}</dd>
-          </div>
-          <div>
-            <dt className="font-bold">Nivel</dt>
-            <dd className="text-cacao-suave">{workshop.level}</dd>
-          </div>
-          <div>
-            <dt className="font-bold">Cupos</dt>
-            <dd className="text-cacao-suave">{workshop.spots} personas</dd>
-          </div>
-          <div>
-            <dt className="font-bold">Precio</dt>
-            <dd className="text-cacao-suave">{formatPrice(workshop.price)}</dd>
-          </div>
+        <h3 className="text-2xl">{workshop.title}</h3>
+        <p className="text-secundario">{workshop.description}</p>
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-greige pt-4 text-sm">
+          {details.map((detail) => (
+            <div key={detail.term}>
+              <dt className="font-medium">{detail.term}</dt>
+              <dd className="text-secundario">{detail.value}</dd>
+            </div>
+          ))}
         </dl>
-        <Button href="/contacto" variant="outline" className="mt-auto self-start">
-          Quiero anotarme<span className="sr-only"> a {workshop.title}</span>
+        <Button
+          href={whatsappLink(whatsappMessages.workshop(workshop.title))}
+          variant="secondary"
+          className="mt-auto self-start"
+        >
+          {ui.workshop.enroll}
+          <span className="sr-only"> {workshop.title}</span>
         </Button>
       </div>
     </article>

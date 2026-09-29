@@ -1,36 +1,32 @@
-import Image from "next/image";
-import Link from "next/link";
-import type { Product } from "@/data/products";
+import { type Product, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import { formatPrice } from "@/lib/format";
+import { Button } from "./Button";
+import { ImageFrame } from "./ImageFrame";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-cacao/10">
-      <Image
+    <article className="flex h-full flex-col rounded-4xl bg-hueso p-3 ring-1 ring-greige">
+      <ImageFrame
         src={product.image.src}
         alt={product.image.alt}
-        width={800}
-        height={600}
+        placeholderLabel={ui.imagePending}
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-        className="aspect-4/3 w-full object-cover"
       />
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <p className="text-sm font-bold tracking-wide text-terracota uppercase">
+      <div className="flex flex-1 flex-col gap-3 px-3 pt-5 pb-3">
+        <p className="font-label text-xs tracking-[0.2em] text-chocolate uppercase">
           {product.category}
         </p>
-        <h3 className="text-xl font-semibold">{product.name}</h3>
-        <p className="text-cacao-suave">{product.description}</p>
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-2">
+        <h3 className="text-2xl">{product.name}</h3>
+        <p className="text-secundario">{product.description}</p>
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-3">
           <p>
-            <span className="block text-2xl font-bold">{formatPrice(product.price)}</span>
-            <span className="text-sm text-cacao-suave">{product.size}</span>
+            <span className="block text-xl font-medium">{formatPrice(product.price)}</span>
+            <span className="text-sm text-secundario">{product.size}</span>
           </p>
-          <Link
-            href="/contacto"
-            className="font-semibold text-terracota underline hover:text-cacao"
-          >
-            Encargar<span className="sr-only"> {product.name}</span>
-          </Link>
+          <Button href={whatsappLink(whatsappMessages.product(product.name))} variant="secondary">
+            {ui.product.order}
+            <span className="sr-only"> {product.name}</span>
+          </Button>
         </div>
       </div>
     </article>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tu pedido · Home Bakery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Mrs+Saint+Delafield&amp;family=Oswald:wght@300;400;500&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F4F0;color:#2F2F2F;font-family:'DM Sans',system-ui,sans-serif}
+a{color:#5E4A33}a:hover{color:#2F2F2F}
+.serif{font-family:'Gilda Display',Georgia,serif}
+.script{font-family:'Mrs Saint Delafield',cursive;font-weight:400;color:#5E4A33;font-size:1.75em;line-height:.6;letter-spacing:0;padding:0 .08em}
+.ph{background:#DCD1C3;border-radius:14px;display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;color:#5E4A33;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.eyebrow{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#5E4A33;font-weight:400}
+.muted{color:#6B5A50}
+.day{width:100%;height:68px;border-radius:14px;border:1px solid #D9C8BD;background:#F5F4F0;color:#2F2F2F;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;cursor:pointer}
+.day-on{width:100%;height:68px;border-radius:14px;border:1.5px solid #2F2F2F;background:#5E4A33;color:#F5F4F0;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;font-weight:600;cursor:pointer}
+.day-off{width:100%;height:68px;border-radius:14px;border:1px dashed #D9C8BD;background:transparent;color:#8A776B;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+.field input,.field select,.field textarea{height:48px;border-radius:12px;border:1px solid #D9C8BD;background:#FFFFFF;padding:0 14px;font-family:inherit;font-size:15px;color:#2F2F2F}
+.field textarea{height:84px;padding:12px 14px;resize:none}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1950px; display: flex; flex-direction: column; background: #F5F4F0">
+
+<header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<ol aria-label="Pasos de la compra" style="display: flex; gap: 32px; list-style: none; margin: 0; padding: 0; font-size: 14px">
+<li style="font-weight: 600">1 · Tu pedido</li><li class="muted">2 · Confirmación de Maggie</li><li class="muted">3 · Pago</li><li class="muted">4 · Retiro</li>
+</ol>
+<a href="tienda.html" style="font-size: 14px; font-weight: 600">← Seguir comprando</a>
+</header>
+
+<main style="flex-grow: 1; padding: 48px 80px 96px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 56px; align-items: start">
+
+<div style="display: flex; flex-direction: column; gap: 40px">
+<h1 class="serif" style="margin: 0; font-size: 52px; font-weight: 400">Tu pedido</h1>
+
+<section aria-labelledby="t-prod" style="display: flex; flex-direction: column">
+<h2 id="t-prod" class="eyebrow" style="margin: 0 0 8px">Productos</h2>
+<div style="display: flex; gap: 20px; align-items: center; padding: 20px 0; border-bottom: 1px solid #E5DDD2">
+<div class="ph" style="width: 88px; height: 88px; flex-shrink: 0">Foto</div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px"><strong class="serif" style="font-size: 24px; font-weight: 500">Red velvet</strong><span class="muted" style="font-size: 14px">[Porciones] · Por encargo</span></div>
+<div style="display: flex; align-items: center; border: 1px solid #D9C8BD; border-radius: 999px"><button type="button" aria-label="Quitar uno" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">−</button><span style="width: 24px; text-align: center">1</span><button type="button" aria-label="Agregar uno" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">+</button></div>
+<strong style="width: 120px; text-align: right">[$ precio]</strong>
+</div>
+<div style="display: flex; gap: 20px; align-items: center; padding: 20px 0; border-bottom: 1px solid #E5DDD2">
+<div class="ph" style="width: 88px; height: 88px; flex-shrink: 0">Foto</div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px"><strong class="serif" style="font-size: 24px; font-weight: 500">Cajita de 8 cookies</strong><span class="muted" style="font-size: 14px">Salted caramel, volcán, rocklets</span></div>
+<div style="display: flex; align-items: center; border: 1px solid #D9C8BD; border-radius: 999px"><button type="button" aria-label="Quitar uno" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">−</button><span style="width: 24px; text-align: center">2</span><button type="button" aria-label="Agregar uno" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">+</button></div>
+<strong style="width: 120px; text-align: right">[$ precio]</strong>
+</div>
+</section>
+
+<section aria-labelledby="t-cuando" style="display: flex; flex-direction: column; gap: 16px">
+<h2 id="t-cuando" class="eyebrow" style="margin: 0">¿Qué día lo retirás?</h2>
+<p class="muted" style="margin: 0; font-size: 14px; line-height: 1.5">Solo se pueden elegir días y horarios con al menos 48 h de anticipación desde ahora. Los domingos no se trabaja.</p>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="14">
+<sc-if value="{{d.closed}}" hint-placeholder-val="{{ false }}"><div class="day-off" aria-disabled="true"><span>{{d.dow}}</span><strong style="font-size: 18px">{{d.num}}</strong><span style="font-size: 11px">Cerrado</span></div></sc-if>
+<sc-if value="{{d.soon}}" hint-placeholder-val="{{ false }}"><div class="day-off" aria-disabled="true" title="Faltan menos de 48 h"><span>{{d.dow}}</span><strong style="font-size: 18px">{{d.num}}</strong><span style="font-size: 11px">Menos de 48 h</span></div></sc-if>
+<sc-if value="{{d.on}}" hint-placeholder-val="{{ false }}"><button type="button" class="day-on" aria-pressed="true" onClick="{{d.pick}}"><span>{{d.dow}}</span><strong style="font-size: 18px">{{d.num}}</strong><span style="font-size: 11px">{{d.mon}}</span></button></sc-if>
+<sc-if value="{{d.idle}}" hint-placeholder-val="{{ true }}"><button type="button" class="day" aria-pressed="false" onClick="{{d.pick}}"><span>{{d.dow}}</span><strong style="font-size: 18px">{{d.num}}</strong><span style="font-size: 11px">{{d.mon}}</span></button></sc-if>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 14px; font-weight: 500">Horario de retiro · {{rangeLabel}}</span>
+<div role="group" aria-label="Horario de retiro" style="display: flex; flex-wrap: wrap; gap: 10px">
+<sc-for list="{{slots}}" as="t" hint-placeholder-count="9">
+<sc-if value="{{t.on}}" hint-placeholder-val="{{ false }}"><button type="button" aria-pressed="true" onClick="{{t.pick}}" style="height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid #2F2F2F; background: #5E4A33; color: #F5F4F0; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{t.label}}</button></sc-if>
+<sc-if value="{{t.off}}" hint-placeholder-val="{{ true }}"><button type="button" aria-pressed="false" onClick="{{t.pick}}" style="height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #D9C8BD; background: #F5F4F0; color: #2F2F2F; font-family: inherit; font-size: 14px; cursor: pointer">{{t.label}}</button></sc-if>
+</sc-for>
+</div>
+<sc-if value="{{partial}}" hint-placeholder-val="{{ false }}"><span class="muted" style="font-size: 13px">Los horarios anteriores de ese día no llegan a las 48 h.</span></sc-if>
+</div>
+</section>
+
+<section aria-labelledby="t-datos" style="display: flex; flex-direction: column; gap: 16px">
+<h2 id="t-datos" class="eyebrow" style="margin: 0">Tus datos</h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<label class="field">Nombre y apellido<input type="text" autocomplete="name"></label>
+<label class="field">WhatsApp<input type="tel" autocomplete="tel" placeholder="11 ..."></label>
+</div>
+<label class="field">Comentarios (dedicatoria, alergias, quién retira)<textarea></textarea></label>
+</section>
+</div>
+
+<aside aria-label="Resumen" style="position: sticky; top: 136px; background: #FFFFFF; border: 1px solid #E5DDD2; border-radius: 28px; padding: 36px; display: flex; flex-direction: column; gap: 22px">
+<h2 class="serif" style="margin: 0; font-size: 28px; font-weight: 500">Cómo lo recibís</h2>
+
+<div role="radiogroup" aria-label="Forma de entrega" style="display: flex; flex-direction: column; gap: 12px">
+<div role="radio" aria-checked="true" tabindex="0" style="border: 1.5px solid #2F2F2F; border-radius: 18px; padding: 18px 20px; display: flex; gap: 14px">
+<span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 99px; border: 6px solid #2F2F2F; box-sizing: border-box; flex-shrink: 0; margin-top: 2px"></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><strong>Take away en San Isidro</strong><span class="muted" style="font-size: 14px; line-height: 1.5">Sin costo. La dirección te llega con la confirmación. Podés mandar un Uber o una moto.</span></div>
+</div>
+<div role="radio" aria-checked="false" aria-disabled="true" style="border: 1px dashed #D9C8BD; border-radius: 18px; padding: 18px 20px; display: flex; gap: 14px; color: #6B5A50">
+<span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 99px; border: 1.5px solid #B8A598; box-sizing: border-box; flex-shrink: 0; margin-top: 2px"></span>
+<div style="display: flex; flex-direction: column; gap: 10px; flex-grow: 1"><strong>Envío a domicilio</strong><span style="font-size: 14px; line-height: 1.5">Disponible en pedidos desde $400.000, hasta 10 km en Zona Norte.</span>
+<div style="height: 8px; background: #EDE6DC; border-radius: 99px"><div style="width: {{progress}}; height: 8px; background: #5E4A33; border-radius: 99px"></div></div>
+<span style="font-size: 13px; font-weight: 600; color: #5E4A33">Te faltan [$ monto] para habilitar el envío</span></div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid #E5DDD2; padding-top: 20px">
+<h3 id="t-pago" class="serif" style="margin: 0; font-size: 24px; font-weight: 500">¿Cómo querés pagar?</h3>
+<div role="radiogroup" aria-labelledby="t-pago" style="display: flex; flex-direction: column; gap: 10px">
+<button type="button" role="radio" aria-checked="{{mp.on}}" onClick="{{mp.pick}}" style="text-align: left; border: {{mp.border}}; background: #FFFFFF; border-radius: 18px; padding: 16px 18px; display: flex; gap: 14px; font-family: inherit; color: #2F2F2F; cursor: pointer">
+<span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 99px; border: {{mp.dot}}; box-sizing: border-box; flex-shrink: 0; margin-top: 2px"></span>
+<span style="display: flex; flex-direction: column; gap: 4px"><strong>Mercado Pago</strong><span class="muted" style="font-size: 14px; line-height: 1.5">Tarjeta, débito o dinero en cuenta. Se acredita al instante.</span></span>
+</button>
+<button type="button" role="radio" aria-checked="{{tr.on}}" onClick="{{tr.pick}}" style="text-align: left; border: {{tr.border}}; background: #FFFFFF; border-radius: 18px; padding: 16px 18px; display: flex; gap: 14px; font-family: inherit; color: #2F2F2F; cursor: pointer">
+<span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 99px; border: {{tr.dot}}; box-sizing: border-box; flex-shrink: 0; margin-top: 2px"></span>
+<span style="display: flex; flex-direction: column; gap: 4px"><strong>Transferencia bancaria</strong><span class="muted" style="font-size: 14px; line-height: 1.5">Te mandamos alias y CBU cuando Maggie confirma. Después subís el comprobante.</span></span>
+</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #E5DDD2; padding-top: 20px; font-size: 15px">
+<div style="display: flex; justify-content: space-between"><span class="muted">Subtotal</span><span>[$ subtotal]</span></div>
+<div style="display: flex; justify-content: space-between"><span class="muted">Retiro · {{pickDay}} · {{pickSlot}}</span><span>Sin costo</span></div>
+<div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 600; margin-top: 8px"><span>Total</span><span>[$ total]</span></div>
+</div>
+<a href="estado-pedido.html" style="display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 999px; background: #5E4A33; color: #F5F4F0; font-weight: 600; font-size: 16px; text-decoration: none">Enviar pedido a Maggie</a>
+<div style="display: flex; gap: 12px; background: #EAE3D8; border-radius: 16px; padding: 16px; font-size: 14px; line-height: 1.5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>{{payNote}}</span></div>
+</aside>
+</main>
+<a href="https://wa.me/5491155767591" aria-label="Escribinos por WhatsApp" style="position: fixed; right: 32px; bottom: 32px; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 24px 0 20px; border-radius: 999px; background: #25D366; color: #0B3B1E; font-weight: 600; font-size: 15px; text-decoration: none; box-shadow: 0 10px 24px rgba(46,37,32,.22)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/><path d="M9 8.6c.3 2.9 2.5 5.3 5.4 5.8l1-1.2-1.7-.9-.8.7a4 4 0 0 1-2-2l.7-.8-.8-1.7z"/></svg>¿Consultas? Escribinos</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"deliveryProgress":{"editor":"range","min":0,"max":100,"step":5,"unit":"%","default":45},"$preview":{"width":1440,"height":1950}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { day: null, slot: null, pay: 'mp' }; }
+  renderVals() {
+    var self = this;
+    var now = new Date();
+    var earliest = new Date(now.getTime() + 48 * 3600 * 1000);
+    var names = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    var months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    var raw = [];
+    var firstOk = -1;
+    for (var i = 0; i < 14; i++) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+      var dow = d.getDay();
+      var open = dow === 6 ? 9 : 10;
+      var close = dow === 6 ? 13 : 19;
+      var closed = dow === 0;
+      var hours = [];
+      if (!closed) {
+        for (var h = open; h < close; h++) {
+          if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), h) >= earliest) hours.push(h);
+        }
+      }
+      var ok = !closed && hours.length > 0;
+      if (ok && firstOk < 0) firstOk = i;
+      raw.push({ i: i, dow: names[dow], num: d.getDate(), mon: months[d.getMonth()], closed: closed, soon: !closed && !ok, ok: ok, hours: hours, open: open, close: close });
+    }
+    var sel = (this.state.day !== null && raw[this.state.day].ok) ? this.state.day : firstOk;
+    var day = raw[sel];
+    var slotSel = day.hours.indexOf(this.state.slot) >= 0 ? this.state.slot : day.hours[0];
+    return {
+      days: raw.map(function (r) {
+        return { dow: r.dow, num: r.num, mon: r.mon, closed: r.closed, soon: r.soon, on: r.ok && r.i === sel, idle: r.ok && r.i !== sel, pick: function () { self.setState({ day: r.i, slot: null }); } };
+      }),
+      slots: day.hours.map(function (h) {
+        return { label: h + ' a ' + (h + 1) + ' h', on: h === slotSel, off: h !== slotSel, pick: function () { self.setState({ day: sel, slot: h }); } };
+      }),
+      rangeLabel: day.dow === 'Sáb' ? 'sábados de 9 a 13 h' : 'lunes a viernes de 10 a 19 h',
+      partial: day.hours.length < (day.close - day.open),
+      pickDay: day.dow + ' ' + day.num + ' ' + day.mon,
+      pickSlot: slotSel + ' a ' + (slotSel + 1) + ' h',
+      progress: (this.props.deliveryProgress ?? 45) + '%',
+      mp: { on: this.state.pay === 'mp' ? 'true' : 'false', border: this.state.pay === 'mp' ? '1.5px solid #2F2F2F' : '1px solid #D9C8BD', dot: this.state.pay === 'mp' ? '6px solid #2F2F2F' : '1.5px solid #B8A598', pick: function () { self.setState({ pay: 'mp' }); } },
+      tr: { on: this.state.pay === 'tr' ? 'true' : 'false', border: this.state.pay === 'tr' ? '1.5px solid #2F2F2F' : '1px solid #D9C8BD', dot: this.state.pay === 'tr' ? '6px solid #2F2F2F' : '1.5px solid #B8A598', pick: function () { self.setState({ pay: 'tr' }); } },
+      payNote: this.state.pay === 'mp'
+        ? 'Todavía no se cobra nada. Si Maggie puede hacerlo, te llega el link de Mercado Pago por WhatsApp y email.'
+        : 'Todavía no se cobra nada. Si Maggie puede hacerlo, te llegan los datos para transferir y un link para subir el comprobante.'
+    };
+  }
+}
+</script>
+</body>
+</html>
