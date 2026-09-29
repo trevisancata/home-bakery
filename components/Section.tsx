@@ -35,9 +35,9 @@ export function Section({
     <section
       id={id}
       aria-labelledby={headingId}
-      className={`${tone === "arena" ? "bg-arena" : "bg-hueso"} px-4 py-16 sm:px-6 lg:py-24 ${className}`}
+      className={`${tone === "arena" ? "bg-arena" : "bg-hueso"} py-16 lg:py-24 ${className}`}
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="contenedor">
         <header className={`mb-10 max-w-2xl lg:mb-14 ${centered ? "mx-auto text-center" : ""}`}>
           {eyebrow && <Eyebrow className="mb-3">{eyebrow}</Eyebrow>}
           <SectionTitle id={headingId} title={title} script={script} />

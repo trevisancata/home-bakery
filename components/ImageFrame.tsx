@@ -20,8 +20,8 @@ type ImageFrameProps = {
 };
 
 /**
- * Imagen con proporción fija y fondo arena, que funciona como placeholder
- * mientras carga la foto o mientras la foto definitiva no existe.
+ * Imagen con proporción fija sobre el color placeholder del mockup, que se
+ * ve mientras carga la foto o mientras la foto definitiva no existe.
  */
 export function ImageFrame({
   src,
@@ -33,7 +33,7 @@ export function ImageFrame({
   className = "",
 }: ImageFrameProps) {
   return (
-    <div className={`relative overflow-hidden rounded-3xl bg-arena ${ratios[ratio]} ${className}`}>
+    <div className={`relative overflow-hidden rounded-[1.125rem] bg-placeholder lg:rounded-[1.25rem] ${ratios[ratio]} ${className}`}>
       {src ? (
         <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
       ) : (
@@ -41,11 +41,10 @@ export function ImageFrame({
           role={alt ? "img" : undefined}
           aria-label={alt || undefined}
           aria-hidden={alt ? undefined : true}
-          className="absolute inset-3 flex flex-col items-center justify-center gap-4 rounded-[1.25rem] border border-greige"
+          className="absolute inset-0 flex items-end p-3 lg:p-4"
         >
-          <span className="size-16 rounded-full bg-greige/60 ring-8 ring-caramelo/25" />
           {placeholderLabel && (
-            <span aria-hidden="true" className="font-label text-xs tracking-[0.2em] text-secundario uppercase">
+            <span aria-hidden="true" className="text-[0.6875rem] font-medium tracking-[0.06em] text-chocolate uppercase lg:text-xs">
               {placeholderLabel}
             </span>
           )}

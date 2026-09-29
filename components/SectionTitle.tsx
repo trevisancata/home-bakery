@@ -1,9 +1,10 @@
 type Level = "h1" | "h2" | "h3";
 
+// Tamaños del mockup: mobile (390 px) → desktop (1440 px).
 const sizes: Record<Level, string> = {
-  h1: "text-4xl sm:text-5xl lg:text-6xl",
-  h2: "text-3xl sm:text-4xl lg:text-5xl",
-  h3: "text-2xl sm:text-3xl",
+  h1: "text-[2.75rem] leading-[1.05] tracking-[-0.02em] lg:text-[4.75rem] lg:leading-[1.02]",
+  h2: "text-[2.125rem] leading-[1.1] lg:text-5xl",
+  h3: "text-[1.3125rem] leading-snug lg:text-[1.625rem]",
 };
 
 type SectionTitleProps = {
@@ -23,11 +24,11 @@ export function SectionTitle({ title, script, as: Tag = "h2", id, className = ""
   const index = script ? title.indexOf(script) : -1;
 
   return (
-    <Tag id={id} className={`leading-tight ${sizes[Tag]} ${className}`}>
+    <Tag id={id} className={`${sizes[Tag]} ${className}`}>
       {script && index !== -1 ? (
         <>
           {title.slice(0, index)}
-          <span className="px-[0.08em] font-script text-[1.45em] leading-[0] text-chocolate">
+          <span className="px-[0.08em] font-script text-[1.75em] leading-[0.6] tracking-normal text-chocolate">
             {script}
           </span>
           {title.slice(index + script.length)}

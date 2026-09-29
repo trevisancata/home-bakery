@@ -12,8 +12,8 @@ const { hero, featured, workshops, about, order } = pages.home;
 export default function Home() {
   return (
     <>
-      <section aria-labelledby="hero-titulo" className="px-4 pt-10 pb-16 sm:px-6 lg:pt-16 lg:pb-24">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      <section aria-labelledby="hero-titulo" className="pt-10 pb-16 lg:pt-18 lg:pb-24">
+        <div className="contenedor grid items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
             <Eyebrow className="mb-4">{hero.eyebrow}</Eyebrow>
             <SectionTitle as="h1" id="hero-titulo" title={hero.title} script={hero.script} />
