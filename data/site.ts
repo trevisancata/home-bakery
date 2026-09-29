@@ -60,6 +60,8 @@ export const whatsappMessages = {
   event: "¡Hola! Quería pedir presupuesto para un evento.",
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
+  customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
+  workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
 };
 
 export const navigation = [
@@ -88,6 +90,7 @@ export const ui = {
   // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
+  priceTbd: "Precio a confirmar",
   whatsappFloat: {
     label: "Escribinos por WhatsApp",
   },
@@ -106,16 +109,6 @@ export const ui = {
   },
   product: {
     order: "Encargar",
-    priceTbd: "Precio a confirmar",
-  },
-  workshop: {
-    enroll: "Quiero anotarme",
-    timeSuffix: "h",
-    duration: "Duración",
-    level: "Nivel",
-    spots: "Cupos",
-    spotsUnit: "personas",
-    price: "Precio",
   },
 };
 
@@ -295,27 +288,60 @@ export const pages = {
   workshops: {
     metadata: {
       title: "Workshops",
-      description: "Workshops de pastelería artesanal en grupos reducidos, para todos los niveles.",
+      description: `Workshops de pastelería en grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
     },
-    eyebrow: "Aprendé a hornear",
-    title: "Nuestros workshops",
-    script: "workshops",
-    intro: "Encuentros en grupos chicos para aprender técnicas de pastelería casera, paso a paso y sin apuro.",
-    upcoming: { title: "Próximas fechas" },
-    howItWorks: {
-      title: "¿Cómo funcionan?",
-      steps: [
+    eyebrow: `Aprender en la cocina de ${site.owner.name}`,
+    title: "Workshops",
+    intro: `Workshops reducidos en mi cocina de ${site.city}, uno por mes. Reservás y pagás online y tu lugar queda confirmado al instante.`,
+    featured: {
+      badge: (month: string) => `Próximo · ${month}`,
+      details: { date: "Fecha", time: "Horario", includes: "Incluye", price: "Precio" },
+      spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
+      capacity: (capacity: number) => `Cupo: ${capacity}`,
+      cta: "Reservar mi lugar",
+    },
+    upcoming: {
+      title: "Próximas fechas",
+      status: { open: "Inscripción abierta", last: "Últimos lugares", soldOut: "Agotado" },
+      cta: "Reservar",
+      waitlist: "Avisarme si se libera",
+    },
+    past: {
+      title: "Así fueron los workshops",
+      script: "workshops",
+      instagram: { label: "Ver más en Instagram", href: site.contact.instagram.url },
+      // Las fotos son decorativas: el nombre va debajo de cada una.
+      items: [
+        "Mis tortas básicas",
+        "Pastelería para el té vol. 2",
+        "Diseñá tu number cake",
+        "Sin azúcar agregada y sin harinas",
+      ].map((name): { name: string; image: SiteImage } => ({ name, image: { alt: "" } })),
+    },
+    custom: {
+      title: "Workshop personalizado",
+      text: "Para tu grupo de amigas, un cumpleaños o tu equipo de trabajo. Elegís el tema y la fecha.",
+      cta: { label: "Consultar por WhatsApp", href: whatsappLink(whatsappMessages.customWorkshop) },
+    },
+    faq: {
+      title: "Preguntas frecuentes",
+      // TODO: revisar con Maggie las respuestas provisorias (todas menos "¿Dónde es?").
+      items: [
         {
-          title: "Elegí tu workshop",
-          text: "Mirá las fechas y elegí el que más te guste. Si es tu primera vez, empezá por uno de nivel inicial.",
+          question: "¿Hace falta experiencia?",
+          answer: "No. Los workshops de nivel inicial están pensados para quien nunca horneó; en los de nivel intermedio conviene tener algo de práctica.",
         },
         {
-          title: "Reservá tu lugar",
-          text: "Escribinos por WhatsApp. El lugar se confirma con una seña del 50 %.",
+          question: "¿Qué tengo que llevar?",
+          answer: "Solo ganas. Los ingredientes, los utensilios y el delantal los pongo yo, y te llevás lo que horneás y las recetas.",
         },
         {
-          title: "Vení con ganas",
-          text: "Los ingredientes, los utensilios y el delantal los ponemos nosotras. Vos te llevás lo que horneás y las recetas.",
+          question: "¿Dónde es?",
+          answer: `En la cocina de ${site.owner.name}, en ${site.city}. La dirección exacta llega con la confirmación.`,
+        },
+        {
+          question: "¿Puedo cancelar o pasar mi lugar a otra persona?",
+          answer: "Podés pasarle tu lugar a otra persona avisando por WhatsApp. Si cancelás con al menos 72 h de anticipación, te devolvemos el pago.",
         },
       ],
     },

@@ -22,7 +22,7 @@ export function WorkshopBand({ workshop }: { workshop: Workshop }) {
       {formatDay(workshop.startsAt)}
     </time>,
     formatTime(workshop.startsAt),
-    formatPrice(workshop.price),
+    workshop.price === null ? ui.priceTbd : formatPrice(workshop.price),
   ];
   const photo = {
     src: image?.src,
