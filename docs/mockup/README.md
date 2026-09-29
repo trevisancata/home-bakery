@@ -28,3 +28,9 @@ Diseño aprobado del sitio, exportado de la herramienta de diseño. Es la **refe
 
 - Colores: hueso #F5F4F0 (fondo), carbón #2F2F2F (texto), chocolate #5E4A33 (botones, bandas, footer), taupe #A88B6C (círculo del logo), arena #EAE3D8 (secciones alternas), placeholder #DCD1C3, texto secundario #6B5A50, bordes #E5DDD2, WhatsApp #25D366 con texto #0B3B1E.
 - Tipografías: Gilda Display (títulos), Mrs Saint Delafield (una palabra manuscrita por título), Oswald (etiquetas en mayúscula), DM Sans (cuerpo y botones).
+
+## Notas de interpretación (última revisión del diseño)
+
+- En `inicio-desktop.html` hay una `<section>` vacía entre "Seguí lo que sale del horno" y "Retiros": la sección "Mesas dulces y eventos" se sacó del diseño. No hay que implementarla.
+- Footer del inicio (desktop): logo blanco sin círculo, una columna con título "Inicio" y links a Tienda, Workshops y Maggie (el link "Maggie" va a `/maggie`), columna de Retiros y columna de Contacto. Sin tagline ni línea de copyright.
+- Botón de WhatsApp: círculo de 60 px solo con el ícono, verde #25D366 con ícono #0B3B1E, fijo abajo a la derecha, en desktop y mobile.

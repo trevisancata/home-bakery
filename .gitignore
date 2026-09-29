@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# comparaciones con el mockup (npm run compare)
+/docs/mockup/comparaciones/*
+!/docs/mockup/comparaciones/README.md

@@ -57,6 +57,7 @@ export function whatsappLink(message?: string) {
 export const whatsappMessages = {
   general: "¡Hola! Quería hacer una consulta.",
   order: "¡Hola! Quería hacer un pedido.",
+  event: "¡Hola! Quería pedir presupuesto para un evento.",
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
 };
@@ -88,16 +89,13 @@ export const ui = {
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
   whatsappFloat: {
-    text: "¿Consultas? Escribinos",
-    // Incluye el texto visible para cumplir "etiqueta en el nombre" (WCAG 2.5.3).
-    label: "¿Consultas? Escribinos por WhatsApp",
+    label: "Escribinos por WhatsApp",
   },
   footer: {
-    description: `${site.tagline}. ${site.pickup}.`,
     navLabel: "Secundaria",
-    navTitle: "Tienda",
+    navTitle: "Inicio",
     links: [
-      { href: "/tienda", label: "Productos" },
+      { href: "/tienda", label: "Tienda" },
       { href: "/workshops", label: "Workshops" },
       { href: "/maggie", label: "Maggie" },
     ],
@@ -108,6 +106,7 @@ export const ui = {
   },
   product: {
     order: "Encargar",
+    priceTbd: "Precio a confirmar",
   },
   workshop: {
     enroll: "Quiero anotarme",
@@ -120,171 +119,17 @@ export const ui = {
   },
 };
 
-/* -------------------------------------------------------------------------- */
-/* Catálogo                                                                   */
-/* -------------------------------------------------------------------------- */
-
-export type ProductCategory = "Tortas" | "Budines" | "Cookies" | "Tartas";
-
 /** Si la foto todavía no está, se omite `src` y se muestra el placeholder. */
 export type SiteImage = { src?: string; alt: string };
 
-export type Product = {
-  id: string;
-  name: string;
-  description: string;
-  category: ProductCategory;
-  /** Precio en pesos argentinos. */
-  price: number;
-  /** Porciones o unidades, para mostrar junto al precio. */
-  size: string;
-  image: SiteImage;
-  featured?: boolean;
+/** Texto con partes en negrita o con links, para no escribir HTML en los datos. */
+export type RichText = (string | { strong: string } | { text: string; href: string })[];
+
+/** Envío a domicilio: solo en pedidos grandes y cerca. */
+const delivery = {
+  minimum: "$400.000",
+  radius: "10 km",
 };
-
-export const productCategories: ProductCategory[] = ["Tortas", "Budines", "Cookies", "Tartas"];
-
-export const products: Product[] = [
-  {
-    id: "torta-chocolate",
-    name: "Torta de chocolate y dulce de leche",
-    description:
-      "Bizcochuelo húmedo de cacao, relleno de dulce de leche repostero y ganache de chocolate semiamargo.",
-    category: "Tortas",
-    price: 32000,
-    size: "12 porciones",
-    image: {
-      alt: "Torta de chocolate alta cortada, con capas de dulce de leche y cobertura brillante de ganache",
-    },
-    featured: true,
-  },
-  {
-    id: "budin-limon",
-    name: "Budín de limón y amapolas",
-    description:
-      "Budín esponjoso con ralladura de limón, semillas de amapola y un glaseado ácido por encima.",
-    category: "Budines",
-    price: 9500,
-    size: "1 unidad (500 g)",
-    image: {
-      alt: "Budín de limón con semillas de amapola y glaseado blanco chorreado por los costados",
-    },
-    featured: true,
-  },
-  {
-    id: "cookies-chips",
-    name: "Cookies con chips de chocolate",
-    description:
-      "Cookies bien doradas por fuera y blandas por dentro, con chips de chocolate y un toque de sal.",
-    category: "Cookies",
-    price: 12000,
-    size: "Caja x 6",
-    image: {
-      alt: "Seis cookies doradas con chips de chocolate apiladas en una caja de cartón",
-    },
-    featured: true,
-  },
-  {
-    id: "carrot-cake",
-    name: "Carrot cake",
-    description:
-      "Torta de zanahoria con nueces y especias, rellena y cubierta con frosting de queso crema.",
-    category: "Tortas",
-    price: 30000,
-    size: "10 porciones",
-    image: {
-      alt: "Carrot cake de dos pisos cubierta con frosting blanco y nueces picadas",
-    },
-  },
-  {
-    id: "tarta-frutillas",
-    name: "Tarta de frutillas",
-    description: "Masa sablée, crema pastelera de vainilla y frutillas frescas de estación.",
-    category: "Tartas",
-    price: 26000,
-    size: "8 porciones",
-    image: {
-      alt: "Tarta redonda cubierta de frutillas frescas cortadas a la mitad sobre crema pastelera",
-    },
-  },
-  {
-    id: "budin-banana",
-    name: "Budín de banana y nueces",
-    description: "Hecho con bananas bien maduras, nueces tostadas y azúcar mascabo.",
-    category: "Budines",
-    price: 9000,
-    size: "1 unidad (500 g)",
-    image: {
-      alt: "Budín de banana cortado en rodajas, con nueces a la vista en el interior",
-    },
-  },
-];
-
-export const featuredProducts = products.filter((product) => product.featured);
-
-export type Workshop = {
-  id: string;
-  title: string;
-  description: string;
-  /** Fecha y hora de inicio en formato ISO, con zona horaria de Argentina. */
-  date: string;
-  duration: string;
-  /** Precio en pesos argentinos. */
-  price: number;
-  spots: number;
-  level: "Inicial" | "Intermedio";
-  image: SiteImage;
-};
-
-export const workshops: Workshop[] = [
-  {
-    id: "budines-basicos",
-    title: "Budines para empezar",
-    description:
-      "Aprendé la base de un buen budín y tres variantes: limón, banana y marmolado. Te llevás todo lo que horneamos.",
-    date: "2026-10-17T10:00:00-03:00",
-    duration: "3 horas",
-    price: 28000,
-    spots: 8,
-    level: "Inicial",
-    image: {
-      alt: "Mesa de trabajo con moldes de budín, harina, huevos y limones listos para hornear",
-    },
-  },
-  {
-    id: "cookies-perfectas",
-    title: "Cookies perfectas",
-    description:
-      "Textura, temperatura y tiempos: todo lo que hace falta para lograr cookies crocantes por fuera y blandas por dentro.",
-    date: "2026-10-31T16:00:00-03:00",
-    duration: "2 horas y media",
-    price: 25000,
-    spots: 10,
-    level: "Inicial",
-    image: {
-      alt: "Manos formando bollitos de masa de cookies sobre una placa con papel manteca",
-    },
-  },
-  {
-    id: "tortas-decoradas",
-    title: "Tortas de capas y decoración",
-    description:
-      "Armado, relleno y cobertura de una torta de capas con terminación lisa y decoración con manga.",
-    date: "2026-11-14T10:00:00-03:00",
-    duration: "4 horas",
-    price: 38000,
-    spots: 6,
-    level: "Intermedio",
-    image: {
-      alt: "Torta de capas sobre un plato giratorio mientras se alisa la cobertura con una espátula",
-    },
-  },
-];
-
-/** Workshops ordenados por fecha, del más próximo al más lejano. */
-export const upcomingWorkshops = [...workshops].sort(
-  (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-);
 
 /* -------------------------------------------------------------------------- */
 /* Páginas                                                                    */
@@ -308,52 +153,144 @@ export const pages = {
   },
   home: {
     hero: {
-      eyebrow: `Pastelería artesanal en ${site.city}`,
-      title: "Dulces caseros hechos con amor",
-      script: "amor",
-      text: "Tortas, budines y cookies por encargo, horneados en pocas cantidades y con ingredientes de verdad.",
+      eyebrow: `Pastelería y workshops · ${site.city}`,
+      title: "Artesanal, delicado y casero.",
+      script: "casero",
+      text: {
+        full: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}. Encargá online, ${site.owner.name} lo confirma y pasás a retirar.`,
+        short: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}.`,
+      },
       primaryCta: { label: "Ver la tienda", href: "/tienda" },
-      secondaryCta: { label: "Próximos workshops", href: "/workshops" },
+      secondaryCta: { label: "Próximo workshop", href: "/workshops" },
       image: heroImage,
+      nextWorkshop: {
+        eyebrow: "Próximo workshop",
+        spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
+      },
     },
-    featured: {
-      eyebrow: "Lo más pedido",
-      title: "Nuestros favoritos",
-      script: "favoritos",
-      intro: "Recetas propias, horneadas por encargo con ingredientes frescos.",
-      cta: { label: "Ver toda la tienda", href: "/tienda" },
+    howToOrder: {
+      eyebrow: "Cómo pedir",
+      title: "Simple, como en casa",
+      intro: "No hay stock: cada pedido se hornea para vos. Por eso te pedimos 48 h de anticipación.",
+      steps: [
+        {
+          title: { full: "Elegí y encargá", short: "Elegí y encargá" },
+          text: {
+            full: ["Armá tu pedido desde la tienda y elegí el día y horario de retiro, con al menos 48 h de anticipación."],
+            short: "Con al menos 48 h de anticipación.",
+          },
+        },
+        {
+          title: { full: "Confirmamos tu pedido", short: `${site.owner.name} lo confirma` },
+          text: {
+            full: [`${site.owner.name} revisa que pueda hacerlo para esa fecha y te avisa por WhatsApp y email.`],
+            short: "Te avisa por WhatsApp y email.",
+          },
+        },
+        {
+          title: { full: "Pagá con Mercado Pago", short: "Pagá online" },
+          text: {
+            full: ["Con el pedido confirmado te llega el link de pago. Antes no se cobra nada."],
+            short: "Te llega el link de Mercado Pago.",
+          },
+        },
+        {
+          title: { full: "Retirá", short: "Retirá o recibí" },
+          text: {
+            full: [`Take away en ${site.city}.`, `Envíos a domicilio únicamente desde ${delivery.minimum}, hasta ${delivery.radius}.`],
+            short: `Take away en ${site.city}. Envío desde ${delivery.minimum}, hasta ${delivery.radius}.`,
+          },
+        },
+      ],
     },
-    workshops: {
-      eyebrow: "Aprendé a hornear",
-      title: "Horneá con nosotras",
-      script: "nosotras",
-      intro: "Grupos reducidos, todo el material incluido y te llevás lo que horneás.",
-      cta: { label: "Ver todos los workshops", href: "/workshops" },
+    favorites: {
+      eyebrow: "La tienda",
+      title: { full: "Los favoritos de la casa", short: "Favoritos" },
+      cta: { label: "Ver todo", href: "/tienda" },
+      detail: (size: string) => `${size} · Por encargo`,
     },
     about: {
-      eyebrow: "Detrás del horno",
-      title: `Hola, soy ${site.owner.name}`,
+      eyebrow: "Quién hornea",
+      title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
+      lead: {
+        full: `Magdalena Gatti para los papeles. ${site.name} empezó cocinando para familia y amigos. Hoy más de 35 mil personas siguen mi cocina, pero casi todo sigue llegando de boca en boca.`,
+        short: `${site.name} empezó cocinando para familia y amigos, y creció de recomendación en recomendación.`,
+      },
+      text: site.owner.bio[0],
       cta: { label: "Conocé mi historia", href: "/maggie" },
       image: ownerImage,
     },
-    order: {
-      eyebrow: site.leadTime,
-      title: "¿Tenés un cumple o simplemente ganas de algo rico?",
-      script: "rico",
-      text: "Escribinos con al menos 48 horas de anticipación y armamos tu pedido.",
-      cta: { label: "Pedir por WhatsApp", href: whatsappLink(whatsappMessages.order) },
+    workshop: {
+      eyebrow: "Workshop del mes",
+      suffix: `Grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
+      spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity} lugares`,
+      cta: "Reservar mi lugar",
+    },
+    instagram: {
+      eyebrow: "Desde la cocina",
+      title: "Seguí lo que sale del horno",
+      intro: "Recetas, tutoriales y lo que se hornea cada semana.",
+      // Placeholders hasta conectar los posts reales: son decorativos.
+      posts: Array.from({ length: 6 }, (): SiteImage => ({ alt: "" })),
+    },
+    pickup: {
+      eyebrow: { full: "Retiros", short: `Take away en ${site.city}` },
+      title: "Pasá a buscarlo",
+      text: `Take away en la casa de ${site.owner.name}, en ${site.city}. La dirección exacta te llega con la confirmación del pedido.`,
+      hours: [
+        { days: { full: "Lunes a viernes", short: "Lun a Vie" }, time: site.hours[0].time },
+        { days: { full: "Sábados", short: "Sábados" }, time: site.hours[1].time },
+        { days: { full: "Domingos", short: "Domingos" }, time: "Cerrado", closed: true },
+      ],
+      farAway: {
+        title: "¿Vivís lejos?",
+        full: [
+          "Podés mandar un Uber o una moto a retirar. En pedidos desde ",
+          { strong: delivery.minimum },
+          ` hacemos envío a domicilio, hasta ${delivery.radius} en Zona Norte.`,
+        ] satisfies RichText,
+        short: [
+          "¿Vivís lejos? Mandá un Uber o una moto. Envío a domicilio desde ",
+          { strong: delivery.minimum },
+          `, hasta ${delivery.radius}.`,
+        ] satisfies RichText,
+      },
     },
   },
   tienda: {
     metadata: {
       title: "Tienda",
-      description: "Tortas, budines, cookies y tartas artesanales por encargo en San Isidro.",
+      description: "Tortas, tartas, cookies y bocados artesanales por encargo en San Isidro.",
     },
-    eyebrow: "Por encargo",
-    title: "Nuestra tienda",
-    script: "tienda",
-    intro: `Todo se hornea el día anterior a la entrega. ${site.leadTime}. ${site.pickup}.`,
+    breadcrumb: { label: "Migas de pan", home: "Inicio" },
+    title: "Tienda",
+    intro: [
+      "Todo se hornea por encargo, no hay stock. Al finalizar elegís el día y horario de retiro. ¿Es para un evento? ",
+      { text: "Pedí presupuesto por WhatsApp", href: whatsappLink(whatsappMessages.event) },
+      ".",
+    ] satisfies RichText,
+    facts: [
+      { term: "Anticipación", value: "48 h" },
+      { term: "Retiro", value: `Lun a Sáb, ${site.city}` },
+      { term: "Envío", value: `Desde ${delivery.minimum} · ${delivery.radius}` },
+    ],
+    filter: { label: "Filtrar por categoría", all: "Todo" },
+    sort: {
+      label: "Ordenar",
+      options: [
+        { value: "destacados", label: "Destacados" },
+        { value: "menor-precio", label: "Menor precio" },
+        { value: "mayor-precio", label: "Mayor precio" },
+      ],
+    },
+    results: (count: number) => (count === 1 ? "1 producto" : `${count} productos`),
+    card: {
+      detail: (size: string) => `${size} · Por encargo`,
+      // Hasta que exista el carrito, el botón queda deshabilitado.
+      soon: "Muy pronto",
+      soonContext: (name: string) => `: agregar ${name} al pedido`,
+    },
   },
   workshops: {
     metadata: {

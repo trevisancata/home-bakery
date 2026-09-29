@@ -70,11 +70,11 @@ export function Header() {
         </button>
 
         <Link href="/" className="rounded-full">
-          <Logo alt={ui.homeLink} className="size-14 lg:size-19" />
+          <Logo alt={ui.homeLink} className="size-14 lg:size-19" imageClassName="w-9 lg:w-12.5" />
         </Link>
 
         <nav aria-label={ui.mainNavLabel} className="hidden md:block">
-          <ul className="flex gap-8 text-[0.9375rem] font-medium lg:gap-10">
+          <ul className="flex gap-8 text-15 font-medium lg:gap-10">
             {navigation.map((item) => {
               const current = isCurrent(item.href);
               return (
@@ -82,7 +82,7 @@ export function Header() {
                   <Link
                     href={item.href}
                     aria-current={current ? "page" : undefined}
-                    className={`block border-b-[1.5px] py-1.5 text-carbon no-underline hover:border-chocolate ${
+                    className={`block border-b-trazo py-1.5 text-carbon no-underline hover:border-chocolate ${
                       current ? "border-chocolate" : "border-transparent"
                     }`}
                   >
@@ -123,12 +123,12 @@ export function Header() {
       >
         <ul>
           {navigation.map((item) => (
-            <li key={item.href} className="border-b border-borde last:border-b-0">
+            <li key={item.href} className="border-b border-borde-suave last:border-b-0">
               <Link
                 href={item.href}
                 aria-current={isCurrent(item.href) ? "page" : undefined}
                 onClick={() => setOpen(false)}
-                className="block py-3 font-display text-[1.625rem] text-carbon no-underline"
+                className="block py-3 font-display text-26 text-carbon no-underline"
               >
                 {item.label}
               </Link>

@@ -1,34 +1,58 @@
-import { type Product, ui, whatsappLink, whatsappMessages } from "@/data/site";
+import type { ReactNode } from "react";
+import { ui } from "@/data/site";
+import type { Product } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
-import { Button } from "./Button";
+import { Eyebrow } from "./Eyebrow";
 import { ImageFrame } from "./ImageFrame";
 
-export function ProductCard({ product }: { product: Product }) {
+type ProductCardProps = {
+  product: Product;
+  /** Línea chica debajo del nombre (tamaño, sabores…). */
+  detail: string;
+  /**
+   * inicio: en mobile muestra solo foto, nombre y precio.
+   * tienda: siempre completa, con el botón de `action`.
+   */
+  variant: "inicio" | "tienda";
+  headingLevel?: "h2" | "h3";
+  action?: ReactNode;
+};
+
+/** Tarjeta de producto del mockup: foto, categoría, nombre con precio y detalle. */
+export function ProductCard({ product, detail, variant, headingLevel: Heading = "h3", action }: ProductCardProps) {
+  const [image] = product.images;
+  const [size] = product.sizes;
+  const inicio = variant === "inicio";
+  // Solo en el inicio mobile se ocultan la categoría y el detalle.
+  const extra = inicio ? "hidden lg:block" : "";
+
   return (
-    <article className="flex h-full flex-col rounded-4xl bg-hueso p-3 ring-1 ring-greige">
+    <article className={`flex h-full flex-col ${inicio ? "gap-1.5 lg:gap-3" : "gap-2.5"}`}>
       <ImageFrame
-        src={product.image.src}
-        alt={product.image.alt}
+        src={image?.src}
+        alt={image?.alt ?? ""}
         placeholderLabel={ui.imagePending}
-        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        className="aspect-37/45"
+        sizes="(min-width: 1024px) 25vw, 50vw"
       />
-      <div className="flex flex-1 flex-col gap-3 px-3 pt-5 pb-3">
-        <p className="font-label text-xs tracking-[0.2em] text-chocolate uppercase">
-          {product.category}
-        </p>
-        <h3 className="text-2xl">{product.name}</h3>
-        <p className="text-secundario">{product.description}</p>
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-3">
-          <p>
-            <span className="block text-xl font-medium">{formatPrice(product.price)}</span>
-            <span className="text-sm text-secundario">{product.size}</span>
-          </p>
-          <Button href={whatsappLink(whatsappMessages.product(product.name))} variant="secondary">
-            {ui.product.order}
-            <span className="sr-only"> {product.name}</span>
-          </Button>
-        </div>
+      <Eyebrow small className={`${extra} ${inicio ? "" : "mt-1"}`}>
+        {product.category}
+      </Eyebrow>
+      {/* Sin precio, el aviso va debajo del nombre: al lado lo cortaría. */}
+      <div
+        className={`mt-1 flex flex-col gap-1.5 lg:mt-0 ${
+          size.price === null ? "" : "xl:flex-row xl:items-baseline xl:justify-between xl:gap-2"
+        }`}
+      >
+        <Heading className="text-21 lg:text-26">{product.name}</Heading>
+        {size.price === null ? (
+          <p className="text-15 font-semibold text-secundario lg:text-16">{ui.product.priceTbd}</p>
+        ) : (
+          <p className="shrink-0 text-15 font-semibold lg:text-16">{formatPrice(size.price)}</p>
+        )}
       </div>
+      <p className={`text-14 text-secundario ${extra}`}>{detail}</p>
+      {action && <div className="flex flex-col pt-1.5">{action}</div>}
     </article>
   );
 }
