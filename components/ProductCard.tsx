@@ -43,7 +43,7 @@ export function ProductCard({ product, detail, variant, headingLevel: Heading = 
         <p className="shrink-0 text-15 font-semibold lg:text-16">{formatPrice(size.price)}</p>
       </div>
       <p className={`text-14 text-secundario ${extra}`}>{detail}</p>
-      {action && <div className="mt-auto flex flex-col pt-1.5">{action}</div>}
+      {action && <div className="flex flex-col pt-1.5">{action}</div>}
     </article>
   );
 }

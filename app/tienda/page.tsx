@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
-import { ProductCard } from "@/components/ProductCard";
-import { Section } from "@/components/Section";
+import Link from "next/link";
+import { Rich } from "@/components/Rich";
+import { ProductCatalog } from "@/components/tienda/ProductCatalog";
 import { pages } from "@/data/site";
 import { getProductCategories, getProducts } from "@/lib/data";
 
@@ -10,35 +10,39 @@ const content = pages.tienda;
 export const metadata: Metadata = content.metadata;
 
 export default async function TiendaPage() {
-  const [productCategories, products] = await Promise.all([getProductCategories(), getProducts()]);
+  const [products, categories] = await Promise.all([getProducts(), getProductCategories()]);
 
   return (
-    <>
-      <PageHeader eyebrow={content.eyebrow} title={content.title} script={content.script}>
-        <p>{content.intro}</p>
-      </PageHeader>
+    <div className="contenedor flex flex-col gap-9 pt-7 pb-12 lg:pt-14 lg:pb-24">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+        <div className="flex flex-col gap-3.5">
+          <nav aria-label={content.breadcrumb.label}>
+            <ol className="flex gap-1 text-14 text-secundario">
+              <li>
+                <Link href="/" className="text-secundario underline hover:text-carbon">
+                  {content.breadcrumb.home}
+                </Link>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li aria-current="page">{content.title}</li>
+            </ol>
+          </nav>
+          <h1 className="text-44 lg:text-64">{content.title}</h1>
+          <p className="max-w-140 text-17 leading-parrafo text-secundario">
+            <Rich text={content.intro} />
+          </p>
+        </div>
+        <dl className="flex shrink-0 flex-wrap gap-x-6 gap-y-3 rounded-card bg-arena px-5 py-4 text-14 leading-normal lg:px-7 lg:py-5">
+          {content.facts.map((fact) => (
+            <div key={fact.term} className="flex flex-col">
+              <dt className="font-bold">{fact.term}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
 
-      {productCategories.map((category, index) => {
-        const items = products.filter((product) => product.category === category);
-        if (items.length === 0) return null;
-        return (
-          <Section
-            key={category}
-            id={category.toLowerCase()}
-            title={category}
-            tone={index % 2 === 0 ? "arena" : "hueso"}
-            className="lg:py-16"
-          >
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((product) => (
-                <li key={product.id}>
-                  <ProductCard product={product} variant="tienda" detail={product.sizes[0].label} />
-                </li>
-              ))}
-            </ul>
-          </Section>
-        );
-      })}
-    </>
+      <ProductCatalog products={products} categories={categories} />
+    </div>
   );
 }

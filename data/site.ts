@@ -57,6 +57,7 @@ export function whatsappLink(message?: string) {
 export const whatsappMessages = {
   general: "¡Hola! Quería hacer una consulta.",
   order: "¡Hola! Quería hacer un pedido.",
+  event: "¡Hola! Quería pedir presupuesto para un evento.",
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
 };
@@ -259,12 +260,36 @@ export const pages = {
   tienda: {
     metadata: {
       title: "Tienda",
-      description: "Tortas, budines, cookies y tartas artesanales por encargo en San Isidro.",
+      description: "Tortas, tartas, cookies y bocados artesanales por encargo en San Isidro.",
     },
-    eyebrow: "Por encargo",
-    title: "Nuestra tienda",
-    script: "tienda",
-    intro: `Todo se hornea el día anterior a la entrega. ${site.leadTime}. ${site.pickup}.`,
+    breadcrumb: { label: "Migas de pan", home: "Inicio" },
+    title: "Tienda",
+    intro: [
+      "Todo se hornea por encargo, no hay stock. Al finalizar elegís el día y horario de retiro. ¿Es para un evento? ",
+      { text: "Pedí presupuesto por WhatsApp", href: whatsappLink(whatsappMessages.event) },
+      ".",
+    ] satisfies RichText,
+    facts: [
+      { term: "Anticipación", value: "48 h" },
+      { term: "Retiro", value: `Lun a Sáb, ${site.city}` },
+      { term: "Envío", value: `Desde ${delivery.minimum} · ${delivery.radius}` },
+    ],
+    filter: { label: "Filtrar por categoría", all: "Todo" },
+    sort: {
+      label: "Ordenar",
+      options: [
+        { value: "destacados", label: "Destacados" },
+        { value: "menor-precio", label: "Menor precio" },
+        { value: "mayor-precio", label: "Mayor precio" },
+      ],
+    },
+    results: (count: number) => (count === 1 ? "1 producto" : `${count} productos`),
+    card: {
+      detail: (size: string) => `${size} · Por encargo`,
+      // Hasta que exista el carrito, el botón queda deshabilitado.
+      soon: "Muy pronto",
+      soonContext: (name: string) => `: agregar ${name} al pedido`,
+    },
   },
   workshops: {
     metadata: {
