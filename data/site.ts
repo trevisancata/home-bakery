@@ -88,9 +88,7 @@ export const ui = {
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
   whatsappFloat: {
-    text: "¿Consultas? Escribinos",
-    // Incluye el texto visible para cumplir "etiqueta en el nombre" (WCAG 2.5.3).
-    label: "¿Consultas? Escribinos por WhatsApp",
+    label: "Escribinos por WhatsApp",
   },
   footer: {
     description: `${site.tagline}. ${site.pickup}.`,
