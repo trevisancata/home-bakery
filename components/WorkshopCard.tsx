@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { site } from "@/data/site";
 import type { Workshop } from "@/data/workshops";
 import { formatDate, formatPrice } from "@/lib/format";
 import { Button } from "./Button";
@@ -38,7 +39,7 @@ export function WorkshopCard({ workshop }: { workshop: Workshop }) {
             <dd className="text-secundario">{formatPrice(workshop.price)}</dd>
           </div>
         </dl>
-        <Button href="/contacto" variant="secondary" className="mt-auto self-start">
+        <Button href={site.contact.whatsappUrl} variant="secondary" className="mt-auto self-start">
           Quiero anotarme<span className="sr-only"> a {workshop.title}</span>
         </Button>
       </div>

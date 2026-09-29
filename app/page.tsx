@@ -21,7 +21,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 max-w-xl text-lg text-secundario">{site.description}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="/productos">Ver productos</Button>
+              <Button href="/tienda">Ver productos</Button>
               <Button href="/workshops" variant="secondary">
                 Próximos workshops
               </Button>
@@ -54,7 +54,7 @@ export default function Home() {
           ))}
         </ul>
         <div className="mt-10">
-          <Button href="/productos" variant="secondary">
+          <Button href="/tienda" variant="secondary">
             Ver todos los productos
           </Button>
         </div>
@@ -88,7 +88,7 @@ export default function Home() {
           <div className="space-y-4 text-lg">
             <p>{site.owner.bio[0]}</p>
             <p>{site.owner.bio[1]}</p>
-            <Button href="/nosotros" variant="secondary" className="mt-2">
+            <Button href="/maggie" variant="secondary" className="mt-2">
               Conocé la historia
             </Button>
           </div>
@@ -103,7 +103,7 @@ export default function Home() {
           <p className="mx-auto mt-4 max-w-2xl text-lg">
             Escribime con al menos 48 horas de anticipación y armamos tu pedido.
           </p>
-          <Button href="/contacto" variant="secondary" className="mt-8">
+          <Button href={site.contact.whatsappUrl} variant="secondary" className="mt-8">
             Hacer un pedido
           </Button>
         </div>

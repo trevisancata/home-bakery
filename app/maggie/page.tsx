@@ -25,7 +25,7 @@ const values = [
   },
 ];
 
-export default function NosotrosPage() {
+export default function MaggiePage() {
   return (
     <>
       <PageHeader eyebrow="Nuestra historia" title={`Detrás de ${site.name}`}>
@@ -76,7 +76,7 @@ export default function NosotrosPage() {
             Todo se hornea en una cocina habilitada, en {site.city}.
           </figcaption>
         </figure>
-        <Button href="/contacto" className="mt-10">
+        <Button href={site.contact.whatsappUrl} className="mt-10">
           Escribime
         </Button>
       </Section>

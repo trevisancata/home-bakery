@@ -18,8 +18,8 @@ export const site = {
   },
   contact: {
     email: "hola@example.com",
-    whatsapp: "+54 9 221 000-0000",
-    whatsappUrl: "https://wa.me/5492210000000",
+    whatsapp: "11 5576-7591",
+    whatsappUrl: "https://wa.me/5491155767591",
     hours: "Pedidos de lunes a viernes, de 9 a 18 h",
     pickup: "Retiro por zona centro (dirección exacta al confirmar el pedido)",
   },
@@ -32,8 +32,7 @@ export const site = {
 
 export const navigation = [
   { href: "/", label: "Inicio" },
-  { href: "/productos", label: "Productos" },
+  { href: "/tienda", label: "Tienda" },
   { href: "/workshops", label: "Workshops" },
-  { href: "/nosotros", label: "Nosotros" },
-  { href: "/contacto", label: "Contacto" },
+  { href: "/maggie", label: "Maggie" },
 ] as const;

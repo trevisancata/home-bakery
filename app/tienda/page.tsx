@@ -6,16 +6,16 @@ import { products, type ProductCategory } from "@/data/products";
 import { site } from "@/data/site";
 
 export const metadata: Metadata = {
-  title: "Productos",
+  title: "Tienda",
   description: "Tortas, budines, cookies y tartas caseras por encargo.",
 };
 
 const categories: ProductCategory[] = ["Tortas", "Budines", "Cookies", "Tartas"];
 
-export default function ProductosPage() {
+export default function TiendaPage() {
   return (
     <>
-      <PageHeader eyebrow="Por encargo" title="Productos">
+      <PageHeader eyebrow="Por encargo" title="Tienda">
         <p>
           Todo se hornea el día anterior a la entrega. Hacé tu pedido con al menos 48 horas de
           anticipación. {site.contact.pickup}.

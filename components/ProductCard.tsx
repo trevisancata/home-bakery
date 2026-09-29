@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { site } from "@/data/site";
 import Link from "next/link";
 import type { Product } from "@/data/products";
 import { formatPrice } from "@/lib/format";
@@ -26,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="text-sm text-secundario">{product.size}</span>
           </p>
           <Link
-            href="/contacto"
+            href={site.contact.whatsappUrl}
             className="text-chocolate underline hover:text-carbon"
           >
             Encargar<span className="sr-only"> {product.name}</span>
