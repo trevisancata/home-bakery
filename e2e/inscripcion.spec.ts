@@ -49,6 +49,7 @@ test.describe("Inscripción a un workshop", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: "Revisá y pagá" })).toBeFocused();
     await expect(page.getByRole("listitem").filter({ hasText: "2 · Pago" })).toHaveAttribute("aria-current", "step");
+    await expect(summary.getByText("Quedan 4")).toBeVisible();
 
     const whatsapp = page.getByRole("link", { name: "Enviar por WhatsApp" });
     const href = await whatsapp.getAttribute("href");

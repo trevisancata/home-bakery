@@ -139,6 +139,7 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
 
     if (response.status === 201) {
       setSubmitted(parsed.data);
+      setSpotsLeft((current) => Math.max(0, current - parsed.data.spots));
       flushSync(() => {
         setStatus({ kind: "idle" });
         setStep("pay");
