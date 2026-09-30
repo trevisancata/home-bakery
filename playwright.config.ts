@@ -13,6 +13,9 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${port}`,
     locale: "es-AR",
+    // Con el scroll suave del sitio, Playwright a veces se traba al hacer
+    // scroll hasta un elemento; con movimiento reducido el sitio lo desactiva.
+    reducedMotion: "reduce",
     trace: "retain-on-failure",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
