@@ -6,7 +6,7 @@
 
 import { site, whatsappLink } from "@/data/site";
 import type { Workshop } from "@/data/workshops";
-import { formatDate } from "@/lib/format";
+import { formatDay, formatTime } from "@/lib/format";
 import type { Inscripcion } from "@/lib/validation/inscripcion";
 
 type WorkshopInfo = Pick<Workshop, "name" | "startsAt">;
@@ -14,7 +14,7 @@ type WorkshopInfo = Pick<Workshop, "name" | "startsAt">;
 export function inscripcionWhatsappMessage(workshop: WorkshopInfo, inscripcion: Inscripcion) {
   const spots = inscripcion.spots === 1 ? "1 lugar" : `${inscripcion.spots} lugares`;
   return [
-    `¡Hola, ${site.owner.name}! Me inscribí desde la web al workshop "${workshop.name}" (${formatDate(workshop.startsAt)}) y quiero confirmar ${spots}.`,
+    `¡Hola, ${site.owner.name}! Me inscribí desde la web al workshop "${workshop.name}" (${formatDay(workshop.startsAt)}, ${formatTime(workshop.startsAt)}) y quiero confirmar ${spots}.`,
     "",
     `Nombre: ${inscripcion.name}`,
     `WhatsApp: ${inscripcion.whatsapp}`,
