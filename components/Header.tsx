@@ -122,18 +122,23 @@ export function Header() {
         className="absolute inset-x-0 top-full border-b border-borde bg-hueso px-4 pt-2 pb-5 md:hidden"
       >
         <ul>
-          {navigation.map((item) => (
-            <li key={item.href} className="border-b border-borde-suave last:border-b-0">
-              <Link
-                href={item.href}
-                aria-current={isCurrent(item.href) ? "page" : undefined}
-                onClick={() => setOpen(false)}
-                className="block py-3 font-display text-26 text-carbon no-underline"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {navigation.map((item) => {
+            const current = isCurrent(item.href);
+            return (
+              <li key={item.href} className="border-b border-borde-suave last:border-b-0">
+                <Link
+                  href={item.href}
+                  aria-current={current ? "page" : undefined}
+                  onClick={() => setOpen(false)}
+                  className={`block py-4 font-sans text-15 font-medium tracking-foto uppercase no-underline ${
+                    current ? "text-chocolate" : "text-carbon"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </header>
