@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       return Response.json({ message: "El workshop no existe o ya no tiene inscripción abierta." }, { status: 404 });
     }
 
-    const result = await createInscripcion(workshop, parsed.data);
+    const result = await createInscripcion(parsed.data);
     if (!result.ok) {
       return Response.json(
         {

@@ -6,7 +6,7 @@
 // cupo y el alta tienen que ir juntos en una transacción (o una función RPC)
 // para que dos inscripciones simultáneas no se lleven el mismo lugar.
 
-import type { Workshop } from "@/data/workshops";
+import { workshops, type Workshop } from "@/data/workshops";
 import type { Inscripcion } from "@/lib/validation/inscripcion";
 
 type StoredInscripcion = Inscripcion & { id: string; createdAt: string };
@@ -17,15 +17,24 @@ type Store = { inscripciones: StoredInscripcion[]; reserved: Map<string, number>
 const globalStore = globalThis as typeof globalThis & { __inscripciones?: Store };
 const store: Store = (globalStore.__inscripciones ??= { inscripciones: [], reserved: new Map() } satisfies Store);
 
-/** Lugares libres: los que quedaban en los datos menos los reservados acá. */
+/**
+ * Lugares libres: los que quedaban en data/workshops.ts menos los reservados
+ * acá. Recibe el registro original, no uno que ya los tenga descontados.
+ */
 export function getSpotsLeft(workshop: Pick<Workshop, "slug" | "spotsLeft">) {
   return Math.max(0, workshop.spotsLeft - (store.reserved.get(workshop.slug) ?? 0));
 }
 
 export type CreateResult = { ok: true; id: string } | { ok: false; spotsLeft: number };
 
-/** Guarda la inscripción si hay cupo para todos los lugares pedidos. */
-export async function createInscripcion(workshop: Workshop, data: Inscripcion): Promise<CreateResult> {
+/**
+ * Guarda la inscripción si hay cupo para todos los lugares pedidos. Quien
+ * llama ya validó que el workshop exista y esté abierto.
+ */
+export async function createInscripcion(data: Inscripcion): Promise<CreateResult> {
+  const workshop = workshops.find((item) => item.slug === data.workshopSlug);
+  if (!workshop) return { ok: false, spotsLeft: 0 };
+
   // El chequeo y la reserva van sin await en el medio: no se intercalan.
   const spotsLeft = getSpotsLeft(workshop);
   if (data.spots > spotsLeft) return { ok: false, spotsLeft };
