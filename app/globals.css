@@ -54,6 +54,9 @@
   /* Estado "Inscripción abierta" en las próximas fechas de /workshops. */
   --color-abierto: #2f6a3e;
 
+  /* Errores de formulario: 6.9:1 sobre hueso y 7.6:1 sobre blanco. */
+  --color-error: #9a2c1c;
+
   /* Solo para el botón flotante de WhatsApp. */
   --color-whatsapp: #25d366;
   --color-whatsapp-oscuro: #0b3b1e;

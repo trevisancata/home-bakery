@@ -3,7 +3,8 @@
 // cambien. Por eso son async aunque todavía no esperen nada.
 
 import { productCategories, products, type ProductCategory } from "@/data/products";
-import { workshops } from "@/data/workshops";
+import { workshops, type Workshop } from "@/data/workshops";
+import { getSpotsLeft } from "@/lib/inscripciones";
 
 export type { Product, ProductCategory, ProductImage, ProductSize } from "@/data/products";
 export type { Workshop, WorkshopImage } from "@/data/workshops";
@@ -23,11 +24,22 @@ export async function getProductCategories() {
   return productCategories.filter((category) => active.some((product) => product.category === category));
 }
 
+/** Los lugares libres descuentan las inscripciones ya recibidas. */
+function withSpotsLeft(workshop: Workshop): Workshop {
+  return { ...workshop, spotsLeft: getSpotsLeft(workshop) };
+}
+
 /** Workshops activos que todavía no empezaron, del más próximo al más lejano. */
 export async function getWorkshops(now = new Date()) {
   return workshops
     .filter((workshop) => workshop.active && new Date(workshop.startsAt) > now)
-    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+    .map(withSpotsLeft);
+}
+
+/** Un workshop abierto a inscripción (activo y sin empezar), o undefined. */
+export async function getWorkshop(slug: string, now = new Date()) {
+  return (await getWorkshops(now)).find((workshop) => workshop.slug === slug);
 }
 
 /** El workshop del mes: el destacado o, si no hay, el próximo. */

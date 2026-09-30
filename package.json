@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "compare": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/compare-mockup.ts"
+    "compare": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/compare-mockup.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "16.3.6",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
