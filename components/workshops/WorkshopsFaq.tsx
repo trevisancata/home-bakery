@@ -6,7 +6,7 @@ const { faq } = pages.workshops;
 /** Preguntas frecuentes con <details> nativos: la primera arranca abierta. */
 export function WorkshopsFaq() {
   return (
-    <section aria-labelledby="faq-titulo" className="grid gap-4 lg:grid-cols-faq lg:gap-16">
+    <section id="preguntas-frecuentes" aria-labelledby="faq-titulo" className="grid gap-4 lg:grid-cols-faq lg:gap-16">
       <h2 id="faq-titulo" className="text-34 lg:text-40">
         {faq.title}
       </h2>

@@ -358,6 +358,78 @@ export const pages = {
       ] satisfies { question: string; answer: RichText }[],
     },
   },
+  inscripcion: {
+    metadata: (workshop: string) => ({
+      title: `Inscripción · ${workshop}`,
+      description: `Reservá tu lugar en el workshop "${workshop}", en la cocina de ${site.owner.name} en ${site.city}.`,
+    }),
+    breadcrumb: {
+      label: "Migas de pan",
+      parent: { label: "Workshops", href: "/workshops" },
+      current: "Inscripción",
+    },
+    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Pago", "3 · Confirmado"] },
+    title: { form: "Inscribite al workshop", pay: "Revisá y pagá" },
+    form: {
+      requiredNote: "Los campos con * son obligatorios.",
+      aboutYou: "Tus datos",
+      name: "Nombre y apellido",
+      whatsapp: "WhatsApp",
+      whatsappPlaceholder: "11 ...",
+      email: "Email",
+      // TODO: el mockup dice "Te mandamos ahí la dirección y los detalles del
+      // workshop." Queda afuera hasta que se manden emails (E5) y Maggie lo confirme.
+      experience: "¿Cuánta experiencia tenés en pastelería?",
+      allergies: "Alergias o restricciones alimentarias",
+      allergiesPlaceholder: "Ej.: celiaquía, frutos secos…",
+      referral: `¿Cómo conociste ${site.name}?`,
+      referralPlaceholder: "Elegí una opción",
+      // TODO: apuntar a la política de cancelación cuando Maggie la defina. Por ahora, a la FAQ.
+      policy: [
+        "Leí la ",
+        { text: "política de cancelación", href: "/workshops#preguntas-frecuentes" },
+        " del workshop.",
+      ] satisfies RichText,
+      submit: "Continuar al pago",
+      sending: "Enviando…",
+      retry: "Reintentar",
+      networkError: "No pudimos enviar la inscripción. Revisá tu conexión y probá de nuevo.",
+      serverError: "No pudimos guardar la inscripción. Probá de nuevo.",
+    },
+    summary: {
+      label: "Resumen del workshop",
+      eyebrow: (month: string) => `Workshop · ${month}`,
+      details: { date: "Fecha", time: "Horario", place: "Lugar", price: "Precio por persona" },
+      place: `Cocina de ${site.owner.name} · ${site.city}`,
+      spots: "Lugares",
+      spotsLeft: (spots: number) => `Quedan ${spots}`,
+      spotsCount: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
+      less: "Un lugar menos",
+      more: "Un lugar más",
+      total: "Total",
+      totalTbd: "A confirmar",
+    },
+    pay: {
+      reviewTitle: "Tus datos",
+      experience: (level: string) => `Experiencia: ${level}`,
+      spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
+      whatsapp: {
+        text: `Para confirmar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
+        messageLabel: "Mensaje",
+        cta: "Enviar por WhatsApp",
+      },
+      mercadoPago: "Pagar con Mercado Pago",
+      soon: "Muy pronto",
+      // TODO: el mockup dice "Tu lugar queda confirmado cuando se acredita el pago.
+      // Si el cupo se completa antes, no se cobra nada." Confirmar con Maggie antes de publicarlo.
+      note: "El pago online va a estar disponible muy pronto.",
+    },
+    soldOut: {
+      title: "No quedan lugares",
+      text: "Este workshop ya está completo. Escribinos por WhatsApp si querés que te tengamos en cuenta si se libera un lugar.",
+      cta: "Avisarme si se libera",
+    },
+  },
   maggie: {
     metadata: {
       title: site.owner.name,
