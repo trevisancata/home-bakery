@@ -100,6 +100,7 @@ export const ui = {
   // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
+  videoPending: "Video próximamente",
   priceTbd: "Precio a confirmar",
   whatsappFloat: {
     label: "Escribinos por WhatsApp",
@@ -128,6 +129,21 @@ export type SiteImage = { src?: string; alt: string };
 /** Texto con partes en negrita o con links, para no escribir HTML en los datos. */
 export type RichText = (string | { strong: string } | { text: string; href: string })[];
 
+/**
+ * Diapositiva de la portada del inicio: foto o video. Sin `src` se muestra un
+ * placeholder de color. Los videos van sin audio y con póster.
+ */
+export type HeroSlide = { type: "image" | "video"; src?: string; poster?: string; alt: string };
+
+// TODO(Maggie): 3 o 4 fotos o videos horizontales para la portada. Mientras
+// tanto, placeholders: las fotos del catálogo son todas verticales.
+// Los placeholders son decorativos (alt vacío): no describen fotos que no existen.
+export const heroSlides: HeroSlide[] = [
+  { type: "image", alt: "" },
+  { type: "video", alt: "" },
+  { type: "image", alt: "" },
+];
+
 /** Envío a domicilio: solo en pedidos grandes y cerca. */
 const delivery = {
   minimum: "$400.000",
@@ -140,10 +156,6 @@ const delivery = {
 
 const ownerImage: SiteImage = {
   alt: `${site.owner.name}, fundadora de ${site.name}, sonriendo en su cocina con un delantal y un bowl de masa`,
-};
-
-const heroImage: SiteImage = {
-  alt: "Mesa de madera con una torta de chocolate, un budín de limón y cookies recién horneadas",
 };
 
 const handsImage: SiteImage = {
@@ -160,19 +172,22 @@ export const pages = {
   },
   home: {
     hero: {
-      eyebrow: `Pastelería y workshops · ${site.city}`,
-      title: "Artesanal, delicado y casero.",
-      script: "casero",
-      text: {
-        full: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}. Encargá online, ${site.owner.name} lo confirma y pasás a retirar.`,
-        short: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}.`,
-      },
+      label: `${site.name}: pastelería y workshops`,
+      // Textos de Maggie (docs/contenido-maggie.md, 01/10).
+      eyebrow: "Artesanal, delicado y casero",
+      title: "Pastelería y workshops",
+      script: "workshops",
+      text: "Workshops reducidos en mi cocina y pastelería por encargo. Pedidos con 48 h de anticipación. Take away en San Isidro.",
       primaryCta: { label: "Ver la tienda", href: "/tienda" },
-      secondaryCta: { label: "Próximo workshop", href: "/workshops" },
-      image: heroImage,
-      nextWorkshop: {
-        eyebrow: "Próximo workshop",
-        spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
+      secondaryCta: { label: "Conocé los workshops", href: "/workshops" },
+      carousel: {
+        controls: "Controles del carrusel",
+        slide: (n: number, total: number) => `${n} de ${total}`,
+        dot: (n: number) => `Diapositiva ${n}`,
+        previous: "Diapositiva anterior",
+        next: "Diapositiva siguiente",
+        pause: "Pausar el carrusel",
+        play: "Reanudar el carrusel",
       },
     },
     howToOrder: {

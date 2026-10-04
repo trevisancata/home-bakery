@@ -1,22 +1,19 @@
 import { AboutMaggie } from "@/components/home/AboutMaggie";
 import { Favorites } from "@/components/home/Favorites";
-import { Hero } from "@/components/home/Hero";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { HowToOrder } from "@/components/home/HowToOrder";
 import { InstagramFeed } from "@/components/home/InstagramFeed";
 import { Pickup } from "@/components/home/Pickup";
 import { WorkshopBand } from "@/components/home/WorkshopBand";
-import { getFeaturedProducts, getFeaturedWorkshop, getNextWorkshop } from "@/lib/data";
+import { heroSlides } from "@/data/site";
+import { getFeaturedProducts, getFeaturedWorkshop } from "@/lib/data";
 
 export default async function Home() {
-  const [featuredProducts, nextWorkshop, featuredWorkshop] = await Promise.all([
-    getFeaturedProducts(),
-    getNextWorkshop(),
-    getFeaturedWorkshop(),
-  ]);
+  const [featuredProducts, featuredWorkshop] = await Promise.all([getFeaturedProducts(), getFeaturedWorkshop()]);
 
   return (
     <>
-      <Hero nextWorkshop={nextWorkshop} />
+      <HeroCarousel slides={heroSlides} />
       <HowToOrder />
       <Favorites products={featuredProducts} />
       <AboutMaggie />

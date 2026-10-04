@@ -20,6 +20,12 @@
  *   crema       sobre chocolate-claro 4.54:1  (etiqueta de foto en la banda;
  *               el mockup usa crema-suave, que da 4.45:1 y no llega a AA)
  *
+ *   Portadas con foto o video (carrusel del inicio, portada de /workshops):
+ *   el mockup pone una capa pareja de capa al 42%. Sobre una foto blanca
+ *   (el peor caso) eso deja el texto hueso en ~2.9:1, así que se suma un
+ *   degradé de capa debajo del bloque de texto. Medido sobre blanco puro,
+ *   ver docs/lighthouse.md.
+ *
  *   borde-control sobre hueso 3.00:1  (borde de chips, selects e inputs,
  *               WCAG 1.4.11; el mockup usa #D9C8BD, que da 1.47:1)
  *
@@ -56,6 +62,9 @@
 
   /* Errores de formulario: 6.9:1 sobre hueso y 7.6:1 sobre blanco. */
   --color-error: #9a2c1c;
+
+  /* Capa oscura sobre las fotos y videos de portada (rgba(36,28,22) del mockup). */
+  --color-capa: #241c16;
 
   /* Solo para el botón flotante de WhatsApp. */
   --color-whatsapp: #25d366;
@@ -97,6 +106,8 @@
   --text-64: 4rem;
   --text-72: 4.5rem;
   --text-76: 4.75rem;
+  --text-84: 5.25rem;
+  --text-92: 5.75rem;
   --text-96: 6rem;
 
   /* "normal" es el interlineado por defecto del navegador, el del mockup. */
@@ -122,8 +133,10 @@
   /* Arco superior del retrato de /maggie. */
   --radius-arco-retrato: 16.25rem;
 
-  /* Filas de "Próximas fechas" (mes · workshop · estado · acción) y FAQ de /workshops. */
-  --grid-template-columns-fechas: 8.75rem minmax(0, 1fr) 11.25rem 12.5rem;
+  /* Filas de la agenda (fecha · workshop · estado · acción) y FAQ de /workshops. */
+  --grid-template-columns-fechas: 7.5rem minmax(0, 1fr) 13.75rem 13.75rem;
+  /* "Cómo enseño" de /workshops: texto y foto. */
+  --grid-template-columns-ensenanza: minmax(0, 1.2fr) minmax(0, 1fr);
   --grid-template-columns-faq: minmax(0, 1fr) minmax(0, 2fr);
 
   --shadow-tarjeta: 0 12px 32px rgb(59 42 34 / 0.12);
@@ -152,6 +165,11 @@
   line-height: 0.6;
   letter-spacing: 0;
   color: var(--color-chocolate);
+
+  /* Sobre fondos oscuros (portadas, banda de workshops) va en crema, como el mockup. */
+  [data-surface="dark"] & {
+    color: var(--color-crema);
+  }
 }
 
 /* Ancho y márgenes del mockup: lienzo de 1440 px con 80 px a los lados. */

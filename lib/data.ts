@@ -52,7 +52,3 @@ export async function getFeaturedWorkshop() {
 export function workshopEnrollHref(slug: string) {
   return `/workshops/${slug}/inscripcion`;
 }
-
-export async function getNextWorkshop() {
-  return (await getWorkshops())[0];
-}
