@@ -9,12 +9,14 @@ import { ImageFrame } from "@/components/ImageFrame";
 import { Rich } from "@/components/Rich";
 import { pages, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import type { Workshop } from "@/lib/data";
-import { formatDay, formatDuration, formatMonth, formatPrice, formatTime } from "@/lib/format";
+import { formatDay, formatMonth, formatPrice, formatTime } from "@/lib/format";
 import { inscripcionWhatsappLink, inscripcionWhatsappMessage } from "@/lib/inscripcion-whatsapp";
+import { balanceOf, depositOf } from "@/lib/sena";
 import {
   experienceOptions,
   fieldErrors,
   inscripcionSchema,
+  maxSpotsPerInscripcion,
   referralOptions,
   type FieldErrors,
   type Inscripcion,
@@ -190,8 +192,14 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
   }
 
   const title = step === "form" ? content.title.form : content.title.pay;
-  const total =
-    workshop.price === null ? content.summary.totalTbd : formatPrice(workshop.price * qty);
+  // Total, seña del 50% y saldo. Sin precio confirmado, los tres quedan "A confirmar".
+  const amount = (calc: (total: number) => number) =>
+    workshop.price === null ? content.summary.totalTbd : formatPrice(calc(workshop.price * qty));
+  const total = amount((value) => value);
+  const deposit = amount(depositOf);
+  const balance = amount(balanceOf);
+  // Nadie reserva más que el cupo libre ni más que el cupo máximo de un workshop.
+  const maxQty = Math.min(spotsLeft, maxSpotsPerInscripcion);
 
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
@@ -257,8 +265,9 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                 },
                 {
                   term: content.summary.details.time,
-                  value: `${formatTime(workshop.startsAt)} · ${formatDuration(workshop.durationMinutes)}`,
+                  value: formatTime(workshop.startsAt),
                 },
+                { term: content.summary.details.duration, value: content.summary.duration },
                 { term: content.summary.details.place, value: content.summary.place },
                 {
                   term: content.summary.details.price,
@@ -300,8 +309,8 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                   <button
                     type="button"
                     aria-label={content.summary.more}
-                    disabled={qty >= spotsLeft || sending}
-                    onClick={() => setQty((current) => Math.min(spotsLeft, current + 1))}
+                    disabled={qty >= maxQty || sending}
+                    onClick={() => setQty((current) => Math.min(maxQty, current + 1))}
                     className="size-11 rounded-full text-18 text-carbon disabled:cursor-not-allowed disabled:text-greige"
                   >
                     +
@@ -311,10 +320,22 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                 <span className="font-semibold">{content.summary.spotsCount(submitted?.spots ?? qty)}</span>
               )}
             </div>
-            <p className="flex justify-between gap-4 text-20 font-semibold">
-              <span>{content.summary.total}</span>
-              <span data-testid="inscripcion-total">{total}</span>
-            </p>
+            <dl className="flex flex-col gap-2 border-t border-borde pt-4.5">
+              <div className="flex justify-between gap-4 text-15">
+                <dt className="text-secundario">{content.summary.total}</dt>
+                <dd data-testid="inscripcion-total">{total}</dd>
+              </div>
+              <div className="flex justify-between gap-4 text-20 font-semibold">
+                <dt>{content.summary.deposit}</dt>
+                <dd data-testid="inscripcion-sena" className="text-right">
+                  {deposit}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4 text-14 text-secundario">
+                <dt>{content.summary.balance}</dt>
+                <dd data-testid="inscripcion-saldo">{balance}</dd>
+              </div>
+            </dl>
           </div>
         </aside>
 
@@ -566,12 +587,9 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                   className="w-full"
                 >
                   {content.pay.whatsapp.cta}
+                  <span className="sr-only">{content.pay.whatsapp.ctaContext}</span>
                 </Button>
               </section>
-
-              <Button variant="secondary" size="lg" disabled className="w-full">
-                {content.pay.mercadoPago} · {content.pay.soon}
-              </Button>
 
               <p className="flex gap-3 rounded-2xl bg-arena p-4 text-14 leading-normal">
                 <svg
@@ -588,7 +606,11 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 8v5M12 16h.01" />
                 </svg>
-                {content.pay.note}
+                <span className="flex flex-col gap-1">
+                  <span>{content.pay.deposit}</span>
+                  <span>{content.pay.balance}</span>
+                  <span>{content.pay.note}</span>
+                </span>
               </p>
             </div>
           )}

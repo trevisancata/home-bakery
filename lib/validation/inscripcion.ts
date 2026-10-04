@@ -12,8 +12,8 @@ export const referralOptions = [
   "Otro",
 ] as const;
 
-/** Tope técnico por inscripción; el real es el cupo libre del workshop. */
-export const maxSpotsPerInscripcion = 20;
+/** Cupo máximo de un workshop (hasta 8 personas); el real es el cupo libre. */
+export const maxSpotsPerInscripcion = 8;
 
 /** Los campos opcionales llegan como "" desde el formulario. */
 const emptyToUndefined = (value: unknown) => (typeof value === "string" && value.trim() === "" ? undefined : value);

@@ -177,8 +177,10 @@ const workshopsStory = {
 const workshopFacts = {
   duration: "2 h aprox.",
   capacity: "Hasta 8 personas",
-  depositRate: 0.5,
 };
+
+/** Los workshops se reservan con una seña del 50% (respuesta de Maggie, 01/10). */
+export const workshopDeposit = { rate: 0.5, label: "50%" } as const;
 
 const kitchenImage: SiteImage = {
   alt: "Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido",
@@ -429,8 +431,8 @@ export const pages = {
       parent: { label: "Workshops", href: "/workshops" },
       current: "Inscripción",
     },
-    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Pago", "3 · Confirmado"] },
-    title: { form: "Inscribite al workshop", pay: "Revisá y pagá" },
+    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Seña", "3 · Reservado"] },
+    title: { form: "Inscribite al workshop", pay: "Revisá y dejá la seña" },
     form: {
       requiredNote: "Los campos con * son obligatorios.",
       aboutYou: "Tus datos",
@@ -460,7 +462,8 @@ export const pages = {
     summary: {
       label: "Resumen del workshop",
       eyebrow: (month: string) => `Workshop · ${month}`,
-      details: { date: "Fecha", time: "Horario", place: "Lugar", price: "Precio por persona" },
+      details: { date: "Fecha", time: "Horario", duration: "Duración", place: "Lugar", price: "Precio por persona" },
+      duration: workshopFacts.duration,
       place: `Cocina de ${site.owner.name} · ${site.city}`,
       spots: "Lugares",
       spotsLeft: (spots: number) => `Quedan ${spots}`,
@@ -468,21 +471,25 @@ export const pages = {
       less: "Un lugar menos",
       more: "Un lugar más",
       total: "Total",
+      deposit: `Seña para reservar (${workshopDeposit.label})`,
+      balance: "Saldo",
       totalTbd: "A confirmar",
     },
     pay: {
       reviewTitle: "Tus datos",
       experience: (level: string) => `Experiencia: ${level}`,
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
+      // TODO(E6): el pago de la seña con Mercado Pago. Hasta entonces, se
+      // coordina por WhatsApp con Maggie.
       whatsapp: {
-        text: `Para confirmar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
+        text: `Para reservar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
         messageLabel: "Mensaje",
-        cta: "Enviar por WhatsApp",
+        cta: "Pagar la seña",
+        ctaContext: " (se abre WhatsApp)",
       },
-      mercadoPago: "Pagar con Mercado Pago",
-      soon: "Muy pronto",
-      // TODO: el mockup dice "Tu lugar queda confirmado cuando se acredita el pago.
-      // Si el cupo se completa antes, no se cobra nada." Confirmar con Maggie antes de publicarlo.
+      deposit: "Tu lugar solo queda reservado con la seña.",
+      // TODO(Maggie): cuándo y cómo se paga el saldo. No inventar la política.
+      balance: "El saldo: a confirmar con Maggie.",
       note: "El pago online va a estar disponible muy pronto.",
     },
     soldOut: {

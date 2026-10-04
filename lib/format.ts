@@ -66,13 +66,3 @@ export function formatMonth(isoDate: string) {
 export function formatTime(isoDate: string) {
   return `${timeFormatter.format(new Date(isoDate))} h`;
 }
-
-/** Ej.: 180 → "3 horas", 150 → "2 horas y media". */
-export function formatDuration(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  const hoursText = hours === 1 ? "1 hora" : `${hours} horas`;
-  if (rest === 0) return hoursText;
-  if (rest === 30) return `${hoursText} y media`;
-  return `${hoursText} ${rest} min`;
-}
