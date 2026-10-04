@@ -17,7 +17,7 @@ export default async function Home() {
       <HowToOrder />
       <Favorites products={featuredProducts} />
       <AboutMaggie />
-      {featuredWorkshop && <WorkshopBand workshop={featuredWorkshop} />}
+      <WorkshopBand nextWorkshop={featuredWorkshop} />
       <InstagramFeed />
       <Pickup />
     </>

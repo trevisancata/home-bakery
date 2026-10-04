@@ -27,6 +27,8 @@ type ImageFrameProps = {
   tone?: keyof typeof tones;
   sizes: string;
   preload?: boolean;
+  /** Clase de object-position para encuadrar la foto (p. ej. "object-[50%_30%]"). */
+  objectPosition?: string;
   className?: string;
 };
 
@@ -43,6 +45,7 @@ export function ImageFrame({
   tone = "claro",
   sizes,
   preload,
+  objectPosition = "",
   className = "",
 }: ImageFrameProps) {
   const colors = tones[tone];
@@ -50,7 +53,7 @@ export function ImageFrame({
   return (
     <div className={`relative overflow-hidden ${colors.frame} ${rounded} ${ratio ? ratios[ratio] : ""} ${className}`}>
       {src ? (
-        <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
+        <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className={`object-cover ${objectPosition}`} />
       ) : (
         <div
           role={alt ? "img" : undefined}

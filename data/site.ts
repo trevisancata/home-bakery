@@ -30,11 +30,6 @@ export const site = {
       "Take away en San Isidro.",
       "Pedidos con 48 h de anticipación.",
     ],
-    bio: [
-      "Aprendí a hornear en la cocina de mi abuela, midiendo la harina a ojo y esperando que el budín se enfriara para cortarlo.",
-      "Después de años horneando para amigos y familia, en 2023 nació Home Bakery: una pastelería chiquita, con recetas propias, ingredientes de estación y cero apuro.",
-      "Hoy también doy workshops para que más personas se animen a hornear en casa.",
-    ],
   },
   leadTime: "Pedidos con 48 h de anticipación",
   pickup: "Take away en San Isidro",
@@ -101,6 +96,7 @@ export const ui = {
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
   videoPending: "Video próximamente",
+  video: { pause: "Pausar video", play: "Reproducir video" },
   priceTbd: "Precio a confirmar",
   whatsappFloat: {
     label: "Escribinos por WhatsApp",
@@ -154,8 +150,43 @@ const delivery = {
 /* Páginas                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const ownerImage: SiteImage = {
-  alt: `${site.owner.name}, fundadora de ${site.name}, sonriendo en su cocina con un delantal y un bowl de masa`,
+const ownerImage = {
+  src: "/fotos/maggie-presentacion.jpg",
+  alt: `${site.owner.name} apoyada en la mesada de su cocina, sonriendo`,
+} satisfies SiteImage;
+
+/**
+ * Presentación de Maggie (docs/contenido-maggie.md, 01/10), en sus palabras.
+ * Solo se corrigió ortografía: no reescribir sin su OK.
+ */
+const ownerStory = [
+  "Home Bakery nació en mi cocina, horneando siempre para mi familia y amigos.",
+  "Soy diseñadora gráfica, dediqué casi 15 años al mundo del diseño y la publicidad. Aprendí mucho y lo disfruté un montón, pero cumplió un ciclo en mi vida.",
+  "Y como a muchas mujeres nos pasa, la llegada de los hijos en nuestra vida trae cambios y desestructura un poco. Ya no quería trabajar fuera de casa tanto tiempo, quería estar más cerca de ellos.",
+  "Así fue que me animé a cambiar y empezar el camino de la gastronomía, que siempre fue parte de mi vida, siempre cociné como modo de conexión y desconexión a la vez.",
+  "Me formé en el IAG como chef profesional y como pastelera en el Ott College. Dediqué mucho tiempo a aprender de grandes referentes. Hice pasantías y me nutrí de quienes tuve cerca para aprender.",
+  "Hoy pude conformar una comunidad que le suma a lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien. Y como soy muy inquieta, empecé a organizar workshops de pastelería en mi cocina, para compartirles todo lo que fui aprendiendo en estos 10 años.",
+  "Espero verte pronto en mi cocina.",
+] as const;
+
+/** Texto de Maggie sobre los workshops (docs/contenido-maggie.md, 01/10). */
+const workshopsStory = {
+  teaching: [
+    "Enseñar pastelería no es solo pasar recetas. Es aprender a leer una masa, a entender por qué algo sale bien o por qué no sale. Es saber cuándo seguir una receta y cuándo no.",
+    "Eso no se aprende en un PDF, se aprende mirando, preguntando, probando y equivocándose con alguien al lado. Yo aprendí así. Y así también trabajo.",
+  ],
+  meeting: "Los workshops son un lugar de encuentro, un momento para frenar, compartir y disfrutar.",
+  welcome: "Las recibo con un rico café, una mini degustación. Preparo mi espacio para que todos se sientan cómodos.",
+  demo: "Les hago una demo de las recetas que vamos a preparar y luego trabajan ustedes.",
+  practice: "¡Y ahí es cuando más aprenden, disfrutan, se ríen y nos divertimos!",
+  box: "La mejor parte es que cada uno se lleva una cajita con todo lo que preparamos.",
+} as const;
+
+/** Datos de los workshops que salen de las respuestas de Maggie. */
+const workshopFacts = {
+  duration: "2 h aprox.",
+  capacity: "Hasta 8 personas",
+  depositRate: 0.5,
 };
 
 const handsImage: SiteImage = {
@@ -235,19 +266,22 @@ export const pages = {
       eyebrow: "Quién hornea",
       title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
-      lead: {
-        full: `Magdalena Gatti para los papeles. ${site.name} empezó cocinando para familia y amigos. Hoy más de 35 mil personas siguen mi cocina, pero casi todo sigue llegando de boca en boca.`,
-        short: `${site.name} empezó cocinando para familia y amigos, y creció de recomendación en recomendación.`,
-      },
-      text: site.owner.bio[0],
+      // Dos frases textuales de su presentación.
+      lead: ownerStory[0],
+      text: "Me formé en el IAG como chef profesional y como pastelera en el Ott College.",
       cta: { label: "Conocé mi historia", href: "/maggie" },
       image: ownerImage,
     },
     workshop: {
-      eyebrow: "Workshop del mes",
-      suffix: `Grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
-      spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity} lugares`,
-      cta: "Reservar mi lugar",
+      eyebrow: "Workshops",
+      title: "Grupos reducidos en mi cocina",
+      script: "cocina",
+      text: [workshopsStory.meeting, workshopsStory.box],
+      facts: [workshopFacts.capacity, workshopFacts.duration, site.city],
+      next: "Próxima fecha:",
+      cta: { label: "Conocé los workshops", href: "/workshops" },
+      // TODO(Maggie): reels de los workshops para el video de fondo.
+      video: { src: undefined as string | undefined, poster: undefined as string | undefined },
     },
     instagram: {
       eyebrow: "Desde la cocina",
