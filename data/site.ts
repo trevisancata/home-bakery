@@ -16,7 +16,8 @@ export const site = {
   city: "San Isidro",
   keywords: ["pastelería artesanal", "San Isidro", "tortas", "budines", "cookies", "workshops de pastelería"],
   logo: {
-    white: { src: "/brand/homebakery_logo_white.png", width: 3003, height: 2835 },
+    white: { src: "/brand/homebakery_logo_sin_tagline_white.png", width: 1660, height: 1561 },
+    black: { src: "/brand/homebakery_logo_sin_tagline.png", width: 1660, height: 1561 },
   },
   owner: {
     name: "Maggie",
