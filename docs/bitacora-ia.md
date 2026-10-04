@@ -86,5 +86,80 @@ Cómo se aplicó en cada PR:
   - La línea de tiempo muestra las etapas sin años, salvo la web (2026).
   - "Incluye" dice "A confirmar" en cada workshop.
 - **PR #7:** no se publican el hint del email ni la nota de confirmación del pago del mockup, porque comprometen al negocio. El link a la política de cancelación va a la FAQ de `/workshops` hasta que exista la política.
+- **PR #10:**
+  - Los textos de Maggie van textuales, de `docs/contenido-maggie.md`. Donde el mockup v6 los parafraseaba, se usaron oraciones completas suyas.
+  - El carrusel queda con placeholders de color hasta que Maggie mande fotos horizontales.
+  - "Así fueron los workshops" muestra solo el título y el link a Instagram, sin nombres inventados.
+  - El saldo de la seña dice "a confirmar con Maggie".
+  - Se borraron la bio provisoria de `site.owner.bio` y los valores de `/maggie`, que ya no se usaban y no eran de Maggie.
 
 Lo que falta completar con Maggie está marcado con `TODO` en `data/site.ts`, `data/products.ts` y `data/workshops.ts`.
+
+## 04/10/2026
+
+Maggie revisó el sitio el 01/10 y mandó textos y cambios por WhatsApp. Catalina pasó el contenido a `docs/contenido-maggie.md` y actualizó el mockup a la v6 (`docs/mockup/README.md`, "Cambios de la v6").
+
+### Pedidos de Maggie (01/10)
+
+- **Logo:** solo "home bakery", sin "cakes & pastries", porque con la bajada queda todo más chiquito.
+- **Portada del inicio:** foto bien horizontal y a todo el ancho, no a la derecha con bordes redondeados. Si puede ser video, mejor. Idealmente un carrusel de 3 o 4 fotos o videos. Textos nuevos: "Artesanal, delicado y casero" / "Pastelería y workshops" / "Workshops reducidos en mi cocina y pastelería por encargo…".
+- **Presentación:** su foto real y su historia en primera persona.
+- **Workshops:** mostrar primero qué son, con un video de fondo que muestre la dinámica de cocina (tiene reels). Darle menos protagonismo al workshop del mes y ponerlo abajo, tipo agenda. Mandó las respuestas de las preguntas frecuentes.
+- **Reglas que salen de sus textos:**
+  - Hasta 8 personas, con un mínimo de 4.
+  - 2 h aprox.
+  - Reserva con seña del 50%.
+  - Sin reembolso, pero se puede pasar el lugar a otra persona.
+- **Pendiente de Maggie:**
+  - Fotos o videos horizontales para el carrusel.
+  - Reels de los workshops.
+  - Nombre, mes/año y foto de 4 workshops pasados.
+  - Cuándo y cómo se paga el saldo.
+
+### PR #10 · Contenido de Maggie v6 (`feat/contenido-maggie-v6`)
+
+**Objetivo:** llevar al sitio los textos y cambios de Maggie, fiel al mockup v6.
+
+**Prompt:**
+
+> Creá la rama feat/contenido-maggie-v6 desde main. Los cambios sin commitear en docs/, public/brand/ y public/fotos/ son parte de este PR; supabase/ NO (es del próximo).
+> Contexto: Maggie revisó el sitio y mandó textos y cambios. Ya actualicé el mockup a la v6. Antes de planificar, leé docs/mockup/README.md (sección "Cambios de la v6") y docs/contenido-maggie.md. Los textos de Maggie van tal cual: no inventes ni reescribas nada.
+> Implementá, mobile-first y fiel al mockup (inicio-desktop, inicio-mobile, workshops, maggie, inscripcion-workshop):
+> 1. Logo: homebakery_logo_sin_tagline_white.png en el header (círculo taupe) y en el footer; homebakery_logo_sin_tagline.png donde vaya en negro.
+> 2. Portada del inicio: componente cliente HeroCarousel a todo el ancho (720 px desktop / 640 px mobile), con la capa oscura y los textos de Maggie. Cada diapositiva puede ser foto o video ({ type, src, poster?, alt }, datos en data/site.ts). Accesibilidad: anterior/siguiente, puntos con 44 px de área táctil y botón de pausa visible. Avanza solo cada ~6 s, se frena con hover o foco y no avanza solo con prefers-reduced-motion. aria-roledescription, y aria-live "off" mientras avanza solo. Videos muted loop playsInline con póster. Sin librerías de carrusel. La primera imagen se precarga (LCP). Mientras Maggie no mande material, elegí 3 fotos de producto en buena resolución de "…/CATALOGO/_para-la-web/fotos" (ver catalogo.json, baja_resolucion: false) que funcionen recortadas en horizontal. Copialas a public/fotos/portada/ y marcalas TODO(Maggie) como provisorias.
+> 3. Presentación en el inicio con public/fotos/maggie-presentacion.jpg (next/image) y los textos del mockup.
+> 4. La banda "Workshop del mes" del inicio pasa a ser "Grupos reducidos en mi cocina"; la próxima fecha sale de getFeaturedWorkshop().
+> 5. /workshops en el orden del mockup: portada con video de fondo (placeholder hasta tener los reels, con botón de pausa), Cómo enseño, Cómo es un workshop (4 pasos + datos), Agenda (próximas fechas con cupo; el destacado es una fila más), Así fueron (sin nombres inventados: si no hay datos, solo el título y el link a Instagram), workshop personalizado y FAQ con las 6 respuestas reales en \<details\>.
+> 6. /maggie: hero con la foto real, "Mi historia" en tres partes con el texto completo; sacá la línea de tiempo con años.
+> 7. Inscripción: el resumen muestra total, "Seña para reservar (50%)" y saldo; el botón dice "Pagar la seña" (sigue siendo el paso por WhatsApp hasta el E6). El texto del saldo queda como TODO(Maggie). Cupo máximo 8. El mensaje prefijado de WhatsApp menciona la seña.
+> 8. data/workshops.ts: cupo 8 y duración 120 min. Todos los textos nuevos en data/site.ts.
+> Calidad: solo tokens de globals.css, foco visible, contraste AA del texto sobre la capa oscura (probalo con una foto clara). Lighthouse ≥95 en accesibilidad y SEO en /, /workshops y /maggie (actualizá docs/lighthouse.md). Corré npm run compare y guardá capturas en docs/mockup/capturas-pr/. Actualizá el e2e de inscripción y sumá uno del carrusel (pausa y navegación con teclado). Registrá en docs/bitacora-ia.md los pedidos de Maggie y este prompt.
+> Commits chicos; lint, build y e2e en verde; PR con el template. No mergees.
+
+**Respuestas a las preguntas del plan:**
+
+- **Fotos del carrusel:** las 56 fotos en buena resolución del catálogo son todas verticales (1200×1600 o 901×1600). Quedan placeholders de color hasta que Maggie mande material, y no se creó `public/fotos/portada/`.
+- **Textos:** el mockup v6 parafraseaba algunos textos de Maggie, por ejemplo "Me formé como chef profesional en el IAG…", los 4 pasos del workshop y "PDF:" con dos puntos, y sumaba frases que no son de ella. Se usaron sus oraciones textuales; los títulos y etiquetas del mockup quedaron. Las frases inventadas pasaron a `TODO(Maggie)`, por ejemplo "Si el cupo se completa antes, no se cobra nada".
+- **Contraste:** se mantuvo la capa del mockup y se sumó un degradé debajo del texto, medido sobre blanco puro (ver [lighthouse.md](lighthouse.md#contraste-del-texto-sobre-las-portadas)).
+
+**Correcciones de Claude Code durante el desarrollo** (no fueron pedidas, salieron de su propia verificación):
+
+- Reforzar el degradé de la portada porque el eyebrow de desktop daba 3.77:1 sobre blanco.
+- Dejar margen debajo de los títulos con palabra manuscrita, para que el trazo bajo no pise la bajada.
+- El botón de pausa del video de fondo aparece recién cuando hay video: un botón que no controla nada confunde a los lectores de pantalla.
+- Los botones "Reservar" de la agenda ocupaban todo el ancho en mobile.
+- La seña ("A confirmar") se cortaba en dos líneas en mobile.
+- Se borraron funciones y datos que quedaron sin uso (`getNextWorkshop`, `formatDuration`, `FeaturedWorkshop`, `Hero`).
+
+**Resultado:**
+
+- Logo sin tagline.
+- Carrusel accesible sin librerías.
+- Presentación con la foto de Maggie.
+- Banda y página de workshops reorganizadas.
+- `/maggie` con su historia completa.
+- Inscripción con seña del 50% y cupo de 8.
+- e2e nuevos del carrusel.
+- Lighthouse en 100.
+
+Abierto el 04/10, sin mergear.

@@ -34,7 +34,7 @@ summary{font-size:19px;font-weight:500;cursor:pointer}
 
 <div style="background: #5E4A33; color: #F5F4F0; font-size: 13px; text-align: center; padding: 11px 16px">Pedidos con 48 h de anticipación · Take away en San Isidro · Lun a Vie 10 a 19 h · Sáb 9 a 13 h</div>
 <header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
-<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/homebakery_logo_sin_tagline_white.png" alt="" style="width: 54px; height: auto"></span></a>
 <nav class="nav" aria-label="Principal" style="display: flex; gap: 40px; font-size: 15px; font-weight: 500">
 <a href="inicio-desktop.html">Inicio</a>
 <a href="tienda.html">Tienda</a>
@@ -95,8 +95,8 @@ summary{font-size:19px;font-weight:500;cursor:pointer}
 <div style="display: flex; justify-content: space-between; align-items: center"><h2 id="rev" class="eyebrow" style="margin: 0">Tus datos</h2><button type="button" onClick="{{toForm}}" style="height: 44px; padding: 0 12px; border: 0; background: transparent; color: #5E4A33; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Editar</button></div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; font-size: 15px"><span>[Nombre y apellido]</span><span>[WhatsApp]</span><span>[Email]</span><span>Experiencia: [nivel]</span></div>
 </section>
-<button type="button" onClick="{{toDone}}" style="height: 60px; border-radius: 999px; border: 0; background: #009EE3; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 17px; cursor: pointer">Pagar {{total}} con Mercado Pago</button>
-<div style="display: flex; gap: 12px; background: #EAE3D8; border-radius: 16px; padding: 16px; font-size: 14px; line-height: 1.5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>Tu lugar queda confirmado cuando se acredita el pago. Si el cupo se completa antes, no se cobra nada.</span></div>
+<button type="button" onClick="{{toDone}}" style="height: 60px; border-radius: 999px; border: 0; background: #009EE3; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 17px; cursor: pointer">Pagar la seña de {{sena}} con Mercado Pago</button>
+<div style="display: flex; gap: 12px; background: #EAE3D8; border-radius: 16px; padding: 16px; font-size: 14px; line-height: 1.5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>Tu lugar queda reservado cuando se acredita la seña del 50%. El saldo se abona [cuándo y cómo: a confirmar con Maggie]. Si el cupo se completa antes, no se cobra nada.</span></div>
 </div>
 </sc-if>
 
@@ -116,28 +116,28 @@ summary{font-size:19px;font-weight:500;cursor:pointer}
 <dl style="margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 15px">
 <div style="display: flex; justify-content: space-between"><dt class="muted">Fecha</dt><dd style="margin: 0">[Día y fecha]</dd></div>
 <div style="display: flex; justify-content: space-between"><dt class="muted">Horario</dt><dd style="margin: 0">[Horario]</dd></div>
-<div style="display: flex; justify-content: space-between"><dt class="muted">Lugar</dt><dd style="margin: 0">Cocina de Maggie · San Isidro</dd></div>
+<div style="display: flex; justify-content: space-between"><dt class="muted">Duración</dt><dd style="margin: 0">2 h aprox.</dd></div><div style="display: flex; justify-content: space-between"><dt class="muted">Lugar</dt><dd style="margin: 0">Cocina de Maggie · San Isidro</dd></div>
 <div style="display: flex; justify-content: space-between"><dt class="muted">Precio por persona</dt><dd style="margin: 0">[$ precio]</dd></div>
 </dl>
 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5DDD2; padding-top: 18px">
 <div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px">Lugares</strong><span style="font-size: 13px; color: #5E4A33; font-weight: 600">Quedan {{left}}</span></div>
 <div style="display: flex; align-items: center; border: 1px solid #CFC3B5; border-radius: 999px"><button type="button" aria-label="Un lugar menos" onClick="{{less}}" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">−</button><span aria-live="polite" style="width: 28px; text-align: center; font-weight: 600">{{qty}}</span><button type="button" aria-label="Un lugar más" onClick="{{more}}" style="width: 44px; height: 44px; border: 0; background: transparent; font-size: 18px; color: #2F2F2F; cursor: pointer">+</button></div>
 </div>
-<div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 600"><span>Total</span><span>{{total}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><div style="display: flex; justify-content: space-between; font-size: 15px"><span class="muted">Total</span><span>{{total}}</span></div><div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 600"><span>Seña para reservar (50%)</span><span>{{sena}}</span></div><div style="display: flex; justify-content: space-between; font-size: 14px"><span class="muted">Saldo</span><span class="muted">{{saldo}}</span></div></div>
 </div>
 </aside>
 </div>
 </main>
 
 <footer style="background: #5E4A33; color: #D9C8BD; padding: 36px 80px; display: flex; justify-content: space-between; font-size: 14px">
-<img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 72px; height: auto">
+<img src="../../public/brand/homebakery_logo_sin_tagline_white.png" alt="Home Bakery" style="width: 72px; height: auto">
 <span>Lun a Vie 10 a 19 h · Sáb 9 a 13 h · Dom cerrado</span>
 <a href="https://instagram.com/homebakery.pasteleria" style="color: #F5F4F0">@homebakery.pasteleria</a>
 </footer>
 <a href="https://wa.me/5491155767591" aria-label="Escribinos por WhatsApp" style="position: fixed; right: 32px; bottom: 32px; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 24px 0 20px; border-radius: 999px; background: #25D366; color: #0B3B1E; font-weight: 600; font-size: 15px; text-decoration: none; box-shadow: 0 10px 24px rgba(46,37,32,.22)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.8z"/><path d="M9 8.6c.3 2.9 2.5 5.3 5.4 5.8l1-1.2-1.7-.9-.8.7a4 4 0 0 1-2-2l.7-.8-.8-1.7z"/></svg>¿Consultas? Escribinos</a>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"lugaresLibres":{"editor":"int","min":1,"max":20,"default":3},"$preview":{"width":1440,"height":1500}}'>
+<script type="text/x-dc" data-dc-script data-props='{"lugaresLibres":{"editor":"int","min":1,"max":8,"default":3},"$preview":{"width":1440,"height":1500}}'>
 class Component extends DCLogic {
   constructor(props) { super(props); this.state = { step: 1, qty: 1 }; }
   renderVals() {
@@ -145,9 +145,9 @@ class Component extends DCLogic {
     var left = this.props.lugaresLibres ?? 3;
     var qty = Math.min(this.state.qty, left);
     var step = this.state.step;
-    var labels = ['1 · Tus datos', '2 · Pago', '3 · Confirmado'];
+    var labels = ['1 · Tus datos', '2 · Seña', '3 · Reservado'];
     return {
-      title: step === 3 ? '¡Tu lugar está confirmado!' : (step === 2 ? 'Revisá y pagá' : 'Inscribite al workshop'),
+      title: step === 3 ? '¡Tu lugar está reservado!' : (step === 2 ? 'Revisá y dejá la seña' : 'Inscribite al workshop'),
       steps: labels.map(function (l, i) { return { label: l, on: i + 1 === step, off: i + 1 !== step }; }),
       isForm: step === 1, isPay: step === 2, isDone: step === 3,
       toPay: function () { self.setState({ step: 2 }); },
@@ -155,6 +155,8 @@ class Component extends DCLogic {
       toDone: function () { self.setState({ step: 3 }); },
       qty: qty, left: left,
       total: qty === 1 ? '[$ precio]' : qty + ' × [$ precio]',
+      sena: qty === 1 ? '[$ seña]' : qty + ' × [$ seña]',
+      saldo: qty === 1 ? '[$ saldo]' : qty + ' × [$ saldo]',
       less: function () { self.setState({ qty: Math.max(1, qty - 1) }); },
       more: function () { self.setState({ qty: Math.min(left, qty + 1) }); }
     };

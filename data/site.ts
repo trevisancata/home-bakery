@@ -16,24 +16,12 @@ export const site = {
   city: "San Isidro",
   keywords: ["pastelería artesanal", "San Isidro", "tortas", "budines", "cookies", "workshops de pastelería"],
   logo: {
-    white: { src: "/brand/homebakery_logo_white.png", width: 3003, height: 2835 },
+    white: { src: "/brand/homebakery_logo_sin_tagline_white.png", width: 1660, height: 1561 },
+    black: { src: "/brand/homebakery_logo_sin_tagline.png", width: 1660, height: 1561 },
   },
   owner: {
     name: "Maggie",
     role: "Pastelera y fundadora",
-    /** Bio de Instagram: el único texto en primera persona confirmado por Maggie. */
-    instagramBio: [
-      "Soy Maggie Gatti.",
-      "Artesanal, delicado y casero.",
-      "Workshops reducidos en mi cocina.",
-      "Take away en San Isidro.",
-      "Pedidos con 48 h de anticipación.",
-    ],
-    bio: [
-      "Aprendí a hornear en la cocina de mi abuela, midiendo la harina a ojo y esperando que el budín se enfriara para cortarlo.",
-      "Después de años horneando para amigos y familia, en 2023 nació Home Bakery: una pastelería chiquita, con recetas propias, ingredientes de estación y cero apuro.",
-      "Hoy también doy workshops para que más personas se animen a hornear en casa.",
-    ],
   },
   leadTime: "Pedidos con 48 h de anticipación",
   pickup: "Take away en San Isidro",
@@ -69,7 +57,6 @@ export const whatsappMessages = {
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
   customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
-  workshopCancellation: "¡Hola! Quería consultar por la política de cancelación de los workshops.",
   workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
 };
 
@@ -99,6 +86,8 @@ export const ui = {
   // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
+  videoPending: "Video próximamente",
+  video: { pause: "Pausar video", play: "Reproducir video" },
   priceTbd: "Precio a confirmar",
   whatsappFloat: {
     label: "Escribinos por WhatsApp",
@@ -127,6 +116,21 @@ export type SiteImage = { src?: string; alt: string };
 /** Texto con partes en negrita o con links, para no escribir HTML en los datos. */
 export type RichText = (string | { strong: string } | { text: string; href: string })[];
 
+/**
+ * Diapositiva de la portada del inicio: foto o video. Sin `src` se muestra un
+ * placeholder de color. Los videos van sin audio y con póster.
+ */
+export type HeroSlide = { type: "image" | "video"; src?: string; poster?: string; alt: string };
+
+// TODO(Maggie): 3 o 4 fotos o videos horizontales para la portada. Mientras
+// tanto, placeholders: las fotos del catálogo son todas verticales.
+// Los placeholders son decorativos (alt vacío): no describen fotos que no existen.
+export const heroSlides: HeroSlide[] = [
+  { type: "image", alt: "" },
+  { type: "video", alt: "" },
+  { type: "image", alt: "" },
+];
+
 /** Envío a domicilio: solo en pedidos grandes y cerca. */
 const delivery = {
   minimum: "$400.000",
@@ -137,17 +141,46 @@ const delivery = {
 /* Páginas                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const ownerImage: SiteImage = {
-  alt: `${site.owner.name}, fundadora de ${site.name}, sonriendo en su cocina con un delantal y un bowl de masa`,
+const ownerImage = {
+  src: "/fotos/maggie-presentacion.jpg",
+  alt: `${site.owner.name} apoyada en la mesada de su cocina, sonriendo`,
+} satisfies SiteImage;
+
+/**
+ * Presentación de Maggie (docs/contenido-maggie.md, 01/10), en sus palabras.
+ * Solo se corrigió ortografía: no reescribir sin su OK.
+ */
+const ownerStory = [
+  "Home Bakery nació en mi cocina, horneando siempre para mi familia y amigos.",
+  "Soy diseñadora gráfica, dediqué casi 15 años al mundo del diseño y la publicidad. Aprendí mucho y lo disfruté un montón, pero cumplió un ciclo en mi vida.",
+  "Y como a muchas mujeres nos pasa, la llegada de los hijos en nuestra vida trae cambios y desestructura un poco. Ya no quería trabajar fuera de casa tanto tiempo, quería estar más cerca de ellos.",
+  "Así fue que me animé a cambiar y empezar el camino de la gastronomía, que siempre fue parte de mi vida, siempre cociné como modo de conexión y desconexión a la vez.",
+  "Me formé en el IAG como chef profesional y como pastelera en el Ott College. Dediqué mucho tiempo a aprender de grandes referentes. Hice pasantías y me nutrí de quienes tuve cerca para aprender.",
+  "Hoy pude conformar una comunidad que le suma a lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien. Y como soy muy inquieta, empecé a organizar workshops de pastelería en mi cocina, para compartirles todo lo que fui aprendiendo en estos 10 años.",
+  "Espero verte pronto en mi cocina.",
+] as const;
+
+/** Texto de Maggie sobre los workshops (docs/contenido-maggie.md, 01/10). */
+const workshopsStory = {
+  teaching: [
+    "Enseñar pastelería no es solo pasar recetas. Es aprender a leer una masa, a entender por qué algo sale bien o por qué no sale. Es saber cuándo seguir una receta y cuándo no.",
+    "Eso no se aprende en un PDF, se aprende mirando, preguntando, probando y equivocándose con alguien al lado. Yo aprendí así. Y así también trabajo.",
+  ],
+  meeting: "Los workshops son un lugar de encuentro, un momento para frenar, compartir y disfrutar.",
+  welcome: "Las recibo con un rico café, una mini degustación. Preparo mi espacio para que todos se sientan cómodos.",
+  demo: "Les hago una demo de las recetas que vamos a preparar y luego trabajan ustedes.",
+  practice: "¡Y ahí es cuando más aprenden, disfrutan, se ríen y nos divertimos!",
+  box: "La mejor parte es que cada uno se lleva una cajita con todo lo que preparamos.",
+} as const;
+
+/** Datos de los workshops que salen de las respuestas de Maggie. */
+const workshopFacts = {
+  duration: "2 h aprox.",
+  capacity: "Hasta 8 personas",
 };
 
-const heroImage: SiteImage = {
-  alt: "Mesa de madera con una torta de chocolate, un budín de limón y cookies recién horneadas",
-};
-
-const handsImage: SiteImage = {
-  alt: "Manos amasando sobre una mesada enharinada",
-};
+/** Los workshops se reservan con una seña del 50% (respuesta de Maggie, 01/10). */
+export const workshopDeposit = { rate: 0.5, label: "50%" } as const;
 
 const kitchenImage: SiteImage = {
   alt: "Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido",
@@ -159,19 +192,22 @@ export const pages = {
   },
   home: {
     hero: {
-      eyebrow: `Pastelería y workshops · ${site.city}`,
-      title: "Artesanal, delicado y casero.",
-      script: "casero",
-      text: {
-        full: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}. Encargá online, ${site.owner.name} lo confirma y pasás a retirar.`,
-        short: `Tortas, tartas, cookies y mesas dulces por encargo, hechas por ${site.owner.name} en su cocina de ${site.city}.`,
-      },
+      label: `${site.name}: pastelería y workshops`,
+      // Textos de Maggie (docs/contenido-maggie.md, 01/10).
+      eyebrow: "Artesanal, delicado y casero",
+      title: "Pastelería y workshops",
+      script: "workshops",
+      text: "Workshops reducidos en mi cocina y pastelería por encargo. Pedidos con 48 h de anticipación. Take away en San Isidro.",
       primaryCta: { label: "Ver la tienda", href: "/tienda" },
-      secondaryCta: { label: "Próximo workshop", href: "/workshops" },
-      image: heroImage,
-      nextWorkshop: {
-        eyebrow: "Próximo workshop",
-        spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
+      secondaryCta: { label: "Conocé los workshops", href: "/workshops" },
+      carousel: {
+        controls: "Controles del carrusel",
+        slide: (n: number, total: number) => `${n} de ${total}`,
+        dot: (n: number) => `Diapositiva ${n}`,
+        previous: "Diapositiva anterior",
+        next: "Diapositiva siguiente",
+        pause: "Pausar el carrusel",
+        play: "Reanudar el carrusel",
       },
     },
     howToOrder: {
@@ -219,19 +255,22 @@ export const pages = {
       eyebrow: "Quién hornea",
       title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
-      lead: {
-        full: `Magdalena Gatti para los papeles. ${site.name} empezó cocinando para familia y amigos. Hoy más de 35 mil personas siguen mi cocina, pero casi todo sigue llegando de boca en boca.`,
-        short: `${site.name} empezó cocinando para familia y amigos, y creció de recomendación en recomendación.`,
-      },
-      text: site.owner.bio[0],
+      // Dos frases textuales de su presentación.
+      lead: ownerStory[0],
+      text: "Me formé en el IAG como chef profesional y como pastelera en el Ott College.",
       cta: { label: "Conocé mi historia", href: "/maggie" },
       image: ownerImage,
     },
     workshop: {
-      eyebrow: "Workshop del mes",
-      suffix: `Grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
-      spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity} lugares`,
-      cta: "Reservar mi lugar",
+      eyebrow: "Workshops",
+      title: "Grupos reducidos en mi cocina",
+      script: "cocina",
+      text: [workshopsStory.meeting, workshopsStory.box],
+      facts: [workshopFacts.capacity, workshopFacts.duration, site.city],
+      next: "Próxima fecha:",
+      cta: { label: "Conocé los workshops", href: "/workshops" },
+      // TODO(Maggie): reels de los workshops para el video de fondo.
+      video: { src: undefined as string | undefined, poster: undefined as string | undefined },
     },
     instagram: {
       eyebrow: "Desde la cocina",
@@ -303,19 +342,40 @@ export const pages = {
       title: "Workshops",
       description: `Workshops de pastelería en grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
     },
-    eyebrow: `Aprender en la cocina de ${site.owner.name}`,
-    title: "Workshops",
-    intro: `Workshops reducidos en mi cocina de ${site.city}, uno por mes. Reservás y pagás online y tu lugar queda confirmado al instante.`,
-    featured: {
-      badge: (month: string) => `Próximo · ${month}`,
-      details: { date: "Fecha", time: "Horario", includes: "Incluye", price: "Precio" },
-      spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
-      capacity: (capacity: number) => `Cupo: ${capacity}`,
-      cta: "Reservar mi lugar",
+    hero: {
+      label: `Workshops en la cocina de ${site.owner.name}`,
+      eyebrow: "Workshops de pastelería",
+      title: "Grupos reducidos en mi cocina",
+      script: "cocina",
+      text: workshopsStory.meeting,
+      cta: { label: "Ver próximas fechas", href: "#agenda" },
+      // TODO(Maggie): reels de los workshops para el video de fondo.
+      video: { src: undefined as string | undefined, poster: undefined as string | undefined },
+    },
+    teaching: {
+      eyebrow: "Cómo enseño",
+      text: workshopsStory.teaching,
+      signature: site.owner.name,
+      // TODO(Maggie): foto de Maggie enseñando.
+      image: { alt: "" } satisfies SiteImage,
+    },
+    steps: {
+      eyebrow: "Paso a paso",
+      title: "Cómo es un workshop",
+      facts: [workshopFacts.duration, workshopFacts.capacity, `En mi cocina de ${site.city}`, "Reservás con una seña del 50%"],
+      items: [
+        { title: "Te recibo", text: workshopsStory.welcome },
+        { title: "Demo", text: workshopsStory.demo },
+        { title: "Manos a la obra", text: workshopsStory.practice },
+        { title: "Tu cajita", text: workshopsStory.box },
+      ],
     },
     upcoming: {
+      eyebrow: "Agenda",
       title: "Próximas fechas",
-      status: { open: "Inscripción abierta", last: "Últimos lugares", soldOut: "Agotado" },
+      note: "Tu lugar solo queda reservado con la seña.",
+      spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity}`,
+      soldOut: "Agotado",
       cta: "Reservar",
       waitlist: "Avisarme si se libera",
     },
@@ -323,13 +383,8 @@ export const pages = {
       title: "Así fueron los workshops",
       script: "workshops",
       instagram: { label: "Ver más en Instagram", href: site.contact.instagram.url },
-      // Las fotos son decorativas: el nombre va debajo de cada una.
-      items: [
-        "Mis tortas básicas",
-        "Pastelería para el té vol. 2",
-        "Diseñá tu number cake",
-        "Sin azúcar agregada y sin harinas",
-      ].map((name): { name: string; image: SiteImage } => ({ name, image: { alt: "" } })),
+      // TODO(Maggie): nombre, mes/año y foto de 4 workshops pasados. Hasta
+      // tenerlos, solo el título y el link a Instagram.
     },
     custom: {
       title: "Workshop personalizado",
@@ -338,24 +393,32 @@ export const pages = {
     },
     faq: {
       title: "Preguntas frecuentes",
-      // TODO: completar con Maggie. Quedan afuera hasta tener las respuestas:
-      // "¿Hace falta experiencia?" y "¿Qué tengo que llevar?".
+      // Respuestas de Maggie (docs/contenido-maggie.md, 01/10).
       items: [
+        { question: "¿Dónde es?", answer: "En mi cocina, en San Isidro." },
         {
-          question: "¿Dónde es?",
-          answer: [
-            `En la cocina de ${site.owner.name}, en ${site.city}. La dirección exacta llega con la confirmación.`,
-          ],
+          question: "¿Cuánto dura?",
+          answer:
+            "Dura 2 horas aprox. La primera hora es una demostración y la segunda hora trabajan ustedes las recetas que aprendieron.",
         },
         {
-          question: "¿Puedo cancelar o pasar mi lugar a otra persona?",
-          // TODO: reemplazar por la política de cancelación cuando Maggie la defina.
-          answer: [
-            { text: "Escribinos por WhatsApp", href: whatsappLink(whatsappMessages.workshopCancellation) },
-            " y te contamos la política de cancelación de cada workshop.",
-          ],
+          question: "¿Cómo reservo mi lugar?",
+          answer: "Completá el formulario y dejá una seña del 50%. Tu lugar solo queda reservado con la seña.",
         },
-      ] satisfies { question: string; answer: RichText }[],
+        {
+          question: "¿Puedo cancelar o pasar mi lugar a otra persona si a último momento no puedo ir?",
+          answer:
+            "¡Sí, obvio! La idea es que esa clase no se pierda. Lo que no hacemos es reembolsar el dinero si no pudo venir nadie.",
+        },
+        {
+          question: "¿Hasta cuántas personas es?",
+          answer: "Los workshops son grupos reducidos de hasta 8 personas.",
+        },
+        {
+          question: "¿En qué situación se suspende el workshop?",
+          answer: "Si no llegamos a un mínimo de 4 personas, el workshop se reagenda para otra fecha.",
+        },
+      ],
     },
   },
   inscripcion: {
@@ -368,8 +431,8 @@ export const pages = {
       parent: { label: "Workshops", href: "/workshops" },
       current: "Inscripción",
     },
-    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Pago", "3 · Confirmado"] },
-    title: { form: "Inscribite al workshop", pay: "Revisá y pagá" },
+    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Seña", "3 · Reservado"] },
+    title: { form: "Inscribite al workshop", pay: "Revisá y dejá la seña" },
     form: {
       requiredNote: "Los campos con * son obligatorios.",
       aboutYou: "Tus datos",
@@ -399,7 +462,8 @@ export const pages = {
     summary: {
       label: "Resumen del workshop",
       eyebrow: (month: string) => `Workshop · ${month}`,
-      details: { date: "Fecha", time: "Horario", place: "Lugar", price: "Precio por persona" },
+      details: { date: "Fecha", time: "Horario", duration: "Duración", place: "Lugar", price: "Precio por persona" },
+      duration: workshopFacts.duration,
       place: `Cocina de ${site.owner.name} · ${site.city}`,
       spots: "Lugares",
       spotsLeft: (spots: number) => `Quedan ${spots}`,
@@ -407,21 +471,25 @@ export const pages = {
       less: "Un lugar menos",
       more: "Un lugar más",
       total: "Total",
+      deposit: `Seña para reservar (${workshopDeposit.label})`,
+      balance: "Saldo",
       totalTbd: "A confirmar",
     },
     pay: {
       reviewTitle: "Tus datos",
       experience: (level: string) => `Experiencia: ${level}`,
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
+      // TODO(E6): el pago de la seña con Mercado Pago. Hasta entonces, se
+      // coordina por WhatsApp con Maggie.
       whatsapp: {
-        text: `Para confirmar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
+        text: `Para reservar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
         messageLabel: "Mensaje",
-        cta: "Enviar por WhatsApp",
+        cta: "Pagar la seña",
+        ctaContext: " (se abre WhatsApp)",
       },
-      mercadoPago: "Pagar con Mercado Pago",
-      soon: "Muy pronto",
-      // TODO: el mockup dice "Tu lugar queda confirmado cuando se acredita el pago.
-      // Si el cupo se completa antes, no se cobra nada." Confirmar con Maggie antes de publicarlo.
+      deposit: "Tu lugar solo queda reservado con la seña.",
+      // TODO(Maggie): cuándo y cómo se paga el saldo. No inventar la política.
+      balance: "El saldo: a confirmar con Maggie.",
       note: "El pago online va a estar disponible muy pronto.",
     },
     soldOut: {
@@ -439,27 +507,20 @@ export const pages = {
       eyebrow: "Magdalena Gatti · Fundadora",
       title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
-      lead: `${site.name} nació en mi cocina, horneando para familia y amigos. Hoy más de 35 mil personas siguen lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien.`,
-      // TODO: completar con Maggie la presentación en primera persona. Por ahora, solo su bio de Instagram.
-      text: site.owner.instagramBio.join(" "),
+      lead: ownerStory[0],
       portrait: ownerImage,
-      detail: handsImage,
     },
-    // TODO: completar con Maggie. Por ahora, cada valor lleva un dato de su bio de Instagram.
-    values: [
-      { title: "Artesanal", text: site.leadTime + "." },
-      { title: "Delicado", text: site.pickup + "." },
-      { title: "Casero", text: site.owner.instagramBio[2] },
-    ],
-    timeline: {
-      title: "De la cocina de casa a tu mesa",
-      // TODO: completar con Maggie los años de cada etapa (solo la web, 2026, está confirmada).
-      items: [
-        { stage: "Family & friends", text: "Las primeras tortas, para cumpleaños de la familia." },
-        { stage: "Boca a boca", text: "Los pedidos empiezan a llegar por recomendación." },
-        { stage: "Workshops", text: "La cocina se abre para enseñar, una vez por mes." },
-        { stage: "Web 2026", text: "Pedidos y reservas desde la web." },
+    story: {
+      eyebrow: "Mi historia",
+      title: "Del diseño a la cocina",
+      script: "cocina",
+      // Texto completo de Maggie, en tres partes (sin años: no los tenemos).
+      parts: [
+        { title: "Un ciclo que se cerró", paragraphs: [ownerStory[1], ownerStory[2], ownerStory[3]] },
+        { title: "Formación", paragraphs: [ownerStory[4]] },
+        { title: "Hoy", paragraphs: [ownerStory[5]] },
       ],
+      closing: ownerStory[6],
     },
     gallery: [
       kitchenImage,

@@ -1,11 +1,14 @@
 import { Button } from "@/components/Button";
-import { ImageFrame } from "@/components/ImageFrame";
 import { SectionTitle } from "@/components/SectionTitle";
-import { pages, ui } from "@/data/site";
+import { pages } from "@/data/site";
 
 const { past, custom } = pages.workshops;
 
-/** Fotos de workshops anteriores y el recuadro de workshop personalizado. */
+/**
+ * "Así fueron los workshops" y el recuadro de workshop personalizado.
+ * Mientras Maggie no mande nombre, fecha y foto de los workshops pasados,
+ * solo va el título con el link a Instagram (no se inventan nombres).
+ */
 export function PastWorkshops() {
   return (
     <section aria-labelledby="pasados-titulo" className="flex flex-col gap-6 lg:gap-8">
@@ -18,22 +21,6 @@ export function PastWorkshops() {
           {past.instagram.label} <span aria-hidden="true" className="font-simbolos">→</span>
         </a>
       </div>
-
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-5 lg:grid-cols-4 lg:gap-6">
-        {past.items.map((item) => (
-          <li key={item.name} className="flex flex-col gap-3">
-            <ImageFrame
-              src={item.image.src}
-              alt={item.image.alt}
-              placeholderLabel={ui.imagePending}
-              rounded="rounded-card-sm lg:rounded-3xl"
-              sizes="(min-width: 1024px) 25vw, 50vw"
-              className="h-48 lg:h-75"
-            />
-            <p className="font-display text-18 lg:text-22">{item.name}</p>
-          </li>
-        ))}
-      </ul>
 
       <div className="flex flex-col gap-6 rounded-3xl border border-borde p-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:px-12 lg:py-10">
         <div className="flex flex-col gap-2">

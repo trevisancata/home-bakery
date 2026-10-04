@@ -20,6 +20,11 @@ const dayFormatter = new Intl.DateTimeFormat("es-AR", {
   timeZone: "America/Argentina/Buenos_Aires",
 });
 
+const dayNumberFormatter = new Intl.DateTimeFormat("es-AR", {
+  day: "2-digit",
+  timeZone: "America/Argentina/Buenos_Aires",
+});
+
 const monthFormatter = new Intl.DateTimeFormat("es-AR", {
   month: "long",
   timeZone: "America/Argentina/Buenos_Aires",
@@ -46,6 +51,11 @@ export function formatDay(isoDate: string) {
   return dayFormatter.format(new Date(isoDate));
 }
 
+/** Ej.: "07". */
+export function formatDayNumber(isoDate: string) {
+  return dayNumberFormatter.format(new Date(isoDate));
+}
+
 /** Ej.: "Octubre". */
 export function formatMonth(isoDate: string) {
   const month = monthFormatter.format(new Date(isoDate));
@@ -55,14 +65,4 @@ export function formatMonth(isoDate: string) {
 /** Ej.: "10:00 h". */
 export function formatTime(isoDate: string) {
   return `${timeFormatter.format(new Date(isoDate))} h`;
-}
-
-/** Ej.: 180 → "3 horas", 150 → "2 horas y media". */
-export function formatDuration(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  const hoursText = hours === 1 ? "1 hora" : `${hours} horas`;
-  if (rest === 0) return hoursText;
-  if (rest === 30) return `${hoursText} y media`;
-  return `${hoursText} ${rest} min`;
 }

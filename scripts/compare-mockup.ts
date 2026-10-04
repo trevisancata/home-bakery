@@ -10,7 +10,7 @@
  *   npm run compare              → todas las pantallas
  *   npm run compare -- tienda    → solo las pantallas indicadas
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium, type Browser, type Page } from "@playwright/test";
@@ -39,7 +39,6 @@ const viewportHeight: Record<Width, number> = { 1440: 900, 390: 844 };
 const root = path.resolve(import.meta.dirname, "..");
 const mockupDir = path.join(root, "docs/mockup");
 const outDir = path.join(mockupDir, "comparaciones");
-const logoPath = path.join(root, "public/brand/homebakery_logo_white.png");
 const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
 /**
@@ -163,8 +162,6 @@ async function capture(page: Page, url: string, isMockup: boolean) {
 async function newPage(browser: Browser, width: Width) {
   const context = await browser.newContext({ viewport: { width, height: viewportHeight[width] } });
   const page = await context.newPage();
-  const logo = await readFile(logoPath);
-  await page.route("**/logo-blanco.png", (route) => route.fulfill({ body: logo, contentType: "image/png" }));
   await page.route("**/support.js", (route) => route.fulfill({ body: "", contentType: "text/javascript" }));
   return page;
 }

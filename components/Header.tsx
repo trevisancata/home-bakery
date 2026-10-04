@@ -70,7 +70,7 @@ export function Header() {
         </button>
 
         <Link href="/" className="rounded-full">
-          <Logo alt={ui.homeLink} className="size-14 lg:size-19" imageClassName="w-9 lg:w-12.5" />
+          <Logo alt={ui.homeLink} className="size-14 lg:size-19" imageClassName="w-10 lg:w-13.5" />
         </Link>
 
         <nav aria-label={ui.mainNavLabel} className="hidden md:block">

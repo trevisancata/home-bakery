@@ -29,7 +29,7 @@ test.describe("Inscripción a un workshop", () => {
     );
   });
 
-  test("envía la inscripción y pasa al paso de pago", async ({ page }) => {
+  test("envía la inscripción y pasa al paso de la seña", async ({ page }) => {
     await page.goto(url);
 
     await page.getByRole("textbox", { name: "Nombre y apellido" }).fill("Ana Pérez");
@@ -40,6 +40,9 @@ test.describe("Inscripción a un workshop", () => {
     await page.getByRole("combobox", { name: "¿Cómo conociste Home Bakery?" }).selectOption("Instagram");
 
     const summary = page.getByRole("complementary", { name: "Resumen del workshop" });
+    await expect(summary.getByText("Total")).toBeVisible();
+    await expect(summary.getByText("Seña para reservar (50%)")).toBeVisible();
+    await expect(summary.getByText("Saldo")).toBeVisible();
     await summary.getByRole("button", { name: "Un lugar más" }).click();
     await expect(summary.getByText("2 lugares")).toBeAttached();
     await expect(summary.getByRole("button", { name: "Un lugar menos" })).toBeEnabled();
@@ -47,17 +50,18 @@ test.describe("Inscripción a un workshop", () => {
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Continuar al pago" }).click();
 
-    await expect(page.getByRole("heading", { level: 1, name: "Revisá y pagá" })).toBeFocused();
-    await expect(page.getByRole("listitem").filter({ hasText: "2 · Pago" })).toHaveAttribute("aria-current", "step");
+    await expect(page.getByRole("heading", { level: 1, name: "Revisá y dejá la seña" })).toBeFocused();
+    await expect(page.getByRole("listitem").filter({ hasText: "2 · Seña" })).toHaveAttribute("aria-current", "step");
     await expect(summary.getByText("Quedan 4")).toBeVisible();
 
-    const whatsapp = page.getByRole("link", { name: "Enviar por WhatsApp" });
+    // Hasta el E6, "Pagar la seña" abre WhatsApp con el mensaje prefijado.
+    const whatsapp = page.getByRole("link", { name: "Pagar la seña (se abre WhatsApp)" });
     const href = await whatsapp.getAttribute("href");
     expect(href).toMatch(/^https:\/\/wa\.me\//);
     const message = new URL(href!).searchParams.get("text");
     expect(message).toContain("Ana Pérez");
     expect(message).toContain("2 lugares");
-
-    await expect(page.getByRole("button", { name: /Mercado Pago/ })).toBeDisabled();
+    expect(message).toContain("seña del 50%");
+    await expect(page.getByText("El saldo: a confirmar con Maggie.")).toBeVisible();
   });
 });
