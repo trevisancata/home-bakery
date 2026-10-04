@@ -27,11 +27,11 @@ a{color:#5E4A33}a:hover{color:#2F2F2F}
 .foot a:hover{color:#FFFFFF;text-decoration:underline}
 </style>
 </helmet>
-<div style="width: 1440px; height: 4900px; display: flex; flex-direction: column; background: #F5F4F0">
+<div style="width: 1440px; height: 5000px; display: flex; flex-direction: column; background: #F5F4F0">
 
 <div style="background: #5E4A33; color: #F5F4F0; font-size: 13px; text-align: center; padding: 11px 16px; letter-spacing: .02em">Pedidos con 48 h de anticipación · Take away en San Isidro · Lun a Vie 10 a 19 h · Sáb 9 a 13 h</div>
 <header style="position: sticky; top: 0; z-index: 20; background: #F5F4F0; display: flex; align-items: center; justify-content: space-between; padding: 22px 80px; border-bottom: 1px solid #E5DDD2">
-<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/logo-blanco.png" alt="" style="width: 50px; height: auto"></span></a>
+<a href="inicio-desktop.html" aria-label="Home Bakery, ir al inicio" style="display: flex; align-items: center; text-decoration: none"><span style="width: 76px; height: 76px; border-radius: 999px; background: #A88B6C; display: flex; align-items: center; justify-content: center"><img src="../../public/brand/homebakery_logo_sin_tagline_white.png" alt="" style="width: 54px; height: auto"></span></a>
 <nav class="nav" aria-label="Principal" style="display: flex; gap: 40px; font-size: 15px; font-weight: 500">
 <a href="inicio-desktop.html" aria-current="page" style="border-bottom-color: #5E4A33">Inicio</a>
 <a href="tienda.html">Tienda</a>
@@ -43,23 +43,27 @@ a{color:#5E4A33}a:hover{color:#2F2F2F}
 
 <main style="flex-grow: 1; display: flex; flex-direction: column; background-color: transparent">
 
-<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; padding: 72px 80px 96px; align-items: center">
-<div style="display: flex; flex-direction: column; gap: 28px">
-<span class="eyebrow">Pastelería y workshops · San Isidro</span>
-<h1 class="serif" style="margin: 0; font-size: 76px; line-height: 1.02; font-weight: 400; letter-spacing: -.02em">Artesanal, delicado y <span class="script">casero</span>.</h1>
-<p class="muted" style="margin: 0; font-size: 19px; line-height: 1.6; max-width: 480px">Tortas, tartas, cookies y mesas dulces por encargo, hechas por Maggie en su cocina de San Isidro. Encargá online, Maggie lo confirma y pasás a retirar.</p>
-<div style="display: flex; gap: 16px; margin-top: 8px">
-<a class="btn" href="tienda.html">Ver la tienda</a>
-<a class="btn2" href="workshops.html">Próximo workshop</a>
+<section aria-roledescription="carrusel" aria-label="Home Bakery: pastelería y workshops" style="position: relative; height: 720px; overflow: hidden; background: #6E5A47">
+<div aria-roledescription="diapositiva" aria-label="{{slideAria}}" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: {{slideBg}}; display: flex; justify-content: flex-end; align-items: flex-start; padding: 28px 40px; box-sizing: border-box; color: #F5F4F0; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-weight: 500">{{slideLabel}}</div>
+<div aria-hidden="true" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(36,28,22,.42)"></div>
+<div style="position: absolute; left: 80px; bottom: 88px; width: 780px; display: flex; flex-direction: column; gap: 24px">
+<span class="eyebrow" style="color: #EADFCF">Artesanal, delicado y casero</span>
+<h1 class="serif" style="margin: 0; font-size: 92px; line-height: 1; font-weight: 400; letter-spacing: -.02em; color: #FFFFFF">Pastelería y <span class="script" style="color: #EADFCF">workshops</span></h1>
+<p style="margin: 0; font-size: 20px; line-height: 1.6; color: #F5F4F0; max-width: 600px">Workshops reducidos en mi cocina y pastelería por encargo. Pedidos con 48 h de anticipación. Take away en San Isidro.</p>
+<div style="display: flex; gap: 16px; margin-top: 8px"><a class="btn" href="tienda.html" style="background: #F5F4F0; color: #2F2F2F">Ver la tienda</a><a class="btn2" href="workshops.html" style="border-color: #F5F4F0; color: #F5F4F0">Conocé los workshops</a></div>
 </div>
+<div style="position: absolute; right: 80px; bottom: 88px">
+<div role="group" aria-label="Controles del carrusel" style="display: flex; align-items: center; gap: 10px">
+<button type="button" aria-label="Diapositiva anterior" onClick="{{prev}}" style="width: 48px; height: 48px; border-radius: 999px; border: 1.5px solid #F5F4F0; background: rgba(36,28,22,.25); color: #F5F4F0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="display: flex; align-items: center">
+<sc-for list="{{dots}}" as="d" hint-placeholder-count="4">
+<sc-if value="{{d.on}}" hint-placeholder-val="{{ false }}"><button type="button" aria-label="Diapositiva {{d.n}}" aria-current="true" onClick="{{d.pick}}" style="width: 32px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer"><span style="width: 12px; height: 12px; border-radius: 99px; background: #F5F4F0"></span></button></sc-if>
+<sc-if value="{{d.off}}" hint-placeholder-val="{{ true }}"><button type="button" aria-label="Diapositiva {{d.n}}" onClick="{{d.pick}}" style="width: 32px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer"><span style="width: 12px; height: 12px; border-radius: 99px; border: 1.5px solid #F5F4F0; box-sizing: border-box"></span></button></sc-if>
+</sc-for>
 </div>
-<div style="position: relative; height: 620px">
-<div class="ph" style="position: absolute; top: 0; right: 0; width: 520px; height: 620px; border-radius: 280px 280px 24px 24px">Foto · torta protagonista</div>
-<div style="position: absolute; left: 0; bottom: 48px; width: 260px; background: #FFFFFF; border-radius: 20px; padding: 22px; box-shadow: 0 12px 32px rgba(59,42,34,.12); display: flex; flex-direction: column; gap: 8px">
-<span class="eyebrow">Próximo workshop</span>
-<span class="serif" style="font-size: 22px">[Nombre del workshop]</span>
-<span class="muted" style="font-size: 14px">[Fecha] · [Horario]</span>
-<span style="font-size: 14px; font-weight: 600; color: #5E4A33">Quedan [N] lugares</span>
+<button type="button" aria-label="Diapositiva siguiente" onClick="{{next}}" style="width: 48px; height: 48px; border-radius: 999px; border: 1.5px solid #F5F4F0; background: rgba(36,28,22,.25); color: #F5F4F0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+<sc-if value="{{playing}}" hint-placeholder-val="{{ true }}"><button type="button" aria-label="Pausar el carrusel" onClick="{{togglePlay}}" style="width: 48px; height: 48px; border-radius: 999px; border: 1.5px solid #F5F4F0; background: rgba(36,28,22,.25); color: #F5F4F0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6v12M15 6v12"></path></svg></button></sc-if>
+<sc-if value="{{paused}}" hint-placeholder-val="{{ false }}"><button type="button" aria-label="Reanudar el carrusel" onClick="{{togglePlay}}" style="width: 48px; height: 48px; border-radius: 999px; border: 1.5px solid #F5F4F0; background: rgba(36,28,22,.25); color: #F5F4F0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"></path></svg></button></sc-if>
 </div>
 </div>
 </section>
@@ -91,26 +95,26 @@ a{color:#5E4A33}a:hover{color:#2F2F2F}
 </section>
 
 <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 80px; padding: 40px 80px 104px; align-items: center">
-<div class="ph" style="height: 560px; border-radius: 24px">Foto · Maggie en su cocina</div>
+<img src="../../public/fotos/maggie-presentacion.jpg" alt="Maggie apoyada en la mesada de su cocina, sonriendo" style="width: 100%; height: 640px; object-fit: cover; object-position: center 30%; border-radius: 24px; display: block">
 <div style="display: flex; flex-direction: column; gap: 24px">
 <span class="eyebrow">Quién hornea</span>
 <h2 class="serif" style="margin: 0; font-size: 56px; font-weight: 400; line-height: 1.05">Hola, soy <span class="script">Maggie</span>.</h2>
-<p style="margin: 0; font-size: 19px; line-height: 1.6">Magdalena Gatti para los papeles. Home Bakery empezó cocinando para familia y amigos. Hoy más de 35 mil personas siguen mi cocina, pero casi todo sigue llegando de boca en boca.</p>
-<p class="muted" style="margin: 0; font-size: 16px; line-height: 1.7">[Dos o tres líneas en primera persona: qué te gusta hornear, de dónde vienen tus recetas, qué querés que sienta quien prueba algo tuyo.]</p>
+<p class="serif" style="margin: 0; font-size: 24px; line-height: 1.5">Home Bakery nació en mi cocina, horneando siempre para mi familia y amigos.</p>
+<p class="muted" style="margin: 0; font-size: 17px; line-height: 1.7">Me formé como chef profesional en el IAG y como pastelera en el Ott College. Hoy casi todo sigue llegando porque alguien le contó a alguien.</p>
 <a class="btn2" href="maggie.html" style="align-self: flex-start">Conocé mi historia</a>
 </div>
 </section>
 
 <section style="margin: 0 80px; background: #5E4A33; color: #F5F4F0; border-radius: 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden">
 <div style="padding: 72px; display: flex; flex-direction: column; gap: 22px">
-<span class="eyebrow" style="color: #EADFCF">Workshop del mes</span>
-<h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 400">[Nombre del workshop]</h2>
-<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #E9DCD3">[Qué se aprende en una línea.] Grupos reducidos, en la cocina de Maggie en San Isidro.</p>
-<div style="display: flex; gap: 32px; font-size: 15px; color: #E9DCD3"><span>[Fecha]</span><span>[Horario]</span><span>[$ precio]</span></div>
-<div style="display: flex; flex-direction: column; gap: 8px; max-width: 360px"><div style="height: 8px; background: #74604A; border-radius: 99px"><div style="width: 70%; height: 8px; background: #EADFCF; border-radius: 99px"></div></div><span style="font-size: 14px; color: #EADFCF; font-weight: 600">Quedan [N] de [M] lugares</span></div>
-<a class="btn" href="inscripcion-workshop.html" style="background: #F5F4F0; color: #2F2F2F; align-self: flex-start; margin-top: 8px">Reservar mi lugar</a>
+<span class="eyebrow" style="color: #EADFCF">Workshops</span>
+<h2 class="serif" style="margin: 0; font-size: 48px; font-weight: 400; line-height: 1.1">Grupos reducidos en mi <span class="script" style="color: #EADFCF">cocina</span></h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #E9DCD3">Un lugar de encuentro, un momento para frenar, compartir y disfrutar. Te llevás una cajita con todo lo que preparamos.</p>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; gap: 28px; font-size: 15px; color: #E9DCD3"><li>Hasta 8 personas</li><li>2 h aprox.</li><li>San Isidro</li></ul>
+<p style="margin: 0; font-size: 15px; color: #EADFCF; border-top: 1px solid #74604A; padding-top: 18px">Próxima fecha: <strong style="color: #F5F4F0">[Nombre del workshop] · [Fecha]</strong></p>
+<a class="btn" href="workshops.html" style="background: #F5F4F0; color: #2F2F2F; align-self: flex-start; margin-top: 4px">Conocé los workshops</a>
 </div>
-<div class="ph" style="border-radius: 0; height: 100%; min-height: 480px; background: #74604A; color: #E9DCD3">Foto · workshop anterior</div>
+<div class="ph" style="border-radius: 0; height: 100%; min-height: 520px; background: #74604A; color: #E9DCD3">Video · dinámica de cocina (reel)</div>
 </section>
 
 <section style="padding: 104px 80px 88px; display: flex; flex-direction: column; gap: 36px">
@@ -145,8 +149,8 @@ a{color:#5E4A33}a:hover{color:#2F2F2F}
 
 <footer id="contacto" class="foot" style="background: #5E4A33; color: #F5F4F0; padding: 72px 80px 36px; display: flex; flex-direction: column; gap: 56px">
 <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 48px">
-<div style="display: flex; flex-direction: column; gap: 12px"><img src="../../public/brand/logo-blanco.png" alt="Home Bakery" style="width: 90px; height: auto"></div>
-<div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: rgb(245, 244, 240)">Inicio</strong><a href="tienda.html">Tienda</a><a href="workshops.html">Workshops</a><a href="#como-pedir">Maggie</a></div>
+<div style="display: flex; flex-direction: column; gap: 12px"><img src="../../public/brand/homebakery_logo_sin_tagline_white.png" alt="Home Bakery" style="width: 90px; height: auto"></div>
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: rgb(245, 244, 240)">Inicio</strong><a href="tienda.html">Tienda</a><a href="workshops.html">Workshops</a><a href="maggie.html">Maggie</a></div>
 <div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: #F5F4F0">Retiros</strong><span>Lun a Vie · 10 a 19 h</span><span>Sáb · 9 a 13 h</span><span>Dom · cerrado</span></div>
 <div style="display: flex; flex-direction: column; gap: 12px; font-size: 15px"><strong style="color: #F5F4F0">Contacto</strong><a href="https://instagram.com/homebakery.pasteleria">Instagram @homebakery.pasteleria</a><a href="https://wa.me/5491155767591">WhatsApp 11 5576-7591</a></div>
 </div>
@@ -155,9 +159,32 @@ a{color:#5E4A33}a:hover{color:#2F2F2F}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5000}}'>
 class Component extends DCLogic {
-  renderVals() { return {}; }
+  constructor(props) { super(props); this.state = { slide: 0, paused: false }; }
+  renderVals() {
+    var slides = [
+      { label: 'Foto o video 1 de 4 · torta protagonista', bg: '#7A6550' },
+      { label: 'Video 2 de 4 · Maggie decorando (reel)', bg: '#6E5A47' },
+      { label: 'Foto 3 de 4 · workshop en la cocina', bg: '#8C7660' },
+      { label: 'Foto 4 de 4 · mesa de productos', bg: '#655243' }
+    ];
+    var cur = this.state.slide || 0;
+    var self = this;
+    var go = function (n) { self.setState({ slide: (n + slides.length) % slides.length }); };
+    return {
+      slideLabel: slides[cur].label,
+      slideBg: slides[cur].bg,
+      slideAria: (cur + 1) + ' de ' + slides.length,
+      prev: function () { go(cur - 1); },
+      next: function () { go(cur + 1); },
+      dots: slides.map(function (s, i) { return { n: i + 1, on: i === cur, off: i !== cur, pick: function () { go(i); } }; }),
+      paused: !!this.state.paused,
+      playing: !this.state.paused,
+      togglePlay: function () { self.setState({ paused: !self.state.paused }); },
+      ready: true
+    };
+  }
 }
 </script>
 </body>
