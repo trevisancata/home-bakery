@@ -20,6 +20,11 @@ const dayFormatter = new Intl.DateTimeFormat("es-AR", {
   timeZone: "America/Argentina/Buenos_Aires",
 });
 
+const dayNumberFormatter = new Intl.DateTimeFormat("es-AR", {
+  day: "2-digit",
+  timeZone: "America/Argentina/Buenos_Aires",
+});
+
 const monthFormatter = new Intl.DateTimeFormat("es-AR", {
   month: "long",
   timeZone: "America/Argentina/Buenos_Aires",
@@ -44,6 +49,11 @@ export function formatDate(isoDate: string) {
 /** Ej.: "sábado, 17 de octubre". */
 export function formatDay(isoDate: string) {
   return dayFormatter.format(new Date(isoDate));
+}
+
+/** Ej.: "07". */
+export function formatDayNumber(isoDate: string) {
+  return dayNumberFormatter.format(new Date(isoDate));
 }
 
 /** Ej.: "Octubre". */

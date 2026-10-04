@@ -65,7 +65,6 @@ export const whatsappMessages = {
   product: (name: string) => `¡Hola! Quería encargar: ${name}.`,
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
   customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
-  workshopCancellation: "¡Hola! Quería consultar por la política de cancelación de los workshops.",
   workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
 };
 
@@ -353,19 +352,40 @@ export const pages = {
       title: "Workshops",
       description: `Workshops de pastelería en grupos reducidos, en la cocina de ${site.owner.name} en ${site.city}.`,
     },
-    eyebrow: `Aprender en la cocina de ${site.owner.name}`,
-    title: "Workshops",
-    intro: `Workshops reducidos en mi cocina de ${site.city}, uno por mes. Reservás y pagás online y tu lugar queda confirmado al instante.`,
-    featured: {
-      badge: (month: string) => `Próximo · ${month}`,
-      details: { date: "Fecha", time: "Horario", includes: "Incluye", price: "Precio" },
-      spotsLeft: (spots: number) => (spots === 1 ? "Queda 1 lugar" : `Quedan ${spots} lugares`),
-      capacity: (capacity: number) => `Cupo: ${capacity}`,
-      cta: "Reservar mi lugar",
+    hero: {
+      label: `Workshops en la cocina de ${site.owner.name}`,
+      eyebrow: "Workshops de pastelería",
+      title: "Grupos reducidos en mi cocina",
+      script: "cocina",
+      text: workshopsStory.meeting,
+      cta: { label: "Ver próximas fechas", href: "#agenda" },
+      // TODO(Maggie): reels de los workshops para el video de fondo.
+      video: { src: undefined as string | undefined, poster: undefined as string | undefined },
+    },
+    teaching: {
+      eyebrow: "Cómo enseño",
+      text: workshopsStory.teaching,
+      signature: site.owner.name,
+      // TODO(Maggie): foto de Maggie enseñando.
+      image: { alt: "" } satisfies SiteImage,
+    },
+    steps: {
+      eyebrow: "Paso a paso",
+      title: "Cómo es un workshop",
+      facts: [workshopFacts.duration, workshopFacts.capacity, `En mi cocina de ${site.city}`, "Reservás con una seña del 50%"],
+      items: [
+        { title: "Te recibo", text: workshopsStory.welcome },
+        { title: "Demo", text: workshopsStory.demo },
+        { title: "Manos a la obra", text: workshopsStory.practice },
+        { title: "Tu cajita", text: workshopsStory.box },
+      ],
     },
     upcoming: {
+      eyebrow: "Agenda",
       title: "Próximas fechas",
-      status: { open: "Inscripción abierta", last: "Últimos lugares", soldOut: "Agotado" },
+      note: "Tu lugar solo queda reservado con la seña.",
+      spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity}`,
+      soldOut: "Agotado",
       cta: "Reservar",
       waitlist: "Avisarme si se libera",
     },
@@ -373,13 +393,8 @@ export const pages = {
       title: "Así fueron los workshops",
       script: "workshops",
       instagram: { label: "Ver más en Instagram", href: site.contact.instagram.url },
-      // Las fotos son decorativas: el nombre va debajo de cada una.
-      items: [
-        "Mis tortas básicas",
-        "Pastelería para el té vol. 2",
-        "Diseñá tu number cake",
-        "Sin azúcar agregada y sin harinas",
-      ].map((name): { name: string; image: SiteImage } => ({ name, image: { alt: "" } })),
+      // TODO(Maggie): nombre, mes/año y foto de 4 workshops pasados. Hasta
+      // tenerlos, solo el título y el link a Instagram.
     },
     custom: {
       title: "Workshop personalizado",
@@ -388,24 +403,32 @@ export const pages = {
     },
     faq: {
       title: "Preguntas frecuentes",
-      // TODO: completar con Maggie. Quedan afuera hasta tener las respuestas:
-      // "¿Hace falta experiencia?" y "¿Qué tengo que llevar?".
+      // Respuestas de Maggie (docs/contenido-maggie.md, 01/10).
       items: [
+        { question: "¿Dónde es?", answer: "En mi cocina, en San Isidro." },
         {
-          question: "¿Dónde es?",
-          answer: [
-            `En la cocina de ${site.owner.name}, en ${site.city}. La dirección exacta llega con la confirmación.`,
-          ],
+          question: "¿Cuánto dura?",
+          answer:
+            "Dura 2 horas aprox. La primera hora es una demostración y la segunda hora trabajan ustedes las recetas que aprendieron.",
         },
         {
-          question: "¿Puedo cancelar o pasar mi lugar a otra persona?",
-          // TODO: reemplazar por la política de cancelación cuando Maggie la defina.
-          answer: [
-            { text: "Escribinos por WhatsApp", href: whatsappLink(whatsappMessages.workshopCancellation) },
-            " y te contamos la política de cancelación de cada workshop.",
-          ],
+          question: "¿Cómo reservo mi lugar?",
+          answer: "Completá el formulario y dejá una seña del 50%. Tu lugar solo queda reservado con la seña.",
         },
-      ] satisfies { question: string; answer: RichText }[],
+        {
+          question: "¿Puedo cancelar o pasar mi lugar a otra persona si a último momento no puedo ir?",
+          answer:
+            "¡Sí, obvio! La idea es que esa clase no se pierda. Lo que no hacemos es reembolsar el dinero si no pudo venir nadie.",
+        },
+        {
+          question: "¿Hasta cuántas personas es?",
+          answer: "Los workshops son grupos reducidos de hasta 8 personas.",
+        },
+        {
+          question: "¿En qué situación se suspende el workshop?",
+          answer: "Si no llegamos a un mínimo de 4 personas, el workshop se reagenda para otra fecha.",
+        },
+      ],
     },
   },
   inscripcion: {

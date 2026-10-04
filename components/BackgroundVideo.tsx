@@ -12,6 +12,8 @@ type BackgroundVideoProps = {
   tone?: string;
   /** Posición del botón de pausa dentro del contenedor. */
   buttonClassName?: string;
+  /** Ubicación de la etiqueta del placeholder. */
+  placeholderClassName?: string;
   className?: string;
 };
 
@@ -26,6 +28,7 @@ export function BackgroundVideo({
   poster,
   tone = "bg-chocolate-claro",
   buttonClassName = "right-4 bottom-4",
+  placeholderClassName = "items-end p-3 lg:p-4",
   className = "",
 }: BackgroundVideoProps) {
   const reducedMotion = useReducedMotion();
@@ -44,7 +47,7 @@ export function BackgroundVideo({
 
   if (!src) {
     return (
-      <div className={`flex items-end p-3 lg:p-4 ${tone} ${className}`}>
+      <div className={`flex ${placeholderClassName} ${tone} ${className}`}>
         <span aria-hidden="true" className="text-11 font-medium tracking-foto text-crema uppercase lg:text-12">
           {ui.videoPending}
         </span>
