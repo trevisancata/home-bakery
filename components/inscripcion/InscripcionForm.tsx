@@ -327,7 +327,7 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
               </div>
               <div className="flex justify-between gap-4 text-20 font-semibold">
                 <dt>{content.summary.deposit}</dt>
-                <dd data-testid="inscripcion-sena" className="text-right">
+                <dd data-testid="inscripcion-sena" className="shrink-0 text-right">
                   {deposit}
                 </dd>
               </div>
