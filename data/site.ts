@@ -22,14 +22,6 @@ export const site = {
   owner: {
     name: "Maggie",
     role: "Pastelera y fundadora",
-    /** Bio de Instagram: el único texto en primera persona confirmado por Maggie. */
-    instagramBio: [
-      "Soy Maggie Gatti.",
-      "Artesanal, delicado y casero.",
-      "Workshops reducidos en mi cocina.",
-      "Take away en San Isidro.",
-      "Pedidos con 48 h de anticipación.",
-    ],
   },
   leadTime: "Pedidos con 48 h de anticipación",
   pickup: "Take away en San Isidro",
@@ -186,10 +178,6 @@ const workshopFacts = {
   duration: "2 h aprox.",
   capacity: "Hasta 8 personas",
   depositRate: 0.5,
-};
-
-const handsImage: SiteImage = {
-  alt: "Manos amasando sobre una mesada enharinada",
 };
 
 const kitchenImage: SiteImage = {
@@ -512,27 +500,20 @@ export const pages = {
       eyebrow: "Magdalena Gatti · Fundadora",
       title: `Hola, soy ${site.owner.name}.`,
       script: site.owner.name,
-      lead: `${site.name} nació en mi cocina, horneando para familia y amigos. Hoy más de 35 mil personas siguen lo que hago, pero casi todo sigue llegando porque alguien le contó a alguien.`,
-      // TODO: completar con Maggie la presentación en primera persona. Por ahora, solo su bio de Instagram.
-      text: site.owner.instagramBio.join(" "),
+      lead: ownerStory[0],
       portrait: ownerImage,
-      detail: handsImage,
     },
-    // TODO: completar con Maggie. Por ahora, cada valor lleva un dato de su bio de Instagram.
-    values: [
-      { title: "Artesanal", text: site.leadTime + "." },
-      { title: "Delicado", text: site.pickup + "." },
-      { title: "Casero", text: site.owner.instagramBio[2] },
-    ],
-    timeline: {
-      title: "De la cocina de casa a tu mesa",
-      // TODO: completar con Maggie los años de cada etapa (solo la web, 2026, está confirmada).
-      items: [
-        { stage: "Family & friends", text: "Las primeras tortas, para cumpleaños de la familia." },
-        { stage: "Boca a boca", text: "Los pedidos empiezan a llegar por recomendación." },
-        { stage: "Workshops", text: "La cocina se abre para enseñar, una vez por mes." },
-        { stage: "Web 2026", text: "Pedidos y reservas desde la web." },
+    story: {
+      eyebrow: "Mi historia",
+      title: "Del diseño a la cocina",
+      script: "cocina",
+      // Texto completo de Maggie, en tres partes (sin años: no los tenemos).
+      parts: [
+        { title: "Un ciclo que se cerró", paragraphs: [ownerStory[1], ownerStory[2], ownerStory[3]] },
+        { title: "Formación", paragraphs: [ownerStory[4]] },
+        { title: "Hoy", paragraphs: [ownerStory[5]] },
       ],
+      closing: ownerStory[6],
     },
     gallery: [
       kitchenImage,
