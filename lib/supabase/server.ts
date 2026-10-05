@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
-import { requireEnv } from "./env";
+import { requireEnv } from "./env.ts";
 
 /**
  * Cliente de Supabase para leer datos públicos desde el servidor, con la

@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
-import { requireEnv } from "./env";
+import { requireEnv } from "./env.ts";
 
 /**
  * Cliente con la secret key (rol service_role): se saltea RLS. Solo para
