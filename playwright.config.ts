@@ -1,11 +1,17 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
-// Las inscripciones se guardan en memoria del servidor: cada corrida levanta
-// uno nuevo (build de producción) para arrancar siempre con el cupo completo.
+// Los tests leen y escriben Supabase: las claves salen de .env.local (Next
+// las carga solo para el servidor; acá hacen falta también para los tests).
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
+
+// Cada corrida levanta un build de producción nuevo.
 const port = 3100;
 
 export default defineConfig({
   testDir: "e2e",
+  // Red de seguridad: borra los workshops de prueba que hayan quedado.
+  globalTeardown: "./e2e/support/teardown.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

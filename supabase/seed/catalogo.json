@@ -1,0 +1,4812 @@
+{
+  "version": 1,
+  "generado": "2026-09-30",
+  "nota": "Precios en null hasta que Maggie los confirme. \"revision\" no se carga en la base.",
+  "categorias": [
+    {
+      "slug": "tortas",
+      "nombre": "Tortas",
+      "orden": 1,
+      "a_medida": false
+    },
+    {
+      "slug": "tortas-especiales",
+      "nombre": "Tortas especiales",
+      "orden": 2,
+      "a_medida": true
+    },
+    {
+      "slug": "number-cakes",
+      "nombre": "Number cakes",
+      "orden": 3,
+      "a_medida": true
+    },
+    {
+      "slug": "budines",
+      "nombre": "Budines",
+      "orden": 4,
+      "a_medida": false
+    },
+    {
+      "slug": "cuadrados-y-bites",
+      "nombre": "Cuadrados y bites",
+      "orden": 5,
+      "a_medida": false
+    },
+    {
+      "slug": "postres",
+      "nombre": "Postres",
+      "orden": 6,
+      "a_medida": false
+    },
+    {
+      "slug": "freezados",
+      "nombre": "Freezados",
+      "orden": 7,
+      "a_medida": false
+    }
+  ],
+  "productos": [
+    {
+      "medida": "24 x 10 cm",
+      "porciones": "12 porciones",
+      "peso": "700 g",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Budín de chocolate",
+      "categoria": "budines",
+      "descripcion": "Budín de chocolate al 60% con baño de chocolate.",
+      "orden": 1,
+      "slug": "budin-de-chocolate",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/budin-de-chocolate/budin-de-chocolate-1.webp",
+          "original": "BUDINES/Budin de chocolate/20260715_143108.jpg",
+          "portada": true,
+          "alt": "Budín de chocolate",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/budin-de-chocolate/budin-de-chocolate-2.webp",
+          "original": "BUDINES/Budin de chocolate/20260715_143054.jpg",
+          "portada": false,
+          "alt": "Budín de chocolate",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Budin de Chocolate",
+        "texto_excel": "Budín de chocolate al 60% con baño de chocolate. | Mide 24 x 10 cm. | Pesa 700gr | Rinde 12 porciones",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 x 10 cm",
+      "porciones": "12 porciones",
+      "peso": "700 g",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Budín de limón y amapolas",
+      "categoria": "budines",
+      "descripcion": "Budín húmedo de limón con cobertura de glasé y semillas de amapola.",
+      "orden": 2,
+      "slug": "budin-de-limon-y-amapolas",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/budin-de-limon-y-amapolas/budin-de-limon-y-amapolas-1.webp",
+          "original": "BUDINES/budin de limon/20210515_110745.jpeg",
+          "portada": true,
+          "alt": "Budín de limón y amapolas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Budin de Limon y amapolas",
+        "texto_excel": "Budín húmedo de limón con cobertura de glase y semillas de amapola. | Mide 24 x 10 cm. | Pesa 700gr | Rinde 12 porciones",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 x 10 cm",
+      "porciones": "12 porciones",
+      "peso": "700 g",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Budín de mandarina y frutos secos",
+      "categoria": "budines",
+      "descripcion": "Budín húmedo de mandarinas con frutos secos en almíbar de cítricos.",
+      "orden": 3,
+      "slug": "budin-de-mandarina-y-frutos-secos",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/budin-de-mandarina-y-frutos-secos/budin-de-mandarina-y-frutos-secos-1.webp",
+          "original": "BUDINES/Budin mandarina y frutos secos/20220607_114626.jpeg",
+          "portada": true,
+          "alt": "Budín de mandarina y frutos secos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Budin de mandarina y frutos secos",
+        "texto_excel": "Budín húmedo de mandarinas con frutos secos en almibar de cítricos. | Mide 24 x 10 cm. | Pesa 700gr | Rinde 12 porciones",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 x 10 cm",
+      "porciones": "12 porciones",
+      "peso": "700 g",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Budín marmolado",
+      "categoria": "budines",
+      "descripcion": "Budín de vainilla y chocolate.",
+      "orden": 4,
+      "slug": "budin-marmolado",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/budin-marmolado/budin-marmolado-1.webp",
+          "original": "BUDINES/Budin Marmolado/20211022_121116.jpeg",
+          "portada": true,
+          "alt": "Budín marmolado",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Budin marmolado",
+        "texto_excel": "Budin de vainilla y chocolate. | Mide 24 x 10 cm. | Pesa 700gr | Rinde 12 porciones",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 x 10 cm",
+      "porciones": "12 porciones",
+      "peso": "700 g",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Budín carrot cake",
+      "categoria": "budines",
+      "descripcion": "Budín de zanahorias, nueces y especias con frosting de crema ácida.",
+      "orden": 5,
+      "slug": "budin-carrot-cake",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/budin-carrot-cake/budin-carrot-cake-1.webp",
+          "original": "BUDINES/carrot cake/20220319_103515.jpeg",
+          "portada": true,
+          "alt": "Budín carrot cake",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/budin-carrot-cake/budin-carrot-cake-2.webp",
+          "original": "BUDINES/carrot cake/20220319_103535.jpeg",
+          "portada": false,
+          "alt": "Budín carrot cake",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Budin carrot cake",
+        "texto_excel": "Budín de zanahorias, nueces y especies con frosting de crema acida. | Mide 24 x 10 cm. | Pesa 700gr | Rinde 12 porciones",
+        "dudas": [
+          "Precio",
+          "Hay carrot cake como budín, como torta y como torta especial. ¿Son tres productos distintos?",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 x 10 cm",
+      "porciones": "12 porciones",
+      "peso": "700 g",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Budín hamburgués",
+      "categoria": "budines",
+      "descripcion": "Budín con nueces, chocolate y Oporto.",
+      "orden": 6,
+      "slug": "budin-hamburgues",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/budin-hamburgues/budin-hamburgues-1.webp",
+          "original": "BUDINES/Budin Chocolate, nueces y oporto/20221125_150242.jpeg",
+          "portada": true,
+          "alt": "Budín hamburgués",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/budin-hamburgues/budin-hamburgues-2.webp",
+          "original": "BUDINES/Budin Chocolate, nueces y oporto/20221125_150249.jpeg",
+          "portada": false,
+          "alt": "Budín hamburgués",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Budin Hamburgues",
+        "texto_excel": "Budín con nueces, chocolate y Oporto | Mide 24 x 10 cm. | Pesa 700gr | Rinde 12 porciones",
+        "dudas": [
+          "Precio",
+          "La carpeta de fotos se llama \"Budín chocolate, nueces y oporto\". ¿Es el mismo? ¿Qué nombre prefiere para la web?",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Cajita de 8 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Dátiles rellenos",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Dátiles Medjool rellenos con pasta de maní, nuez, bañados con chocolate semiamargo y sal marina.",
+      "orden": 1,
+      "slug": "datiles-rellenos",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/datiles-rellenos/datiles-rellenos-1.webp",
+          "original": "CUADRADOS_BITES/Datiles/20240411_085609.jpg",
+          "portada": true,
+          "alt": "Dátiles rellenos",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/datiles-rellenos/datiles-rellenos-2.webp",
+          "original": "CUADRADOS_BITES/Datiles/20240411_085240.jpg",
+          "portada": false,
+          "alt": "Dátiles rellenos",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Datiles relleno",
+        "texto_excel": "Datiles Metjoul rellenos con pasta de mani, nuez, bañados con chocolate semiamago y sal marina. | En cajitas de 8 unidades",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 15 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Alfajorcitos de maicena",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Alfajores de maicena, dulce de leche y coco rallado.",
+      "orden": 2,
+      "slug": "alfajorcitos-de-maicena",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/alfajorcitos-de-maicena/alfajorcitos-de-maicena-1.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos maicena/20220322_104524.jpeg",
+          "portada": true,
+          "alt": "Alfajorcitos de maicena",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-maicena/alfajorcitos-de-maicena-2.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos maicena/20210404_123041.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de maicena",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Alfajorcitos Maicena",
+        "texto_excel": "Alfajores de maicena, dulce de leche y coco rallado | Caja x 15 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 15 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Alfajorcitos de almendras",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Alfajorcitos de almendras y dulce de leche.",
+      "orden": 3,
+      "slug": "alfajorcitos-de-almendras",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/alfajorcitos-de-almendras/alfajorcitos-de-almendras-1.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de almendas/20251218_111850.jpg",
+          "portada": true,
+          "alt": "Alfajorcitos de almendras",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-almendras/alfajorcitos-de-almendras-2.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de almendas/20200516_104552.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 551,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-almendras/alfajorcitos-de-almendras-3.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de almendas/20220305_114623.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-almendras/alfajorcitos-de-almendras-4.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de almendas/20210131_100309.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Alfajorcitos de almendras",
+        "texto_excel": "Alfajorcitos de almendras y dulce de leche. | Caja x 15 unidades",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 15 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Alfajorcitos de manteca",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Alfajorcitos de masa sablé y dulce de leche.",
+      "orden": 4,
+      "slug": "alfajorcitos-de-manteca",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/alfajorcitos-de-manteca/alfajorcitos-de-manteca-1.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos manteca/20210430_103141.jpeg",
+          "portada": true,
+          "alt": "Alfajorcitos de manteca",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-manteca/alfajorcitos-de-manteca-2.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos manteca/20200516_104644.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de manteca",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 551,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-manteca/alfajorcitos-de-manteca-3.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos manteca/20210702_135956.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de manteca",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Alfajorcitos de manteca",
+        "texto_excel": "Alfajorcitos de masa sablee y dulce de leche. | Caja x 15 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 15 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Alfajorcitos de cacao y maní",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Alfajorcitos de cacao, dulce de leche y maní.",
+      "orden": 5,
+      "slug": "alfajorcitos-de-cacao-y-mani",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/alfajorcitos-de-cacao-y-mani/alfajorcitos-de-cacao-y-mani-1.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de cacao y mani/20210519_155351-01.jpeg",
+          "portada": true,
+          "alt": "Alfajorcitos de cacao y maní",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-cacao-y-mani/alfajorcitos-de-cacao-y-mani-2.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de cacao y mani/20210924_122430.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de cacao y maní",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/alfajorcitos-de-cacao-y-mani/alfajorcitos-de-cacao-y-mani-3.webp",
+          "original": "CUADRADOS_BITES/alfajorcitos de cacao y mani/20210519_155402-01.jpeg",
+          "portada": false,
+          "alt": "Alfajorcitos de cacao y maní",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Alfajorcitos de cacao y mani",
+        "texto_excel": "Alfajorcitos de cacao, dulce de leche y mani | Caja x 15 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": [
+          "CUADRADOS_BITES/alfajorcitos de cacao y mani/20210519_155402.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova bites de chocolate blanco y almendras",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Mini pavlovas con cremoso de chocolate blanco y almendras caramelizadas.",
+      "orden": 6,
+      "slug": "pavlova-bites-de-chocolate-blanco-y-almendras",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-bites-de-chocolate-blanco-y-almendras/pavlova-bites-de-chocolate-blanco-y-almendras-1.webp",
+          "original": "CUADRADOS_BITES/pavlova bites choco blanco y almendras/20220705_151259.jpeg",
+          "portada": true,
+          "alt": "Pavlova bites de chocolate blanco y almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-chocolate-blanco-y-almendras/pavlova-bites-de-chocolate-blanco-y-almendras-2.webp",
+          "original": "CUADRADOS_BITES/pavlova bites choco blanco y almendras/20220705_151319.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de chocolate blanco y almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova bites de choco blanco y almendras",
+        "texto_excel": "Mini pavlovas con cremoso de chocolate blanco y almendras caramelizadas. | Vienen x 12 unidades.",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "5 x 5 cm",
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cuadrados de coco y dulce de leche",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Cuadrados de coco y dulce de leche.",
+      "orden": 7,
+      "slug": "cuadrados-de-coco-y-dulce-de-leche",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cuadrados-de-coco-y-dulce-de-leche/cuadrados-de-coco-y-dulce-de-leche-1.webp",
+          "original": "CUADRADOS_BITES/cuadrados cco y ddl/20210322_115907.jpeg",
+          "portada": true,
+          "alt": "Cuadrados de coco y dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cuadrados-de-coco-y-dulce-de-leche/cuadrados-de-coco-y-dulce-de-leche-2.webp",
+          "original": "CUADRADOS_BITES/cuadrados cco y ddl/20210404_123033.jpeg",
+          "portada": false,
+          "alt": "Cuadrados de coco y dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cuadrados-de-coco-y-dulce-de-leche/cuadrados-de-coco-y-dulce-de-leche-3.webp",
+          "original": "CUADRADOS_BITES/cuadrados cco y ddl/20210430_114230.jpeg",
+          "portada": false,
+          "alt": "Cuadrados de coco y dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cuadrados de coco y dulce de leche",
+        "texto_excel": "Cuadrados de coco y dulce de leche | Miden 5x5 cm | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 15 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Lemon bites",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Mini bocaditos de lemon pie.",
+      "orden": 8,
+      "slug": "lemon-bites",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/lemon-bites/lemon-bites-1.webp",
+          "original": "CUADRADOS_BITES/Lemon bites/20220305_122209.jpeg",
+          "portada": true,
+          "alt": "Lemon bites",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/lemon-bites/lemon-bites-2.webp",
+          "original": "CUADRADOS_BITES/Lemon bites/20211110_152828.jpeg",
+          "portada": false,
+          "alt": "Lemon bites",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Lemon Bites",
+        "texto_excel": "Mini bocaditos de lemon pie. | Vienen x 15 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": [
+          "CUADRADOS_BITES/Lemon bites/Screenshot_20180604-171627_Instagram.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova bites de dulce de leche y nuez",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Mini pavlovas rellenas de dulce de leche y nuez caramelizada.",
+      "orden": 9,
+      "slug": "pavlova-bites-de-dulce-de-leche-y-nuez",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-bites-de-dulce-de-leche-y-nuez/pavlova-bites-de-dulce-de-leche-y-nuez-1.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de ddl/20210706_155346.jpeg",
+          "portada": true,
+          "alt": "Pavlova bites de dulce de leche y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-dulce-de-leche-y-nuez/pavlova-bites-de-dulce-de-leche-y-nuez-2.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de ddl/20210706_155242.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de dulce de leche y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-dulce-de-leche-y-nuez/pavlova-bites-de-dulce-de-leche-y-nuez-3.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de ddl/20210706_155019.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de dulce de leche y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova bites de ddl y nuez",
+        "texto_excel": "Mini pavlovas rellenas de dulce de leche y nuez caramelizada. | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova bites de limón",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Mini pavlova con curd de limón y coco en escamas.",
+      "orden": 10,
+      "slug": "pavlova-bites-de-limon",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-bites-de-limon/pavlova-bites-de-limon-1.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de limon/20210509_102319.jpeg",
+          "portada": true,
+          "alt": "Pavlova bites de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-limon/pavlova-bites-de-limon-2.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de limon/20210509_102349.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-limon/pavlova-bites-de-limon-3.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de limon/20210509_102344.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-limon/pavlova-bites-de-limon-4.webp",
+          "original": "CUADRADOS_BITES/pavlova bites de limon/20210509_102423.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova bites de limon",
+        "texto_excel": "Mini pavlova con curd de limon y coco en escamas. | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cuadrados de brownie",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Cuadrados de brownie super cremosos.",
+      "orden": 11,
+      "slug": "cuadrados-de-brownie",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cuadrados-de-brownie/cuadrados-de-brownie-1.webp",
+          "original": "CUADRADOS_BITES/Brownies/20220316_135244.jpeg",
+          "portada": true,
+          "alt": "Cuadrados de brownie",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cuadrados-de-brownie/cuadrados-de-brownie-2.webp",
+          "original": "CUADRADOS_BITES/Brownies/20211124_105518.jpeg",
+          "portada": false,
+          "alt": "Cuadrados de brownie",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cuadrados de Brownies",
+        "texto_excel": "Cuadrados de brownie super cremosos. | Miden 5xcm | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "El Excel dice \"Miden 5xcm\". ¿Son 5 x 5 cm como los otros cuadrados?",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova bites de chocolate y almendras",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Mini pavlovas rellenas de cremoso de chocolate semiamargo y almendras caramelizadas.",
+      "orden": 12,
+      "slug": "pavlova-bites-de-chocolate-y-almendras",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-bites-de-chocolate-y-almendras/pavlova-bites-de-chocolate-y-almendras-1.webp",
+          "original": "CUADRADOS_BITES/pavlova bite de chocolate y almendras/20220614_154800.jpeg",
+          "portada": true,
+          "alt": "Pavlova bites de chocolate y almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-bites-de-chocolate-y-almendras/pavlova-bites-de-chocolate-y-almendras-2.webp",
+          "original": "CUADRADOS_BITES/pavlova bite de chocolate y almendras/20220614_154659.jpeg",
+          "portada": false,
+          "alt": "Pavlova bites de chocolate y almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova bites de chocolate con almendras",
+        "texto_excel": "Mini Pavlovas rellenas de cremoso de chocolate semiamargo y almendras caramelizadas. | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 15 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Choco bites",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Bocaditos de masa sablé de cacao con cremoso de chocolate semiamargo y almendras caramelizadas.",
+      "orden": 13,
+      "slug": "choco-bites",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/choco-bites/choco-bites-1.webp",
+          "original": "CUADRADOS_BITES/choco bites/20211110_152756.jpeg",
+          "portada": true,
+          "alt": "Choco bites",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Choco Bites",
+        "texto_excel": "Bocaditos de masa sablee de cacao con cremoso de chocolate semiamargo y almendras caramelizadas. | Vienen x 15 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": [
+          "CUADRADOS_BITES/choco bites/20211110_152801.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": "5 x 5 cm",
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cuadrados de dulce de leche, avena y nuez",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Cuadrados de dulce de leche, avena y nuez.",
+      "orden": 14,
+      "slug": "cuadrados-de-dulce-de-leche-avena-y-nuez",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cuadrados-de-dulce-de-leche-avena-y-nuez/cuadrados-de-dulce-de-leche-avena-y-nuez-1.webp",
+          "original": "CUADRADOS_BITES/cuadrados de ddl+avena+nuez/20200307_122354.jpeg",
+          "portada": true,
+          "alt": "Cuadrados de dulce de leche, avena y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 551,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cuadrados de dulce de leche, avena y nuez",
+        "texto_excel": "Cuadrados de dulce de leche, avena y nuez. | Miden 5x5 cm | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "5 x 5 cm",
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cuadrados de frambuesa y nuez",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Cuadrados de frambuesa con crumble de nuez.",
+      "orden": 15,
+      "slug": "cuadrados-de-frambuesa-y-nuez",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cuadrados-de-frambuesa-y-nuez/cuadrados-de-frambuesa-y-nuez-1.webp",
+          "original": "CUADRADOS_BITES/cuadrados frambuesa y nuez/20210508_113455.jpeg",
+          "portada": true,
+          "alt": "Cuadrados de frambuesa y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cuadrados de frambuesa y nuez",
+        "texto_excel": "Cuadrados de frambuesa con crumble de nuez. | Miden 5x5cm | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "5 x 5 cm",
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cuadrados de manzana y nuez",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": "Cuadrados de manzana con crumble de nuez.",
+      "orden": 16,
+      "slug": "cuadrados-de-manzana-y-nuez",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cuadrados-de-manzana-y-nuez/cuadrados-de-manzana-y-nuez-1.webp",
+          "original": "CUADRADOS_BITES/cuadrados manzana/20220407_132702.jpeg",
+          "portada": true,
+          "alt": "Cuadrados de manzana y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cuadrados-de-manzana-y-nuez/cuadrados-de-manzana-y-nuez-2.webp",
+          "original": "CUADRADOS_BITES/cuadrados manzana/20210430_114205.jpeg",
+          "portada": false,
+          "alt": "Cuadrados de manzana y nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cuadrados de manzana y nuez",
+        "texto_excel": "Cuadrados de manzana con crumble de nuez. | Miden 5x5 cm. | Vienen x 12 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "12 porciones aprox.",
+      "peso": "2,5 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Sablé de almendras",
+      "categoria": "tortas",
+      "descripcion": "2 capas de masa quebrada de almendras + dulce de leche + crema + frutillas o frutos rojos.",
+      "orden": 1,
+      "slug": "sable-de-almendras",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/sable-de-almendras/sable-de-almendras-1.webp",
+          "original": "TORTAS/sable de almendras/20260418_091929.jpg",
+          "portada": true,
+          "alt": "Sablé de almendras",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/sable-de-almendras/sable-de-almendras-2.webp",
+          "original": "TORTAS/sable de almendras/20251128_111514.jpg",
+          "portada": false,
+          "alt": "Sablé de almendras",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/sable-de-almendras/sable-de-almendras-3.webp",
+          "original": "TORTAS/sable de almendras/20210924_114401.jpeg",
+          "portada": false,
+          "alt": "Sablé de almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/sable-de-almendras/sable-de-almendras-4.webp",
+          "original": "TORTAS/sable de almendras/20220513_112331.jpeg",
+          "portada": false,
+          "alt": "Sablé de almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Sable de almendras",
+        "texto_excel": "2 capas de masa quebrada de almendras + dulce de leche + crema + frutillas o frutos rojos. | Mide 24 cm de diametro | Rinde 12 porciones aprox | Peso 2,5 kg",
+        "dudas": [
+          "Precio",
+          "Dice \"frutillas o frutos rojos\": ¿el cliente elige al pedir?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": "2,2 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Marquise con frutos rojos",
+      "categoria": "tortas",
+      "descripcion": "Base de marquise de chocolate + dulce de leche + frutos rojos + crema chantilly.",
+      "orden": 2,
+      "slug": "marquise-con-frutos-rojos",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/marquise-con-frutos-rojos/marquise-con-frutos-rojos-1.webp",
+          "original": "TORTAS/marquisse +ddl+crema+frutos rojos/20210220_121717.jpeg",
+          "portada": true,
+          "alt": "Marquise con frutos rojos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-con-frutos-rojos/marquise-con-frutos-rojos-2.webp",
+          "original": "TORTAS/marquisse +ddl+crema+frutos rojos/20210220_121734.jpeg",
+          "portada": false,
+          "alt": "Marquise con frutos rojos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Marquisse con frutos rojos",
+        "texto_excel": "Base de marquisse de chocolate + dulce de leche + frutos rojos + crema chatilly | Mide 24 cm de diametro | Rinde 10 porciones aprox | Pesa 2,2kg",
+        "dudas": [
+          "Precio",
+          "La carpeta de fotos dice \"+ dulce de leche + crema\" y el Excel dice \"crema chantilly\". Revisar que la descripción esté completa.",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Marquise con crema",
+      "categoria": "tortas",
+      "descripcion": "Base de marquise de chocolate + dulce de leche + crema chantilly.",
+      "orden": 3,
+      "slug": "marquise-con-crema",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/marquise-con-crema/marquise-con-crema-1.webp",
+          "original": "TORTAS/marquisse + ddl. + crema/20210626_100750.jpeg",
+          "portada": true,
+          "alt": "Marquise con crema",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-con-crema/marquise-con-crema-2.webp",
+          "original": "TORTAS/marquisse + ddl. + crema/20210903_112502.jpeg",
+          "portada": false,
+          "alt": "Marquise con crema",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Marquisse con crema",
+        "texto_excel": "Base de marquisse de chocolate + dulce de leche + crema chantilly | Mide 24 cm de diametro | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Marquise con merengue",
+      "categoria": "tortas",
+      "descripcion": "Base de marquise de chocolate + dulce de leche + merengue italiano.",
+      "orden": 4,
+      "slug": "marquise-con-merengue",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/marquise-con-merengue/marquise-con-merengue-1.webp",
+          "original": "TORTAS/marquisse + ddl + merengue/20220315_155955.jpeg",
+          "portada": true,
+          "alt": "Marquise con merengue",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-con-merengue/marquise-con-merengue-2.webp",
+          "original": "TORTAS/marquisse + ddl + merengue/20210328_113408-01.jpeg",
+          "portada": false,
+          "alt": "Marquise con merengue",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-con-merengue/marquise-con-merengue-3.webp",
+          "original": "TORTAS/marquisse + ddl + merengue/IMG-20210522-WA0004-01.jpeg",
+          "portada": false,
+          "alt": "Marquise con merengue",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 413,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Marquisse con merengue",
+        "texto_excel": "Base de marquisse de chocolate + dulce de leche + merengue italiano. | Mide 24 cm | Rinde10 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": "1,8 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Marquise con mousse de chocolate",
+      "categoria": "tortas",
+      "descripcion": "Base de marquise de chocolate + dulce de leche + mousse de chocolate y almendras caramelizadas.",
+      "orden": 5,
+      "slug": "marquise-con-mousse-de-chocolate",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/marquise-con-mousse-de-chocolate/marquise-con-mousse-de-chocolate-1.webp",
+          "original": "TORTAS/marquisse + ddl + mousse de choco/20211002_102953.jpeg",
+          "portada": true,
+          "alt": "Marquise con mousse de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-con-mousse-de-chocolate/marquise-con-mousse-de-chocolate-2.webp",
+          "original": "TORTAS/marquisse + ddl + mousse de choco/20210505_140915.jpeg",
+          "portada": false,
+          "alt": "Marquise con mousse de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Marquisse con mousse de chocolate",
+        "texto_excel": "Base de marquisse de chocolate + dulce de leche + mousse de chocolate y almendras caramelizadas. | Medida 24 cm | Rinde 10 porciones aprox | Pesa 1,8 kg",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": "1,6 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Torta de nuez",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue de nuez + dulce de leche + crema chantilly.",
+      "orden": 6,
+      "slug": "torta-de-nuez",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/torta-de-nuez/torta-de-nuez-1.webp",
+          "original": "TORTAS/Nuez/20220401_175550.jpeg",
+          "portada": true,
+          "alt": "Torta de nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/torta-de-nuez/torta-de-nuez-2.webp",
+          "original": "TORTAS/Nuez/20220401_175555.jpeg",
+          "portada": false,
+          "alt": "Torta de nuez",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Torta de nuez",
+        "texto_excel": "Base de merengue de nuez + dulce de leche + crema chantilly. | Mide 24 cm | Rinde 10 porciones aprox | Pesa 1,6 kg",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "12 porciones aprox.",
+      "peso": "2,1 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Torta trufa",
+      "categoria": "tortas",
+      "descripcion": "Base crocante de chocolate + trufado de chocolate + almendras caramelizadas.",
+      "orden": 7,
+      "slug": "torta-trufa",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/torta-trufa/torta-trufa-1.webp",
+          "original": "TORTAS/Trufa/20240830_095330.jpg",
+          "portada": true,
+          "alt": "Torta trufa",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/torta-trufa/torta-trufa-2.webp",
+          "original": "TORTAS/Trufa/20240830_095343.jpg",
+          "portada": false,
+          "alt": "Torta trufa",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Torta trufa",
+        "texto_excel": "Base crocante de chocolate + trufado de chocolate + almendras caramelizadas. | Mide 24 cm | Rinde 12 porciones aprox | Pesa 2,1 kg",
+        "dudas": [
+          "Precio",
+          "Hay otra carpeta \"Trufa con merengue\" sin descripción. ¿Es otro producto?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Torta de nuez con frutillas",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue de nuez + dulce de leche + frutillas + crema chantilly.",
+      "orden": 8,
+      "slug": "torta-de-nuez-con-frutillas",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/torta-de-nuez-con-frutillas/torta-de-nuez-con-frutillas-1.webp",
+          "original": "TORTAS/nuez con frutillas/20250704_145232.jpg",
+          "portada": true,
+          "alt": "Torta de nuez con frutillas",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Torta de nuez con frutillas",
+        "texto_excel": "Base de merengue de nuez + dulce de leche + frutillas + crema chantilly. | Mide 24 cm | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Torta de nuez con banana",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue de nuez + dulce de leche + banana + crema chantilly.",
+      "orden": 9,
+      "slug": "torta-de-nuez-con-banana",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [],
+      "revision": {
+        "nombre_excel": "Torta de nuez con banana",
+        "texto_excel": "Base de merengue de nuez + dulce de leche + banana + crema chantilly. | Mide 24 cm | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio",
+          "No hay fotos. ¿Tiene alguna?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": "1,5 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Lemon pie",
+      "categoria": "tortas",
+      "descripcion": "Base de masa sablé + curd de limón + merengue italiano.",
+      "orden": 10,
+      "slug": "lemon-pie",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/lemon-pie/lemon-pie-1.webp",
+          "original": "TORTAS/lemon pie/20260422_115207.jpg",
+          "portada": true,
+          "alt": "Lemon pie",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/lemon-pie/lemon-pie-2.webp",
+          "original": "TORTAS/lemon pie/20210410_120011-01.jpeg",
+          "portada": false,
+          "alt": "Lemon pie",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/lemon-pie/lemon-pie-3.webp",
+          "original": "TORTAS/lemon pie/20210717_163254.jpeg",
+          "portada": false,
+          "alt": "Lemon pie",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/lemon-pie/lemon-pie-4.webp",
+          "original": "TORTAS/lemon pie/20220315_160005.jpeg",
+          "portada": false,
+          "alt": "Lemon pie",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Lemon Pie",
+        "texto_excel": "Base de masa sable + curd de limon + merengue italiano | Mide 24 cm | Rinde 10 porciones aprox | Pesa 1,5 kg",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "22 cm de diámetro",
+      "porciones": "8 a 10 porciones",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Key lime pie",
+      "categoria": "tortas",
+      "descripcion": "Típica tarta americana. Base de galletitas + crema de lima + crema batida.",
+      "orden": 11,
+      "slug": "key-lime-pie",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/key-lime-pie/key-lime-pie-1.webp",
+          "original": "TORTAS/key lime/20260522_142115.jpg",
+          "portada": true,
+          "alt": "Key lime pie",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/key-lime-pie/key-lime-pie-2.webp",
+          "original": "TORTAS/key lime/20250912_090648.jpg",
+          "portada": false,
+          "alt": "Key lime pie",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Key lime pie",
+        "texto_excel": "Tipica tarta americana. Base de galletitas + crema de lima + crema batida | Mide 22 cm | Rinde 8 a 10 porciones",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "12 a 15 porciones aprox.",
+      "peso": "3 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Rogel",
+      "categoria": "tortas",
+      "descripcion": "Típica torta argentina. 10 capas de masa hojaldrada + dulce de leche + merengue italiano.",
+      "orden": 12,
+      "slug": "rogel",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/rogel/rogel-1.webp",
+          "original": "TORTAS/Rogel/20260604_122527.jpg",
+          "portada": true,
+          "alt": "Rogel",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/rogel/rogel-2.webp",
+          "original": "TORTAS/Rogel/20260604_122513.jpg",
+          "portada": false,
+          "alt": "Rogel",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/rogel/rogel-3.webp",
+          "original": "TORTAS/Rogel/20260701_125544.jpg",
+          "portada": false,
+          "alt": "Rogel",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Rogel",
+        "texto_excel": "Tipica torta Argentina. 10 capas de masa hojaldrada + dulce de leche + merengue italiano. | Mide 24 cm | Rinde 12 a 15 porciones aprox | Pesa 3 kg",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 a 12 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Torta Oreo",
+      "categoria": "tortas",
+      "descripcion": "2 capas de galletitas Oreo + dulce de leche + crema chantilly.",
+      "orden": 13,
+      "slug": "torta-oreo",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/torta-oreo/torta-oreo-1.webp",
+          "original": "TORTAS/Oreo/20220406_101630.jpeg",
+          "portada": true,
+          "alt": "Torta Oreo",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/torta-oreo/torta-oreo-2.webp",
+          "original": "TORTAS/Oreo/20220618_095947.jpeg",
+          "portada": false,
+          "alt": "Torta Oreo",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/torta-oreo/torta-oreo-3.webp",
+          "original": "TORTAS/Oreo/20220618_100001.jpeg",
+          "portada": false,
+          "alt": "Torta Oreo",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/torta-oreo/torta-oreo-4.webp",
+          "original": "TORTAS/Oreo/20210731_111315.jpeg",
+          "portada": false,
+          "alt": "Torta Oreo",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Torta Oreo",
+        "texto_excel": "2 capas de galletitas Oreo + dulce de leche + crema chantilly. | Mide 24 cm | Rinde 10 a 12 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Havanette",
+      "categoria": "tortas",
+      "descripcion": "Base de galletitas + dulce de leche + ganache de chocolate.",
+      "orden": 14,
+      "slug": "havanette",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/havanette/havanette-1.webp",
+          "original": "TORTAS/havanette/20260703_152316.jpg",
+          "portada": true,
+          "alt": "Havanette",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/havanette/havanette-2.webp",
+          "original": "TORTAS/havanette/20260703_152258.jpg",
+          "portada": false,
+          "alt": "Havanette",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/havanette/havanette-3.webp",
+          "original": "TORTAS/havanette/20210407_105846.jpeg",
+          "portada": false,
+          "alt": "Havanette",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Havanette",
+        "texto_excel": "Base de galletitas + dulce de leche + ganache de chocolate | Mide 24 cm | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "20 x 20 cm",
+      "porciones": "16 porciones aprox.",
+      "peso": "2,6 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Chocotorta cuadrada",
+      "categoria": "tortas",
+      "descripcion": "Típica torta argentina. Capas de galletitas chocolinas + crema de chocotorta.",
+      "orden": 15,
+      "slug": "chocotorta-cuadrada",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/chocotorta-cuadrada/chocotorta-cuadrada-1.webp",
+          "original": "TORTAS/chocotorta cuadrada/20260716_145143.jpg",
+          "portada": true,
+          "alt": "Chocotorta cuadrada",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/chocotorta-cuadrada/chocotorta-cuadrada-2.webp",
+          "original": "TORTAS/chocotorta cuadrada/20260716_145828.jpg",
+          "portada": false,
+          "alt": "Chocotorta cuadrada",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Chocotorta cuadrada",
+        "texto_excel": "Tipica torta Argentina. Capas de galletitas chocolinas + crema de chocotorta | Mide 20 x 20 cm | Rinde 16 porciones aprox | Pesa 2,6kg",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "30 x 20 cm",
+      "porciones": "25 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Chocotorta XL",
+      "categoria": "tortas",
+      "descripcion": "Típica torta argentina. Capas de galletitas chocolinas + crema de chocotorta.",
+      "orden": 16,
+      "slug": "chocotorta-xl",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/chocotorta-xl/chocotorta-xl-1.webp",
+          "original": "TORTAS/chocotorta XL/20260616_120608.jpg",
+          "portada": true,
+          "alt": "Chocotorta XL",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/chocotorta-xl/chocotorta-xl-2.webp",
+          "original": "TORTAS/chocotorta XL/20260903_122802.jpg",
+          "portada": false,
+          "alt": "Chocotorta XL",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Chocotorta XL",
+        "texto_excel": "Tipica torta Argentina. Capas de galletitas chocolinas + crema de chocotorta. | Mide 30x20 cm | Rinde 25 porciones aprox",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "22 cm de diámetro",
+      "porciones": "10 a 12 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cheesecake de dulce de leche",
+      "categoria": "tortas",
+      "descripcion": "Clásica torta americana a base de queso crema y dulce de leche.",
+      "orden": 17,
+      "slug": "cheesecake-de-dulce-de-leche",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cheesecake-de-dulce-de-leche/cheesecake-de-dulce-de-leche-1.webp",
+          "original": "TORTAS/Cheesecake de dulce de leche/20210917_111843.jpeg",
+          "portada": true,
+          "alt": "Cheesecake de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cheesecake-de-dulce-de-leche/cheesecake-de-dulce-de-leche-2.webp",
+          "original": "TORTAS/Cheesecake de dulce de leche/20210917_111809.jpeg",
+          "portada": false,
+          "alt": "Cheesecake de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cheesecake de dulce de leche",
+        "texto_excel": "Clasica torta Americana a base de queso crema y dulce de leche. | Medida 22 cm | Rinde 10 a 12 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "22 cm de diámetro",
+      "porciones": "10 a 12 porciones aprox.",
+      "peso": "2,3 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cheesecake clásico",
+      "categoria": "tortas",
+      "descripcion": "Clásica torta americana a base de queso crema y confitura de frutos rojos.",
+      "orden": 18,
+      "slug": "cheesecake-clasico",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cheesecake-clasico/cheesecake-clasico-1.webp",
+          "original": "TORTAS/cheesecake/20260504_212940.jpg",
+          "portada": true,
+          "alt": "Cheesecake clásico",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/cheesecake-clasico/cheesecake-clasico-2.webp",
+          "original": "TORTAS/cheesecake/20260814_113112.jpg",
+          "portada": false,
+          "alt": "Cheesecake clásico",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cheesecake clasico",
+        "texto_excel": "Clásica torta Americana a base de queso crema y confitura de frutos rojos | Mide 22 cm | Rinde 10 a 12 porciones aprox | Pesa 2,3kg",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "22 cm de diámetro",
+      "porciones": "10 a 12 porciones aprox.",
+      "peso": "2,3 kg",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cheesecake de maracuyá y chocolate blanco",
+      "categoria": "tortas",
+      "descripcion": "Clásica torta americana a base de queso crema y salsa de maracuyá con chocolate blanco.",
+      "orden": 19,
+      "slug": "cheesecake-de-maracuya-y-chocolate-blanco",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cheesecake-de-maracuya-y-chocolate-blanco/cheesecake-de-maracuya-y-chocolate-blanco-1.webp",
+          "original": "TORTAS/cheesecake de maracuya y choco blanco/20260828_122549.jpg",
+          "portada": true,
+          "alt": "Cheesecake de maracuyá y chocolate blanco",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/cheesecake-de-maracuya-y-chocolate-blanco/cheesecake-de-maracuya-y-chocolate-blanco-2.webp",
+          "original": "TORTAS/cheesecake de maracuya y choco blanco/20260828_122644.jpg",
+          "portada": false,
+          "alt": "Cheesecake de maracuyá y chocolate blanco",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cheesecake maracuya y choco blanco",
+        "texto_excel": "Clásica torta Americana a base de queso crema y salsa de maracuya con chocolate blanco | Mide 22 cm | Rinde 10 a 12 porciones aprox | Pesa 2,3kg",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": "1,6 kg",
+      "unidades": null,
+      "temporada": {
+        "desde_mes": 9,
+        "hasta_mes": 2,
+        "texto": "Solo en temporada, de septiembre a febrero"
+      },
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Tarta de frutillas",
+      "categoria": "tortas",
+      "descripcion": "Base de masa sablé + dulce de leche + crema chantilly + frutillas.",
+      "orden": 20,
+      "slug": "tarta-de-frutillas",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/tarta-de-frutillas/tarta-de-frutillas-1.webp",
+          "original": "TORTAS/Tarta de frutillas/20210409_161723.jpeg",
+          "portada": true,
+          "alt": "Tarta de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/tarta-de-frutillas/tarta-de-frutillas-2.webp",
+          "original": "TORTAS/Tarta de frutillas/20210820_143254.jpeg",
+          "portada": false,
+          "alt": "Tarta de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/tarta-de-frutillas/tarta-de-frutillas-3.webp",
+          "original": "TORTAS/Tarta de frutillas/20210731_093108.jpeg",
+          "portada": false,
+          "alt": "Tarta de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/tarta-de-frutillas/tarta-de-frutillas-4.webp",
+          "original": "TORTAS/Tarta de frutillas/20210924_155128.jpeg",
+          "portada": false,
+          "alt": "Tarta de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Tarta de Frutillas",
+        "texto_excel": "Base de masa sablee+ dulce de leche + crema chantilly + frutillas. | SOLAMENTE EN TEMPORADA DE SEPTIEMBRE A FEBRERO | Mide 24 cm | Rinde 10 porciones aprox | Pesa 1,6 kg",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": {
+        "desde_mes": 9,
+        "hasta_mes": 2,
+        "texto": "Solo en temporada, de septiembre a febrero"
+      },
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Tarta de frutillas y cremoso de chocolate",
+      "categoria": "tortas",
+      "descripcion": "Base de masa sablé de cacao + cremoso de chocolate con leche + frutillas.",
+      "orden": 21,
+      "slug": "tarta-de-frutillas-y-cremoso-de-chocolate",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/tarta-de-frutillas-y-cremoso-de-chocolate/tarta-de-frutillas-y-cremoso-de-chocolate-1.webp",
+          "original": "TORTAS/tarta de frutillas y cremoso de chocolate/20260812_151452.jpg",
+          "portada": true,
+          "alt": "Tarta de frutillas y cremoso de chocolate",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/tarta-de-frutillas-y-cremoso-de-chocolate/tarta-de-frutillas-y-cremoso-de-chocolate-2.webp",
+          "original": "TORTAS/tarta de frutillas y cremoso de chocolate/20260812_153150.jpg",
+          "portada": false,
+          "alt": "Tarta de frutillas y cremoso de chocolate",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Tarta de frutillas con cremoso de choco leche",
+        "texto_excel": "Base de masa sablee de cacao + cremoso de chocolate con leche + frutillas | SOLAMENTE EN TEMPORADA DE SEPTIEMBRE A FEBRERO | Medida 24 cm | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Merengada de chocolate",
+      "categoria": "tortas",
+      "descripcion": "2 discos de merengue de cacao + dulce de leche + mousse de chocolate + almendras caramelizadas.",
+      "orden": 22,
+      "slug": "merengada-de-chocolate",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/merengada-de-chocolate/merengada-de-chocolate-1.webp",
+          "original": "TORTAS/Merengada de chocolate/20210913_105022.jpeg",
+          "portada": true,
+          "alt": "Merengada de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/merengada-de-chocolate/merengada-de-chocolate-2.webp",
+          "original": "TORTAS/Merengada de chocolate/20210913_105010.jpeg",
+          "portada": false,
+          "alt": "Merengada de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/merengada-de-chocolate/merengada-de-chocolate-3.webp",
+          "original": "TORTAS/Merengada de chocolate/20210917_113901.jpeg",
+          "portada": false,
+          "alt": "Merengada de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/merengada-de-chocolate/merengada-de-chocolate-4.webp",
+          "original": "TORTAS/Merengada de chocolate/20210917_113922.jpeg",
+          "portada": false,
+          "alt": "Merengada de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Merengada de chocolate",
+        "texto_excel": "2 discos de merengue de cacao + dulce de leche + mousse de chocolate + almendras caramelizadas | Medida 24 cm | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "8 a 10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": {
+        "desde_mes": 9,
+        "hasta_mes": 2,
+        "texto": "Solo en temporada, de septiembre a febrero"
+      },
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Merengada de frutillas",
+      "categoria": "tortas",
+      "descripcion": "2 discos de merengue seco + dulce de leche + crema + frutillas.",
+      "orden": 23,
+      "slug": "merengada-de-frutillas",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/merengada-de-frutillas/merengada-de-frutillas-1.webp",
+          "original": "TORTAS/merengada de frutillas/20210809_101024.jpeg",
+          "portada": true,
+          "alt": "Merengada de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/merengada-de-frutillas/merengada-de-frutillas-2.webp",
+          "original": "TORTAS/merengada de frutillas/20210809_101113.jpeg",
+          "portada": false,
+          "alt": "Merengada de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/merengada-de-frutillas/merengada-de-frutillas-3.webp",
+          "original": "TORTAS/merengada de frutillas/20210809_100825.jpeg",
+          "portada": false,
+          "alt": "Merengada de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/merengada-de-frutillas/merengada-de-frutillas-4.webp",
+          "original": "TORTAS/merengada de frutillas/20210927_143759.jpeg",
+          "portada": false,
+          "alt": "Merengada de frutillas",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Merengada de frutillas",
+        "texto_excel": "2 discos de merengue seco + dulce de leche + crema + frutillas | SOLAMENTE EN TEMPORADA DE SEPTIEMBRE A FEBRERO | Mide 24 cm | Rinde 8 a 10 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "8 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": {
+        "desde_mes": 9,
+        "hasta_mes": 2,
+        "texto": "Solo en temporada, de septiembre a febrero"
+      },
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova de frutillas",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue + dulce de leche + crema chantilly + frutillas.",
+      "orden": 24,
+      "slug": "pavlova-de-frutillas",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-de-frutillas/pavlova-de-frutillas-1.webp",
+          "original": "TORTAS/pavlova con frutillas/20250606_120311.jpg",
+          "portada": true,
+          "alt": "Pavlova de frutillas",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/pavlova-de-frutillas/pavlova-de-frutillas-2.webp",
+          "original": "TORTAS/pavlova con frutillas/20250926_100049.jpg",
+          "portada": false,
+          "alt": "Pavlova de frutillas",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova de frutillas",
+        "texto_excel": "Base de merengue + dulce de leche + crema chantilly + frutillas | SOLAMENTE EN TEMPORADA DE SEPTIEMBRE A FEBRERO | Medida 24 cm | Rinde 8 porciones aprox",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "8 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova de maracuyá y chocolate blanco",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue + curd de maracuyá + crema chantilly + chocolate blanco en rama.",
+      "orden": 25,
+      "slug": "pavlova-de-maracuya-y-chocolate-blanco",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-de-maracuya-y-chocolate-blanco/pavlova-de-maracuya-y-chocolate-blanco-1.webp",
+          "original": "TORTAS/pavlova de maracuya y choco blanco/20210926_112104.jpeg",
+          "portada": true,
+          "alt": "Pavlova de maracuyá y chocolate blanco",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-de-maracuya-y-chocolate-blanco/pavlova-de-maracuya-y-chocolate-blanco-2.webp",
+          "original": "TORTAS/pavlova de maracuya y choco blanco/20220418_132634.jpeg",
+          "portada": false,
+          "alt": "Pavlova de maracuyá y chocolate blanco",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova maracuya y choco blanco",
+        "texto_excel": "Base de merengue + curd de maracuya + crema chantilly + chocolate blanco en rama | Mide 24 cm | Rinde 8 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "8 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova de limón",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue + curd de limón + crema chantilly.",
+      "orden": 26,
+      "slug": "pavlova-de-limon",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-de-limon/pavlova-de-limon-1.webp",
+          "original": "TORTAS/pavlova de limon/20211112_172108.jpeg",
+          "portada": true,
+          "alt": "Pavlova de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-de-limon/pavlova-de-limon-2.webp",
+          "original": "TORTAS/pavlova de limon/20211112_172115.jpeg",
+          "portada": false,
+          "alt": "Pavlova de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-de-limon/pavlova-de-limon-3.webp",
+          "original": "TORTAS/pavlova de limon/20210312_110614.jpeg",
+          "portada": false,
+          "alt": "Pavlova de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/pavlova-de-limon/pavlova-de-limon-4.webp",
+          "original": "TORTAS/pavlova de limon/20210312_110609-01.jpeg",
+          "portada": false,
+          "alt": "Pavlova de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 514,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova de limón",
+        "texto_excel": "Base de merengue + curd de limon + crema chantilly | Mide 24 cm | Rinde 8 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "8 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pavlova de chocolate blanco y frambuesas",
+      "categoria": "tortas",
+      "descripcion": "Base de merengue + cremoso de chocolate blanco + frambuesas.",
+      "orden": 27,
+      "slug": "pavlova-de-chocolate-blanco-y-frambuesas",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pavlova-de-chocolate-blanco-y-frambuesas/pavlova-de-chocolate-blanco-y-frambuesas-1.webp",
+          "original": "TORTAS/pavlova + cremoso de choco blanco + frutos rojos/20260619_153700.jpg",
+          "portada": true,
+          "alt": "Pavlova de chocolate blanco y frambuesas",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/pavlova-de-chocolate-blanco-y-frambuesas/pavlova-de-chocolate-blanco-y-frambuesas-2.webp",
+          "original": "TORTAS/pavlova + cremoso de choco blanco + frutos rojos/20260619_153636.jpg",
+          "portada": false,
+          "alt": "Pavlova de chocolate blanco y frambuesas",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pavlova de chocolate blanco y Frambuesas",
+        "texto_excel": "Base de merengue + cremoso de chocolate blanco + Frambuesas | Mide 24 cm | Rinde 8 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Usé las fotos de la carpeta \"pavlova + cremoso de choco blanco + frutos rojos\". ¿Es la misma? ¿Lleva frambuesas o frutos rojos?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 a 12 porciones",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Carrot cake",
+      "categoria": "tortas",
+      "descripcion": "Torta de zanahoria y especias + crema ácida + nueces.",
+      "orden": 28,
+      "slug": "carrot-cake",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/carrot-cake/carrot-cake-1.webp",
+          "original": "TORTAS/carrot cake/20260806_112757.jpg",
+          "portada": true,
+          "alt": "Carrot cake",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/carrot-cake/carrot-cake-2.webp",
+          "original": "TORTAS/carrot cake/20230523_163728.jpg",
+          "portada": false,
+          "alt": "Carrot cake",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Carrot cake",
+        "texto_excel": "Torta de zanahoria y especias + crema acida + nueces | Mide 24 cm | Rinde 10 a 12 porciones",
+        "dudas": [
+          "Precio",
+          "Hay carrot cake como budín, como torta y como torta especial. ¿Son tres productos distintos?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Tarta bretona de peras",
+      "categoria": "tortas",
+      "descripcion": "Masa bretona + crema de almendras + peras.",
+      "orden": 29,
+      "slug": "tarta-bretona-de-peras",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/tarta-bretona-de-peras/tarta-bretona-de-peras-1.webp",
+          "original": "TORTAS/Tarta bretona de peras/20220701_113057.jpeg",
+          "portada": true,
+          "alt": "Tarta bretona de peras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/tarta-bretona-de-peras/tarta-bretona-de-peras-2.webp",
+          "original": "TORTAS/Tarta bretona de peras/20210819_122329.jpeg",
+          "portada": false,
+          "alt": "Tarta bretona de peras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Tarta bretona de peras",
+        "texto_excel": "Masa bretona + crema de almendras + peras | Medida 24 cm | Rinde 10 porciones aprox",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 a 12 porciones",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Tarta de mandarina y granola",
+      "categoria": "tortas",
+      "descripcion": "Base de masa sablé + curd de mandarinas + granola de frutos secos y coco.",
+      "orden": 30,
+      "slug": "tarta-de-mandarina-y-granola",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/tarta-de-mandarina-y-granola/tarta-de-mandarina-y-granola-1.webp",
+          "original": "TORTAS/Tarta de mandarinas y granola/20210811_114555.jpeg",
+          "portada": true,
+          "alt": "Tarta de mandarina y granola",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/tarta-de-mandarina-y-granola/tarta-de-mandarina-y-granola-2.webp",
+          "original": "TORTAS/Tarta de mandarinas y granola/20210811_114617_02.jpeg",
+          "portada": false,
+          "alt": "Tarta de mandarina y granola",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 735,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Tarta de mandarina y granola",
+        "texto_excel": "Base de masa sablee + curd de mandarinas + granola de frutos secos y coco | Medida 24 cm | Rinde 10 a 12 porciones",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "10 porciones",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Tarta de ricota y naranja",
+      "categoria": "tortas",
+      "descripcion": "Masa sablé + ricota + naranja.",
+      "orden": 31,
+      "slug": "tarta-de-ricota-y-naranja",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/tarta-de-ricota-y-naranja/tarta-de-ricota-y-naranja-1.webp",
+          "original": "TORTAS/Tarta de ricota/20210327_095838.jpeg",
+          "portada": true,
+          "alt": "Tarta de ricota y naranja",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Tarta de ricota y naranja",
+        "texto_excel": "Masa sablee + ricota + naranja | Medida 24 cm | Rinde 10 porciones",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": "24 cm de diámetro",
+      "porciones": "12 porciones aprox.",
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Pastafrola",
+      "categoria": "tortas",
+      "descripcion": "Clásica pastafrola de dulce de membrillo.",
+      "orden": 32,
+      "slug": "pastafrola",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/pastafrola/pastafrola-1.webp",
+          "original": "TORTAS/Pastafrola/20260519_140048.jpg",
+          "portada": true,
+          "alt": "Pastafrola",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/pastafrola/pastafrola-2.webp",
+          "original": "TORTAS/Pastafrola/20210625_132016.jpeg",
+          "portada": false,
+          "alt": "Pastafrola",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Pastafrola",
+        "texto_excel": "Clasica pastafrola de dulce de membrillo. | LA MEJOR! | Mide 24 cm | Rinde 12 porciones aprox",
+        "dudas": [
+          "Precio",
+          "El Excel agrega \"LA MEJOR!\". ¿Lo sumamos a la descripción?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Pack de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cookies full choco y sal marina",
+      "categoria": "freezados",
+      "descripcion": "Pack de 12 cookies freezadas, listas para hornear.",
+      "orden": 1,
+      "slug": "cookies-full-choco-y-sal-marina",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cookies-full-choco-y-sal-marina/cookies-full-choco-y-sal-marina-1.webp",
+          "original": "FREEZADOS/cookies full choco/20210421_162919.jpeg",
+          "portada": true,
+          "alt": "Cookies full choco y sal marina",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cookies-full-choco-y-sal-marina/cookies-full-choco-y-sal-marina-2.webp",
+          "original": "FREEZADOS/cookies full choco/20210421_153705-01.jpeg",
+          "portada": false,
+          "alt": "Cookies full choco y sal marina",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cookies-full-choco-y-sal-marina/cookies-full-choco-y-sal-marina-3.webp",
+          "original": "FREEZADOS/cookies full choco/20210421_163338-01.jpeg",
+          "portada": false,
+          "alt": "Cookies full choco y sal marina",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cookies-full-choco-y-sal-marina/cookies-full-choco-y-sal-marina-4.webp",
+          "original": "FREEZADOS/cookies full choco/20210421_162529-01.jpeg",
+          "portada": false,
+          "alt": "Cookies full choco y sal marina",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 413,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cookies full choco y sal marina",
+        "texto_excel": "Pack de 12 cookies freezadas, listas para hornear.",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": [
+          "FREEZADOS/cookies full choco/Screenshot_20210515-123339_WhatsApp.jpeg",
+          "FREEZADOS/cookies full choco/Screenshot_20210515-123344_WhatsApp.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Pack de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Cookies de maní y chocolate con leche",
+      "categoria": "freezados",
+      "descripcion": "Pack de 12 cookies freezadas, listas para hornear.",
+      "orden": 2,
+      "slug": "cookies-de-mani-y-chocolate-con-leche",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cookies-de-mani-y-chocolate-con-leche/cookies-de-mani-y-chocolate-con-leche-1.webp",
+          "original": "FREEZADOS/cookies mani y choco/20250326_160101.jpg",
+          "portada": true,
+          "alt": "Cookies de maní y chocolate con leche",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/cookies-de-mani-y-chocolate-con-leche/cookies-de-mani-y-chocolate-con-leche-2.webp",
+          "original": "FREEZADOS/cookies mani y choco/20210421_152726-01.jpeg",
+          "portada": false,
+          "alt": "Cookies de maní y chocolate con leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cookies-de-mani-y-chocolate-con-leche/cookies-de-mani-y-chocolate-con-leche-3.webp",
+          "original": "FREEZADOS/cookies mani y choco/20210120_151223.jpeg",
+          "portada": false,
+          "alt": "Cookies de maní y chocolate con leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Cookies mani y chocolate con leche",
+        "texto_excel": "Pack de 12 cookies freezadas, listas para hornear.",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Pack de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Scones clásicos",
+      "categoria": "freezados",
+      "descripcion": "Pack de 12 scones dulces freezados, listos para hornear.",
+      "orden": 3,
+      "slug": "scones-clasicos",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/scones-clasicos/scones-clasicos-1.webp",
+          "original": "FREEZADOS/Scons clasicos/20210421_154256-01.jpeg",
+          "portada": true,
+          "alt": "Scones clásicos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/scones-clasicos/scones-clasicos-2.webp",
+          "original": "FREEZADOS/Scons clasicos/20210806_171247.jpeg",
+          "portada": false,
+          "alt": "Scones clásicos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/scones-clasicos/scones-clasicos-3.webp",
+          "original": "FREEZADOS/Scons clasicos/20210312_145936.jpeg",
+          "portada": false,
+          "alt": "Scones clásicos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/scones-clasicos/scones-clasicos-4.webp",
+          "original": "FREEZADOS/Scons clasicos/IMG-20210522-WA0008-01.jpeg",
+          "portada": false,
+          "alt": "Scones clásicos",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 413,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Scons Clasicos",
+        "texto_excel": "Pack de 12 scons dulces freezados, listos para hornear.",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Pack de 12 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Scones de parmesano",
+      "categoria": "freezados",
+      "descripcion": "Pack de 12 scones de parmesano freezados, listos para hornear.",
+      "orden": 4,
+      "slug": "scones-de-parmesano",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/scones-de-parmesano/scones-de-parmesano-1.webp",
+          "original": "FREEZADOS/Scons parmesano/20211217_160810.jpeg",
+          "portada": true,
+          "alt": "Scones de parmesano",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/scones-de-parmesano/scones-de-parmesano-2.webp",
+          "original": "FREEZADOS/Scons parmesano/20211217_154225.jpeg",
+          "portada": false,
+          "alt": "Scones de parmesano",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/scones-de-parmesano/scones-de-parmesano-3.webp",
+          "original": "FREEZADOS/Scons parmesano/20211217_175524.jpeg",
+          "portada": false,
+          "alt": "Scones de parmesano",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/scones-de-parmesano/scones-de-parmesano-4.webp",
+          "original": "FREEZADOS/Scons parmesano/20210806_171258.jpeg",
+          "portada": false,
+          "alt": "Scones de parmesano",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Scons Parmesano",
+        "texto_excel": "Pack de 12 scons de parmesano freezados, listos para hornear.",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": [
+          "FREEZADOS/Scons parmesano/20220315_112742.jpeg",
+          "FREEZADOS/Scons parmesano/IMG-20210522-WA0007-01.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Shots de maracuyá",
+      "categoria": "postres",
+      "descripcion": "Postres en vasito de 180 g.",
+      "orden": 1,
+      "slug": "shots-de-maracuya",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-maracuya/shots-de-maracuya-1.webp",
+          "original": "POSTRES/shot de maracuya/20240321_153258.jpg",
+          "portada": true,
+          "alt": "Shots de maracuyá",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-maracuya/shots-de-maracuya-2.webp",
+          "original": "POSTRES/shot de maracuya/20220331_155941.jpeg",
+          "portada": false,
+          "alt": "Shots de maracuyá",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/shots-de-maracuya/shots-de-maracuya-3.webp",
+          "original": "POSTRES/shot de maracuya/20220331_155925.jpeg",
+          "portada": false,
+          "alt": "Shots de maracuyá",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Shot de Maracuya",
+        "texto_excel": "Postres en vasito de 180gr. | Vienen en cajas de 6 unidades",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Shots de frutillas, dulce de leche y crema",
+      "categoria": "postres",
+      "descripcion": "Postres en vasito de 180 g.",
+      "orden": 2,
+      "slug": "shots-de-frutillas-dulce-de-leche-y-crema",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-frutillas-dulce-de-leche-y-crema/shots-de-frutillas-dulce-de-leche-y-crema-1.webp",
+          "original": "POSTRES/shot frutillas + ddl +crema + merenge/20251120_132941.jpg",
+          "portada": true,
+          "alt": "Shots de frutillas, dulce de leche y crema",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-frutillas-dulce-de-leche-y-crema/shots-de-frutillas-dulce-de-leche-y-crema-2.webp",
+          "original": "POSTRES/shot frutillas + ddl +crema + merenge/20210828_151416.jpeg",
+          "portada": false,
+          "alt": "Shots de frutillas, dulce de leche y crema",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/shots-de-frutillas-dulce-de-leche-y-crema/shots-de-frutillas-dulce-de-leche-y-crema-3.webp",
+          "original": "POSTRES/shot frutillas + ddl +crema + merenge/20210828_151445.jpeg",
+          "portada": false,
+          "alt": "Shots de frutillas, dulce de leche y crema",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Shot de Frutillas con dulce de leche y crema",
+        "texto_excel": "Postres en vasito de 180gr. | Vienen en cajas de 6 unidades",
+        "dudas": [
+          "Precio",
+          "La carpeta de fotos dice \"+ merengue\" y el Excel no. ¿Lleva merengue?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Shots de mousse de sambayón con nueces",
+      "categoria": "postres",
+      "descripcion": "Postres en vasito de 180 g.",
+      "orden": 3,
+      "slug": "shots-de-mousse-de-sambayon-con-nueces",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-mousse-de-sambayon-con-nueces/shots-de-mousse-de-sambayon-con-nueces-1.webp",
+          "original": "POSTRES/shots sambayon/20210607_163143.jpeg",
+          "portada": true,
+          "alt": "Shots de mousse de sambayón con nueces",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Shot de Mousse de Sambayon con nueces",
+        "texto_excel": "Postres en vasito de 180gr. | Vienen en cajas de 6 unidades",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": "100 g cada uno",
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Volcanes de dulce de leche",
+      "categoria": "postres",
+      "descripcion": "¡Increíble postre para tener siempre a mano! Volcán de dulce de leche listo para hornear.",
+      "orden": 4,
+      "slug": "volcanes-de-dulce-de-leche",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/volcanes-de-dulce-de-leche/volcanes-de-dulce-de-leche-1.webp",
+          "original": "POSTRES/volcan dulce de leche/20220524_161125.jpeg",
+          "portada": true,
+          "alt": "Volcanes de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/volcanes-de-dulce-de-leche/volcanes-de-dulce-de-leche-2.webp",
+          "original": "POSTRES/volcan dulce de leche/20210312_153856.jpeg",
+          "portada": false,
+          "alt": "Volcanes de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/volcanes-de-dulce-de-leche/volcanes-de-dulce-de-leche-3.webp",
+          "original": "POSTRES/volcan dulce de leche/20210522_163621-01.jpeg",
+          "portada": false,
+          "alt": "Volcanes de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/volcanes-de-dulce-de-leche/volcanes-de-dulce-de-leche-4.webp",
+          "original": "POSTRES/volcan dulce de leche/IMG-20210522-WA0006-01.jpeg",
+          "portada": false,
+          "alt": "Volcanes de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 413,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Volcan de Dulce de Leche",
+        "texto_excel": "Increible postre para tener siempre a mano! | Volcan de dulce de leche listo para hornear. | Vienen en cajas de 6 unidades | (Cada volcan pesa 100gr)",
+        "dudas": [
+          "Precio",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": "100 g cada uno",
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Volcanes de chocolate",
+      "categoria": "postres",
+      "descripcion": "¡Increíble postre para tener siempre a mano! Volcán de chocolate listo para hornear.",
+      "orden": 5,
+      "slug": "volcanes-de-chocolate",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/volcanes-de-chocolate/volcanes-de-chocolate-1.webp",
+          "original": "POSTRES/volcan chocolate/20260824_175239.jpg",
+          "portada": true,
+          "alt": "Volcanes de chocolate",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/volcanes-de-chocolate/volcanes-de-chocolate-2.webp",
+          "original": "POSTRES/volcan chocolate/20210312_151331.jpeg",
+          "portada": false,
+          "alt": "Volcanes de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/volcanes-de-chocolate/volcanes-de-chocolate-3.webp",
+          "original": "POSTRES/volcan chocolate/20210319_151910.jpeg",
+          "portada": false,
+          "alt": "Volcanes de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/volcanes-de-chocolate/volcanes-de-chocolate-4.webp",
+          "original": "POSTRES/volcan chocolate/20210522_163638.jpeg",
+          "portada": false,
+          "alt": "Volcanes de chocolate",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Volcan de Chocolate",
+        "texto_excel": "Increible postre para tener siempre a mano! | Volcan de chocolate listo para hornear. | Vienen en cajas de 6 unidades | (Cada volcan pesa 100gr)",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": [
+          "POSTRES/volcan chocolate/IMG-20210312-WA0061-01.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Shots de chocotorta",
+      "categoria": "postres",
+      "descripcion": "Postres en vasito de 100 g.",
+      "orden": 6,
+      "slug": "shots-de-chocotorta",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-chocotorta/shots-de-chocotorta-1.webp",
+          "original": "POSTRES/shot chocotorta/20230714_135330.jpg",
+          "portada": true,
+          "alt": "Shots de chocotorta",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-chocotorta/shots-de-chocotorta-2.webp",
+          "original": "POSTRES/shot chocotorta/20210813_130450.jpeg",
+          "portada": false,
+          "alt": "Shots de chocotorta",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/shots-de-chocotorta/shots-de-chocotorta-3.webp",
+          "original": "POSTRES/shot chocotorta/20210324_163246.jpeg",
+          "portada": false,
+          "alt": "Shots de chocotorta",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/shots-de-chocotorta/shots-de-chocotorta-4.webp",
+          "original": "POSTRES/shot chocotorta/20210813_130508.jpeg",
+          "portada": false,
+          "alt": "Shots de chocotorta",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Shot de Chocotorta",
+        "texto_excel": "Postres en vasito de 100gr. | Vienen en cajas de 6 unidades",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Shots de lemon pie",
+      "categoria": "postres",
+      "descripcion": "Postres en vasito de 100 g.",
+      "orden": 7,
+      "slug": "shots-de-lemon-pie",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-lemon-pie/shots-de-lemon-pie-1.webp",
+          "original": "POSTRES/shot de lemon pie/20251203_170121.jpg",
+          "portada": true,
+          "alt": "Shots de lemon pie",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-lemon-pie/shots-de-lemon-pie-2.webp",
+          "original": "POSTRES/shot de lemon pie/20210324_162755-01.jpeg",
+          "portada": false,
+          "alt": "Shots de lemon pie",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Shots de Lemon Pie",
+        "texto_excel": "Postres en vasito de 100gr. | Vienen en cajas de 6 unidades",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": "Caja de 6 unidades",
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Shots de mousse de dulce de leche",
+      "categoria": "postres",
+      "descripcion": "Postres en vasito de 180 g.",
+      "orden": 8,
+      "slug": "shots-de-mousse-de-dulce-de-leche",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-mousse-de-dulce-de-leche/shots-de-mousse-de-dulce-de-leche-1.webp",
+          "original": "POSTRES/shot mousse ddl/20210826_162911.jpg",
+          "portada": true,
+          "alt": "Shots de mousse de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-mousse-de-dulce-de-leche/shots-de-mousse-de-dulce-de-leche-2.webp",
+          "original": "POSTRES/shot mousse ddl/20210826_162926.jpeg",
+          "portada": false,
+          "alt": "Shots de mousse de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 446,
+          "alto": 792
+        },
+        {
+          "archivo": "fotos/shots-de-mousse-de-dulce-de-leche/shots-de-mousse-de-dulce-de-leche-3.webp",
+          "original": "POSTRES/shot mousse ddl/20210826_162746.jpeg",
+          "portada": false,
+          "alt": "Shots de mousse de dulce de leche",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Shots de Mousse de dulce de leche",
+        "texto_excel": "Postres en vasito de 180gr. | Vienen en cajas de 6 unidades",
+        "dudas": [
+          "Precio"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Grande · bandeja de 30 x 40 cm",
+          "precio": null
+        },
+        {
+          "etiqueta": "Chica · bandeja de 28 x 28 cm",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Number cake",
+      "categoria": "number-cakes",
+      "descripcion": "Torta con forma de número. Todas llevan macarons o alfajorcitos (2 por número), merenguitos o sprinkles y 2 decoraciones a elección.",
+      "sabores": [
+        "Marquise + dulce de leche + crema o merengue",
+        "Marquise + dulce de leche + crema + frutillas",
+        "Marquise + dulce de leche + mousse de chocolate",
+        "Masa sablé de cacao + dulce de leche + mousse de chocolate",
+        "Masa sablé de cacao + crema de chocotorta",
+        "Masa sablé + dulce de leche + merengue",
+        "Sablé de almendras + dulce de leche + crema chantilly + frutillas",
+        "Masa sablé + curd de limón + merengue italiano"
+      ],
+      "decoraciones": [
+        "Flores naturales",
+        "Garrapiñada de frutos secos",
+        "Chocolatines o rulos de chocolate blanco o negro",
+        "Hostias (para comuniones)"
+      ],
+      "orden": 1,
+      "slug": "number-cake",
+      "imagenes": [
+        {
+          "archivo": "fotos/number-cake/number-cake-1.webp",
+          "original": "NUMBER CAKES/marquisse + ddl + crema_merengue/20260808_103018.jpg",
+          "portada": true,
+          "alt": "Number cake · Marquise + dulce de leche + crema o merengue",
+          "sabor": "Marquise + dulce de leche + crema o merengue",
+          "baja_resolucion": false,
+          "ancho": 901,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-2.webp",
+          "original": "NUMBER CAKES/marquisse + dll + mousse choco/20260227_155859.jpg",
+          "portada": false,
+          "alt": "Number cake · Marquise + dulce de leche + mousse de chocolate",
+          "sabor": "Marquise + dulce de leche + mousse de chocolate",
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-3.webp",
+          "original": "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20260425_085140.jpg",
+          "portada": false,
+          "alt": "Number cake · Sablé de almendras + dulce de leche + crema chantilly + frutillas",
+          "sabor": "Sablé de almendras + dulce de leche + crema chantilly + frutillas",
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-4.webp",
+          "original": "NUMBER CAKES/cookies chocolate + ddl + mousse choco/20211023_102226.jpeg",
+          "portada": false,
+          "alt": "Number cake · Masa sablé de cacao + dulce de leche + mousse de chocolate",
+          "sabor": "Masa sablé de cacao + dulce de leche + mousse de chocolate",
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-5.webp",
+          "original": "NUMBER CAKES/cookie de manteca + ddl + merengue/20210815_153207.jpeg",
+          "portada": false,
+          "alt": "Number cake · Masa sablé + dulce de leche + merengue",
+          "sabor": "Masa sablé + dulce de leche + merengue",
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-6.webp",
+          "original": "NUMBER CAKES/marquisse + ddl + crema + frutillas/20210903_154605.jpeg",
+          "portada": false,
+          "alt": "Number cake · Marquise + dulce de leche + crema + frutillas",
+          "sabor": "Marquise + dulce de leche + crema + frutillas",
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-7.webp",
+          "original": "NUMBER CAKES/cookies chocolate + crema de chocotorta/20211127_110653.jpeg",
+          "portada": false,
+          "alt": "Number cake · Masa sablé de cacao + crema de chocotorta",
+          "sabor": "Masa sablé de cacao + crema de chocotorta",
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/number-cake/number-cake-8.webp",
+          "original": "NUMBER CAKES/lemon pie/20211001_151943.jpeg",
+          "portada": false,
+          "alt": "Number cake · Masa sablé + curd de limón + merengue italiano",
+          "sabor": "Masa sablé + curd de limón + merengue italiano",
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Number cakes",
+        "texto_excel": "(bloque Number cakes del Excel)",
+        "dudas": [
+          "Precio",
+          "El Excel dice $7.600 (grande) y $5.600 (chica). ¿Están actualizados? Por ahora no se publican.",
+          "¿Cuántas porciones rinde cada tamaño?",
+          "¿Hace letras además de números?"
+        ],
+        "fotos_descartadas": [
+          "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20210608_102544.jpeg",
+          "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20220319_102140.jpeg",
+          "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20220408_110116.jpeg",
+          "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20220409_155338.jpeg",
+          "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20220521_102535.jpeg",
+          "NUMBER CAKES/almendras + ddl + crema + frutos rojos/20220709_091055.jpeg",
+          "NUMBER CAKES/cookie de manteca + ddl + merengue/20210718_120347.jpeg",
+          "NUMBER CAKES/cookie de manteca + ddl + merengue/20211001_173759.jpeg",
+          "NUMBER CAKES/cookie de manteca + ddl + merengue/20211126_135234.jpeg",
+          "NUMBER CAKES/cookie de manteca + ddl + merengue/20211211_105153.jpeg",
+          "NUMBER CAKES/cookies chocolate + crema de chocotorta/20211126_134944.jpeg",
+          "NUMBER CAKES/cookies chocolate + crema de chocotorta/20211127_110600.jpeg",
+          "NUMBER CAKES/cookies chocolate + ddl + mousse choco/20200615_122900.jpeg",
+          "NUMBER CAKES/cookies chocolate + ddl + mousse choco/20220625_103152.jpeg",
+          "NUMBER CAKES/lemon pie/20211021_071605.jpeg",
+          "NUMBER CAKES/lemon pie/20220602_123642.jpeg",
+          "NUMBER CAKES/lemon pie/20220602_123704.jpeg",
+          "NUMBER CAKES/lemon pie/20220616_084657.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema + frutillas/20210327_090042-01.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema + frutillas/20210924_120152.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema + frutillas/20211021_071615.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema + frutillas/20211030_080314.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20210903_154610.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20210906_142510.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20210909_103136.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20211023_093837.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20211105_102814.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20220408_105209.jpeg",
+          "NUMBER CAKES/marquisse + ddl + crema_merengue/20220624_113414.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220321_162950.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220321_163203.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220506_112205.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220506_112218.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220606_150304.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220625_102301.jpeg",
+          "NUMBER CAKES/marquisse + dll + mousse choco/20220813_082748.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": "Entre 25 y 30 porciones",
+      "peso": "3,5 kg aprox.",
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Torta cubierta con buttercream",
+      "categoria": "tortas-especiales",
+      "descripcion": "Bizcochuelo de vainilla o chocolate + dulce de leche + buttercream. La decoración se cobra aparte, según lo que se defina: macarons, flores o sprinkles.",
+      "orden": 1,
+      "slug": "torta-cubierta-con-buttercream",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/torta-cubierta-con-buttercream/torta-cubierta-con-buttercream-1.webp",
+          "original": "TORTAS ESPECIALES/bizcochuelo con butter cream/20260306_140419.jpg",
+          "portada": true,
+          "alt": "Torta cubierta con buttercream",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/torta-cubierta-con-buttercream/torta-cubierta-con-buttercream-2.webp",
+          "original": "TORTAS ESPECIALES/bizcochuelo con butter cream/20260605_121941.jpg",
+          "portada": false,
+          "alt": "Torta cubierta con buttercream",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/torta-cubierta-con-buttercream/torta-cubierta-con-buttercream-3.webp",
+          "original": "TORTAS ESPECIALES/bizcochuelo con butter cream/20251205_170350.jpg",
+          "portada": false,
+          "alt": "Torta cubierta con buttercream",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/torta-cubierta-con-buttercream/torta-cubierta-con-buttercream-4.webp",
+          "original": "TORTAS ESPECIALES/bizcochuelo con butter cream/20260603_133820.jpg",
+          "portada": false,
+          "alt": "Torta cubierta con buttercream",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Torta cubierta con buttercream",
+        "texto_excel": "(bloque Tortas Especiales del Excel)",
+        "dudas": [
+          "Precio",
+          "¿Cuánto sale la decoración? ¿Qué medida tiene?"
+        ],
+        "fotos_descartadas": [
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20220715_164022.jpeg",
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20220715_164036.jpeg",
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20260228_083348.jpg",
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20260312_111834.jpg",
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20260321_102357.jpg",
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20260508_120237.jpg",
+          "TORTAS ESPECIALES/bizcochuelo con butter cream/20260515_144124.jpg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Sablé de almendras decorado",
+      "categoria": "tortas-especiales",
+      "descripcion": "3 capas de masa sablé de almendras + dulce de leche + crema + frutillas o frutos rojos. Decorada con macarons, flores naturales y merenguitos.",
+      "orden": 2,
+      "slug": "sable-de-almendras-decorado",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/sable-de-almendras-decorado/sable-de-almendras-decorado-1.webp",
+          "original": "TORTAS ESPECIALES/sable de almendras decorada/20190921_160838.jpeg",
+          "portada": true,
+          "alt": "Sablé de almendras decorado",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 551,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/sable-de-almendras-decorado/sable-de-almendras-decorado-2.webp",
+          "original": "TORTAS ESPECIALES/sable de almendras decorada/20210626_100057.jpeg",
+          "portada": false,
+          "alt": "Sablé de almendras decorado",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/sable-de-almendras-decorado/sable-de-almendras-decorado-3.webp",
+          "original": "TORTAS ESPECIALES/sable de almendras decorada/20220315_185358.jpeg",
+          "portada": false,
+          "alt": "Sablé de almendras decorado",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Sablé de almendras decorado",
+        "texto_excel": "(bloque Tortas Especiales del Excel)",
+        "dudas": [
+          "Precio",
+          "¿Medida y porciones?",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": true,
+      "destacado": false,
+      "nombre": "Rogel decorado",
+      "categoria": "tortas-especiales",
+      "descripcion": "Múltiples capas de masa hojaldrada + dulce de leche + merengue italiano. Decorado con flores y macarons.",
+      "orden": 3,
+      "slug": "rogel-decorado",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/rogel-decorado/rogel-decorado-1.webp",
+          "original": "TORTAS ESPECIALES/rogel decorado/20260417_120841.jpg",
+          "portada": true,
+          "alt": "Rogel decorado",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/rogel-decorado/rogel-decorado-2.webp",
+          "original": "TORTAS ESPECIALES/rogel decorado/20260424_111838.jpg",
+          "portada": false,
+          "alt": "Rogel decorado",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/rogel-decorado/rogel-decorado-3.webp",
+          "original": "TORTAS ESPECIALES/rogel decorado/20250926_161607.jpg",
+          "portada": false,
+          "alt": "Rogel decorado",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/rogel-decorado/rogel-decorado-4.webp",
+          "original": "TORTAS ESPECIALES/rogel decorado/20250905_154826.jpg",
+          "portada": false,
+          "alt": "Rogel decorado",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": "Rogel decorado",
+        "texto_excel": "(bloque Tortas Especiales del Excel)",
+        "dudas": [
+          "Precio",
+          "¿Medida y porciones? ¿Es igual al rogel común?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Cuadrados de limón",
+      "categoria": "cuadrados-y-bites",
+      "descripcion": null,
+      "orden": 17,
+      "slug": "cuadrados-de-limon",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/cuadrados-de-limon/cuadrados-de-limon-1.webp",
+          "original": "CUADRADOS_BITES/cuadrados de limon/20220413_111056.jpeg",
+          "portada": true,
+          "alt": "Cuadrados de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/cuadrados-de-limon/cuadrados-de-limon-2.webp",
+          "original": "CUADRADOS_BITES/cuadrados de limon/20220413_111105.jpeg",
+          "portada": false,
+          "alt": "Cuadrados de limón",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto.",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Shots de mousse de chocolate y almendras",
+      "categoria": "postres",
+      "descripcion": null,
+      "orden": 9,
+      "slug": "shots-de-mousse-de-chocolate-y-almendras",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/shots-de-mousse-de-chocolate-y-almendras/shots-de-mousse-de-chocolate-y-almendras-1.webp",
+          "original": "POSTRES/shots mousse de choco y almendras/20251204_101557.jpg",
+          "portada": true,
+          "alt": "Shots de mousse de chocolate y almendras",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-mousse-de-chocolate-y-almendras/shots-de-mousse-de-chocolate-y-almendras-2.webp",
+          "original": "POSTRES/shots mousse de choco y almendras/20251204_101612.jpg",
+          "portada": false,
+          "alt": "Shots de mousse de chocolate y almendras",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        },
+        {
+          "archivo": "fotos/shots-de-mousse-de-chocolate-y-almendras/shots-de-mousse-de-chocolate-y-almendras-3.webp",
+          "original": "POSTRES/shots mousse de choco y almendras/20210604_095201.jpeg",
+          "portada": false,
+          "alt": "Shots de mousse de chocolate y almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/shots-de-mousse-de-chocolate-y-almendras/shots-de-mousse-de-chocolate-y-almendras-4.webp",
+          "original": "POSTRES/shots mousse de choco y almendras/20210324_173807.jpeg",
+          "portada": false,
+          "alt": "Shots de mousse de chocolate y almendras",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto."
+        ],
+        "fotos_descartadas": [
+          "POSTRES/shots mousse de choco y almendras/20210324_173924.jpeg"
+        ]
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Red velvet",
+      "categoria": "tortas-especiales",
+      "descripcion": null,
+      "orden": 4,
+      "slug": "red-velvet",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/red-velvet/red-velvet-1.webp",
+          "original": "TORTAS ESPECIALES/Red velvet/20251128_123703.jpg",
+          "portada": true,
+          "alt": "Red velvet",
+          "sabor": null,
+          "baja_resolucion": false,
+          "ancho": 1200,
+          "alto": 1600
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto."
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Carrot cake decorada",
+      "categoria": "tortas-especiales",
+      "descripcion": null,
+      "orden": 5,
+      "slug": "carrot-cake-decorada",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/carrot-cake-decorada/carrot-cake-decorada-1.webp",
+          "original": "TORTAS ESPECIALES/carrot cake/20220407_150113.jpeg",
+          "portada": true,
+          "alt": "Carrot cake decorada",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/carrot-cake-decorada/carrot-cake-decorada-2.webp",
+          "original": "TORTAS ESPECIALES/carrot cake/20220407_150039.jpeg",
+          "portada": false,
+          "alt": "Carrot cake decorada",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto.",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Marquise de 1 metro",
+      "categoria": "tortas-especiales",
+      "descripcion": null,
+      "orden": 6,
+      "slug": "marquise-de-1-metro",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/marquise-de-1-metro/marquise-de-1-metro-1.webp",
+          "original": "TORTAS ESPECIALES/marquisse 1mt/20190615_012841.jpeg",
+          "portada": true,
+          "alt": "Marquise de 1 metro",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 551,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-de-1-metro/marquise-de-1-metro-2.webp",
+          "original": "TORTAS ESPECIALES/marquisse 1mt/20190614_152918.jpeg",
+          "portada": false,
+          "alt": "Marquise de 1 metro",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 980,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/marquise-de-1-metro/marquise-de-1-metro-3.webp",
+          "original": "TORTAS ESPECIALES/marquisse 1mt/20190614_153009.jpeg",
+          "portada": false,
+          "alt": "Marquise de 1 metro",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 551,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto.",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": true,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Rainbow de cupcakes",
+      "categoria": "tortas-especiales",
+      "descripcion": null,
+      "orden": 7,
+      "slug": "rainbow-de-cupcakes",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/rainbow-de-cupcakes/rainbow-de-cupcakes-1.webp",
+          "original": "TORTAS ESPECIALES/rainbow de cupcakes/20211203_183157.jpeg",
+          "portada": true,
+          "alt": "Rainbow de cupcakes",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/rainbow-de-cupcakes/rainbow-de-cupcakes-2.webp",
+          "original": "TORTAS ESPECIALES/rainbow de cupcakes/20211202_105507.jpeg",
+          "portada": false,
+          "alt": "Rainbow de cupcakes",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/rainbow-de-cupcakes/rainbow-de-cupcakes-3.webp",
+          "original": "TORTAS ESPECIALES/rainbow de cupcakes/20211203_183207.jpeg",
+          "portada": false,
+          "alt": "Rainbow de cupcakes",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto.",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    },
+    {
+      "medida": null,
+      "porciones": null,
+      "peso": null,
+      "unidades": null,
+      "temporada": null,
+      "tamanos": [
+        {
+          "etiqueta": "Único",
+          "precio": null
+        }
+      ],
+      "a_medida": false,
+      "anticipacion_horas": 48,
+      "activo": false,
+      "destacado": false,
+      "nombre": "Torta trufa con merengue",
+      "categoria": "tortas",
+      "descripcion": null,
+      "orden": 33,
+      "slug": "torta-trufa-con-merengue",
+      "sabores": null,
+      "decoraciones": null,
+      "imagenes": [
+        {
+          "archivo": "fotos/torta-trufa-con-merengue/torta-trufa-con-merengue-1.webp",
+          "original": "TORTAS/Trufa con merenge/20220709_100718.jpeg",
+          "portada": true,
+          "alt": "Torta trufa con merengue",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        },
+        {
+          "archivo": "fotos/torta-trufa-con-merengue/torta-trufa-con-merengue-2.webp",
+          "original": "TORTAS/Trufa con merenge/20220709_100706.jpeg",
+          "portada": false,
+          "alt": "Torta trufa con merengue",
+          "sabor": null,
+          "baja_resolucion": true,
+          "ancho": 414,
+          "alto": 735
+        }
+      ],
+      "revision": {
+        "nombre_excel": null,
+        "texto_excel": null,
+        "dudas": [
+          "Precio",
+          "Tiene fotos pero no está en el Excel. ¿Lo sigue haciendo? Si sí, falta la descripción. Mientras tanto queda oculto.",
+          "Las fotos que hay son chicas (comprimidas por WhatsApp). ¿Tiene los originales o fotos nuevas?"
+        ],
+        "fotos_descartadas": []
+      }
+    }
+  ]
+}

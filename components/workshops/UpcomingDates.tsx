@@ -51,35 +51,44 @@ export function UpcomingDates({ workshops }: { workshops: Workshop[] }) {
                   {workshop.price === null ? ui.priceTbd : formatPrice(workshop.price)}
                 </p>
               </div>
-              {soldOut ? (
-                <p className="text-14 font-semibold text-secundario">{content.soldOut}</p>
+              {workshop.isExample ? (
+                // TODO(Maggie): cargar el workshop real. Mientras tanto, sin Reservar.
+                <p className="justify-self-start rounded-full bg-arena px-4 py-2 text-14 font-semibold text-chocolate lg:col-span-2 lg:justify-self-end">
+                  {ui.exampleWorkshop}
+                </p>
               ) : (
-                <div className="flex flex-col gap-2 lg:max-w-50">
-                  <p className="text-14 font-semibold">{content.spots(workshop.spotsLeft, workshop.capacity)}</p>
-                  <div aria-hidden="true" className="h-1.5 rounded-full bg-placeholder">
-                    <div className="h-1.5 rounded-full bg-chocolate" style={{ width: `${taken}%` }} />
+                <>
+                {soldOut ? (
+                  <p className="text-14 font-semibold text-secundario">{content.soldOut}</p>
+                ) : (
+                  <div className="flex flex-col gap-2 lg:max-w-50">
+                    <p className="text-14 font-semibold">{content.spots(workshop.spotsLeft, workshop.capacity)}</p>
+                    <div aria-hidden="true" className="h-1.5 rounded-full bg-placeholder">
+                      <div className="h-1.5 rounded-full bg-chocolate" style={{ width: `${taken}%` }} />
+                    </div>
                   </div>
-                </div>
-              )}
-              {soldOut ? (
-                <Button
-                  href={whatsappLink(whatsappMessages.workshopWaitlist(workshop.name))}
-                  variant="secondary"
-                  size="sm"
-                  className="mt-1 justify-self-start lg:mt-0 lg:justify-self-end"
-                >
-                  {content.waitlist}
-                  <span className="sr-only">: {workshop.name}</span>
-                </Button>
-              ) : (
-                <Button
-                  href={workshopEnrollHref(workshop.slug)}
-                  size="sm"
-                  className="mt-1 justify-self-start lg:mt-0 lg:min-h-12 lg:justify-self-end lg:px-7"
-                >
-                  {content.cta}
-                  <span className="sr-only">: {workshop.name}</span>
-                </Button>
+                )}
+                {soldOut ? (
+                  <Button
+                    href={whatsappLink(whatsappMessages.workshopWaitlist(workshop.name))}
+                    variant="secondary"
+                    size="sm"
+                    className="mt-1 justify-self-start lg:mt-0 lg:justify-self-end"
+                  >
+                    {content.waitlist}
+                    <span className="sr-only">: {workshop.name}</span>
+                  </Button>
+                ) : (
+                  <Button
+                    href={workshopEnrollHref(workshop.slug)}
+                    size="sm"
+                    className="mt-1 justify-self-start lg:mt-0 lg:min-h-12 lg:justify-self-end lg:px-7"
+                  >
+                    {content.cta}
+                    <span className="sr-only">: {workshop.name}</span>
+                  </Button>
+                )}
+                </>
               )}
             </li>
           );

@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Rich } from "@/components/Rich";
-import { ProductCatalog } from "@/components/tienda/ProductCatalog";
+import { CatalogFromUrl, CatalogView } from "@/components/tienda/ProductCatalog";
 import { pages } from "@/data/site";
 import { getProductCategories, getProducts } from "@/lib/data";
 
 const content = pages.tienda;
 
 export const metadata: Metadata = content.metadata;
+
+// ISR: el catálogo se regenera cada 5 minutos. TODO(E5): revalidación
+// on-demand cuando Maggie edite desde el panel.
+export const revalidate = 300;
 
 export default async function TiendaPage() {
   const [products, categories] = await Promise.all([getProducts(), getProductCategories()]);
@@ -42,7 +47,11 @@ export default async function TiendaPage() {
         </dl>
       </div>
 
-      <ProductCatalog products={products} categories={categories} />
+      {/* El filtro lee ?categoria= en el cliente: el fallback (todo el catálogo)
+          es lo que se prerenderiza, así la página sigue siendo estática. */}
+      <Suspense fallback={<CatalogView products={products} categories={categories} category={null} />}>
+        <CatalogFromUrl products={products} categories={categories} />
+      </Suspense>
     </div>
   );
 }

@@ -58,6 +58,7 @@ export const whatsappMessages = {
   workshop: (title: string) => `¡Hola! Quería anotarme al workshop "${title}".`,
   customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
   workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
+  customProduct: (name: string) => `¡Hola! Quería consultar por ${name} a medida.`,
 };
 
 export const navigation = [
@@ -86,6 +87,8 @@ export const ui = {
   // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
   cart: { label: "Carrito", href: "/tienda" },
   imagePending: "Foto próximamente",
+  // TODO(Maggie): cargar el workshop real. Mientras tanto, las fechas son de ejemplo.
+  exampleWorkshop: "Fecha de ejemplo: todavía no hay inscripción abierta",
   videoPending: "Video próximamente",
   video: { pause: "Pausar video", play: "Reproducir video" },
   priceTbd: "Precio a confirmar",
@@ -249,7 +252,6 @@ export const pages = {
       eyebrow: "La tienda",
       title: { full: "Los favoritos de la casa", short: "Favoritos" },
       cta: { label: "Ver todo", href: "/tienda" },
-      detail: (size: string) => `${size} · Por encargo`,
     },
     about: {
       eyebrow: "Quién hornea",
@@ -321,6 +323,8 @@ export const pages = {
       { term: "Envío", value: `Desde ${delivery.minimum} · ${delivery.radius}` },
     ],
     filter: { label: "Filtrar por categoría", all: "Todo" },
+    allTitle: "Todos los productos",
+    empty: { text: "No hay productos en esta categoría.", cta: "Ver todo" },
     sort: {
       label: "Ordenar",
       options: [
@@ -331,10 +335,33 @@ export const pages = {
     },
     results: (count: number) => (count === 1 ? "1 producto" : `${count} productos`),
     card: {
-      detail: (size: string) => `${size} · Por encargo`,
+      detail: (info: string | null) => (info ? `${info} · Por encargo` : "Por encargo"),
       // Hasta que exista el carrito, el botón queda deshabilitado.
       soon: "Muy pronto",
       soonContext: (name: string) => `: agregar ${name} al pedido`,
+      custom: "A medida",
+      outOfSeason: "Fuera de temporada",
+    },
+    product: {
+      metadata: (name: string) => ({ title: name }),
+      breadcrumb: { label: "Migas de pan", parent: { label: "Tienda", href: "/tienda" } },
+      gallery: "Fotos",
+      details: {
+        measure: "Medida",
+        servings: "Porciones",
+        weight: "Peso",
+        presentation: "Presentación",
+        season: "Temporada",
+        leadTime: "Anticipación",
+      },
+      leadTime: (hours: number) => `${hours} h`,
+      season: (range: string) => `Solo en temporada: ${range}`,
+      sizes: "Tamaños",
+      flavors: "Sabores",
+      decorations: "Decoraciones",
+      customCta: "Consultar por WhatsApp",
+      outOfSeason: (range: string) => `Fuera de temporada. Se hace ${range}.`,
+      back: "Volver a la tienda",
     },
   },
   workshops: {

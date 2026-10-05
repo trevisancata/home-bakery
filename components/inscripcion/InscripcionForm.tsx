@@ -135,9 +135,11 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
       return;
     }
 
-    const body: { message?: string; errors?: FieldErrors; spotsLeft?: number } = await response
+    // La API responde { data } o { error: { message, fields?, spotsLeft? } }.
+    const { error }: { error?: { message?: string; fields?: FieldErrors; spotsLeft?: number } } = await response
       .json()
       .catch(() => ({}));
+    const message = error?.message ?? content.form.serverError;
 
     if (response.status === 201) {
       setSubmitted(parsed.data);
@@ -150,25 +152,21 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
       return;
     }
 
-    if (response.status === 400 && body.errors && Object.keys(body.errors).length > 0) {
+    if (response.status === 400 && error?.fields && Object.keys(error.fields).length > 0) {
       setStatus({ kind: "idle" });
-      showErrors(body.errors);
+      showErrors(error.fields);
       return;
     }
 
-    if (response.status === 409 && typeof body.spotsLeft === "number") {
-      const left = body.spotsLeft;
+    if (response.status === 409 && typeof error?.spotsLeft === "number") {
+      const left = error.spotsLeft;
       setSpotsLeft(left);
       setQty((current) => Math.max(1, Math.min(current, left)));
-      setStatus({ kind: "error", message: body.message ?? content.form.serverError, retry: left > 0 });
+      setStatus({ kind: "error", message, retry: left > 0 });
       return;
     }
 
-    setStatus({
-      kind: "error",
-      message: body.message ?? content.form.serverError,
-      retry: response.status >= 500,
-    });
+    setStatus({ kind: "error", message, retry: response.status >= 500 });
   }
 
   /** Atributos de accesibilidad de un campo: error e indicaciones asociadas. */

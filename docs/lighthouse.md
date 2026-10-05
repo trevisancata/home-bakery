@@ -1,19 +1,22 @@
 # Lighthouse
 
-Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y S## Última medición
+Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
-- **Fecha:** 04/10/2026
-- **Commit:** `9e61c2d` (rama `feat/contenido-maggie-v6`)
+## Última medición
+
+- **Fecha:** 05/10/2026
+- **Commit:** `8a46b70` (rama `feat/e4-supabase-catalogo`)
 - **Lighthouse:** 12.8.2, emulación mobile, Chromium de Playwright (headless)
-- **Servidor:** build de producción (`npm run build && npm start`)
+- **Servidor:** build de producción (`npm run build && npm start`) leyendo Supabase
 
 | Ruta | Accessibility | Best Practices | SEO |
 |---|---|---|---|
 | `/` | 100 | 100 | 100 |
+| `/tienda` | 100 | 100 | 100 |
+| `/tienda/number-cake` | 100 | 100 | 100 |
 | `/workshops` | 100 | 100 | 100 |
-| `/maggie` | 100 | 100 | 100 |
 
-`/tienda` no cambió en este PR y no se volvió a medir (100 / 100 / 100 el 29/09).
+`/maggie` no cambió en este PR y no se volvió a medir (100 / 100 / 100 el 04/10).
 
 No hubo que corregir nada: ninguna auditoría automática falló. Lighthouse no cubre todo: las pruebas manuales de accesibilidad (teclado, lector de pantalla, zoom) siguen haciendo falta.
 

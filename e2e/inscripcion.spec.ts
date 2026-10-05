@@ -1,11 +1,13 @@
-import { expect, test } from "@playwright/test";
+import { expect, hasSupabase, skipReason, test } from "./support/supabase";
 
-// 6 lugares libres en data/workshops.ts.
-const url = "/workshops/tortas-de-capas/inscripcion";
+test.skip(!hasSupabase, skipReason);
+
+// Cada test usa un workshop de prueba propio (cupo 6) que se borra al final.
+const urlOf = (slug: string) => `/workshops/${slug}/inscripcion`;
 
 test.describe("Inscripción a un workshop", () => {
-  test("muestra los errores por campo y lleva el foco al primero", async ({ page }) => {
-    await page.goto(url);
+  test("muestra los errores por campo y lleva el foco al primero", async ({ page, workshop }) => {
+    await page.goto(urlOf(workshop.slug));
     await page.getByRole("button", { name: "Continuar al pago" }).click();
 
     const name = page.getByRole("textbox", { name: "Nombre y apellido" });
@@ -29,8 +31,8 @@ test.describe("Inscripción a un workshop", () => {
     );
   });
 
-  test("envía la inscripción y pasa al paso de la seña", async ({ page }) => {
-    await page.goto(url);
+  test("envía la inscripción y pasa al paso de la seña", async ({ page, workshop }) => {
+    await page.goto(urlOf(workshop.slug));
 
     await page.getByRole("textbox", { name: "Nombre y apellido" }).fill("Ana Pérez");
     await page.getByRole("textbox", { name: "WhatsApp" }).fill("11 5555-6666");
@@ -63,5 +65,16 @@ test.describe("Inscripción a un workshop", () => {
     expect(message).toContain("2 lugares");
     expect(message).toContain("seña del 50%");
     await expect(page.getByText("El saldo: a confirmar con Maggie.")).toBeVisible();
+  });
+
+  test("los workshops de ejemplo muestran el aviso y no se pueden reservar", async ({ page }) => {
+    await page.goto("/workshops");
+    const fila = page.getByRole("listitem").filter({ hasText: "Budines para empezar" });
+    await expect(fila.getByText("Fecha de ejemplo: todavía no hay inscripción abierta")).toBeVisible();
+    await expect(fila.getByRole("link", { name: /Reservar/ })).toHaveCount(0);
+
+    await page.goto("/workshops/budines-para-empezar/inscripcion");
+    await expect(page.getByText("Fecha de ejemplo: todavía no hay inscripción abierta")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continuar al pago" })).toHaveCount(0);
   });
 });
