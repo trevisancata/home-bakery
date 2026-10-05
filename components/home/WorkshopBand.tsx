@@ -3,7 +3,7 @@ import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
 import { SectionTitle } from "@/components/SectionTitle";
-import { pages } from "@/data/site";
+import { pages, ui } from "@/data/site";
 import type { Workshop } from "@/lib/data";
 import { formatDay } from "@/lib/format";
 
@@ -59,6 +59,7 @@ export function WorkshopBand({ nextWorkshop }: { nextWorkshop?: Workshop }) {
                 {nextWorkshop.name} ·{" "}
                 <time dateTime={nextWorkshop.startsAt}>{formatDay(nextWorkshop.startsAt)}</time>
               </strong>
+              {nextWorkshop.isExample && <span className="mt-1 block">{ui.exampleWorkshop}</span>}
             </p>
           )}
           <Button href={content.cta.href} variant="light" className="lg:mt-2 lg:self-start">

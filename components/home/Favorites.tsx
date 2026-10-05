@@ -31,7 +31,6 @@ export function Favorites({ products }: { products: Product[] }) {
             <ProductCard
               product={product}
               variant="inicio"
-              detail={product.highlight ?? favorites.detail(product.sizes[0].label)}
             />
           </li>
         ))}
