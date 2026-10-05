@@ -92,6 +92,11 @@ Cómo se aplicó en cada PR:
   - "Así fueron los workshops" muestra solo el título y el link a Instagram, sin nombres inventados.
   - El saldo de la seña dice "a confirmar con Maggie".
   - Se borraron la bio provisoria de `site.owner.bio` y los valores de `/maggie`, que ya no se usaban y no eran de Maggie.
+- **PR #11:**
+  - El catálogo se carga tal cual de `catalogo.json`, con los precios en `null` ("Precio a confirmar").
+  - Los workshops de `data/workshops.ts` se marcan como de ejemplo (`es_ejemplo`): se ven con aviso y no aceptan inscripciones.
+  - "Los favoritos de la casa" se oculta hasta que Maggie elija los destacados.
+  - En el detalle de los productos a medida se sacó una frase que prometía un presupuesto.
 
 Lo que falta completar con Maggie está marcado con `TODO` en `data/site.ts`, `data/products.ts` y `data/workshops.ts`.
 
@@ -163,3 +168,59 @@ Maggie revisó el sitio el 01/10 y mandó textos y cambios por WhatsApp. Catalin
 - Lighthouse en 100.
 
 Abierto el 04/10, sin mergear.
+
+## 05/10/2026
+
+### PR #11 · E4: catálogo y workshops en Supabase (`feat/e4-supabase-catalogo`)
+
+**Objetivo:** que el catálogo y los workshops se lean de Supabase, con API interna en Route Handlers e inscripciones persistidas sin sobreventa.
+
+**Prompt resumido:**
+1. Migración SQL con categorías, productos, tamaños, imágenes, workshops, imágenes de workshops e inscripciones: checks, triggers de `updated_at` e índices.
+2. RLS en todas las tablas, con lectura pública solo de lo activo. Inscripciones solo por la función `crear_inscripcion` (security definer, `for update`), sin select ni insert públicos. Vista `workshops_publicos` con lugares libres.
+3. Buckets públicos de Storage.
+4. Clientes de Supabase con las claves publishable y secret, y `.env.example`.
+5. `npm run seed` idempotente que sube las fotos.
+6. `lib/data.ts` contra Supabase, con filtro `?categoria=` y detalle `/tienda/[slug]`, y revalidación cada 5 minutos.
+7. API `{ data }` / `{ error }` con zod y headers de caché.
+8. Tests de la API y e2e de la tienda y la inscripción, sin ensuciar los datos reales.
+9. `docs/modelo-de-datos.md`.
+
+Nunca escribir claves en el código, los commits ni los logs.
+
+**Respuestas a las preguntas del plan:**
+
+- **Caché de `/tienda`:** leer `searchParams` en el servidor vuelve dinámica la página. Se eligió ISR con el filtro en el cliente: el componente que usa `useSearchParams` va en un `<Suspense>` con el catálogo completo de fallback. Los chips llevan `aria-pressed`, hay un estado vacío y el título dice la categoría.
+- **Favoritos del inicio:** ningún producto viene destacado, así que la sección se oculta hasta que Maggie elija.
+
+**Ajustes al plan:**
+
+- El proyecto tiene desactivado "Automatically expose new tables". La migración da permisos explícitos a `service_role` (tablas, funciones y los mismos por defecto) y el seed lo verifica.
+- Los workshops de `data/workshops.ts` son de ejemplo:
+  - Columna `es_ejemplo`.
+  - Aviso visible "Fecha de ejemplo: todavía no hay inscripción abierta", sin botón Reservar.
+  - `crear_inscripcion` los rechaza.
+- `docs/modelo-de-datos.md` explica como decisión consciente que `crear_inscripcion` se puede ejecutar con la clave publishable: el riesgo y lo pendiente para el E5 (rate limit o captcha, y cancelación desde el panel).
+
+**Supuestos de Claude Code explicados en el PR:**
+
+- **Cliente sin cookies:** `lib/supabase/server.ts` usa `createClient` sin cookies en lugar de `createServerClient` de `@supabase/ssr`. Leer cookies vuelve dinámica cada página y anula el ISR. El cliente con cookies entra en el E5 con el login de la admin.
+- **`presentacion`:** se carga desde `unidades` del catálogo.
+
+**Correcciones de Claude Code durante el desarrollo** (no fueron pedidas, salieron de su propia verificación):
+
+- Probar la migración en un Postgres local (PGlite) antes de pasarla. Así apareció, por ejemplo, que un workshop con cupo 3 necesita `cupo_minimo` ≤ 3.
+- La vista con `security_invoker` no podía sumar los lugares ocupados, porque anon no lee inscripciones. Se agregó `lugares_ocupados()` como security definer, que devuelve solo el total.
+- Reintentos en la subida de fotos del seed: una corrida falló una vez por un error de red transitorio.
+- La API no registra el `detail` de los errores de Postgres, porque un check fallido incluye la fila con datos personales.
+- Arreglar la primera línea de `docs/lighthouse.md`, que había quedado cortada en el PR #10.
+
+**Resultado:**
+
+- 77 productos (7 ocultos), 7 categorías, 198 fotos y 3 workshops de ejemplo en Supabase.
+- RLS verificada con la clave publishable.
+- API con 5 rutas.
+- 36 tests en verde, incluido uno de concurrencia: diez inscripciones simultáneas con cupo 3 dejan una sola reserva.
+- Lighthouse en 100.
+
+Abierto el 05/10, sin mergear.
