@@ -1,11 +1,9 @@
-// Mensaje de WhatsApp para confirmar una inscripción con Maggie.
-//
-// TODO(E5): quitar cuando las inscripciones se guarden en Supabase. Mientras
-// se guarden en memoria pueden perderse (cold starts en Vercel), así que el
-// paso de pago le pide a la persona que le mande sus datos a Maggie.
+// Mensaje de WhatsApp para coordinar la seña con Maggie. La inscripción ya
+// queda guardada en Supabase; el mensaje es el paso de pago de la seña
+// hasta que exista Mercado Pago (TODO(E6)).
 
 import { site, whatsappLink, workshopDeposit } from "@/data/site";
-import type { Workshop } from "@/data/workshops";
+import type { Workshop } from "@/lib/data";
 import { formatDay, formatPrice, formatTime } from "@/lib/format";
 import { depositOf } from "@/lib/sena";
 import type { Inscripcion } from "@/lib/validation/inscripcion";
