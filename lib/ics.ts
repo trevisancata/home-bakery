@@ -21,7 +21,7 @@ function fechaIcs(date: Date) {
 
 /** Escapa \ ; , y saltos de línea (RFC 5545, 3.3.11). */
 function texto(value: string) {
-  return value.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 }
 
 export function eventoIcs({ uid, titulo, inicio, duracionMinutos, lugar, descripcion, url, ahora = new Date() }: EventoIcs) {
