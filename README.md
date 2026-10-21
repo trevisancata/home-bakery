@@ -92,7 +92,7 @@ La seña de los workshops se paga con Checkout Pro. El flujo, los estados y las 
 |---|---|---|
 | `MP_ACCESS_TOKEN` | Servidor (`.env.local`, Vercel) | Access token de **Tus integraciones → tu aplicación**: de prueba (`TEST-…`) para sandbox, de producción (`APP_USR-…`) para cobrar de verdad |
 | `MP_WEBHOOK_SECRET` | Servidor | Clave secreta de **Webhooks → Configurar notificaciones**. El webhook es `https://<dominio>/api/v1/webhooks/mercadopago` con el evento **Pagos** |
-| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública (`https://…`) para las `back_urls` y el webhook. Vacía: `https://$VERCEL_URL` (previews) o `http://localhost:3000` |
+| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública (`https://…`) para las `back_urls`. Vacía: `https://$VERCEL_URL` (previews) o `http://localhost:3000`. La URL del webhook se carga solo en el panel de MP, no en la preferencia |
 
 Los previews de Vercel están protegidos, así que el webhook no les llega. Ahí el pago se confirma con la conciliación de la página de resultado. Un workshop sin precio no acepta inscripciones (422).
 

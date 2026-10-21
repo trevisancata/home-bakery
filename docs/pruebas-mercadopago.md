@@ -14,7 +14,7 @@ Datos de prueba según la [documentación de compras de prueba de Checkout Pro](
 4. **Webhook** (solo producción: los previews están protegidos con Vercel Authentication y el aviso no les llega):
    - en **Tu aplicación → Webhooks → Configurar notificaciones**, poner la URL `https://<dominio de producción>/api/v1/webhooks/mercadopago` y el evento **Pagos**;
    - guardar y copiar la **clave secreta** como `MP_WEBHOOK_SECRET` en Vercel.
-5. **URL pública:** `NEXT_PUBLIC_SITE_URL` con la URL de producción. En local, sin https, MP no acepta `auto_return` ni `notification_url`: la vuelta al sitio es con el botón "Volver al sitio" y el pago se confirma por conciliación.
+5. **URL pública:** `NEXT_PUBLIC_SITE_URL` con la URL de producción, para las `back_urls`. En local, sin https, MP no acepta `auto_return`: la vuelta al sitio es con el botón "Volver al sitio", y el pago se confirma por conciliación. La URL del webhook **no** va en la preferencia, solo en el panel (paso 4; ver [pagos.md](pagos.md#el-webhook-se-configura-en-el-panel-no-en-la-preferencia)).
 6. **Workshop de prueba:** desde Supabase o `PATCH /api/v1/admin/workshops/<id>`, un workshop **activo**, con **precio**, **no de ejemplo** y con fecha futura. Por ejemplo, $ 1.000 con seña del 50%, para que la seña sea de $ 500.
 
 > Probá siempre en una **ventana de incógnito**, con la sesión de la cuenta compradora de prueba. Si usás tu cuenta real, MP rechaza el pago o mezcla las credenciales.
@@ -94,6 +94,6 @@ En un preview, el aviso de MP no llega (Vercel Authentication). La página de re
 | Síntoma | Qué revisar |
 |---|---|
 | 502 "No pudimos iniciar el pago" | `MP_ACCESS_TOKEN` cargado y válido. En los logs de Vercel: "Error al crear la preferencia de Mercado Pago (<status>)" |
-| 401 en el historial de webhooks de MP | `MP_WEBHOOK_SECRET` igual a la clave de Tus integraciones. En los logs: "Webhook de Mercado Pago con firma inválida (<motivo>)" |
+| 401 en el historial de webhooks de MP | `MP_WEBHOOK_SECRET` igual a la clave de Tus integraciones. Probar con "Simular notificación" del panel. En los logs de Vercel: "Webhook de Mercado Pago con firma inválida (<motivo>) · ts=… · x-request-id=… · data.id=… · source_news=… · largo de la clave=…". Si el aviso trae `source_news`, vino por una `notification_url` de preferencia, no por el panel |
 | Queda "Estamos esperando…" con el pago aprobado en MP | Que el `external_reference` del pago sea el id de la inscripción, y que `SUPABASE_SECRET_KEY` esté en el servidor |
 | "Algo salió mal" al volver de MP en local | Es esperable en `localhost`: MP no acepta back_urls locales para `auto_return`. Volver con el botón del checkout |

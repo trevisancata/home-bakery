@@ -120,3 +120,26 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Solución:** corregido, y el test lo cubre ("Workshop: Tortas, capas; y más").
 
 **Para que no se repita:** cuando un archivo tiene barras invertidas (regex, escapes), escribirlo con el editor y no con un heredoc. Y que un test cubra el escape.
+
+## 22/10/2026
+
+### 401 del webhook con los pagos reales
+
+**PR:** #14 (`fix/webhook-firma`)
+
+**Síntoma:** en producción, el webhook de Mercado Pago respondía **401** a los avisos de los pagos reales. Las inscripciones igual se reservaban por la conciliación de la página de resultado, pero sin ella un pago aprobado habría quedado sin registrar.
+
+**Cómo lo diagnosticamos:**
+1. **Logs de Vercel:** el webhook registraba "Webhook de Mercado Pago con firma inválida (SignatureMismatch)". Los avisos llegaban con `?data.id=…&type=payment&source_news=webhooks`, es decir, por la `notification_url` que mandaba la preferencia.
+2. **"Simular notificación" en Tus integraciones (modo prueba):** respondía **200**. La clave cargada en Vercel (`MP_WEBHOOK_SECRET`) era la correcta, y la validación del código funcionaba.
+3. **Conclusión:** los avisos por la `notification_url` de la preferencia no validaban con la clave del panel; los del panel, sí.
+
+**Solución:**
+- La preferencia **ya no manda `notification_url`**, así MP usa el webhook configurado en el panel, que firma con su clave.
+- `MP_WEBHOOK_SECRET` se usa con `trim()`, por si se pegó con un salto de línea.
+- Cuando la firma falla, el log suma un diagnóstico sin la clave, sin la firma y sin datos personales: `ts`, `x-request-id`, `data.id`, si vino `source_news` y el largo de la clave. Tiene un `TODO` para sacarlo cuando el webhook esté estable.
+- Los tests unitarios cubren las tres cosas.
+
+**Para que no se repita:**
+- El webhook se configura en un solo lugar, el panel de MP, documentado en [pagos.md](pagos.md#el-webhook-se-configura-en-el-panel-no-en-la-preferencia).
+- Ante un 401, comparar con "Simular notificación": si la simulación da 200, la clave está bien y hay que mirar por dónde llega el aviso.
