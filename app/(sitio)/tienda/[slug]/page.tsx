@@ -15,7 +15,8 @@ type Props = { params: Promise<{ slug: string }> };
 const content = pages.tienda;
 const { product: text } = content;
 
-// ISR cada 5 minutos. TODO(E5): revalidación on-demand.
+// ISR: cada cambio del producto desde el panel la regenera al instante
+// (lib/admin/revalidar.ts); los 5 minutos quedan para la temporada.
 export const revalidate = 300;
 
 /** Se prerenderizan los productos activos; los nuevos se generan al primer pedido. */

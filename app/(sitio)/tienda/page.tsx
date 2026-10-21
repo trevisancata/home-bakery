@@ -10,8 +10,9 @@ const content = pages.tienda;
 
 export const metadata: Metadata = content.metadata;
 
-// ISR: el catálogo se regenera cada 5 minutos. TODO(E5): revalidación
-// on-demand cuando Maggie edite desde el panel.
+// ISR: cada cambio de un producto desde el panel la regenera al instante
+// (lib/admin/revalidar.ts). Los 5 minutos quedan para la temporada, que
+// cambia sola con el mes.
 export const revalidate = 300;
 
 export default async function TiendaPage() {

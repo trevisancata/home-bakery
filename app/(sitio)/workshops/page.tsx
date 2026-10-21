@@ -10,8 +10,9 @@ import { getWorkshops } from "@/lib/data";
 
 export const metadata: Metadata = pages.workshops.metadata;
 
-// ISR: los lugares libres se actualizan cada 5 minutos (la inscripción los
-// lee en cada request). TODO(E5): revalidación on-demand.
+// ISR: se regenera al instante con cada inscripción nueva y con cada cambio
+// desde el panel (lib/admin/revalidar.ts). Los 5 minutos quedan para las
+// fechas que ya pasaron, que salen solas de la lista.
 export const revalidate = 300;
 
 export default async function WorkshopsPage() {

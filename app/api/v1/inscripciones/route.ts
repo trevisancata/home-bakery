@@ -1,4 +1,5 @@
 import { fromDbError } from "@/lib/admin/errors";
+import { revalidarWorkshops } from "@/lib/admin/revalidar";
 import { ok, readJson, withApi } from "@/lib/api";
 import { createPublicClient } from "@/lib/supabase/server";
 import { inscripcionSchema } from "@/lib/validation/inscripcion";
@@ -29,5 +30,7 @@ export const POST = withApi("Error al guardar la inscripción", async (request) 
   // la tabla que el esquema zod no cubrió.
   if (error) throw fromDbError(error, "El workshop no existe o ya no tiene inscripción abierta.");
 
+  // Cambiaron los lugares libres que muestran el inicio y /workshops.
+  revalidarWorkshops();
   return ok({ id: data as string }, { status: 201, cache: false });
 });

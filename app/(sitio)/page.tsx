@@ -8,7 +8,9 @@ import { WorkshopBand } from "@/components/home/WorkshopBand";
 import { heroSlides } from "@/data/site";
 import { getFeaturedProducts, getFeaturedWorkshop } from "@/lib/data";
 
-// ISR: se regenera cada 5 minutos. TODO(E5): revalidación on-demand.
+// ISR: cada cambio desde el panel la regenera al instante (lib/admin/revalidar.ts).
+// Los 5 minutos quedan como red de seguridad: la temporada y las fechas
+// de los workshops cambian solas, sin que nadie edite nada.
 export const revalidate = 300;
 
 export default async function Home() {
