@@ -2,6 +2,24 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
+## Pago de la seña (E6)
+
+- **Fecha:** 21/10/2026
+- **Rama:** `feat/e6-mercadopago-sena`
+- **Lighthouse:** 12.8.2, mobile y desktop
+- **Servidor:** build de producción, con el mock de Mercado Pago de los e2e
+
+| Ruta | Accessibility | Best Practices | SEO |
+|---|---|---|---|
+| Resultado: reservada | 100 | 100 | 63* |
+| Resultado: pendiente | 100 | 100 | 63* |
+| Resultado: rechazada | 100 | 100 | 63* |
+| Paso "Revisá y dejá la seña" | axe-core: 0 violaciones | — | — |
+
+\* La página de resultado lleva `noindex` a propósito, porque es de cada inscripción. La única auditoría de SEO que falla es `is-crawlable`.
+
+El paso de la seña es un estado del formulario: Lighthouse no puede llegar hasta ahí. Se revisó con axe-core 4.10 (WCAG 2.2 AA) en mobile y en desktop, igual que las tres páginas de resultado: 0 violaciones.
+
 ## Panel de administración (E5)
 
 - **Fecha:** 21/10/2026
