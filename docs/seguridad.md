@@ -95,7 +95,7 @@ Todo lo que entra se valida en el servidor con zod (`lib/admin/schemas.ts`), aun
 
 Como el login se hace desde el servidor, Supabase ve la IP de Vercel, no la de quien ingresa. Ese límite "por IP" es entonces uno solo, compartido por todas.
 
-**El propio** (`lib/rate-limit.ts`):
+**Los propios** (`lib/rate-limit.ts`). Las inscripciones tienen el suyo (ver [Pagos](#pagos)). El del login:
 - Cuenta 5 intentos **fallidos** cada 15 minutos por IP (`x-forwarded-for`, que en Vercel pone la plataforma). Al sexto, "Demasiados intentos. Probá de nuevo en N minutos." y no se llama a Supabase.
 - Un login correcto borra el contador.
 - Vive en memoria: cada instancia de Vercel tiene el suyo y se reinicia con cada cold start. Hay un `TODO(Redis)` para pasarlo a un almacenamiento compartido (por ejemplo, Upstash).
@@ -111,6 +111,23 @@ Lo prueba `e2e/rate-limit.spec.ts`: después del bloqueo, ni la contraseña corr
 ## Registro público deshabilitado
 
 El panel no tiene registro. Además, en Supabase hay que desactivar **Authentication → Sign In / Providers → Allow new users to sign up**. Si no, cualquiera con la clave publishable (que es pública) podría crearse una cuenta por la API de Auth. Esa cuenta no tendría rol y recibiría 403, pero no tiene por qué existir.
+
+## Pagos
+
+El pago de la seña está explicado en [pagos.md](pagos.md). Lo que importa para la seguridad:
+
+- **Webhook firmado:** `POST /api/v1/webhooks/mercadopago` valida `x-signature` antes de hacer nada (`lib/pagos/firma.ts`).
+  - El HMAC-SHA256 del manifest `id:<data.id>;request-id:<x-request-id>;ts:<ts>;` lo calcula el validador del SDK oficial, con `MP_WEBHOOK_SECRET` como clave, y lo compara en **tiempo constante**: el tiempo de respuesta no revela cuántos caracteres coinciden.
+  - El `ts` puede estar a lo sumo **5 minutos** del reloj del servidor. Así no sirve reenviar un aviso viejo capturado.
+  - Si la firma es inválida, faltan headers o el `ts` está fuera de rango: **401**. Al log va solo el motivo, nunca la firma ni el secret.
+- **Nunca se confía en el aviso:** del body solo se usa el id del pago. El estado, el monto y la referencia salen de la API de MP (`GET /v1/payments/{id}`). Un aviso inventado con una firma válida igual tendría que existir en MP.
+- **Nunca se confía en la vuelta del checkout:** la página de resultado ignora `status`, `payment_id` y el resto de los query params. Lee el estado en la base, del lado del servidor.
+- **El monto lo pone la base:** `crear_inscripcion` calcula la seña y `confirmar_pago` reserva solo si lo que cobró MP es exactamente eso, en ARS. El navegador nunca manda un monto.
+- **`confirmar_pago` solo para `service_role`:** ni la clave publishable ni la sesión de la admin pueden marcar una inscripción como pagada. Por eso el servidor necesita `SUPABASE_SECRET_KEY` desde el E6, y solo la usa para eso, para leer el resultado y para guardar la preferencia.
+- **Secretos solo en el servidor:** `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` y `SUPABASE_SECRET_KEY` no llevan `NEXT_PUBLIC_`, se leen solo en módulos `server-only` y nunca se escriben en los logs. Los errores de MP se registran con su status HTTP, no con el cuerpo.
+- **Mock solo en localhost:** `MP_API_BASE_URL` (para los tests) solo acepta `http://localhost` o `127.0.0.1`. Una variable mal cargada no puede mandar el token a otro host.
+- **Rate limit de inscripciones:** 5 inscripciones válidas por IP cada 10 minutos (`lib/rate-limit.ts`, en memoria, `TODO(Redis)`), con 429 y `Retry-After`. Frena a quien quiera ocupar el cupo con inscripciones falsas, que igual vencen solas a los 30 minutos.
+- **Datos personales:** `pagos.detalle` guarda solo datos del pago (estado, medio, fechas), nunca los del pagador. La página de resultado no muestra el nombre ni el email: con el id en la URL solo se ve el estado y el monto.
 
 ## Por qué las páginas públicas no leen cookies
 

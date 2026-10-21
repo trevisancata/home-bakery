@@ -22,6 +22,7 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 - [Supabase](https://supabase.com) (Postgres, Storage, Auth) para el catálogo, los workshops, las inscripciones y el login del panel
 - [`@supabase/ssr`](https://supabase.com/docs/guides/auth/server-side/nextjs) para la sesión en cookies HttpOnly, y [sharp](https://sharp.pixelplumbing.com) para validar las fotos que se suben
 - [Zod](https://zod.dev) para validar formularios y la API
+- [Mercado Pago Checkout Pro](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/overview) con el [SDK oficial](https://github.com/mercadopago/sdk-nodejs) para la seña de los workshops
 - [Playwright](https://playwright.dev) para los tests e2e y de la API
 - ESLint
 - GitHub Actions para CI (lint y build en cada PR)
@@ -34,7 +35,8 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 | `/tienda`    | Productos por categoría (filtro en la URL: `?categoria=`)  |
 | `/tienda/[slug]` | Detalle de un producto                                 |
 | `/workshops` | Próximas fechas y cómo funcionan                           |
-| `/workshops/[slug]/inscripcion` | Inscripción a un workshop               |
+| `/workshops/[slug]/inscripcion` | Inscripción a un workshop y pago de la seña |
+| `/workshops/[slug]/inscripcion/resultado` | Resultado del pago (vuelta de Mercado Pago) |
 | `/maggie`    | Historia, valores y la cocina                              |
 | `/admin`     | Panel de administración (con login; ver [Panel de administración](#panel-de-administración)) |
 
@@ -62,10 +64,12 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
 2. En el **SQL Editor**, correr las migraciones en orden:
    - [`0001_catalogo.sql`](supabase/migrations/0001_catalogo.sql): las tablas, RLS, la vista `workshops_publicos`, la función `crear_inscripcion` y los buckets `productos` y `workshops`.
    - [`0002_auth_admin.sql`](supabase/migrations/0002_auth_admin.sql): la tabla `perfiles` (roles), `es_admin()` y los permisos de escritura de la admin (tablas y Storage).
+   - [`0003_pagos.sql`](supabase/migrations/0003_pagos.sql): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`.
 3. Copiar `.env.example` a `.env.local` y completarlo con los datos de **Project Settings → API**:
    - `NEXT_PUBLIC_SUPABASE_URL`: la URL del proyecto.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: la clave publishable (`sb_publishable_…`). Es pública y respeta RLS.
-   - `SUPABASE_SECRET_KEY`: la clave secret (`sb_secret_…`). Se saltea RLS: solo para el seed y los tests. **Nunca** va en el código ni en Vercel.
+   - `SUPABASE_SECRET_KEY`: la clave secret (`sb_secret_…`). Se saltea RLS. La usan el seed, los tests y, desde el E6, el servidor para confirmar los pagos. **Nunca** va en el código ni en una variable `NEXT_PUBLIC_`.
+   - `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` y `NEXT_PUBLIC_SITE_URL`: Mercado Pago (ver abajo).
    - `CATALOGO_FOTOS_DIR`: la carpeta del catálogo de Maggie (la que tiene `fotos/` adentro).
 4. Cargar el catálogo:
 
@@ -75,7 +79,21 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
 
    Lee `supabase/seed/catalogo.json`, sube las 198 fotos al bucket `productos` y hace upsert por slug. Se puede correr las veces que haga falta: deja la base igual. Los productos con `activo: false` quedan cargados pero ocultos. Los workshops salen de `data/workshops.ts` y se marcan como de ejemplo (no aceptan inscripciones) hasta que Maggie pase los reales.
 
-5. Para el deploy y la CI, cargar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` como variables de entorno en Vercel y como *secrets* del repositorio en GitHub (**Settings → Secrets and variables → Actions**). El build prerenderiza el catálogo leyendo Supabase.
+5. **Deploy y CI:**
+   - **GitHub** (**Settings → Secrets and variables → Actions**): `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` como *secrets*. El build prerenderiza el catálogo leyendo Supabase.
+   - **Vercel:** las dos variables públicas y, del lado del servidor (sin `NEXT_PUBLIC_`), `SUPABASE_SECRET_KEY`, `MP_ACCESS_TOKEN` y `MP_WEBHOOK_SECRET`. En producción, además, `NEXT_PUBLIC_SITE_URL`.
+
+### Mercado Pago
+
+La seña de los workshops se paga con Checkout Pro. El flujo, los estados y las decisiones están en [docs/pagos.md](docs/pagos.md), y la prueba manual en sandbox, en [docs/pruebas-mercadopago.md](docs/pruebas-mercadopago.md).
+
+| Variable | Dónde | Qué es |
+|---|---|---|
+| `MP_ACCESS_TOKEN` | Servidor (`.env.local`, Vercel) | Access token de **Tus integraciones → tu aplicación**: de prueba (`TEST-…`) para sandbox, de producción (`APP_USR-…`) para cobrar de verdad |
+| `MP_WEBHOOK_SECRET` | Servidor | Clave secreta de **Webhooks → Configurar notificaciones**. El webhook es `https://<dominio>/api/v1/webhooks/mercadopago` con el evento **Pagos** |
+| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública (`https://…`) para las `back_urls` y el webhook. Vacía: `https://$VERCEL_URL` (previews) o `http://localhost:3000` |
+
+Los previews de Vercel están protegidos, así que el webhook no les llega. Ahí el pago se confirma con la conciliación de la página de resultado. Un workshop sin precio no acepta inscripciones (422).
 
 ### API interna
 
@@ -87,7 +105,8 @@ API REST versionada en `/api/v1`. Todas las respuestas son `{ data }` si saliero
 | `GET /api/v1/productos?categoria=&destacados=` | Productos activos. 400 si la categoría no existe o los parámetros no son válidos |
 | `GET /api/v1/productos/[slug]` | Un producto. 404 si no existe o está oculto |
 | `GET /api/v1/workshops` | Próximos workshops, con lugares libres |
-| `POST /api/v1/inscripciones` | Crea una inscripción con `crear_inscripcion`: 201, 400, 404 o 409 (con `spotsLeft`) |
+| `POST /api/v1/inscripciones` | Crea la inscripción y la preferencia de pago: 201 `{ id, initPoint }`, 400, 404, 409 (con `spotsLeft`), 422 (sin precio), 429 (5 por IP cada 10 minutos) o 502 (falló Mercado Pago) |
+| `POST /api/v1/webhooks/mercadopago` | Avisos de pago de Mercado Pago, con firma `x-signature`: 200, 401 si la firma no es válida, 500 para que MP reintente |
 
 Las rutas sin versión (`/api/categorias`, `/api/productos`…) redirigen con 308 a `/api/v1`. El 308 conserva el método, así que un `POST /api/inscripciones` sigue funcionando.
 
@@ -108,7 +127,7 @@ Errores: 400 (con `fields` por campo), 401, 403, 404, 409 y 500 genérico, sin s
 
 ## Panel de administración
 
-El login está en [`/admin/ingresar`](http://localhost:3000/admin/ingresar). La seguridad (sesión, roles, proxy, rate limiting) está explicada en [docs/seguridad.md](docs/seguridad.md). El panel visual llega en el próximo PR; por ahora hay login, recuperación de contraseña, 403 y la API.
+El login está en [`/admin/ingresar`](http://localhost:3000/admin/ingresar). La seguridad (sesión, roles, proxy, rate limiting) está explicada en [docs/seguridad.md](docs/seguridad.md). El panel visual llega en el próximo PR. Por ahora hay login, recuperación de contraseña, 403, la API y, en `/admin`, la lista de inscripciones con su pago y los pagos para devolver.
 
 ### Crear la usuaria admin
 
@@ -207,7 +226,7 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 | `npm start`     | Sirve el build de producción               |
 | `npm run lint`  | Revisa el código con ESLint                |
 | `npm run seed`  | Carga el catálogo y los workshops en Supabase |
-| `npm run test:e2e` | Tests e2e y de la API con Playwright (build de producción). Necesita las dos migraciones y `SUPABASE_SECRET_KEY`: crea y borra sus propias usuarias, productos y workshops de prueba |
+| `npm run test:e2e` | Tests e2e y de la API con Playwright (build de producción). Necesita las tres migraciones y `SUPABASE_SECRET_KEY`: crea y borra sus propias usuarias, productos, workshops y pagos de prueba. Mercado Pago es un mock local (`e2e/support/mp-mock.ts`), sin credenciales reales |
 | `npm run compare` | Compara el sitio con el mockup              |
 
 Los tests leen y escriben el proyecto de Supabase de `.env.local` sin ensuciar los datos reales: cada test que inscribe crea su propio workshop de prueba (slug `e2e-…`) y lo borra al terminar, con sus inscripciones. Al final de la corrida, un teardown borra cualquier `e2e-…` que haya quedado.
