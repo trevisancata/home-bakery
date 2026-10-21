@@ -48,6 +48,33 @@ export class BadRequestError extends Error {
   }
 }
 
+/** 422: el pedido es válido, pero no se puede cumplir (por ejemplo, un workshop sin precio). */
+export class UnprocessableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "UnprocessableError";
+  }
+}
+
+/** 429: demasiados pedidos. */
+export class TooManyRequestsError extends Error {
+  constructor(
+    message: string,
+    readonly retryAfterSeconds: number,
+  ) {
+    super(message);
+    this.name = "TooManyRequestsError";
+  }
+}
+
+/** 502: falló un servicio externo (Mercado Pago). */
+export class BadGatewayError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BadGatewayError";
+  }
+}
+
 /** Error de PostgREST / Postgres tal como lo devuelve supabase-js. */
 export type DbError = { code?: string; message: string; details?: string | null };
 
@@ -71,6 +98,7 @@ export function fromDbError(error: DbError, notFound = "No existe."): Error {
       spotsLeft,
     );
   }
+  if (code === "HB422") return new UnprocessableError("Precio a confirmar, consultanos por WhatsApp.");
   if (code === "23514" || code === "23502" || code.startsWith("22")) {
     return new BadRequestError("Revisá los datos: alguno no es válido.");
   }

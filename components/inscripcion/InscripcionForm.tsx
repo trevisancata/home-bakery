@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { flushSync } from "react-dom";
 import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
@@ -10,8 +10,8 @@ import { Rich } from "@/components/Rich";
 import { pages, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import type { Workshop } from "@/lib/data";
 import { formatDay, formatMonth, formatPrice, formatTime } from "@/lib/format";
-import { inscripcionWhatsappLink, inscripcionWhatsappMessage } from "@/lib/inscripcion-whatsapp";
-import { balanceOf, depositOf } from "@/lib/sena";
+import { ayudaPagoLink } from "@/lib/inscripcion-whatsapp";
+import { montoSena, saldo } from "@/lib/sena";
 import {
   experienceOptions,
   fieldErrors,
@@ -38,7 +38,8 @@ type Values = {
 type Status =
   | { kind: "idle" }
   | { kind: "sending" }
-  | { kind: "error"; message: string; retry: boolean };
+  /** whatsapp: el workshop no tiene precio (422), se consulta por WhatsApp. */
+  | { kind: "error"; message: string; retry: boolean; whatsapp?: boolean };
 
 const initialValues: Values = {
   name: "",
@@ -77,6 +78,18 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [submitted, setSubmitted] = useState<Inscripcion | null>(null);
+  const [initPoint, setInitPoint] = useState<string | null>(null);
+  const [redirecting, setRedirecting] = useState(false);
+
+  // Si se vuelve de Mercado Pago con "atrás", el navegador restaura la página
+  // tal cual (bfcache): el botón no puede quedar en "Te llevamos…".
+  useEffect(() => {
+    const reset = (event: PageTransitionEvent) => {
+      if (event.persisted) setRedirecting(false);
+    };
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
   const fields = useRef<Partial<Record<InscripcionField, HTMLElement | null>>>({});
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -135,14 +148,17 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
       return;
     }
 
-    // La API responde { data } o { error: { message, fields?, spotsLeft? } }.
-    const { error }: { error?: { message?: string; fields?: FieldErrors; spotsLeft?: number } } = await response
-      .json()
-      .catch(() => ({}));
+    // La API responde { data: { id, initPoint } } o { error: { message, fields?, spotsLeft? } }.
+    const {
+      data,
+      error,
+    }: { data?: { initPoint?: string }; error?: { message?: string; fields?: FieldErrors; spotsLeft?: number } } =
+      await response.json().catch(() => ({}));
     const message = error?.message ?? content.form.serverError;
 
-    if (response.status === 201) {
+    if (response.status === 201 && data?.initPoint) {
       setSubmitted(parsed.data);
+      setInitPoint(data.initPoint);
       setSpotsLeft((current) => Math.max(0, current - parsed.data.spots));
       flushSync(() => {
         setStatus({ kind: "idle" });
@@ -166,6 +182,12 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
       return;
     }
 
+    if (response.status === 422) {
+      setStatus({ kind: "error", message, retry: false, whatsapp: true });
+      return;
+    }
+
+    // 429 (demasiadas inscripciones), 502 (falló Mercado Pago) o 500.
     setStatus({ kind: "error", message, retry: response.status >= 500 });
   }
 
@@ -190,12 +212,13 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
   }
 
   const title = step === "form" ? content.title.form : content.title.pay;
-  // Total, seña del 50% y saldo. Sin precio confirmado, los tres quedan "A confirmar".
-  const amount = (calc: (total: number) => number) =>
-    workshop.price === null ? content.summary.totalTbd : formatPrice(calc(workshop.price * qty));
-  const total = amount((value) => value);
-  const deposit = amount(depositOf);
-  const balance = amount(balanceOf);
+  // Total, seña y saldo, con la misma cuenta que la base (lib/sena.ts). Sin
+  // precio confirmado, los tres quedan "A confirmar".
+  const amount = (calc: (price: number) => number) =>
+    workshop.price === null ? content.summary.totalTbd : formatPrice(calc(workshop.price));
+  const total = amount((price) => price * qty);
+  const deposit = amount((price) => montoSena(price, qty, workshop.depositPercent));
+  const balance = amount((price) => saldo(price, qty, workshop.depositPercent));
   // Nadie reserva más que el cupo libre ni más que el cupo máximo de un workshop.
   const maxQty = Math.min(spotsLeft, maxSpotsPerInscripcion);
 
@@ -324,7 +347,7 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                 <dd data-testid="inscripcion-total">{total}</dd>
               </div>
               <div className="flex justify-between gap-4 text-20 font-semibold">
-                <dt>{content.summary.deposit}</dt>
+                <dt>{content.summary.deposit(workshop.depositPercent)}</dt>
                 <dd data-testid="inscripcion-sena" className="shrink-0 text-right">
                   {deposit}
                 </dd>
@@ -531,6 +554,19 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                   className="flex flex-col items-start gap-3 rounded-2xl border-2 border-error bg-white p-4 text-15 leading-normal sm:flex-row sm:items-center sm:justify-between"
                 >
                   <p className="font-medium text-error">{status.message}</p>
+                  {status.whatsapp && (
+                    <Button
+                      href={whatsappLink(whatsappMessages.workshop(workshop.name))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="secondary"
+                      size="sm"
+                      className="shrink-0"
+                    >
+                      {content.noPrice.cta}
+                      <span className="sr-only">{content.pay.help.ctaContext}</span>
+                    </Button>
+                  )}
                   {status.retry && (
                     <Button type="submit" variant="secondary" size="sm" className="shrink-0">
                       {content.form.retry}
@@ -569,24 +605,52 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                 </ul>
               </section>
 
-              <section aria-labelledby="inscripcion-whatsapp-texto" className="flex flex-col gap-4">
-                <p id="inscripcion-whatsapp-texto" className="text-17 leading-parrafo font-medium">
-                  {content.pay.whatsapp.text}
+              <section aria-labelledby="inscripcion-pago-texto" className="flex flex-col gap-4">
+                <p id="inscripcion-pago-texto" className="text-17 leading-parrafo font-medium">
+                  {content.pay.mercadoPago.text}
                 </p>
-                <figure className="rounded-2xl bg-arena p-4 text-14 leading-medio">
-                  <figcaption className="sr-only">{content.pay.whatsapp.messageLabel}</figcaption>
-                  <p className="whitespace-pre-line">{inscripcionWhatsappMessage(workshop, submitted)}</p>
-                </figure>
-                <Button
-                  href={inscripcionWhatsappLink(workshop, submitted)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  size="lg"
-                  className="w-full"
-                >
-                  {content.pay.whatsapp.cta}
-                  <span className="sr-only">{content.pay.whatsapp.ctaContext}</span>
-                </Button>
+                <p className="flex items-baseline justify-between gap-4 rounded-2xl bg-arena p-4 text-15">
+                  <span>{content.pay.mercadoPago.amount}</span>
+                  <strong data-testid="pago-sena" className="text-20">
+                    {deposit}
+                  </strong>
+                </p>
+                {initPoint && (
+                  <Button
+                    href={initPoint}
+                    size="lg"
+                    className="w-full aria-disabled:cursor-wait aria-disabled:opacity-80"
+                    aria-disabled={redirecting || undefined}
+                    onClick={(event) => {
+                      // Un segundo clic mientras carga Mercado Pago no hace nada.
+                      if (redirecting) event.preventDefault();
+                      else setRedirecting(true);
+                    }}
+                  >
+                    {redirecting && (
+                      <span
+                        aria-hidden="true"
+                        className="size-4 animate-spin rounded-full border-2 border-hueso border-t-transparent motion-reduce:animate-none"
+                      />
+                    )}
+                    <span aria-live="polite">
+                      {redirecting ? content.pay.mercadoPago.redirecting : content.pay.mercadoPago.cta}
+                    </span>
+                  </Button>
+                )}
+                <p className="text-14 text-secundario">{content.pay.mercadoPago.expires}</p>
+                <p className="text-14">
+                  {content.pay.help.text}{" "}
+                  <a
+                    href={ayudaPagoLink(workshop, submitted.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block py-2.5 font-semibold text-chocolate underline hover:text-carbon"
+                  >
+                    {content.pay.help.cta}
+                    <span className="sr-only">{content.pay.help.ctaContext}</span>
+                  </a>
+                </p>
               </section>
 
               <p className="flex gap-3 rounded-2xl bg-arena p-4 text-14 leading-normal">
@@ -607,7 +671,6 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                 <span className="flex flex-col gap-1">
                   <span>{content.pay.deposit}</span>
                   <span>{content.pay.balance}</span>
-                  <span>{content.pay.note}</span>
                 </span>
               </p>
             </div>

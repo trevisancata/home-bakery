@@ -56,15 +56,21 @@ test.describe("Inscripción a un workshop", () => {
     await expect(page.getByRole("listitem").filter({ hasText: "2 · Seña" })).toHaveAttribute("aria-current", "step");
     await expect(summary.getByText("Quedan 4")).toBeVisible();
 
-    // Hasta el E6, "Pagar la seña" abre WhatsApp con el mensaje prefijado.
-    const whatsapp = page.getByRole("link", { name: "Pagar la seña (se abre WhatsApp)" });
-    const href = await whatsapp.getAttribute("href");
-    expect(href).toMatch(/^https:\/\/wa\.me\//);
-    const message = new URL(href!).searchParams.get("text");
-    expect(message).toContain("Ana Pérez");
-    expect(message).toContain("2 lugares");
-    expect(message).toContain("seña del 50%");
+    // Seña: 50% de 2 × $ 30.000, la misma cuenta que hace la base.
+    await expect(page.getByTestId("pago-sena")).toHaveText(/30\.000/);
     await expect(page.getByText("El saldo: a confirmar con Maggie.")).toBeVisible();
+    await expect(page.getByText("Guardamos tu lugar 30 minutos mientras pagás.", { exact: false })).toBeVisible();
+
+    // WhatsApp queda solo como ayuda.
+    const ayuda = page.getByRole("link", { name: "Escribinos por WhatsApp (se abre WhatsApp)" });
+    expect(await ayuda.getAttribute("href")).toMatch(/^https:\/\/wa\.me\//);
+
+    // "Pagar la seña con Mercado Pago" lleva al checkout (acá, el del mock de MP), sin pagar.
+    const pagar = page.getByRole("link", { name: "Pagar la seña con Mercado Pago" });
+    await expect(pagar).toHaveAttribute("href", /\/checkout\?pref_id=pref-e2e-/);
+    await pagar.click();
+    await expect(page.getByRole("heading", { name: "Checkout de prueba" })).toBeVisible();
+    expect(new URL(page.url()).searchParams.get("pref_id")).toMatch(/^pref-e2e-/);
   });
 
   test("los workshops de ejemplo muestran el aviso y no se pueden reservar", async ({ page }) => {

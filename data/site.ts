@@ -182,8 +182,6 @@ const workshopFacts = {
   capacity: "Hasta 8 personas",
 };
 
-/** Los workshops se reservan con una seña del 50% (respuesta de Maggie, 01/10). */
-export const workshopDeposit = { rate: 0.5, label: "50%" } as const;
 
 const kitchenImage: SiteImage = {
   alt: "Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido",
@@ -498,7 +496,7 @@ export const pages = {
       less: "Un lugar menos",
       more: "Un lugar más",
       total: "Total",
-      deposit: `Seña para reservar (${workshopDeposit.label})`,
+      deposit: (percent: number) => `Seña para reservar (${percent}%)`,
       balance: "Saldo",
       totalTbd: "A confirmar",
     },
@@ -506,24 +504,68 @@ export const pages = {
       reviewTitle: "Tus datos",
       experience: (level: string) => `Experiencia: ${level}`,
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
-      // TODO(E6): el pago de la seña con Mercado Pago. Hasta entonces, se
-      // coordina por WhatsApp con Maggie.
-      whatsapp: {
-        text: `Para reservar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
-        messageLabel: "Mensaje",
-        cta: "Pagar la seña",
-        ctaContext: " (se abre WhatsApp)",
+      mercadoPago: {
+        text: "Pagá la seña con Mercado Pago para reservar tu lugar.",
+        amount: "Seña a pagar",
+        cta: "Pagar la seña con Mercado Pago",
+        redirecting: "Te llevamos a Mercado Pago…",
+        // Regla del sistema: la inscripción pendiente vence a los 30 minutos (migración 0003).
+        expires: "Guardamos tu lugar 30 minutos mientras pagás. Si no se completa el pago, se libera.",
       },
+      help: { text: "¿Problemas para pagar?", cta: "Escribinos por WhatsApp", ctaContext: " (se abre WhatsApp)" },
       deposit: "Tu lugar solo queda reservado con la seña.",
       // TODO(Maggie): cuándo y cómo se paga el saldo. No inventar la política.
       balance: "El saldo: a confirmar con Maggie.",
-      note: "El pago online va a estar disponible muy pronto.",
     },
+    noPrice: { cta: "Consultar por WhatsApp" },
     soldOut: {
       title: "No quedan lugares",
       text: "Este workshop ya está completo. Escribinos por WhatsApp si querés que te tengamos en cuenta si se libera un lugar.",
       cta: "Avisarme si se libera",
     },
+  },
+  inscripcionResultado: {
+    metadata: { title: "Tu inscripción", robots: { index: false, follow: false } },
+    eyebrow: (workshop: string) => `Workshop · ${workshop}`,
+    reserved: {
+      title: "¡Tu lugar está reservado!",
+      text: (day: string, time: string) => `Te esperamos el ${day}, a las ${time}.`,
+      deposit: "Seña pagada",
+      spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
+      calendar: "Agregar al calendario",
+      calendarFile: "workshop-home-bakery.ics",
+      whatsapp: "Escribirle a Maggie",
+      whatsappMessage: (workshop: string) => `¡Hola, ${site.owner.name}! Ya pagué la seña del workshop "${workshop}".`,
+    },
+    pending: {
+      title: "Estamos esperando la confirmación del pago",
+      text: "Mercado Pago todavía no nos confirmó el pago. Esta página se actualiza sola.",
+      notPaid: "Si todavía no pagaste, podés hacerlo ahora: guardamos tu lugar hasta que venza la reserva.",
+      pay: "Pagar la seña",
+      timeout: "Todavía no se confirmó. Si ya pagaste, escribinos por WhatsApp y lo revisamos.",
+    },
+    rejected: {
+      title: "El pago no se aprobó",
+      text: "Mercado Pago no aprobó el pago. Podés probar de nuevo, por ejemplo con otro medio de pago.",
+      retry: "Probar de nuevo",
+      expired: "La reserva del lugar ya venció. Volvé a inscribirte para intentarlo otra vez.",
+    },
+    expired: {
+      title: "La reserva venció",
+      text: "Pasaron 30 minutos sin que se completara el pago, así que el lugar se liberó.",
+    },
+    refund: {
+      title: "El pago llegó cuando ya no quedaban lugares",
+      // TODO(Maggie): plazo y forma de la devolución. No prometer nada que no esté confirmado.
+      text: "Recibimos tu pago, pero el workshop se completó antes de que se confirmara. Escribinos por WhatsApp para coordinar la devolución.",
+    },
+    cancelled: {
+      title: "Esta inscripción está cancelada",
+      text: "Si querés participar, volvé a inscribirte.",
+    },
+    again: "Volver a inscribirme",
+    help: "Escribinos por WhatsApp",
+    helpContext: " (se abre WhatsApp)",
   },
   maggie: {
     metadata: {

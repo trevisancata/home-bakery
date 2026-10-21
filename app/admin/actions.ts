@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { admin } from "@/data/admin";
 import { safeNext } from "@/lib/auth";
-import { blockedMinutes, clearFailures, clientIp, registerFailure } from "@/lib/rate-limit";
+import { clientIp, loginLimiter } from "@/lib/rate-limit";
 import { createAuthClient } from "@/lib/supabase/server-auth";
 import { firstErrors, loginSchema, newPasswordSchema, recoverSchema } from "@/lib/validation/admin-auth";
 
@@ -36,7 +36,7 @@ export async function ingresar(_prev: FormState, formData: FormData): Promise<Fo
   const email = text(formData, "email");
   const ip = clientIp(await headers());
 
-  const minutes = blockedMinutes(ip);
+  const minutes = loginLimiter.blockedMinutes(ip);
   if (minutes !== null) return { error: admin.login.errors.tooMany(minutes), email };
 
   const parsed = loginSchema.safeParse({ email, password: text(formData, "password") });
@@ -49,12 +49,12 @@ export async function ingresar(_prev: FormState, formData: FormData): Promise<Fo
     if (error.status === 429) return { error: admin.login.errors.tooManyLater, email };
     // Credenciales inválidas, email sin confirmar, usuaria inexistente: el
     // mismo mensaje para todo, así no se puede averiguar qué emails existen.
-    registerFailure(ip);
+    loginLimiter.hit(ip);
     if (error.code !== "invalid_credentials") logAuthError("Error al ingresar", error);
     return { error: admin.login.errors.credentials, email };
   }
 
-  clearFailures(ip);
+  loginLimiter.clear(ip);
   redirect(safeNext(text(formData, "next")));
 }
 

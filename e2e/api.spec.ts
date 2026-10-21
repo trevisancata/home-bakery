@@ -114,6 +114,8 @@ test.describe("POST /api/v1/inscripciones", () => {
     expect(response.status()).toBe(201);
     const { data } = await response.json();
     expect(data.id).toMatch(/^[0-9a-f-]{36}$/);
+    // El link de pago de Checkout Pro (en los e2e, el del mock de MP).
+    expect(data.initPoint).toMatch(/\/checkout\?pref_id=pref-e2e-/);
     expect(await lugaresOcupados(workshop.id)).toBe(2);
 
     const { data: workshops } = await (await request.get("/api/v1/workshops")).json();

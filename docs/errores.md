@@ -91,3 +91,32 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Qué pasó:** el plan usaba una plantilla de mail propia con `token_hash` para la recuperación de contraseña. Pero en este proyecto de Supabase las plantillas no se pueden editar sin SMTP propio. Además, el SMTP por defecto solo manda mails a los miembros del equipo del proyecto, y pocos por hora.
 
 **Solución:** a pedido de Catalina, `/admin/auth/confirm` acepta las dos formas de link: `?code=` (PKCE, la plantilla por defecto) y `?token_hash=` (para cuando haya SMTP). Si el link no sirve (venció o se abrió en otro navegador), lo explica y ofrece pedir otro. La configuración de producción quedó como `TODO(SMTP)` en el README, con la plantilla en español. Mientras tanto, si Maggie olvida la contraseña, Catalina se la resetea desde el dashboard.
+
+## 21/10/2026 (E6)
+
+### La página de resultado mostraba "pendiente" con el pago ya registrado
+
+**PR:** #13 (`feat/e6-mercadopago-sena`)
+
+**Qué pasó:** al volver de Mercado Pago, la página lee la inscripción, concilia con la API de MP y la vuelve a leer. El pago quedaba registrado en la base, pero la página seguía diciendo "Estamos esperando la confirmación del pago". Los e2e lo detectaron.
+
+**Causa:** dos problemas juntos.
+1. Next **memoiza los `fetch` GET iguales dentro de un render**, y supabase-js usa `fetch`. La segunda lectura era idéntica a la primera, así que devolvía el mismo resultado viejo.
+2. La conciliación llamaba a `revalidatePath` durante el render de un Server Component. Next no lo permite y lanza un error.
+
+**Solución:**
+- La lectura usa `.abortSignal(new AbortController().signal)`, que es como la documentación de Next indica salir de la memoización.
+- La revalidación va en `after()`, que corre después del render.
+- Se encontró reproduciendo el caso a mano: el pago estaba en `pagos`, pero la página no lo mostraba.
+
+**Para que no se repita:** si una página escribe y después vuelve a leer en el mismo render, la segunda lectura tiene que salir de la memoización. `revalidatePath` va siempre en una Server Action, en un Route Handler o en `after()`.
+
+### El `.ics` no escapaba el punto y coma
+
+**PR:** #13
+
+**Qué pasó:** el test unitario del `.ics` falló: `;` quedaba sin escapar, y en un título con `;` el calendario lo cortaría. En el código había `"\;"` en lugar de `"\;"`. El archivo se había escrito con un heredoc de la terminal, que se comió una barra.
+
+**Solución:** corregido, y el test lo cubre ("Workshop: Tortas, capas; y más").
+
+**Para que no se repita:** cuando un archivo tiene barras invertidas (regex, escapes), escribirlo con el editor y no con un heredoc. Y que un test cubra el escape.

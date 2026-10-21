@@ -304,3 +304,67 @@ Nunca escribir claves ni contraseñas en el código, los commits ni los logs. Co
 - Lighthouse en las pantallas de acceso: 100 en Accessibility y en Best Practices. axe-core: 0 violaciones en la 403.
 
 Abierto el 21/10, sin mergear.
+
+### PR #13 · E6: seña de los workshops con Mercado Pago (`feat/e6-mercadopago-sena`)
+
+**Objetivo:** cobrar la seña de los workshops con Mercado Pago Checkout Pro, con webhook firmado, conciliación y pruebas exhaustivas. Los pedidos de la tienda quedan como TODO hasta que haya carrito.
+
+**Prompt resumido** (pedía leer antes la doc actual de MP y usar el SDK oficial `mercadopago`; mostrar el plan y el SQL antes de escribir código):
+1. **Migración `0003_pagos.sql`:**
+   - tabla `pagos` (lectura solo `es_admin()`);
+   - `monto_sena` (calculada en `crear_inscripcion`) y `vence_at` (+30 minutos) en las inscripciones;
+   - `lugares_ocupados` sin las pendientes vencidas;
+   - HB422 sin precio;
+   - `confirmar_pago` (security definer, solo `service_role`, idempotente, reserva si el monto coincide y hay cupo; si no, devolución manual).
+2. **`lib/mercadopago.ts`** server-only, con la URL base desde `NEXT_PUBLIC_SITE_URL`, `VERCEL_URL` o localhost.
+3. **`POST /api/v1/inscripciones`** crea la inscripción y la preferencia (ítem, seña, `external_reference`, `back_urls`, `auto_return`, `notification_url`, 30 minutos, `HOMEBAKERY`) y responde `{ id, initPoint }`. El formulario reemplaza WhatsApp por "Pagar la seña con Mercado Pago".
+4. **Webhook** con validación de `x-signature` (HMAC SHA256, tiempo constante, tolerancia de `ts`). Consulta el pago real, llama a `confirmar_pago`, es idempotente y revalida.
+5. **Conciliación** desde la página de resultado con la misma función que el webhook, porque los previews de Vercel están protegidos y el webhook no les llega.
+6. **Página de resultado** con el estado real de la base: aprobado (seña, `.ics`, WhatsApp), pendiente (se refresca hasta 1 minuto) y rechazado (reintentar). Con `aria-live` y foco en el título.
+7. **Panel:** lista simple de inscripciones con su pago y las marcadas para devolver.
+8. **Seguridad:** secretos solo en el servidor, el monto desde la base y rate limit de 5 inscripciones por IP cada 10 minutos (`TODO(Redis)`).
+9. **Tests exhaustivos:** unitarios (firma, seña), webhook y conciliación con MP mockeado, expiración, concurrencia, 422 y e2e hasta el `initPoint`. Más `docs/pruebas-mercadopago.md` para la prueba manual en sandbox.
+10. **Docs:** `docs/pagos.md` con el diagrama de secuencia, variables nuevas, bitácora y el checklist del E6.
+
+**Respuestas a las preguntas del plan:**
+
+- **Mock de MP en los tests:** un servidor mock local. El SDK tiene la URL base fija, así que `lib/mercadopago.ts` la reemplaza solo si `MP_API_BASE_URL` apunta a localhost. Los e2e no usan credenciales reales; el sandbox real queda para la prueba manual.
+- **Webhook:** procesa y después responde 200. Si MP o la base fallan, responde 500 y MP reintenta.
+- **Pago aprobado tarde y sin cupo:** la inscripción pasa a `cancelada` y el pago queda con `devolucion_pendiente`.
+
+**Cambio pedido durante el desarrollo:** al aprobar el plan, Catalina había pedido que `crear_inscripcion` dejara de tener `grant` para anon y authenticated. El pedido no estaba en el contexto de Claude Code y se aplicó cuando lo recordó:
+- migración `0004_inscripcion_solo_servidor.sql` (solo `service_role`);
+- la API la llama con el cliente admin;
+- un e2e prueba que la clave publishable recibe `42501`;
+- en seguridad y en el modelo de datos, el riesgo aceptado del E4 queda cerrado.
+
+**Ajustes al plan:**
+
+- **Sin efectivo ni cajero en la preferencia:** se acreditan en días, cuando la reserva de 30 minutos ya venció.
+- **`auto_return` y `notification_url` solo con https:** MP no los acepta en localhost.
+- **La tolerancia de `ts` se controla aparte del validador del SDK:** la doc de MP habla de segundos y de milisegundos, así que se aceptan los dos. El HMAC sigue siendo el del SDK.
+- **Reintentos del SDK limitados a 1, con 8 s de timeout:** con los valores por defecto, el webhook podía pasar los 22 s que espera MP.
+- **Si MP falla al crear la preferencia,** la inscripción se cancela para liberar el cupo y la API responde 502.
+- **`SUPABASE_SECRET_KEY` pasa a necesitarse en el servidor (Vercel):** solo `service_role` puede ejecutar `confirmar_pago` y, desde la 0004, `crear_inscripcion`.
+- **Sin la constante fija del 50%:** la seña usa el porcentaje de cada workshop (`sena_porcentaje`, 50% por defecto), y `formatPrice` muestra centavos cuando los hay.
+
+**Correcciones de Claude Code durante el desarrollo** (no fueron pedidas, salieron de su propia verificación):
+
+- **Migraciones en PGlite:** se probaron 0003 y 0004 antes de pasarlas, con 33 chequeos (permisos, HB422, vencimiento, idempotencia, monto y moneda distintos, último lugar, devoluciones).
+- **La página de resultado mostraba "pendiente" con el pago ya registrado:** era la memoización de `fetch` de Next más `revalidatePath` durante el render. Se reprodujo a mano y se corrigió con un `AbortSignal` y `after()` (ver [errores.md](errores.md#la-página-de-resultado-mostraba-pendiente-con-el-pago-ya-registrado)).
+- **Escape del `;` en el `.ics`:** lo encontró el test unitario.
+- **Botón de pago después de "atrás":** se resetea con `pageshow`, porque el navegador restaura la página desde el bfcache con "Te llevamos a Mercado Pago…".
+- **Fecha de la reserva** con el formato del sitio, en lugar de "08:17 p. m..".
+
+**Resultado:**
+
+- **97 tests en verde** contra Supabase y el mock de MP:
+  - 21 unitarios;
+  - 20 de pagos: webhook, firma, idempotencia, concurrencia, vencimiento, 422, 502, la clave publishable, el resultado y el panel;
+  - el resto, del E4 y el E5.
+- Al final de la corrida quedaron 0 usuarias, workshops, inscripciones y pagos de prueba.
+- Las páginas públicas siguen estáticas con ISR.
+- **Lighthouse** de la página de resultado: 100 en Accessibility y 100 en Best Practices. **axe:** 0 violaciones en el paso de la seña.
+- **Sin probar todavía con el sandbox real de MP:** faltan las credenciales de prueba. El paso a paso está en `docs/pruebas-mercadopago.md`.
+
+Abierto el 21/10, sin mergear.

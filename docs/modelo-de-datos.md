@@ -1,9 +1,13 @@
 # Modelo de datos
 
-El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en dos migraciones, que se corren una vez y en orden en el SQL Editor:
+El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en cuatro migraciones, que se corren una vez y en orden en el SQL Editor:
 
 - [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
-- [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md). Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
+- [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md).
+- [`0003_pagos.sql`](../supabase/migrations/0003_pagos.sql) (E6): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`. El flujo completo está en [`docs/pagos.md`](pagos.md).
+- [`0004_inscripcion_solo_servidor.sql`](../supabase/migrations/0004_inscripcion_solo_servidor.sql) (E6): `crear_inscripcion` pasa a ejecutarse solo con `service_role`, desde la API.
+
+Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
 ## Diagrama
 
@@ -15,6 +19,7 @@ erDiagram
   workshops ||--o{ workshop_imagenes : "tiene"
   workshops ||--o{ inscripciones : "recibe"
   auth_users ||--o| perfiles : "tiene rol"
+  inscripciones ||--o{ pagos : "se paga con"
 
   categorias {
     uuid id PK
@@ -102,6 +107,22 @@ erDiagram
     int cantidad "1 a 8"
     bool acepta_politica
     text estado "pendiente_sena · reservada · cancelada"
+    numeric monto_sena "la calcula la base"
+    timestamptz vence_at "+30 min"
+    text mp_preference_id
+    text mp_init_point
+  }
+  pagos {
+    uuid id PK
+    uuid inscripcion_id FK
+    text mp_preference_id
+    text mp_payment_id UK
+    text estado "pending · approved · rejected · ..."
+    numeric monto
+    text moneda
+    jsonb detalle "sin datos personales"
+    bool devolucion_pendiente
+    text motivo_devolucion
   }
 ```
 
@@ -118,7 +139,7 @@ Todas las tablas tienen `created_at` y `updated_at`; un trigger (`set_updated_at
 
 ## Permisos y RLS
 
-RLS está activado en las ocho tablas. Además, las migraciones revocan todos los privilegios de `anon` y `authenticated` y otorgan solo los que hacen falta: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven o se tocan. Para la admin, las políticas exigen `(select public.es_admin())`.
+RLS está activado en las nueve tablas. Además, las migraciones revocan todos los privilegios de `anon` y `authenticated` y otorgan solo los que hacen falta: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven o se tocan. Para la admin, las políticas exigen `(select public.es_admin())`.
 
 | Tabla | Lectura pública (anon, authenticated) | Admin (`es_admin()`) |
 |---|---|---|
@@ -130,6 +151,7 @@ RLS está activado en las ocho tablas. Además, las migraciones revocan todos lo
 | `workshop_imagenes` | Las de workshops activos | Lee todas; crea, edita y borra |
 | `inscripciones` | **Ninguna:** sin permisos ni políticas | Lee todas y cambia **solo la columna `estado`**. No borra |
 | `perfiles` | Cada usuaria lee **solo su** perfil | Igual: nadie escribe con la clave publishable |
+| `pagos` | **Ninguna** | Lee todos. Nadie escribe con la clave publishable ni con la sesión: solo `confirmar_pago` (service_role) |
 
 Las políticas permisivas se combinan con OR: la admin ve lo activo por la política pública y lo inactivo por la suya.
 
@@ -138,12 +160,15 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 | Puede… | Visitante (anon) | Con sesión, sin rol | `editor` | `admin` | `service_role` (secret key) |
 |---|---|---|---|---|---|
 | Ver el catálogo y los workshops activos | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Inscribirse (`crear_inscripcion`) | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Inscribirse (por `POST /api/v1/inscripciones`) | ✓ | ✓ | ✓ | ✓ | — |
+| Llamar directo a `crear_inscripcion` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API, desde la 0004) |
 | Entrar a `/admin` y a `/api/v1/admin` | ✗ (login / 401) | ✗ (403) | ✗ (403) | ✓ | — |
 | Ver lo inactivo | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Crear, editar y borrar productos, categorías y workshops | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Subir y borrar fotos en Storage | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Ver inscripciones (datos personales) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Ver los pagos | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Registrar un pago y reservar (`confirmar_pago`) | ✗ | ✗ | ✗ | ✗ | ✓ (webhook y conciliación) |
 | Cambiar el estado de una inscripción | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Borrar inscripciones | ✗ | ✗ | ✗ | ✗ | ✓ |
 | Asignar roles (`perfiles`) | ✗ | ✗ | ✗ | ✗ | ✓ (o SQL en el dashboard) |
@@ -153,7 +178,8 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 ### Funciones y vistas
 
 - **`workshops_publicos`** es una vista con `security_invoker = true`: corre con los permisos de quien consulta, así que respeta el RLS de `workshops` (solo activos). Además filtra los que ya empezaron y calcula `lugares_libres`.
-- **`lugares_ocupados(workshop_id)`** es `security definer`: anon no puede leer `inscripciones`, así que la vista no podría sumar los lugares ocupados. La función solo devuelve el total de lugares, nunca datos de las personas.
+- **`lugares_ocupados(workshop_id)`** es `security definer`: anon no puede leer `inscripciones`, así que la vista no podría sumar los lugares ocupados. La función solo devuelve el total de lugares, nunca datos de las personas. Desde la 0003 cuenta las **reservadas** y las **pendientes de seña que no vencieron** (`vence_at > now()`). Una pendiente vencida libera el cupo sola, sin un proceso que la cancele.
+- **`confirmar_pago(inscripción, pago, estado, monto, moneda, detalle)`** (0003) es `security definer` y **solo la ejecuta `service_role`**. Registra el pago de MP de forma idempotente y reserva si corresponde. Ver [pagos.md](pagos.md#qué-hace-confirmar_pago).
 - **`es_admin()`** (0002) es `security definer`, `stable`, con `search_path = ''`. Lee `perfiles` y devuelve si la usuaria actual (`auth.uid()`) es admin. Solo la puede ejecutar `authenticated`.
 - **`cambiar_estado_inscripcion(id, estado)`** (0002) es `security invoker`: corre con el RLS de la admin. Bloquea la inscripción y el workshop (como `crear_inscripcion`) y, si una cancelada vuelve a estar activa y ya no hay lugar, falla con `HB409`. Así el panel no puede sobrevender.
 - **`reemplazar_tamanos(producto_id, tamanos)`** (0002) es `security invoker`. Borra los tamaños de un producto e inserta los nuevos en una sola transacción: si algo falla, quedan los de antes.
@@ -174,8 +200,11 @@ Reservar un lugar son dos pasos: **mirar cuántos lugares quedan** y **guardar l
 `crear_inscripcion(...)` hace los dos pasos dentro de **una sola transacción** en la base:
 
 1. **Bloquea la fila del workshop** con `select … for update`. Si otra inscripción al mismo workshop está en curso, esta espera a que termine. Así, en el ejemplo, B lee los lugares recién después de que A guardó, y ve 0.
-2. **Valida:** que el workshop exista, esté activo, no sea de ejemplo y no haya empezado (si no, `HB404`), y que alcancen los lugares (si no, `HB409`, con los lugares libres en `detail`).
-3. **Inserta** la inscripción. Los checks de la tabla validan nombre, WhatsApp, email, cantidad (1 a 8) y aceptación de la política; si alguno falla, `23514`.
+2. **Valida:**
+   - que el workshop exista, esté activo, no sea de ejemplo y no haya empezado (si no, `HB404`);
+   - que tenga precio (si no, `HB422`);
+   - que alcancen los lugares (si no, `HB409`, con los lugares libres en `detail`).
+3. **Calcula la seña** (`precio × cantidad × sena_porcentaje / 100`, al centavo) e **inserta** la inscripción pendiente, que vence en 30 minutos. Devuelve el id, la seña y el vencimiento. Los checks de la tabla validan nombre, WhatsApp, email, cantidad (1 a 8) y aceptación de la política; si alguno falla, `23514`.
 
 Es ACID:
 - **Atómica:** o se guarda todo o nada.
@@ -185,7 +214,7 @@ Es ACID:
 
 El test `no sobrevende con inscripciones simultáneas` (`e2e/api.spec.ts`) manda diez inscripciones de 2 lugares a la vez a un workshop con cupo 3: entra una sola.
 
-La función es `security definer` (corre con los permisos de su dueño) para poder insertar en `inscripciones`, que anon no puede tocar. Lleva `set search_path = ''` y nombra todo con su schema (`public.workshops`), para que nadie pueda colar una tabla o función con el mismo nombre en otro schema.
+La función es `security definer` (corre con los permisos de su dueño) para poder insertar en `inscripciones`, que nadie más que la admin puede leer. Desde la 0004 solo la ejecuta `service_role`: la llama `POST /api/v1/inscripciones` con la secret key, después de validar el pedido y el rate limit. Lleva `set search_path = ''` y nombra todo con su schema (`public.workshops`), para que nadie pueda colar una tabla o función con el mismo nombre en otro schema.
 
 **Errores y cómo los traduce la API (`POST /api/v1/inscripciones`):**
 
@@ -193,21 +222,25 @@ La función es `security definer` (corre con los permisos de su dueño) para pod
 |---|---|---|
 | `HB404` | No existe, inactivo, de ejemplo o ya empezó | 404 |
 | `HB409` | No alcanza el cupo (`detail` = lugares libres) | 409 con `spotsLeft` |
+| `HB422` | El workshop no tiene precio | 422 "Precio a confirmar, consultanos por WhatsApp." |
 | `23514`, `22xxx` | No pasa un check de la tabla | 400 |
 | Otro | Error inesperado | 500 (se registra solo el código, sin datos personales) |
 
-### Decisión consciente: la función se puede ejecutar con la clave publishable
+### Riesgo cerrado: la función se podía ejecutar con la clave publishable
 
-`crear_inscripcion` tiene `grant execute` para `anon`, así que cualquiera con la clave publishable puede llamarla directamente, sin pasar por el formulario. Esa clave es pública: viaja al navegador.
+**Hasta el E6**, `crear_inscripcion` tenía `grant execute` para `anon` y `authenticated`. Cualquiera con la clave publishable, que es pública porque viaja al navegador, podía llamarla directo por la API de Supabase, sin pasar por el formulario ni por la API. Era una decisión consciente del E4 y estaba documentada.
 
-- **Riesgo:** alguien podría crear inscripciones falsas y ocupar el cupo de un workshop.
-- **Mitigación hoy:**
-  - Los checks de la tabla validan largo y formato de cada campo.
-  - Una inscripción no puede pedir más de 8 lugares.
-  - Los workshops de ejemplo no aceptan inscripciones.
-  - El cupo es chico y Maggie confirma cada inscripción por WhatsApp con la seña.
-- **Desde el E5:** la admin puede cancelar inscripciones (`PATCH /api/v1/admin/inscripciones/<id>`, y el panel en el próximo PR). `estado = 'cancelada'` libera los lugares.
-- **Pendiente:** TODO rate limit o captcha en el formulario de inscripción. El E5 suma un rate limit solo en el login del panel.
+- **Riesgo:** inscripciones falsas que ocupaban el cupo, sin rate limit y (desde el E6) sin preferencia de pago.
+- **Mitigación en el E4 y el E5:** los checks de la tabla, 8 lugares como máximo, los workshops de ejemplo sin inscripción, y que la admin pueda cancelar.
+
+**Desde la migración 0004 el riesgo está cerrado:**
+- `crear_inscripcion` solo la ejecuta `service_role`;
+- la única puerta es `POST /api/v1/inscripciones`, que valida con zod, aplica el rate limit (5 por IP cada 10 minutos, `TODO(Redis)`) y crea la preferencia de pago;
+- una inscripción sin pago vence a los 30 minutos y libera el cupo sola.
+
+Lo prueba el e2e "con la clave publishable no se puede llamar a crear_inscripcion": responde `42501` y no ocupa lugar.
+
+- **Pendiente:** TODO captcha en el formulario, si el rate limit no alcanza.
 
 ## Caché
 
