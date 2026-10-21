@@ -20,8 +20,8 @@ export function rutaResultado(slug: string, inscripcionId: string) {
 export function armarPreferencia({ inscripcion, workshop, baseUrl }: DatosPreferencia): PreferenceRequest {
   const lugares = inscripcion.cantidad === 1 ? "1 lugar" : `${inscripcion.cantidad} lugares`;
   const resultado = `${baseUrl}${rutaResultado(workshop.slug, inscripcion.id)}`;
-  // MP no acepta auto_return ni notification_url con http://localhost: en
-  // local y en los e2e solo queda la conciliación de la página de resultado.
+  // MP no acepta auto_return con http://localhost: en local y en los e2e la
+  // vuelta es con el botón del checkout.
   const publica = baseUrl.startsWith("https://");
 
   return {
@@ -38,13 +38,11 @@ export function armarPreferencia({ inscripcion, workshop, baseUrl }: DatosPrefer
     external_reference: inscripcion.id,
     metadata: { inscripcion_id: inscripcion.id },
     back_urls: { success: resultado, pending: resultado, failure: resultado },
-    ...(publica
-      ? {
-          auto_return: "approved",
-          // source_news=webhooks: solo webhooks (con firma), no el IPN viejo.
-          notification_url: `${baseUrl}/api/v1/webhooks/mercadopago?source_news=webhooks`,
-        }
-      : {}),
+    ...(publica ? { auto_return: "approved" } : {}),
+    // Sin notification_url a propósito: los avisos que llegan por la URL de la
+    // preferencia no validan con la clave del panel (401 SignatureMismatch en
+    // producción). El webhook se configura en Tus integraciones → Webhooks,
+    // que firma con MP_WEBHOOK_SECRET. Ver docs/pagos.md y docs/errores.md.
     // La preferencia vence junto con la reserva del lugar (30 minutos).
     expires: true,
     expiration_date_from: new Date().toISOString(),
