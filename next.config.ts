@@ -17,6 +17,13 @@ const nextConfig: NextConfig = {
       { source: "/nosotros", destination: "/maggie", permanent: true },
       // El contacto ahora vive en el footer y en el botón de WhatsApp.
       { source: "/contacto", destination: "/", permanent: true },
+      // La API pasó a /api/v1 (E5). 308 conserva el método: un POST viejo a
+      // /api/inscripciones sigue siendo un POST.
+      ...["categorias", "productos", "productos/:slug", "workshops", "inscripciones"].map((path) => ({
+        source: `/api/${path}`,
+        destination: `/api/v1/${path}`,
+        permanent: true,
+      })),
     ];
   },
 };
