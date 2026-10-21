@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { z } from "zod";
 import { revalidarWorkshops } from "@/lib/admin/revalidar";
 import { buscarPagos, obtenerPago, type PagoMP } from "@/lib/mercadopago";
@@ -53,8 +54,10 @@ async function registrar(pago: PagoMP): Promise<Conciliacion> {
   if (error?.code === "HB400") return { resultado: "ignorado", motivo: "pago_de_otra_inscripcion" };
   if (error) throw Object.assign(new Error("No se pudo registrar el pago"), { code: error.code });
 
-  // Si una inscripción pasó a reservada (o se canceló), cambiaron los lugares libres.
-  if (data.cambio) revalidarWorkshops();
+  // Si una inscripción pasó a reservada (o se canceló), cambiaron los lugares
+  // libres. Con after(): la página de resultado concilia mientras se
+  // renderiza, y revalidatePath no se puede llamar durante un render.
+  if (data.cambio) after(revalidarWorkshops);
   return { resultado: "registrado", estadoInscripcion: data.estado_inscripcion, cambio: data.cambio };
 }
 

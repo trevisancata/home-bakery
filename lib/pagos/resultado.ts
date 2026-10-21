@@ -33,6 +33,9 @@ async function leer(id: string): Promise<Resultado | null> {
       "id, estado, cantidad, monto_sena, vence_at, mp_init_point, workshop:workshops!inner (slug, nombre, fecha_inicio, duracion_min), pagos (estado, devolucion_pendiente, created_at)",
     )
     .eq("id", id)
+    // Next memoiza los fetch GET iguales dentro de un render: sin esto, la
+    // segunda lectura (después de conciliar) devolvería la primera.
+    .abortSignal(new AbortController().signal)
     .maybeSingle<Row>();
   if (error) throw Object.assign(new Error("No se pudo leer la inscripción"), { code: error.code });
   if (!data) return null;
