@@ -524,6 +524,49 @@ export const pages = {
       cta: "Avisarme si se libera",
     },
   },
+  inscripcionResultado: {
+    metadata: { title: "Tu inscripción", robots: { index: false, follow: false } },
+    eyebrow: (workshop: string) => `Workshop · ${workshop}`,
+    reserved: {
+      title: "¡Tu lugar está reservado!",
+      text: (date: string) => `Te esperamos el ${date}.`,
+      deposit: "Seña pagada",
+      spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
+      calendar: "Agregar al calendario",
+      calendarFile: "workshop-home-bakery.ics",
+      whatsapp: "Escribirle a Maggie",
+      whatsappMessage: (workshop: string) => `¡Hola, ${site.owner.name}! Ya pagué la seña del workshop "${workshop}".`,
+    },
+    pending: {
+      title: "Estamos esperando la confirmación del pago",
+      text: "Mercado Pago todavía no nos confirmó el pago. Esta página se actualiza sola.",
+      notPaid: "Si todavía no pagaste, podés hacerlo ahora: guardamos tu lugar hasta que venza la reserva.",
+      pay: "Pagar la seña",
+      timeout: "Todavía no se confirmó. Si ya pagaste, escribinos por WhatsApp y lo revisamos.",
+    },
+    rejected: {
+      title: "El pago no se aprobó",
+      text: "Mercado Pago no aprobó el pago. Podés probar de nuevo, por ejemplo con otro medio de pago.",
+      retry: "Probar de nuevo",
+      expired: "La reserva del lugar ya venció. Volvé a inscribirte para intentarlo otra vez.",
+    },
+    expired: {
+      title: "La reserva venció",
+      text: "Pasaron 30 minutos sin que se completara el pago, así que el lugar se liberó.",
+    },
+    refund: {
+      title: "El pago llegó cuando ya no quedaban lugares",
+      // TODO(Maggie): plazo y forma de la devolución. No prometer nada que no esté confirmado.
+      text: "Recibimos tu pago, pero el workshop se completó antes de que se confirmara. Escribinos por WhatsApp para coordinar la devolución.",
+    },
+    cancelled: {
+      title: "Esta inscripción está cancelada",
+      text: "Si querés participar, volvé a inscribirte.",
+    },
+    again: "Volver a inscribirme",
+    help: "Escribinos por WhatsApp",
+    helpContext: " (se abre WhatsApp)",
+  },
   maggie: {
     metadata: {
       title: site.owner.name,
