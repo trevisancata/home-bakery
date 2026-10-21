@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { eventoIcs } from "../lib/ics";
 import { estadoPago } from "../lib/pagos/estados";
-import { toleranciaSegundos, validarFirma } from "../lib/pagos/firma";
+import { diagnosticoFirma, toleranciaSegundos, validarFirma, webhookSecret } from "../lib/pagos/firma";
 import { armarPreferencia, statementDescriptor } from "../lib/pagos/preferencia";
 import { vistaResultado } from "../lib/pagos/vista";
 import { createRateLimiter } from "../lib/rate-limit";
@@ -67,6 +67,24 @@ test.describe("Firma del webhook (x-signature)", () => {
     expect(validarFirma({ ...valida, secret: "" })).toEqual({ ok: false, motivo: "sin_secret" });
   });
 
+  test("la clave del webhook se usa sin espacios ni saltos de línea alrededor", () => {
+    expect(webhookSecret({ MP_WEBHOOK_SECRET: `  ${secret}\n` })).toBe(secret);
+    expect(webhookSecret({})).toBe("");
+    // Una clave pegada con un salto de línea igual valida la firma.
+    expect(validarFirma({ ...valida, secret: webhookSecret({ MP_WEBHOOK_SECRET: `${secret}\r\n` }) })).toEqual({ ok: true });
+  });
+
+  test("el diagnóstico de una firma inválida no incluye la clave ni la firma", () => {
+    const xSignature = firma("123456", "req-1");
+    const texto = diagnosticoFirma({ xSignature, xRequestId: "req-1", dataId: "123456", sourceNews: "webhooks", secret });
+    expect(texto).toBe(`ts=${ts} · x-request-id=req-1 · data.id=123456 · source_news=webhooks · largo de la clave=${secret.length}`);
+    expect(texto).not.toContain(secret);
+    expect(texto).not.toContain(xSignature.split("v1=")[1]);
+    expect(diagnosticoFirma({ xSignature: null, xRequestId: null, dataId: null, sourceNews: null, secret: "" })).toBe(
+      "ts=sin x-signature · x-request-id=sin · data.id=sin · source_news=no · largo de la clave=0",
+    );
+  });
+
   test("rechaza un header mal armado", () => {
     expect(validarFirma({ ...valida, xSignature: "cualquier-cosa" })).toMatchObject({ ok: false });
     expect(validarFirma({ ...valida, xSignature: `ts=abc,v1=${"0".repeat(64)}` })).toMatchObject({ ok: false });
@@ -109,7 +127,7 @@ test.describe("Preferencia de Checkout Pro", () => {
     workshop: { slug: "tortas-de-capas", nombre: "Tortas de capas", senaPorcentaje: 50 },
   };
 
-  test("con la URL pública (https): back_urls, auto_return y webhook", () => {
+  test("con la URL pública (https): back_urls y auto_return, sin notification_url", () => {
     const pref = armarPreferencia({ ...datos, baseUrl: "https://homebakery.com.ar" });
     const resultado = "https://homebakery.com.ar/workshops/tortas-de-capas/inscripcion/resultado?inscripcion=6f1d2a43-0000-4000-8000-000000000001";
     expect(pref.items).toEqual([
@@ -119,14 +137,15 @@ test.describe("Preferencia de Checkout Pro", () => {
     expect(pref.payer).toEqual({ email: "ana@ejemplo.com" });
     expect(pref.back_urls).toEqual({ success: resultado, pending: resultado, failure: resultado });
     expect(pref.auto_return).toBe("approved");
-    expect(pref.notification_url).toBe("https://homebakery.com.ar/api/v1/webhooks/mercadopago?source_news=webhooks");
+    // El webhook se configura en el panel de MP (firma con la clave del panel), no en la preferencia.
+    expect(pref.notification_url).toBeUndefined();
     expect(pref.expires).toBe(true);
     expect(pref.expiration_date_to).toBe(datos.inscripcion.venceAt);
     expect(pref.statement_descriptor).toBe(statementDescriptor);
     expect(pref.payment_methods?.excluded_payment_types).toEqual([{ id: "ticket" }, { id: "atm" }]);
   });
 
-  test("en localhost no manda auto_return ni notification_url (MP no los acepta)", () => {
+  test("en localhost no manda auto_return (MP no lo acepta)", () => {
     const pref = armarPreferencia({ ...datos, baseUrl: "http://localhost:3000" });
     expect(pref.auto_return).toBeUndefined();
     expect(pref.notification_url).toBeUndefined();

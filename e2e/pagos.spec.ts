@@ -68,8 +68,9 @@ test.describe("Inscripción con preferencia de pago", () => {
     expect(pref.back_urls.success).toBe(`http://localhost:3100/workshops/${workshop.slug}/inscripcion/resultado?inscripcion=${id}`);
     expect(pref.statement_descriptor).toBe("HOMEBAKERY");
     expect(new Date(pref.expiration_date_to).getTime()).toBe(new Date(db.vence_at).getTime());
-    // En localhost MP no acepta auto_return ni notification_url.
+    // Nunca notification_url: el webhook es el del panel de MP. En localhost, tampoco auto_return.
     expect(pref.notification_url).toBeUndefined();
+    expect(pref.auto_return).toBeUndefined();
   });
 
   test("con la clave publishable no se puede llamar a crear_inscripcion (solo el servidor)", async ({ workshop }) => {

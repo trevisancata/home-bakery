@@ -17,13 +17,13 @@ sequenceDiagram
   P->>W: Formulario de inscripción
   W->>DB: crear_inscripcion() con service_role (bloquea el workshop, valida cupo y precio)
   DB-->>W: id, monto_sena, vence_at (+30 min)
-  W->>MP: Crear preferencia (seña, external_reference = id, vence con la reserva)
+  W->>MP: Crear preferencia (seña, external_reference = id, vence con la reserva, sin notification_url)
   MP-->>W: init_point
   W-->>P: 201 { id, initPoint } → "Pagar la seña con Mercado Pago"
   P->>MP: Paga en Checkout Pro
 
-  par Webhook (producción)
-    MP->>W: POST /api/v1/webhooks/mercadopago (x-signature)
+  par Webhook (producción, URL del panel de MP)
+    MP->>W: POST /api/v1/webhooks/mercadopago (x-signature con la clave del panel)
     W->>W: Valida la firma (si no, 401)
     W->>MP: GET /v1/payments/{data.id}
     MP-->>W: estado, monto y external_reference reales
@@ -44,7 +44,21 @@ sequenceDiagram
 
 El webhook y la página usan la misma función (`lib/pagos/conciliar.ts`). Si llegan los dos, el segundo no cambia nada: `confirmar_pago` es idempotente.
 
-**Por qué hace falta la conciliación:** los previews de Vercel están protegidos con Vercel Authentication, así que el webhook de MP no les llega. Además, en `localhost` MP no acepta `notification_url` ni `auto_return`, así que la preferencia no los lleva cuando la URL del sitio no es https. Con la conciliación, el flujo funciona en local, en los previews y si el webhook se demora.
+**Por qué hace falta la conciliación:** el webhook solo llega a producción. Los previews de Vercel están protegidos con Vercel Authentication, y en `localhost` MP no puede llegar. Con la conciliación, el flujo funciona en local, en los previews y si el webhook se demora. En `localhost` la preferencia tampoco lleva `auto_return`, porque MP no lo acepta sin https.
+
+## El webhook se configura en el panel, no en la preferencia
+
+La URL del webhook (`https://<producción>/api/v1/webhooks/mercadopago`, evento **Pagos**) se carga en **Tus integraciones → tu aplicación → Webhooks**, y la clave secreta que muestra ese panel es `MP_WEBHOOK_SECRET`. La preferencia **no** manda `notification_url`.
+
+**Por qué:**
+- En producción, los avisos que llegaban por la `notification_url` de la preferencia (con `?data.id=…&type=payment&source_news=webhooks`) daban **401 SignatureMismatch**.
+- La "Simular notificación" del panel, con la misma clave, validaba bien (200).
+- Es decir: esos avisos no se podían validar con la clave del panel, y el webhook no puede aceptar avisos sin firma válida.
+- Sin `notification_url`, MP manda los avisos a la URL del panel, firmados con su clave.
+
+El diagnóstico está en [errores.md](errores.md#401-del-webhook-con-los-pagos-reales).
+
+**Si cambia el dominio de producción,** hay que actualizar la URL en el panel: ya no sale de `NEXT_PUBLIC_SITE_URL`.
 
 ## Estados
 
@@ -97,8 +111,8 @@ Los pagos para devolver aparecen en `/admin`, en "Para devolver". La devolución
 | Variable | Dónde | Para qué |
 |---|---|---|
 | `MP_ACCESS_TOKEN` | Servidor (Vercel y `.env.local`) | Crear preferencias y consultar pagos. De prueba (`TEST-…`) o de producción (`APP_USR-…`) |
-| `MP_WEBHOOK_SECRET` | Servidor | Validar la firma de los webhooks (Tus integraciones → Webhooks) |
-| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública para las `back_urls` y el webhook. Sin ella: `https://$VERCEL_URL` o `http://localhost:3000` |
+| `MP_WEBHOOK_SECRET` | Servidor | Validar la firma de los webhooks: la clave del panel (Tus integraciones → Webhooks). Se usa con `trim()` |
+| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública para las `back_urls`. Sin ella: `https://$VERCEL_URL` o `http://localhost:3000`. La URL del webhook va en el panel de MP |
 | `SUPABASE_SECRET_KEY` | Servidor | `confirmar_pago` y la página de resultado |
 
 ## Tests
