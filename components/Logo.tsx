@@ -10,10 +10,19 @@ type LogoProps = {
   className?: string;
   /** Ancho del logo dentro del círculo. */
   imageClassName?: string;
+  /** Ancho en pantalla, para elegir la resolución (con círculo, 80px por defecto). */
+  sizes?: string;
 };
 
 /** Logo de la marca, sin la bajada "cakes & pastries". */
-export function Logo({ alt, tone = "white", circle = true, className = "", imageClassName = "w-2/3" }: LogoProps) {
+export function Logo({
+  alt,
+  tone = "white",
+  circle = true,
+  className = "",
+  imageClassName = "w-2/3",
+  sizes = "80px",
+}: LogoProps) {
   const { src, width, height } = site.logo[tone];
 
   if (!circle) {
@@ -22,7 +31,7 @@ export function Logo({ alt, tone = "white", circle = true, className = "", image
 
   return (
     <span className={`flex items-center justify-center rounded-full bg-taupe ${className}`}>
-      <Image src={src} alt={alt} width={width} height={height} sizes="80px" loading="eager" className={`h-auto ${imageClassName}`} />
+      <Image src={src} alt={alt} width={width} height={height} sizes={sizes} loading="eager" className={`h-auto ${imageClassName}`} />
     </span>
   );
 }
