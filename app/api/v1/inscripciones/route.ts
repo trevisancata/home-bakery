@@ -6,7 +6,6 @@ import { armarPreferencia } from "@/lib/pagos/preferencia";
 import { clientIp, inscripcionesLimiter } from "@/lib/rate-limit";
 import { siteUrl } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPublicClient } from "@/lib/supabase/server";
 import { inscripcionSchema } from "@/lib/validation/inscripcion";
 
 type InscripcionCreada = {
@@ -22,7 +21,9 @@ type InscripcionCreada = {
  * de la seña en Mercado Pago.
  *
  * 1. crear_inscripcion (Supabase) bloquea el workshop, valida el cupo,
- *    calcula la seña y guarda la inscripción pendiente por 30 minutos.
+ *    calcula la seña y guarda la inscripción pendiente por 30 minutos. Solo
+ *    la puede ejecutar service_role (migración 0004): se llama con la
+ *    secret key, después de validar el pedido y el rate limit.
  * 2. Con la seña que calculó la base, se crea la preferencia de Checkout Pro.
  *
  * 201 { data: { id, initPoint } } · 400 { error: { message, fields } } · 404 ·
@@ -42,7 +43,8 @@ export const POST = withApi("Error al guardar la inscripción", async (request) 
   }
   inscripcionesLimiter.hit(ip);
 
-  const { data, error } = await createPublicClient()
+  const admin = createAdminClient();
+  const { data, error } = await admin
     .rpc("crear_inscripcion", {
       p_workshop_slug: inscripcion.workshopSlug,
       p_nombre: inscripcion.name,
@@ -60,7 +62,6 @@ export const POST = withApi("Error al guardar la inscripción", async (request) 
   if (error) throw fromDbError(error, "El workshop no existe o ya no tiene inscripción abierta.");
 
   const id = data.inscripcion_id;
-  const admin = createAdminClient();
 
   let preferencia: { id: string; initPoint: string };
   try {
