@@ -182,8 +182,6 @@ const workshopFacts = {
   capacity: "Hasta 8 personas",
 };
 
-/** Los workshops se reservan con una seña del 50% (respuesta de Maggie, 01/10). */
-export const workshopDeposit = { rate: 0.5, label: "50%" } as const;
 
 const kitchenImage: SiteImage = {
   alt: "Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido",
@@ -498,7 +496,7 @@ export const pages = {
       less: "Un lugar menos",
       more: "Un lugar más",
       total: "Total",
-      deposit: `Seña para reservar (${workshopDeposit.label})`,
+      deposit: (percent: number) => `Seña para reservar (${percent}%)`,
       balance: "Saldo",
       totalTbd: "A confirmar",
     },
@@ -506,19 +504,20 @@ export const pages = {
       reviewTitle: "Tus datos",
       experience: (level: string) => `Experiencia: ${level}`,
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
-      // TODO(E6): el pago de la seña con Mercado Pago. Hasta entonces, se
-      // coordina por WhatsApp con Maggie.
-      whatsapp: {
-        text: `Para reservar tu lugar, mandale este mensaje a ${site.owner.name} por WhatsApp.`,
-        messageLabel: "Mensaje",
-        cta: "Pagar la seña",
-        ctaContext: " (se abre WhatsApp)",
+      mercadoPago: {
+        text: "Pagá la seña con Mercado Pago para reservar tu lugar.",
+        amount: "Seña a pagar",
+        cta: "Pagar la seña con Mercado Pago",
+        redirecting: "Te llevamos a Mercado Pago…",
+        // Regla del sistema: la inscripción pendiente vence a los 30 minutos (migración 0003).
+        expires: "Guardamos tu lugar 30 minutos mientras pagás. Si no se completa el pago, se libera.",
       },
+      help: { text: "¿Problemas para pagar?", cta: "Escribinos por WhatsApp", ctaContext: " (se abre WhatsApp)" },
       deposit: "Tu lugar solo queda reservado con la seña.",
       // TODO(Maggie): cuándo y cómo se paga el saldo. No inventar la política.
       balance: "El saldo: a confirmar con Maggie.",
-      note: "El pago online va a estar disponible muy pronto.",
     },
+    noPrice: { cta: "Consultar por WhatsApp" },
     soldOut: {
       title: "No quedan lugares",
       text: "Este workshop ya está completo. Escribinos por WhatsApp si querés que te tengamos en cuenta si se libera un lugar.",

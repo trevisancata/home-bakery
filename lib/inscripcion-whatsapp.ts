@@ -1,30 +1,17 @@
-// Mensaje de WhatsApp para coordinar la seña con Maggie. La inscripción ya
-// queda guardada en Supabase; el mensaje es el paso de pago de la seña
-// hasta que exista Mercado Pago (TODO(E6)).
+// Mensaje de WhatsApp para pedir ayuda con el pago de la seña. El pago va
+// por Mercado Pago; esto es solo para quien tenga problemas.
 
-import { site, whatsappLink, workshopDeposit } from "@/data/site";
+import { site, whatsappLink } from "@/data/site";
 import type { Workshop } from "@/lib/data";
-import { formatDay, formatPrice, formatTime } from "@/lib/format";
-import { depositOf } from "@/lib/sena";
-import type { Inscripcion } from "@/lib/validation/inscripcion";
+import { formatDay, formatTime } from "@/lib/format";
 
-type WorkshopInfo = Pick<Workshop, "name" | "startsAt" | "price">;
+type WorkshopInfo = Pick<Workshop, "name" | "startsAt">;
 
-export function inscripcionWhatsappMessage(workshop: WorkshopInfo, inscripcion: Inscripcion) {
-  const spots = inscripcion.spots === 1 ? "1 lugar" : `${inscripcion.spots} lugares`;
-  const amount = workshop.price === null ? "" : ` (${formatPrice(depositOf(workshop.price * inscripcion.spots))})`;
-  return [
-    `¡Hola, ${site.owner.name}! Me inscribí desde la web al workshop "${workshop.name}" (${formatDay(workshop.startsAt)}, ${formatTime(workshop.startsAt)}) y quiero reservar ${spots}.`,
-    `Quiero pagar la seña del ${workshopDeposit.label}${amount} para confirmar la reserva.`,
-    "",
-    `Nombre: ${inscripcion.name}`,
-    `WhatsApp: ${inscripcion.whatsapp}`,
-    `Email: ${inscripcion.email}`,
-    `Experiencia: ${inscripcion.experience ?? "—"}`,
-    `Alergias o restricciones: ${inscripcion.allergies ?? "—"}`,
-  ].join("\n");
+export function ayudaPagoMessage(workshop: WorkshopInfo, nombre?: string) {
+  const quien = nombre ? `Soy ${nombre}. ` : "";
+  return `¡Hola, ${site.owner.name}! ${quien}Me inscribí al workshop "${workshop.name}" (${formatDay(workshop.startsAt)}, ${formatTime(workshop.startsAt)}) y tengo un problema con el pago de la seña.`;
 }
 
-export function inscripcionWhatsappLink(workshop: WorkshopInfo, inscripcion: Inscripcion) {
-  return whatsappLink(inscripcionWhatsappMessage(workshop, inscripcion));
+export function ayudaPagoLink(workshop: WorkshopInfo, nombre?: string) {
+  return whatsappLink(ayudaPagoMessage(workshop, nombre));
 }
