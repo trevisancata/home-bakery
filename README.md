@@ -128,18 +128,53 @@ Una cuenta sin fila en `perfiles` puede ingresar, pero recibe 403 "No tenés per
 
 ### Recuperar la contraseña
 
-"¿Olvidaste tu contraseña?" manda un mail con un link a `/admin/auth/confirm`, que abre una sesión y lleva a `/admin/nueva-contrasena`. Hay que configurarlo una vez:
+"¿Olvidaste tu contraseña?" manda un mail con un link. El link pasa por Supabase y vuelve a `/admin/auth/confirm`, que abre una sesión y lleva a `/admin/nueva-contrasena`. La ruta acepta las dos formas de link:
 
-1. **Authentication → URL Configuration → Redirect URLs:** agregar `http://localhost:3000/admin/auth/confirm`, `https://home-bakery-brown.vercel.app/admin/auth/confirm` y, para las previews de Vercel, `https://home-bakery-*-trevisancata.vercel.app/admin/auth/confirm` (Supabase acepta `*` en las Redirect URLs).
-2. **Authentication → Emails → Reset password:** cambiar el link de la plantilla por
+| Link | Plantilla | Cómo se canjea | Limitación |
+|---|---|---|---|
+| `?code=…` (PKCE) | La de Supabase por defecto (`{{ .ConfirmationURL }}`) | `exchangeCodeForSession` | Solo abre en el mismo navegador donde se pidió |
+| `?token_hash=…&type=recovery` | La propia (abajo) | `verifyOtp` | Ninguna: abre en cualquier navegador o en el celular |
 
-   ```html
-   <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">Elegir una contraseña nueva</a>
-   ```
+Si el link venció, ya se usó o se abrió en otro navegador, `/admin/recuperar` lo dice y ofrece el botón "Pedir otro link".
 
-   Con `token_hash`, el link funciona aunque el mail se abra en otro navegador o en el celular.
+**Configuración (una sola vez):** en **Authentication → URL Configuration → Redirect URLs**, agregar:
 
-El proveedor de mails incluido en Supabase manda hasta 2 mails por hora en todo el proyecto. Para más, hay que configurar un SMTP propio (**Authentication → Emails → SMTP Settings**).
+- `http://localhost:3000/admin/auth/confirm`;
+- `https://home-bakery-brown.vercel.app/admin/auth/confirm`;
+- para las previews de Vercel, `https://home-bakery-*-trevisancata.vercel.app/admin/auth/confirm` (Supabase acepta `*` en las Redirect URLs).
+
+#### TODO(SMTP): mails de producción
+
+Hoy el proyecto usa el SMTP por defecto de Supabase, que tiene dos límites:
+
+1. **Solo manda mails a los miembros del equipo del proyecto** en Supabase. A cualquier otro email no le llega nada.
+2. **Manda pocos mails por hora** en todo el proyecto: 2 según la [documentación de rate limits](https://supabase.com/docs/guides/auth/rate-limits).
+
+Además, sin SMTP propio no se pueden editar las plantillas. Por eso hoy se usa la de por defecto, con el link PKCE.
+
+**Mientras tanto,** si Maggie se olvida la contraseña, la reseteo yo desde **Authentication → Users**: busco su usuaria, entro a **Reset password** o le cargo una contraseña nueva, y se la paso por un canal privado, nunca por el repo.
+
+**Para producción:**
+
+1. **Configurar un SMTP propio** (por ejemplo, [Resend](https://resend.com)) en **Authentication → Emails → SMTP Settings**, con un dominio verificado como remitente.
+2. **Pegar la plantilla** en **Authentication → Emails → Reset password**:
+   - Asunto: `Elegí una contraseña nueva para el panel de Home Bakery`
+   - Cuerpo:
+
+     ```html
+     <h2>Elegí una contraseña nueva</h2>
+     <p>Pediste cambiar la contraseña del panel de Home Bakery.</p>
+     <p>
+       <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">
+         Elegir una contraseña nueva
+       </a>
+     </p>
+     <p>El link vence en una hora y se puede usar una sola vez.</p>
+     <p>Si no lo pediste, ignorá este mail: tu contraseña no cambia.</p>
+     ```
+
+   `{{ .RedirectTo }}` es el `/admin/auth/confirm` del sitio desde donde se pidió el link (local, preview o producción). Con `token_hash`, el link funciona en cualquier navegador.
+3. **Probar** con "¿Olvidaste tu contraseña?" y borrar este TODO.
 
 ## Cómo correrlo en local
 

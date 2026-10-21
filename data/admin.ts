@@ -34,7 +34,12 @@ export const admin = {
     // Mismo mensaje exista o no el email.
     sent: "Si el email está registrado, te llega un link en unos minutos. Revisá también el correo no deseado.",
     back: { label: "Volver a ingresar", href: "/admin/ingresar" },
-    invalidLink: "El link venció o ya se usó. Pedí uno nuevo.",
+    // Con la plantilla de mail por defecto (PKCE), el link solo abre en el
+    // navegador donde se pidió. TODO(SMTP): con la plantilla de token_hash
+    // ya no hace falta mencionarlo.
+    invalidLink:
+      "El link venció, ya se usó o se abrió en otro navegador. Pedí uno nuevo y abrilo en este mismo navegador.",
+    retry: "Pedir otro link",
     unexpected: "No pudimos mandar el link. Probá de nuevo en un rato.",
   },
   newPassword: {

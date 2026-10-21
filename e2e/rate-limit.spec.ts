@@ -14,7 +14,7 @@ test("después de 5 intentos fallidos bloquea el login, aunque la contraseña se
     await page.getByRole("textbox", { name: "Email" }).fill(email);
     await page.getByLabel("Contraseña").fill(password);
     await page.getByRole("button", { name: "Ingresar" }).click();
-    return page.getByRole("alert");
+    return page.locator("form").getByRole("alert");
   };
 
   // Otros tests ya fallaron algún login desde esta IP: a lo sumo 5 intentos más.

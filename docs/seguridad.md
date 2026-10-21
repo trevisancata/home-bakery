@@ -91,7 +91,7 @@ Todo lo que entra se valida en el servidor con zod (`lib/admin/schemas.ts`), aun
 | Login y renovación de sesión (`/token`) | 150 pedidos cada 5 minutos | IP |
 | Recuperación y otros (`/recover`, `/user`…) | 30 pedidos cada 5 minutos | IP |
 | Pedir el link de recuperación | 1 cada 60 segundos | Usuaria |
-| Mails con el proveedor incluido | 2 por hora | Proyecto |
+| Mails con el SMTP por defecto (solo al equipo del proyecto) | 2 por hora | Proyecto |
 
 Como el login se hace desde el servidor, Supabase ve la IP de Vercel, no la de quien ingresa. Ese límite "por IP" es entonces uno solo, compartido por todas.
 
@@ -101,6 +101,12 @@ Como el login se hace desde el servidor, Supabase ve la IP de Vercel, no la de q
 - Vive en memoria: cada instancia de Vercel tiene el suyo y se reinicia con cada cold start. Hay un `TODO(Redis)` para pasarlo a un almacenamiento compartido (por ejemplo, Upstash).
 
 Lo prueba `e2e/rate-limit.spec.ts`: después del bloqueo, ni la contraseña correcta entra.
+
+## Recuperación de contraseña
+
+- **Siempre el mismo aviso:** `/admin/recuperar` responde "Si el email está registrado, te llega un link" exista o no el email.
+- **Dos formas de link:** `/admin/auth/confirm` acepta las dos que manda Supabase. Con `?code=` (flujo PKCE, la plantilla por defecto), el link se canjea con `exchangeCodeForSession` y solo abre en el navegador donde se pidió, porque el *code verifier* quedó en una cookie. Con `?token_hash=` (plantilla propia), se canjea con `verifyOtp` y abre en cualquier navegador. Si no sirve (venció, ya se usó o se abrió en otro navegador), lo dice y ofrece pedir otro.
+- **TODO(SMTP):** el SMTP por defecto de Supabase solo manda mails a los miembros del equipo del proyecto, y pocos por hora. En producción hay que configurar un SMTP propio (por ejemplo, Resend) y pegar la plantilla con `token_hash`; los pasos y el HTML están en el [README](../README.md#todosmtp-mails-de-producción). Mientras tanto, si Maggie olvida la contraseña, se la resetea la desarrolladora desde **Authentication → Users**.
 
 ## Registro público deshabilitado
 

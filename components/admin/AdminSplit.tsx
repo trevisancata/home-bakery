@@ -9,7 +9,7 @@ import { admin } from "@/data/admin";
  */
 export function AdminSplit({ children }: { children: ReactNode }) {
   return (
-    <div className="grid min-h-dvh bg-hueso lg:grid-cols-2">
+    <div className="grid min-h-dvh grid-rows-[auto_1fr] bg-hueso lg:grid-cols-2 lg:grid-rows-1">
       <div
         data-surface="dark"
         className="flex items-center justify-center bg-chocolate px-4 py-8 lg:p-16"

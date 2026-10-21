@@ -32,7 +32,7 @@ test.describe("Sin sesión", () => {
       await page.getByLabel("Contraseña").fill("no-es-la-contraseña");
       await page.getByRole("button", { name: "Ingresar" }).click();
 
-      const alert = page.getByRole("alert");
+      const alert = page.locator("form").getByRole("alert");
       await expect(alert).toHaveText(loginMessage);
       await expect(alert).toBeFocused();
       await expect(page).toHaveURL(/\/admin\/ingresar/);

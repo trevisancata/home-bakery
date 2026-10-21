@@ -34,7 +34,7 @@ export function RecoverForm({ invalidLink }: { invalidLink: boolean }) {
         defaultValue={state.email}
         error={state.fields?.email}
       />
-      <SubmitButton pending={content.submitting}>{content.submit}</SubmitButton>
+      <SubmitButton pending={content.submitting}>{invalidLink ? content.retry : content.submit}</SubmitButton>
       <Link href={content.back.href} className="self-center px-3 py-2.5 text-14 font-semibold text-chocolate hover:text-carbon">
         {content.back.label}
       </Link>
