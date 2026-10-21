@@ -160,3 +160,20 @@ test.describe("POST /api/v1/inscripciones", () => {
     }
   });
 });
+
+test.describe("Rutas viejas de la API", () => {
+  for (const path of ["categorias", "productos?categoria=budines", "productos/budin-de-chocolate", "workshops"]) {
+    test(`/api/${path} redirige con 308 a /api/v1`, async ({ request }) => {
+      const response = await request.get(`/api/${path}`, { maxRedirects: 0 });
+      expect(response.status()).toBe(308);
+      expect(response.headers().location).toBe(`/api/v1/${path}`);
+      expect((await request.get(`/api/${path}`)).status()).toBe(200);
+    });
+  }
+
+  test("POST /api/inscripciones redirige con 308 (conserva el método)", async ({ request }) => {
+    const response = await request.post("/api/inscripciones", { data: inscripcion("no-existe"), maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    expect(response.headers().location).toBe("/api/v1/inscripciones");
+  });
+});

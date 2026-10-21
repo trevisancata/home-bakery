@@ -102,6 +102,7 @@ export async function nuevaContrasena(_prev: FormState, formData: FormData): Pro
 
 export async function cerrarSesion() {
   const supabase = await createAuthClient();
-  await supabase.auth.signOut();
+  // local: cierra esta sesión, no las de otros dispositivos.
+  await supabase.auth.signOut({ scope: "local" });
   redirect("/admin/ingresar");
 }

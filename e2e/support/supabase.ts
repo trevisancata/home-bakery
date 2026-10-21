@@ -16,7 +16,8 @@ export const skipReason = "Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SECRET_KEY
 
 export const testSlugPrefix = "e2e-";
 
-function admin() {
+/** Cliente con la secret key (se saltea RLS). Solo para preparar y limpiar datos. */
+export function admin() {
   if (!url || !secret) throw new Error(skipReason);
   return createClient(url, secret, { auth: { persistSession: false, autoRefreshToken: false } });
 }
