@@ -360,7 +360,7 @@ Abierto el 21/10, sin mergear.
 
 - **97 tests en verde** contra Supabase y el mock de MP:
   - 21 unitarios;
-  - 23 de pagos: webhook, firma, idempotencia, concurrencia, vencimiento, 422, 502, la clave publishable, el resultado y el panel;
+  - 20 de pagos: webhook, firma, idempotencia, concurrencia, vencimiento, 422, 502, la clave publishable, el resultado y el panel;
   - el resto, del E4 y el E5.
 - Al final de la corrida quedaron 0 usuarias, workshops, inscripciones y pagos de prueba.
 - Las páginas públicas siguen estáticas con ISR.
