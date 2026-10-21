@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // forbidden() responde 403 en /admin cuando la cuenta no tiene rol (app/forbidden.tsx).
+    authInterrupts: true,
+  },
   images: {
     // Fotos del catálogo y de los workshops en Supabase Storage (buckets públicos).
     remotePatterns: [{ protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" }],
