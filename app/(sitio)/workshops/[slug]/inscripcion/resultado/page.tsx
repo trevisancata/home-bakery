@@ -7,7 +7,7 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { RefrescoPendiente } from "@/components/inscripcion/RefrescoPendiente";
 import { TituloConFoco } from "@/components/inscripcion/TituloConFoco";
 import { pages, whatsappLink } from "@/data/site";
-import { formatDate, formatPrice } from "@/lib/format";
+import { formatDay, formatPrice, formatTime } from "@/lib/format";
 import { eventoIcs, icsHref } from "@/lib/ics";
 import { ayudaPagoLink } from "@/lib/inscripcion-whatsapp";
 import { resultadoInscripcion } from "@/lib/pagos/resultado";
@@ -63,7 +63,7 @@ export default async function ResultadoPage({ params, searchParams }: PageProps<
       });
       body = (
         <>
-          <p className="text-17 leading-parrafo">{content.reserved.text(formatDate(workshop.fechaInicio))}</p>
+          <p className="text-17 leading-parrafo">{content.reserved.text(formatDay(workshop.fechaInicio), formatTime(workshop.fechaInicio))}</p>
           <dl className="flex flex-col gap-2 rounded-2xl bg-arena p-5 text-15">
             <div className="flex justify-between gap-4">
               <dt className="text-secundario">{content.reserved.deposit}</dt>

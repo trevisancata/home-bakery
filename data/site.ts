@@ -529,7 +529,7 @@ export const pages = {
     eyebrow: (workshop: string) => `Workshop · ${workshop}`,
     reserved: {
       title: "¡Tu lugar está reservado!",
-      text: (date: string) => `Te esperamos el ${date}.`,
+      text: (day: string, time: string) => `Te esperamos el ${day}, a las ${time}.`,
       deposit: "Seña pagada",
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
       calendar: "Agregar al calendario",
