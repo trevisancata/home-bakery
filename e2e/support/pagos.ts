@@ -47,7 +47,11 @@ export function firmar(dataId: string, { ts = Math.floor(Date.now() / 1000), cla
 }
 
 /** Manda un aviso de pago al webhook, firmado. */
-export function avisarPago(request: APIRequestContext, paymentId: string, { type = "payment", headers = firmar(paymentId) } = {}) {
+export function avisarPago(
+  request: APIRequestContext,
+  paymentId: string,
+  { type = "payment", headers = firmar(paymentId) as Record<string, string> }: { type?: string; headers?: Record<string, string> } = {},
+) {
   return request.post(`/api/v1/webhooks/mercadopago?data.id=${paymentId}&type=${type}`, {
     headers,
     data: { action: "payment.updated", api_version: "v1", type, data: { id: paymentId }, live_mode: false },
