@@ -1,4 +1,5 @@
 import type { APIRequestContext } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import {
   avisarPago,
   cargarPago,
@@ -69,6 +70,23 @@ test.describe("Inscripción con preferencia de pago", () => {
     expect(new Date(pref.expiration_date_to).getTime()).toBe(new Date(db.vence_at).getTime());
     // En localhost MP no acepta auto_return ni notification_url.
     expect(pref.notification_url).toBeUndefined();
+  });
+
+  test("con la clave publishable no se puede llamar a crear_inscripcion (solo el servidor)", async ({ workshop }) => {
+    const publica = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
+      auth: { persistSession: false },
+    });
+    const { data, error } = await publica.rpc("crear_inscripcion", {
+      p_workshop_slug: workshop.slug,
+      p_nombre: "Sin pasar por la API",
+      p_whatsapp: "11 5555-6666",
+      p_email: "prueba@ejemplo.com",
+      p_cantidad: 1,
+      p_acepta_politica: true,
+    });
+    expect(data).toBeNull();
+    expect(error?.code).toBe("42501");
+    expect(await lugaresOcupados(workshop.id)).toBe(0);
   });
 
   test("422 si el workshop no tiene precio", async ({ request }) => {

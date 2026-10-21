@@ -65,10 +65,11 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
    - [`0001_catalogo.sql`](supabase/migrations/0001_catalogo.sql): las tablas, RLS, la vista `workshops_publicos`, la función `crear_inscripcion` y los buckets `productos` y `workshops`.
    - [`0002_auth_admin.sql`](supabase/migrations/0002_auth_admin.sql): la tabla `perfiles` (roles), `es_admin()` y los permisos de escritura de la admin (tablas y Storage).
    - [`0003_pagos.sql`](supabase/migrations/0003_pagos.sql): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`.
+   - [`0004_inscripcion_solo_servidor.sql`](supabase/migrations/0004_inscripcion_solo_servidor.sql): `crear_inscripcion` solo desde el servidor (`service_role`).
 3. Copiar `.env.example` a `.env.local` y completarlo con los datos de **Project Settings → API**:
    - `NEXT_PUBLIC_SUPABASE_URL`: la URL del proyecto.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: la clave publishable (`sb_publishable_…`). Es pública y respeta RLS.
-   - `SUPABASE_SECRET_KEY`: la clave secret (`sb_secret_…`). Se saltea RLS. La usan el seed, los tests y, desde el E6, el servidor para confirmar los pagos. **Nunca** va en el código ni en una variable `NEXT_PUBLIC_`.
+   - `SUPABASE_SECRET_KEY`: la clave secret (`sb_secret_…`). Se saltea RLS. La usan el seed, los tests y, desde el E6, el servidor para crear inscripciones y confirmar los pagos. **Nunca** va en el código ni en una variable `NEXT_PUBLIC_`.
    - `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` y `NEXT_PUBLIC_SITE_URL`: Mercado Pago (ver abajo).
    - `CATALOGO_FOTOS_DIR`: la carpeta del catálogo de Maggie (la que tiene `fotos/` adentro).
 4. Cargar el catálogo:
@@ -226,7 +227,7 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 | `npm start`     | Sirve el build de producción               |
 | `npm run lint`  | Revisa el código con ESLint                |
 | `npm run seed`  | Carga el catálogo y los workshops en Supabase |
-| `npm run test:e2e` | Tests e2e y de la API con Playwright (build de producción). Necesita las tres migraciones y `SUPABASE_SECRET_KEY`: crea y borra sus propias usuarias, productos, workshops y pagos de prueba. Mercado Pago es un mock local (`e2e/support/mp-mock.ts`), sin credenciales reales |
+| `npm run test:e2e` | Tests e2e y de la API con Playwright (build de producción). Necesita las cuatro migraciones y `SUPABASE_SECRET_KEY`: crea y borra sus propias usuarias, productos, workshops y pagos de prueba. Mercado Pago es un mock local (`e2e/support/mp-mock.ts`), sin credenciales reales |
 | `npm run compare` | Compara el sitio con el mockup              |
 
 Los tests leen y escriben el proyecto de Supabase de `.env.local` sin ensuciar los datos reales: cada test que inscribe crea su propio workshop de prueba (slug `e2e-…`) y lo borra al terminar, con sus inscripciones. Al final de la corrida, un teardown borra cualquier `e2e-…` que haya quedado.

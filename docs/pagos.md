@@ -15,7 +15,7 @@ sequenceDiagram
   participant MP as Mercado Pago
 
   P->>W: Formulario de inscripción
-  W->>DB: crear_inscripcion() (bloquea el workshop, valida cupo y precio)
+  W->>DB: crear_inscripcion() con service_role (bloquea el workshop, valida cupo y precio)
   DB-->>W: id, monto_sena, vence_at (+30 min)
   W->>MP: Crear preferencia (seña, external_reference = id, vence con la reserva)
   MP-->>W: init_point
@@ -90,7 +90,7 @@ Los pagos para devolver aparecen en `/admin`, en "Para devolver". La devolución
 - **Sin precio no hay inscripción:** un workshop con `precio = null` responde 422 "Precio a confirmar, consultanos por WhatsApp" (`HB422`). Hoy todos los workshops reales están así hasta que Maggie cargue los precios.
 - **Vencimiento de 30 minutos:** la preferencia vence a la misma hora que la reserva (`expiration_date_to = vence_at`).
 - **Si Mercado Pago falla** al crear la preferencia, la inscripción se cancela (para liberar el cupo ya) y la API responde 502.
-- **La secret key en el servidor:** `confirmar_pago` solo lo puede ejecutar `service_role`, así que el webhook y la página de resultado usan `SUPABASE_SECRET_KEY` (nunca en el navegador). Ver [seguridad](seguridad.md#pagos).
+- **La secret key en el servidor:** `crear_inscripcion` (desde la 0004) y `confirmar_pago` solo los puede ejecutar `service_role`. La API, el webhook y la página de resultado usan `SUPABASE_SECRET_KEY`, nunca en el navegador. Ver [seguridad](seguridad.md#pagos).
 
 ## Variables de entorno
 

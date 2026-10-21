@@ -1,10 +1,11 @@
 # Modelo de datos
 
-El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en tres migraciones, que se corren una vez y en orden en el SQL Editor:
+El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en cuatro migraciones, que se corren una vez y en orden en el SQL Editor:
 
 - [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
 - [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md).
 - [`0003_pagos.sql`](../supabase/migrations/0003_pagos.sql) (E6): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`. El flujo completo está en [`docs/pagos.md`](pagos.md).
+- [`0004_inscripcion_solo_servidor.sql`](../supabase/migrations/0004_inscripcion_solo_servidor.sql) (E6): `crear_inscripcion` pasa a ejecutarse solo con `service_role`, desde la API.
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -159,7 +160,8 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 | Puede… | Visitante (anon) | Con sesión, sin rol | `editor` | `admin` | `service_role` (secret key) |
 |---|---|---|---|---|---|
 | Ver el catálogo y los workshops activos | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Inscribirse (`crear_inscripcion`) | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Inscribirse (por `POST /api/v1/inscripciones`) | ✓ | ✓ | ✓ | ✓ | — |
+| Llamar directo a `crear_inscripcion` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API, desde la 0004) |
 | Entrar a `/admin` y a `/api/v1/admin` | ✗ (login / 401) | ✗ (403) | ✗ (403) | ✓ | — |
 | Ver lo inactivo | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Crear, editar y borrar productos, categorías y workshops | ✗ | ✗ | ✗ | ✓ | ✓ |
@@ -212,7 +214,7 @@ Es ACID:
 
 El test `no sobrevende con inscripciones simultáneas` (`e2e/api.spec.ts`) manda diez inscripciones de 2 lugares a la vez a un workshop con cupo 3: entra una sola.
 
-La función es `security definer` (corre con los permisos de su dueño) para poder insertar en `inscripciones`, que anon no puede tocar. Lleva `set search_path = ''` y nombra todo con su schema (`public.workshops`), para que nadie pueda colar una tabla o función con el mismo nombre en otro schema.
+La función es `security definer` (corre con los permisos de su dueño) para poder insertar en `inscripciones`, que nadie más que la admin puede leer. Desde la 0004 solo la ejecuta `service_role`: la llama `POST /api/v1/inscripciones` con la secret key, después de validar el pedido y el rate limit. Lleva `set search_path = ''` y nombra todo con su schema (`public.workshops`), para que nadie pueda colar una tabla o función con el mismo nombre en otro schema.
 
 **Errores y cómo los traduce la API (`POST /api/v1/inscripciones`):**
 
@@ -224,21 +226,21 @@ La función es `security definer` (corre con los permisos de su dueño) para pod
 | `23514`, `22xxx` | No pasa un check de la tabla | 400 |
 | Otro | Error inesperado | 500 (se registra solo el código, sin datos personales) |
 
-### Decisión consciente: la función se puede ejecutar con la clave publishable
+### Riesgo cerrado: la función se podía ejecutar con la clave publishable
 
-`crear_inscripcion` tiene `grant execute` para `anon`, así que cualquiera con la clave publishable puede llamarla directamente, sin pasar por el formulario. Esa clave es pública: viaja al navegador.
+**Hasta el E6**, `crear_inscripcion` tenía `grant execute` para `anon` y `authenticated`. Cualquiera con la clave publishable, que es pública porque viaja al navegador, podía llamarla directo por la API de Supabase, sin pasar por el formulario ni por la API. Era una decisión consciente del E4 y estaba documentada.
 
-- **Riesgo:** alguien podría crear inscripciones falsas y ocupar el cupo de un workshop.
-- **Mitigación hoy:**
-  - Los checks de la tabla validan largo y formato de cada campo.
-  - Una inscripción no puede pedir más de 8 lugares.
-  - Los workshops de ejemplo no aceptan inscripciones.
-  - El cupo es chico y Maggie confirma cada inscripción por WhatsApp con la seña.
-- **Desde el E5:** la admin puede cancelar inscripciones (`PATCH /api/v1/admin/inscripciones/<id>`, y el panel en el próximo PR). `estado = 'cancelada'` libera los lugares.
-- **Desde el E6:**
-  - 5 inscripciones por IP cada 10 minutos (`TODO(Redis)`);
-  - una inscripción sin pago vence a los 30 minutos y deja de ocupar lugar sola, así que el cupo bloqueado con inscripciones falsas se libera solo.
-- **Pendiente:** TODO captcha, si el rate limit no alcanza.
+- **Riesgo:** inscripciones falsas que ocupaban el cupo, sin rate limit y (desde el E6) sin preferencia de pago.
+- **Mitigación en el E4 y el E5:** los checks de la tabla, 8 lugares como máximo, los workshops de ejemplo sin inscripción, y que la admin pueda cancelar.
+
+**Desde la migración 0004 el riesgo está cerrado:**
+- `crear_inscripcion` solo la ejecuta `service_role`;
+- la única puerta es `POST /api/v1/inscripciones`, que valida con zod, aplica el rate limit (5 por IP cada 10 minutos, `TODO(Redis)`) y crea la preferencia de pago;
+- una inscripción sin pago vence a los 30 minutos y libera el cupo sola.
+
+Lo prueba el e2e "con la clave publishable no se puede llamar a crear_inscripcion": responde `42501` y no ocupa lugar.
+
+- **Pendiente:** TODO captcha en el formulario, si el rate limit no alcanza.
 
 ## Caché
 

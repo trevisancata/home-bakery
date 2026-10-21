@@ -123,9 +123,14 @@ El pago de la seña está explicado en [pagos.md](pagos.md). Lo que importa para
 - **Nunca se confía en el aviso:** del body solo se usa el id del pago. El estado, el monto y la referencia salen de la API de MP (`GET /v1/payments/{id}`). Un aviso inventado con una firma válida igual tendría que existir en MP.
 - **Nunca se confía en la vuelta del checkout:** la página de resultado ignora `status`, `payment_id` y el resto de los query params. Lee el estado en la base, del lado del servidor.
 - **El monto lo pone la base:** `crear_inscripcion` calcula la seña y `confirmar_pago` reserva solo si lo que cobró MP es exactamente eso, en ARS. El navegador nunca manda un monto.
-- **`confirmar_pago` solo para `service_role`:** ni la clave publishable ni la sesión de la admin pueden marcar una inscripción como pagada. Por eso el servidor necesita `SUPABASE_SECRET_KEY` desde el E6, y solo la usa para eso, para leer el resultado y para guardar la preferencia.
+- **`confirmar_pago` solo para `service_role`:** ni la clave publishable ni la sesión de la admin pueden marcar una inscripción como pagada. Por eso el servidor necesita `SUPABASE_SECRET_KEY` desde el E6. La usa solo para:
+  - crear la inscripción;
+  - confirmar el pago;
+  - leer el resultado;
+  - guardar la preferencia.
 - **Secretos solo en el servidor:** `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` y `SUPABASE_SECRET_KEY` no llevan `NEXT_PUBLIC_`, se leen solo en módulos `server-only` y nunca se escriben en los logs. Los errores de MP se registran con su status HTTP, no con el cuerpo.
 - **Mock solo en localhost:** `MP_API_BASE_URL` (para los tests) solo acepta `http://localhost` o `127.0.0.1`. Una variable mal cargada no puede mandar el token a otro host.
+- **Inscripciones solo por la API** (migración 0004): `crear_inscripcion` ya no se puede ejecutar con la clave publishable, solo con `service_role`. Antes cualquiera podía llamarla directo por la API de Supabase, saltándose el formulario y el rate limit. Era el riesgo aceptado del E4 ([modelo de datos](modelo-de-datos.md#riesgo-cerrado-la-función-se-podía-ejecutar-con-la-clave-publishable)), y ahora está cerrado. Lo prueba un e2e: el rpc con la clave publishable responde `42501`.
 - **Rate limit de inscripciones:** 5 inscripciones válidas por IP cada 10 minutos (`lib/rate-limit.ts`, en memoria, `TODO(Redis)`), con 429 y `Retry-After`. Frena a quien quiera ocupar el cupo con inscripciones falsas, que igual vencen solas a los 30 minutos.
 - **Datos personales:** `pagos.detalle` guarda solo datos del pago (estado, medio, fechas), nunca los del pagador. La página de resultado no muestra el nombre ni el email: con el id en la URL solo se ve el estado y el monto.
 
