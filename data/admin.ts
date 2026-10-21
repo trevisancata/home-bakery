@@ -67,9 +67,45 @@ export const admin = {
   },
   home: {
     title: "Panel de Home Bakery",
-    // TODO(E5): el panel (productos, workshops e inscripciones) llega en el próximo PR.
-    text: "El panel con productos, workshops e inscripciones llega en el próximo PR. Por ahora, la API de admin ya está disponible en /api/v1/admin.",
+    // TODO: el panel completo (productos, workshops e inscripciones) llega en el próximo PR.
+    text: "El panel completo llega en el próximo PR. Por ahora, acá están las inscripciones con su pago, y la API de admin en /api/v1/admin.",
     signedInAs: (email: string) => `Ingresaste como ${email}.`,
     signOut: "Cerrar sesión",
+  },
+  pagos: {
+    title: "Inscripciones y pagos",
+    caption: "Inscripciones a workshops, de la más nueva a la más vieja, con el pago de la seña.",
+    empty: "Todavía no hay inscripciones.",
+    refundsTitle: "Para devolver",
+    refundsText: "Pagos aprobados que no reservaron lugar. La devolución se hace a mano desde Mercado Pago.",
+    refundsEmpty: "No hay pagos para devolver.",
+    columns: {
+      date: "Fecha",
+      workshop: "Workshop",
+      name: "Nombre",
+      spots: "Lugares",
+      status: "Estado",
+      deposit: "Seña",
+      payment: "Pago",
+      amount: "Monto",
+      mpId: "Id de Mercado Pago",
+      reason: "Motivo",
+    },
+    noPayment: "Sin pago",
+    expired: "vencida",
+    status: { pendiente_sena: "Pendiente de seña", reservada: "Reservada", cancelada: "Cancelada" } as Record<string, string>,
+    paymentStatus: {
+      pending: "Pendiente",
+      in_process: "En proceso",
+      approved: "Aprobado",
+      rejected: "Rechazado",
+      cancelled: "Cancelado",
+      refunded: "Devuelto",
+    } as Record<string, string>,
+    reasons: {
+      sin_cupo: "Llegó sin cupo",
+      monto_distinto: "Monto distinto de la seña",
+      inscripcion_cancelada: "La inscripción estaba cancelada",
+    } as Record<string, string>,
   },
 };
