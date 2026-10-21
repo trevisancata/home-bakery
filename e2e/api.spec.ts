@@ -1,4 +1,14 @@
-import { crearWorkshopDePrueba, borrarWorkshopsDePrueba, expect, hasSupabase, lugaresOcupados, skipReason, test } from "./support/supabase";
+import {
+  borrarWorkshopsDePrueba,
+  crearWorkshopDePrueba,
+  expect,
+  hasSupabase,
+  lugaresOcupados,
+  proximoWorkshopDeEjemplo,
+  skipReason,
+  test,
+  testSlugPrefix,
+} from "./support/supabase";
 
 test.skip(!hasSupabase, skipReason);
 
@@ -38,8 +48,10 @@ test.describe("GET /api/v1/productos", () => {
     const response = await request.get("/api/v1/productos");
     expect(response.status()).toBe(200);
     const { data } = await response.json();
-    expect(data).toHaveLength(70);
-    expect(data.map((product: { slug: string }) => product.slug)).not.toContain("red-velvet");
+    // Sin los productos "e2e-…" que crean en paralelo los tests del panel.
+    const slugs: string[] = data.map((product: { slug: string }) => product.slug).filter((slug: string) => !slug.startsWith(testSlugPrefix));
+    expect(slugs).toHaveLength(70);
+    expect(slugs).not.toContain("red-velvet");
   });
 
   test("filtra por categoría", async ({ request }) => {
@@ -91,7 +103,8 @@ test.describe("GET /api/v1/workshops", () => {
     const found = data.find((item: { slug: string }) => item.slug === workshop.slug);
     expect(found).toMatchObject({ spotsLeft: 6, capacity: 6, isExample: false });
     // Los de ejemplo vienen marcados.
-    expect(data.find((item: { slug: string }) => item.slug === "budines-para-empezar")?.isExample).toBe(true);
+    const ejemplo = await proximoWorkshopDeEjemplo();
+    if (ejemplo) expect(data.find((item: { slug: string }) => item.slug === ejemplo.slug)?.isExample).toBe(true);
   });
 });
 
@@ -130,7 +143,9 @@ test.describe("POST /api/v1/inscripciones", () => {
   });
 
   test("404 si el workshop es de ejemplo", async ({ request }) => {
-    const response = await request.post("/api/v1/inscripciones", { data: inscripcion("budines-para-empezar") });
+    const ejemplo = await proximoWorkshopDeEjemplo();
+    test.skip(!ejemplo, "No quedan workshops de ejemplo por venir.");
+    const response = await request.post("/api/v1/inscripciones", { data: inscripcion(ejemplo!.slug) });
     expect(response.status()).toBe(404);
   });
 

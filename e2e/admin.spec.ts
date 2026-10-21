@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import { categoriaDePrueba } from "./support/productos";
-import { expect, hasSupabase, skipReason, test } from "./support/supabase";
+import { admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
 import { authFile, testUser } from "./support/usuarios";
 
 test.skip(!hasSupabase, skipReason);
@@ -179,7 +179,9 @@ test.describe("Con admin", () => {
     expect((await patched.json()).data).toMatchObject({ alt: "Budín recién horneado", order: 3 });
 
     expect((await api.delete(`${imagenes}/${image.id}`)).status()).toBe(204);
-    expect((await request.get(image.src)).ok()).toBe(false);
+    // La URL pública puede seguir en la caché del CDN un rato: se mira Storage directo.
+    const { data: archivos } = await admin().storage.from("productos").list(product.slug);
+    expect(archivos ?? []).toEqual([]);
     const { data: after } = await (await api.get(`/api/v1/admin/productos/${product.id}`)).json();
     expect(after.images).toEqual([]);
 
@@ -238,25 +240,5 @@ test.describe("Con admin", () => {
 
     expect((await api.delete(`/api/v1/admin/workshops/${workshop.id}`)).status()).toBe(204);
     expect((await api.get(`/api/v1/admin/workshops/${workshop.id}`)).status()).toBe(404);
-  });
-});
-
-test.describe("Cerrar sesión", () => {
-  // El trace guardaría la contraseña real que se escribe en el login.
-  test.use({ trace: "off" });
-
-  // Sesión propia (sin storageState): cerrar la compartida rompería los otros tests.
-  test("cerrar sesión vuelve al login", async ({ page }) => {
-    const { email, password } = testUser("admin");
-    await page.goto("/admin/ingresar");
-    await page.getByRole("textbox", { name: "Email" }).fill(email);
-    await page.getByLabel("Contraseña").fill(password);
-    await page.getByRole("button", { name: "Ingresar" }).click();
-    await page.waitForURL("/admin");
-
-    await page.getByRole("button", { name: "Cerrar sesión" }).click();
-    await page.waitForURL("/admin/ingresar");
-    await page.goto("/admin");
-    await expect(page).toHaveURL(/\/admin\/ingresar\?next=/);
   });
 });

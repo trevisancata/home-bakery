@@ -61,6 +61,24 @@ export async function borrarWorkshopsDePrueba(ids?: string[]) {
   if (workshops.error) throw new Error(`No se pudieron borrar los workshops de prueba: ${workshops.error.message}`);
 }
 
+/**
+ * El próximo workshop de ejemplo (data/workshops.ts) que todavía no empezó.
+ * Las fechas de ejemplo van pasando: los tests no fijan uno por slug.
+ */
+export async function proximoWorkshopDeEjemplo() {
+  const { data, error } = await admin()
+    .from("workshops")
+    .select("slug, nombre")
+    .eq("es_ejemplo", true)
+    .eq("activo", true)
+    .gt("fecha_inicio", new Date().toISOString())
+    .order("fecha_inicio")
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`No se pudieron leer los workshops de ejemplo: ${error.message}`);
+  return data as { slug: string; nombre: string } | null;
+}
+
 /** Cuántos lugares ocupan las inscripciones de un workshop. */
 export async function lugaresOcupados(workshopId: string) {
   const { data, error } = await admin().from("inscripciones").select("cantidad").eq("workshop_id", workshopId);

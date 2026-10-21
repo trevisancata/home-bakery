@@ -1,3 +1,4 @@
+import { rm } from "node:fs/promises";
 import { borrarProductosDePrueba } from "./productos";
 import { borrarWorkshopsDePrueba, hasSupabase } from "./supabase";
 import { borrarUsuariasDePrueba } from "./usuarios";
@@ -11,4 +12,6 @@ export default async function teardown() {
   await borrarWorkshopsDePrueba();
   await borrarProductosDePrueba();
   await borrarUsuariasDePrueba();
+  // Las sesiones guardadas (cookies con tokens) ya no sirven: se borran.
+  await rm("e2e/.auth", { recursive: true, force: true });
 }
