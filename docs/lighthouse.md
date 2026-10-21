@@ -2,7 +2,28 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
-## Última medición
+## Panel de administración (E5)
+
+- **Fecha:** 21/10/2026
+- **Rama:** `feat/e5-auth-admin-api`
+- **Lighthouse:** 12.8.2, Chromium de Playwright (headless), mobile y desktop
+- **Servidor:** build de producción (`npm run build && npm start`)
+
+| Ruta | Accessibility | Best Practices | SEO |
+|---|---|---|---|
+| `/admin/ingresar` (mobile y desktop) | 100 | 100 | 63* |
+| `/admin/recuperar?error=link` (mobile y desktop) | 100 | 100 | 63* |
+| 403 "No tenés permiso" | axe-core: 0 violaciones | — | — |
+
+\* El panel lleva `noindex` a propósito, y la única auditoría de SEO que falla es `is-crawlable`.
+
+La 403 responde con status 403, y Lighthouse no audita páginas con status de error. Se revisó con axe-core 4.10 (el motor de accesibilidad de Lighthouse), con reglas WCAG 2.2 AA y buenas prácticas, en mobile y en desktop, con la sesión de una usuaria temporal sin rol.
+
+Correcciones a partir de la medición:
+- El logo del login pedía la imagen de 80 px y se mostraba a 156 (`image-size-responsive`): `Logo` acepta `sizes`.
+- El panel del logo quedaba fuera de los landmarks (axe: `region`): pasó a `<header>`.
+
+## Sitio público: última medición
 
 - **Fecha:** 05/10/2026
 - **Commit:** `8a46b70` (rama `feat/e4-supabase-catalogo`)

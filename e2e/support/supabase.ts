@@ -16,7 +16,8 @@ export const skipReason = "Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SECRET_KEY
 
 export const testSlugPrefix = "e2e-";
 
-function admin() {
+/** Cliente con la secret key (se saltea RLS). Solo para preparar y limpiar datos. */
+export function admin() {
   if (!url || !secret) throw new Error(skipReason);
   return createClient(url, secret, { auth: { persistSession: false, autoRefreshToken: false } });
 }
@@ -58,6 +59,24 @@ export async function borrarWorkshopsDePrueba(ids?: string[]) {
   if (inscripciones.error) throw new Error(`No se pudieron borrar las inscripciones: ${inscripciones.error.message}`);
   const workshops = await client.from("workshops").delete().in("id", targets).like("slug", `${testSlugPrefix}%`);
   if (workshops.error) throw new Error(`No se pudieron borrar los workshops de prueba: ${workshops.error.message}`);
+}
+
+/**
+ * El próximo workshop de ejemplo (data/workshops.ts) que todavía no empezó.
+ * Las fechas de ejemplo van pasando: los tests no fijan uno por slug.
+ */
+export async function proximoWorkshopDeEjemplo() {
+  const { data, error } = await admin()
+    .from("workshops")
+    .select("slug, nombre")
+    .eq("es_ejemplo", true)
+    .eq("activo", true)
+    .gt("fecha_inicio", new Date().toISOString())
+    .order("fecha_inicio")
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`No se pudieron leer los workshops de ejemplo: ${error.message}`);
+  return data as { slug: string; nombre: string } | null;
 }
 
 /** Cuántos lugares ocupan las inscripciones de un workshop. */

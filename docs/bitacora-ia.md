@@ -224,3 +224,83 @@ Nunca escribir claves en el código, los commits ni los logs.
 - Lighthouse en 100.
 
 Abierto el 05/10, sin mergear.
+
+## 21/10/2026
+
+### PR #12 · E5: auth, roles y API de admin (`feat/e5-auth-admin-api`)
+
+**Objetivo:** la base del panel de Maggie. Login con Supabase Auth, roles (RBAC), protección en capas, API REST versionada con la API de admin y revalidación on-demand. El panel visual va en el próximo PR.
+
+**Prompt resumido** (pedía seguir las clases de Auth y de APIs y leer antes la doc de Next 16 y la de `@supabase/ssr`; mostrar el plan y el SQL antes de escribir código):
+1. Migración `0002_auth_admin.sql`:
+   - Tabla `perfiles` (admin/editor) con RLS.
+   - `es_admin()` security definer.
+   - Políticas de admin en las tablas del catálogo y los workshops (lectura completa y escritura).
+   - En `inscripciones`, select y update del estado, sin delete.
+   - Storage solo para la admin, GRANTs explícitos y el SQL para asignar el rol.
+2. `lib/supabase/server-auth.ts` con `createServerClient` y cookies HttpOnly, Secure y SameSite=Lax, sin tocar el cliente público (ISR).
+3. `proxy.ts` solo para `/admin` y `/api/v1/admin`: renueva la sesión; sin sesión, login o 401 JSON. Volver a verificar con `getClaims()` + `es_admin` en el layout, los handlers y las acciones: sin rol, 403.
+4. Login según el mockup:
+   - Server Action con zod y error genérico.
+   - Estado de carga, autocomplete y foco al error.
+   - Recuperación, contraseña nueva y cerrar sesión.
+   - Rate limit de Supabase documentado más 5 intentos cada 15 minutos por IP en memoria (TODO Redis).
+5. API pública en `/api/v1` con 308 desde las rutas viejas. API de admin: productos (con imágenes de hasta 5 MB en Storage), workshops (409 si tienen inscripciones), inscripciones por workshop y cambio de estado.
+6. Capa de servicio `lib/admin/*` con esquemas zod compartidos (trim, sin HTML, slugs únicos) y wrapper `withApi`: 400 con `fields`, 401, 403, 404, 409 y 500 genérico sin stack trace ni datos personales.
+7. Revalidación on-demand de `/`, `/tienda`, `/tienda/[slug]` y `/workshops`, en lugar de los `TODO(E5)`.
+8. e2e contra Supabase con una admin y una usuaria sin rol creadas con la secret key, todo limpio al final.
+9. `docs/modelo-de-datos.md` con los permisos por rol, `docs/seguridad.md`, README y bitácora. Checklist del E5 en el PR.
+
+Nunca escribir claves ni contraseñas en el código, los commits ni los logs. Commits chicos y lint, build y tests en verde. No mergear.
+
+**Respuestas a las preguntas del plan:**
+
+- **403 de la página:** `forbidden()` de Next con `experimental.authInterrupts`. Devuelve un 403 HTTP real y agrega `noindex`, a cambio de usar un flag experimental.
+- **Link de recuperación:** con `token_hash` y la plantilla propia, para que funcione en cualquier navegador. Esto cambió después (ver abajo).
+- **Checklist del E5:** lo pasó Catalina. Está en el PR, marcado con lo que cubre este PR y lo que queda para el del panel.
+
+**Cambio pedido durante el desarrollo:** en este proyecto las plantillas de mail no se pueden editar sin SMTP propio. Catalina pidió:
+- que `/admin/auth/confirm` acepte también `?code=` (PKCE, la plantilla por defecto);
+- que muestre un mensaje claro si el link venció o se abrió en otro navegador;
+- documentar los límites del SMTP por defecto, la plantilla en español para cuando haya SMTP (Resend) y el reseteo manual desde el dashboard, como `TODO(SMTP)`.
+
+**Ajustes al plan:**
+
+- **Layout del sitio en `app/(sitio)`:** el layout raíz traía el header y el footer públicos, que el panel no tiene que heredar. Las URLs no cambiaron.
+- **Dos funciones SQL que no estaban pedidas:**
+  - `cambiar_estado_inscripcion` bloquea la inscripción y el workshop, así reactivar una cancelada no sobrevende (409).
+  - `reemplazar_tamanos` cambia los tamaños en una sola transacción.
+- **Foto individual en su propia ruta:** el PATCH y el DELETE van en `productos/[id]/imagenes/[imagenId]`, porque sobre la colección no tienen a qué foto apuntar.
+- **Chequeo de `Origin`** en las escrituras de la API de admin, como segunda barrera contra CSRF además de SameSite=Lax.
+- **Revalidación también en `POST /api/v1/inscripciones`:** una inscripción nueva cambia los lugares libres de `/` y `/workshops`.
+
+**Supuestos de Claude Code explicados en el PR:**
+
+- **Campos de la API de admin** en inglés camelCase (`name`, `categoryId`, `sizes`), igual que la API pública.
+- **El slug no cambia** al editar el nombre: los links publicados siguen andando.
+- **Se cuentan solo los intentos fallidos** para el rate limit del login, y uno correcto borra el contador.
+- **Inicio del panel provisorio:** `/admin` muestra un aviso con "Cerrar sesión" hasta el próximo PR.
+
+**Correcciones de Claude Code durante el desarrollo** (no fueron pedidas, salieron de su propia verificación):
+
+- **Migración probada en PGlite** antes de pasarla, con 47 chequeos de RLS para anon, sin rol, editor, admin y service_role. Entre ellos, que la admin no puede editar el nombre de una inscripción ni cambiarse el rol.
+- **Cerrar sesión con `scope: "local"`:** el default cerraba todas las sesiones de la usuaria, en todos los dispositivos.
+- **Trace apagado en los tests que escriben contraseñas reales:** Playwright guarda en el trace lo que se escribe en los inputs. El teardown borra las sesiones guardadas en `e2e/.auth/`.
+- **Tests del E4 que fallaban por fecha:** tres tests fijaban un workshop de ejemplo cuya fecha ya pasó. Ahora buscan el próximo (ver [errores.md](errores.md#tests-atados-a-una-fecha-de-ejemplo-que-ya-pasó)).
+- **Lighthouse y axe en las pantallas nuevas:** el logo se veía borroso en desktop, y el panel del logo pasó a `<header>`.
+
+**Resultado:**
+
+- 56 tests en verde contra Supabase, entre ellos:
+  - redirección sin sesión, login genérico y foco;
+  - 403 sin rol y 401/403 en la API;
+  - CRUD de productos que aparece y desaparece de la API pública;
+  - fotos validadas por contenido;
+  - estados de inscripción con cupo;
+  - 409 al borrar un workshop con inscripciones;
+  - `Origin`, 308 y rate limit.
+- Al final de la corrida quedaron 0 usuarias, productos, workshops, inscripciones y fotos de prueba.
+- Las páginas públicas siguen estáticas con ISR (build).
+- Lighthouse en las pantallas de acceso: 100 en Accessibility y en Best Practices. axe-core: 0 violaciones en la 403.
+
+Abierto el 21/10, sin mergear.

@@ -125,7 +125,7 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
 
     let response: Response;
     try {
-      response = await fetch("/api/inscripciones", {
+      response = await fetch("/api/v1/inscripciones", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),

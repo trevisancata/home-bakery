@@ -1,4 +1,14 @@
-import { crearWorkshopDePrueba, borrarWorkshopsDePrueba, expect, hasSupabase, lugaresOcupados, skipReason, test } from "./support/supabase";
+import {
+  borrarWorkshopsDePrueba,
+  crearWorkshopDePrueba,
+  expect,
+  hasSupabase,
+  lugaresOcupados,
+  proximoWorkshopDeEjemplo,
+  skipReason,
+  test,
+  testSlugPrefix,
+} from "./support/supabase";
 
 test.skip(!hasSupabase, skipReason);
 
@@ -15,9 +25,9 @@ function inscripcion(workshopSlug: string, overrides: Record<string, unknown> = 
   };
 }
 
-test.describe("GET /api/categorias", () => {
+test.describe("GET /api/v1/categorias", () => {
   test("devuelve las categorías activas en orden, con caché", async ({ request }) => {
-    const response = await request.get("/api/categorias");
+    const response = await request.get("/api/v1/categorias");
     expect(response.status()).toBe(200);
     expect(response.headers()["cache-control"]).toContain("s-maxage=300");
     const { data } = await response.json();
@@ -33,23 +43,25 @@ test.describe("GET /api/categorias", () => {
   });
 });
 
-test.describe("GET /api/productos", () => {
+test.describe("GET /api/v1/productos", () => {
   test("devuelve solo los productos activos", async ({ request }) => {
-    const response = await request.get("/api/productos");
+    const response = await request.get("/api/v1/productos");
     expect(response.status()).toBe(200);
     const { data } = await response.json();
-    expect(data).toHaveLength(70);
-    expect(data.map((product: { slug: string }) => product.slug)).not.toContain("red-velvet");
+    // Sin los productos "e2e-…" que crean en paralelo los tests del panel.
+    const slugs: string[] = data.map((product: { slug: string }) => product.slug).filter((slug: string) => !slug.startsWith(testSlugPrefix));
+    expect(slugs).toHaveLength(70);
+    expect(slugs).not.toContain("red-velvet");
   });
 
   test("filtra por categoría", async ({ request }) => {
-    const { data } = await (await request.get("/api/productos?categoria=budines")).json();
+    const { data } = await (await request.get("/api/v1/productos?categoria=budines")).json();
     expect(data.length).toBeGreaterThan(0);
     for (const product of data) expect(product.category.slug).toBe("budines");
   });
 
   test("filtra por destacados", async ({ request }) => {
-    const response = await request.get("/api/productos?destacados=true");
+    const response = await request.get("/api/v1/productos?destacados=true");
     expect(response.status()).toBe(200);
     const { data } = await response.json();
     for (const product of data) expect(product.featured).toBe(true);
@@ -57,7 +69,7 @@ test.describe("GET /api/productos", () => {
 
   for (const query of ["categoria=NO%20VALE", "categoria=inexistente", "destacados=quizas"]) {
     test(`responde 400 con ?${query}`, async ({ request }) => {
-      const response = await request.get(`/api/productos?${query}`);
+      const response = await request.get(`/api/v1/productos?${query}`);
       expect(response.status()).toBe(400);
       expect(response.headers()["cache-control"]).toBe("no-store");
       const body = await response.json();
@@ -67,9 +79,9 @@ test.describe("GET /api/productos", () => {
   }
 });
 
-test.describe("GET /api/productos/[slug]", () => {
+test.describe("GET /api/v1/productos/[slug]", () => {
   test("devuelve un producto activo", async ({ request }) => {
-    const response = await request.get("/api/productos/budin-de-chocolate");
+    const response = await request.get("/api/v1/productos/budin-de-chocolate");
     expect(response.status()).toBe(200);
     const { data } = await response.json();
     expect(data.name).toBe("Budín de chocolate");
@@ -78,37 +90,38 @@ test.describe("GET /api/productos/[slug]", () => {
 
   for (const slug of ["red-velvet", "no-existe"]) {
     test(`responde 404 para ${slug}`, async ({ request }) => {
-      const response = await request.get(`/api/productos/${slug}`);
+      const response = await request.get(`/api/v1/productos/${slug}`);
       expect(response.status()).toBe(404);
       expect((await response.json()).error.message).toBeTruthy();
     });
   }
 });
 
-test.describe("GET /api/workshops", () => {
+test.describe("GET /api/v1/workshops", () => {
   test("incluye los próximos con lugares libres", async ({ request, workshop }) => {
-    const { data } = await (await request.get("/api/workshops")).json();
+    const { data } = await (await request.get("/api/v1/workshops")).json();
     const found = data.find((item: { slug: string }) => item.slug === workshop.slug);
     expect(found).toMatchObject({ spotsLeft: 6, capacity: 6, isExample: false });
     // Los de ejemplo vienen marcados.
-    expect(data.find((item: { slug: string }) => item.slug === "budines-para-empezar")?.isExample).toBe(true);
+    const ejemplo = await proximoWorkshopDeEjemplo();
+    if (ejemplo) expect(data.find((item: { slug: string }) => item.slug === ejemplo.slug)?.isExample).toBe(true);
   });
 });
 
-test.describe("POST /api/inscripciones", () => {
+test.describe("POST /api/v1/inscripciones", () => {
   test("crea la inscripción y descuenta el cupo", async ({ request, workshop }) => {
-    const response = await request.post("/api/inscripciones", { data: inscripcion(workshop.slug, { spots: 2 }) });
+    const response = await request.post("/api/v1/inscripciones", { data: inscripcion(workshop.slug, { spots: 2 }) });
     expect(response.status()).toBe(201);
     const { data } = await response.json();
     expect(data.id).toMatch(/^[0-9a-f-]{36}$/);
     expect(await lugaresOcupados(workshop.id)).toBe(2);
 
-    const { data: workshops } = await (await request.get("/api/workshops")).json();
+    const { data: workshops } = await (await request.get("/api/v1/workshops")).json();
     expect(workshops.find((item: { slug: string }) => item.slug === workshop.slug).spotsLeft).toBe(4);
   });
 
   test("400 si el JSON no es válido", async ({ request }) => {
-    const response = await request.post("/api/inscripciones", {
+    const response = await request.post("/api/v1/inscripciones", {
       headers: { "Content-Type": "application/json" },
       data: "{roto",
     });
@@ -116,7 +129,7 @@ test.describe("POST /api/inscripciones", () => {
   });
 
   test("400 con los errores por campo", async ({ request, workshop }) => {
-    const response = await request.post("/api/inscripciones", {
+    const response = await request.post("/api/v1/inscripciones", {
       data: inscripcion(workshop.slug, { email: "sin-arroba", acceptsPolicy: false }),
     });
     expect(response.status()).toBe(400);
@@ -125,18 +138,20 @@ test.describe("POST /api/inscripciones", () => {
   });
 
   test("404 si el workshop no existe", async ({ request }) => {
-    const response = await request.post("/api/inscripciones", { data: inscripcion("no-existe") });
+    const response = await request.post("/api/v1/inscripciones", { data: inscripcion("no-existe") });
     expect(response.status()).toBe(404);
   });
 
   test("404 si el workshop es de ejemplo", async ({ request }) => {
-    const response = await request.post("/api/inscripciones", { data: inscripcion("budines-para-empezar") });
+    const ejemplo = await proximoWorkshopDeEjemplo();
+    test.skip(!ejemplo, "No quedan workshops de ejemplo por venir.");
+    const response = await request.post("/api/v1/inscripciones", { data: inscripcion(ejemplo!.slug) });
     expect(response.status()).toBe(404);
   });
 
   test("409 con los lugares libres si no alcanza el cupo", async ({ request, workshop }) => {
-    await request.post("/api/inscripciones", { data: inscripcion(workshop.slug, { spots: 5 }) });
-    const response = await request.post("/api/inscripciones", { data: inscripcion(workshop.slug, { spots: 2 }) });
+    await request.post("/api/v1/inscripciones", { data: inscripcion(workshop.slug, { spots: 5 }) });
+    const response = await request.post("/api/v1/inscripciones", { data: inscripcion(workshop.slug, { spots: 2 }) });
     expect(response.status()).toBe(409);
     const { error } = await response.json();
     expect(error.spotsLeft).toBe(1);
@@ -148,7 +163,7 @@ test.describe("POST /api/inscripciones", () => {
     try {
       const responses = await Promise.all(
         Array.from({ length: 10 }, () =>
-          request.post("/api/inscripciones", { data: inscripcion(workshop.slug, { spots: 2 }) }),
+          request.post("/api/v1/inscripciones", { data: inscripcion(workshop.slug, { spots: 2 }) }),
         ),
       );
       const statuses = responses.map((response) => response.status()).sort();
@@ -158,5 +173,22 @@ test.describe("POST /api/inscripciones", () => {
     } finally {
       await borrarWorkshopsDePrueba([workshop.id]);
     }
+  });
+});
+
+test.describe("Rutas viejas de la API", () => {
+  for (const path of ["categorias", "productos?categoria=budines", "productos/budin-de-chocolate", "workshops"]) {
+    test(`/api/${path} redirige con 308 a /api/v1`, async ({ request }) => {
+      const response = await request.get(`/api/${path}`, { maxRedirects: 0 });
+      expect(response.status()).toBe(308);
+      expect(response.headers().location).toBe(`/api/v1/${path}`);
+      expect((await request.get(`/api/${path}`)).status()).toBe(200);
+    });
+  }
+
+  test("POST /api/inscripciones redirige con 308 (conserva el método)", async ({ request }) => {
+    const response = await request.post("/api/inscripciones", { data: inscripcion("no-existe"), maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    expect(response.headers().location).toBe("/api/v1/inscripciones");
   });
 });

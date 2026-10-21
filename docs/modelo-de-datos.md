@@ -1,6 +1,9 @@
 # Modelo de datos
 
-El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en [`supabase/migrations/0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) y se corre una vez en el SQL Editor. Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
+El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en dos migraciones, que se corren una vez y en orden en el SQL Editor:
+
+- [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
+- [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md). Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
 ## Diagrama
 
@@ -11,6 +14,7 @@ erDiagram
   productos ||--o{ producto_imagenes : "tiene"
   workshops ||--o{ workshop_imagenes : "tiene"
   workshops ||--o{ inscripciones : "recibe"
+  auth_users ||--o| perfiles : "tiene rol"
 
   categorias {
     uuid id PK
@@ -80,6 +84,15 @@ erDiagram
     bool portada
     int orden
   }
+  auth_users {
+    uuid id PK "Supabase Auth"
+    text email
+  }
+  perfiles {
+    uuid id PK "= auth.users.id"
+    text nombre
+    text rol "admin · editor"
+  }
   inscripciones {
     uuid id PK
     uuid workshop_id FK
@@ -105,23 +118,47 @@ Todas las tablas tienen `created_at` y `updated_at`; un trigger (`set_updated_at
 
 ## Permisos y RLS
 
-RLS está activado en las siete tablas. Además, la migración revoca todos los privilegios de `anon` y `authenticated` y otorga solo `select` donde corresponde: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven.
+RLS está activado en las ocho tablas. Además, las migraciones revocan todos los privilegios de `anon` y `authenticated` y otorgan solo los que hacen falta: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven o se tocan. Para la admin, las políticas exigen `(select public.es_admin())`.
 
-| Tabla | Política de lectura (anon, authenticated) | Escritura |
+| Tabla | Lectura pública (anon, authenticated) | Admin (`es_admin()`) |
 |---|---|---|
-| `categorias` | Solo las activas (`activo`) | TODO(E5) |
-| `productos` | Activos y de una categoría activa | TODO(E5) |
-| `producto_tamanos` | Los de productos activos | TODO(E5) |
-| `producto_imagenes` | Los de productos activos | TODO(E5) |
-| `workshops` | Solo los activos | TODO(E5) |
-| `workshop_imagenes` | Las de workshops activos | TODO(E5) |
-| `inscripciones` | **Ninguna:** sin permisos ni políticas | Solo con `crear_inscripcion()` |
+| `categorias` | Solo las activas (`activo`) | Lee todas; crea, edita y borra |
+| `productos` | Activos y de una categoría activa | Lee todos (también inactivos); crea, edita y borra |
+| `producto_tamanos` | Los de productos activos | Lee todos; crea, edita y borra |
+| `producto_imagenes` | Los de productos activos | Lee todas; crea, edita y borra |
+| `workshops` | Solo los activos | Lee todos; crea, edita y borra |
+| `workshop_imagenes` | Las de workshops activos | Lee todas; crea, edita y borra |
+| `inscripciones` | **Ninguna:** sin permisos ni políticas | Lee todas y cambia **solo la columna `estado`**. No borra |
+| `perfiles` | Cada usuaria lee **solo su** perfil | Igual: nadie escribe con la clave publishable |
+
+Las políticas permisivas se combinan con OR: la admin ve lo activo por la política pública y lo inactivo por la suya.
+
+### Permisos por rol
+
+| Puede… | Visitante (anon) | Con sesión, sin rol | `editor` | `admin` | `service_role` (secret key) |
+|---|---|---|---|---|---|
+| Ver el catálogo y los workshops activos | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Inscribirse (`crear_inscripcion`) | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Entrar a `/admin` y a `/api/v1/admin` | ✗ (login / 401) | ✗ (403) | ✗ (403) | ✓ | — |
+| Ver lo inactivo | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Crear, editar y borrar productos, categorías y workshops | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Subir y borrar fotos en Storage | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Ver inscripciones (datos personales) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Cambiar el estado de una inscripción | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Borrar inscripciones | ✗ | ✗ | ✗ | ✗ | ✓ |
+| Asignar roles (`perfiles`) | ✗ | ✗ | ✗ | ✗ | ✓ (o SQL en el dashboard) |
+
+`editor` está reservado: hoy tiene los mismos permisos que una cuenta sin rol. `service_role` se saltea RLS; solo lo usan el seed y los tests, nunca la web.
+
+### Funciones y vistas
 
 - **`workshops_publicos`** es una vista con `security_invoker = true`: corre con los permisos de quien consulta, así que respeta el RLS de `workshops` (solo activos). Además filtra los que ya empezaron y calcula `lugares_libres`.
 - **`lugares_ocupados(workshop_id)`** es `security definer`: anon no puede leer `inscripciones`, así que la vista no podría sumar los lugares ocupados. La función solo devuelve el total de lugares, nunca datos de las personas.
-- **`service_role` (la secret key)** se saltea RLS y la usan el seed y los tests. El proyecto tiene desactivado "Automatically expose new tables", así que la migración le otorga permisos explícitos (`grant all on all tables…`, `grant execute on all functions…`) y los mismos por defecto (`alter default privileges`) para lo que se cree después.
-- **Storage:** los buckets `productos` y `workshops` son públicos, así que las fotos se sirven por URL sin pasar por RLS. No hay políticas de subida: solo la secret key puede subir. TODO(E5): políticas de subida para la admin.
-- **Escritura desde el panel:** TODO(E5). La admin va a escribir con su sesión (`authenticated` con rol admin) y políticas específicas.
+- **`es_admin()`** (0002) es `security definer`, `stable`, con `search_path = ''`. Lee `perfiles` y devuelve si la usuaria actual (`auth.uid()`) es admin. Solo la puede ejecutar `authenticated`.
+- **`cambiar_estado_inscripcion(id, estado)`** (0002) es `security invoker`: corre con el RLS de la admin. Bloquea la inscripción y el workshop (como `crear_inscripcion`) y, si una cancelada vuelve a estar activa y ya no hay lugar, falla con `HB409`. Así el panel no puede sobrevender.
+- **`reemplazar_tamanos(producto_id, tamanos)`** (0002) es `security invoker`. Borra los tamaños de un producto e inserta los nuevos en una sola transacción: si algo falla, quedan los de antes.
+- **`service_role` (la secret key)** se saltea RLS y la usan el seed y los tests. El proyecto tiene desactivado "Automatically expose new tables", así que la migración 0001 le otorga permisos explícitos (`grant all on all tables…`, `grant execute on all functions…`) y los mismos por defecto (`alter default privileges`), que cubren lo que crea la 0002.
+- **Storage:** los buckets `productos` y `workshops` son públicos, así que las fotos se sirven por URL sin pasar por RLS. Subir, reemplazar y borrar en esos buckets pide `es_admin()` (políticas sobre `storage.objects`).
 
 ## Por qué la inscripción va por una función
 
@@ -150,7 +187,7 @@ El test `no sobrevende con inscripciones simultáneas` (`e2e/api.spec.ts`) manda
 
 La función es `security definer` (corre con los permisos de su dueño) para poder insertar en `inscripciones`, que anon no puede tocar. Lleva `set search_path = ''` y nombra todo con su schema (`public.workshops`), para que nadie pueda colar una tabla o función con el mismo nombre en otro schema.
 
-**Errores y cómo los traduce la API (`POST /api/inscripciones`):**
+**Errores y cómo los traduce la API (`POST /api/v1/inscripciones`):**
 
 | Código | Cuándo | Respuesta |
 |---|---|---|
@@ -169,8 +206,17 @@ La función es `security definer` (corre con los permisos de su dueño) para pod
   - Una inscripción no puede pedir más de 8 lugares.
   - Los workshops de ejemplo no aceptan inscripciones.
   - El cupo es chico y Maggie confirma cada inscripción por WhatsApp con la seña.
-- **Pendiente para el E5:** rate limit o captcha en el formulario, y que Maggie pueda cancelar inscripciones desde el panel (`estado = 'cancelada'` libera los lugares).
+- **Desde el E5:** la admin puede cancelar inscripciones (`PATCH /api/v1/admin/inscripciones/<id>`, y el panel en el próximo PR). `estado = 'cancelada'` libera los lugares.
+- **Pendiente:** TODO rate limit o captcha en el formulario de inscripción. El E5 suma un rate limit solo en el login del panel.
 
 ## Caché
 
-Las páginas públicas (`/`, `/tienda`, `/tienda/[slug]` y `/workshops`) se regeneran cada 5 minutos (`export const revalidate = 300`). La inscripción lee los lugares libres en cada request. La API responde con `Cache-Control: public, s-maxage=300, stale-while-revalidate=600`; los errores llevan `no-store`. TODO(E5): revalidación on-demand cuando Maggie edite desde el panel.
+Las páginas públicas (`/`, `/tienda`, `/tienda/[slug]` y `/workshops`) son estáticas con ISR, y se regeneran de dos formas:
+
+- **On-demand:** cada cambio desde el panel llama a `revalidatePath` (`lib/admin/revalidar.ts`):
+  - un producto revalida `/`, `/tienda` y `/tienda/<slug>`;
+  - un workshop o el estado de una inscripción revalida `/` y `/workshops`;
+  - una inscripción nueva desde el sitio también revalida `/` y `/workshops`, porque cambian los lugares libres.
+- **Cada 5 minutos** (`export const revalidate = 300`): queda como red de seguridad para lo que cambia solo, como la temporada (depende del mes) o los workshops que ya empezaron.
+
+La inscripción lee los lugares libres en cada request. La API pública responde con `Cache-Control: public, s-maxage=300, stale-while-revalidate=600`. La de admin y los errores llevan `no-store`.

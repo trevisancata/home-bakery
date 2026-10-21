@@ -1,4 +1,4 @@
-import { expect, hasSupabase, skipReason, test } from "./support/supabase";
+import { expect, hasSupabase, proximoWorkshopDeEjemplo, skipReason, test } from "./support/supabase";
 
 test.skip(!hasSupabase, skipReason);
 
@@ -68,12 +68,14 @@ test.describe("Inscripción a un workshop", () => {
   });
 
   test("los workshops de ejemplo muestran el aviso y no se pueden reservar", async ({ page }) => {
+    const ejemplo = await proximoWorkshopDeEjemplo();
+    test.skip(!ejemplo, "No quedan workshops de ejemplo por venir.");
     await page.goto("/workshops");
-    const fila = page.getByRole("listitem").filter({ hasText: "Budines para empezar" });
+    const fila = page.getByRole("listitem").filter({ hasText: ejemplo!.nombre });
     await expect(fila.getByText("Fecha de ejemplo: todavía no hay inscripción abierta")).toBeVisible();
     await expect(fila.getByRole("link", { name: /Reservar/ })).toHaveCount(0);
 
-    await page.goto("/workshops/budines-para-empezar/inscripcion");
+    await page.goto(`/workshops/${ejemplo!.slug}/inscripcion`);
     await expect(page.getByText("Fecha de ejemplo: todavía no hay inscripción abierta")).toBeVisible();
     await expect(page.getByRole("button", { name: "Continuar al pago" })).toHaveCount(0);
   });

@@ -1,5 +1,5 @@
 // Esquema de la inscripción a un workshop. Es el mismo en el formulario
-// (validación antes de enviar) y en POST /api/inscripciones (revalidación).
+// (validación antes de enviar) y en POST /api/v1/inscripciones (revalidación).
 
 import { z } from "zod";
 

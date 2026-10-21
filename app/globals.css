@@ -62,6 +62,8 @@
 
   /* Errores de formulario: 6.9:1 sobre hueso y 7.6:1 sobre blanco. */
   --color-error: #9a2c1c;
+  /* Fondo del aviso de error del login (mockup): error encima da 6.18:1. */
+  --color-error-fondo: #f6e3e1;
 
   /* Capa oscura sobre las fotos y videos de portada (rgba(36,28,22) del mockup). */
   --color-capa: #241c16;
