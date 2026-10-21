@@ -45,3 +45,49 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Solución:** en los PRs #5 y #6 se pidió sacarlos antes de mergear y usar "Precio a confirmar", "A confirmar", la bio de Instagram de Maggie o un link a WhatsApp. En el PR #7, con la regla ya en `AGENTS.md`, Claude Code dejó afuera por su cuenta los textos del mockup que comprometen al negocio. El detalle está en [bitacora-ia.md](bitacora-ia.md#decisión-no-publicar-datos-inventados).
 
 **Para que no se repita:** la regla quedó al principio de `AGENTS.md`, así que Claude Code la lee en cada sesión. Lo que falta está marcado con `TODO` en `data/`.
+
+## 21/10/2026
+
+### Tests atados a una fecha de ejemplo que ya pasó
+
+**PR:** #12 (`feat/e5-auth-admin-api`)
+
+**Qué pasó:** dos tests del E4 buscaban el workshop de ejemplo `budines-para-empezar` por slug. Su fecha (17/10) ya había pasado, así que salió de `/workshops` y los tests fallaron, aunque el código estaba bien. Un tercero ("404 si el workshop es de ejemplo") seguía pasando, pero por la razón equivocada: daba 404 porque ya había empezado, no por ser de ejemplo.
+
+**Solución:** `proximoWorkshopDeEjemplo()` (`e2e/support/supabase.ts`) busca el próximo de ejemplo que todavía no empezó. Si no queda ninguno, esos tests se saltean con el motivo.
+
+**Para que no se repita:** un test no puede depender de una fecha fija de los datos reales. Se crean datos propios (como los workshops `e2e-…`) o se buscan de forma dinámica.
+
+### `getByRole("alert")` encontraba el aviso de Next
+
+**PR:** #12
+
+**Qué pasó:** Next agrega a cada página un `<p role="alert">` vacío (el *route announcer*, que anuncia los cambios de página a los lectores de pantalla). El test del login esperaba el aviso de error con `getByRole("alert")` y encontraba ese, vacío.
+
+**Solución:** los tests buscan el aviso dentro del formulario: `page.locator("form").getByRole("alert")`.
+
+### Lighthouse midió un servidor viejo
+
+**PR:** #12
+
+**Qué pasó:** la primera medición de `/admin/ingresar` dio errores de consola y botones de 18 px de alto. En el puerto quedaba un `next start` anterior, que servía un build ya borrado: el CSS y el JS respondían 500 y la página se veía sin estilos. El servidor nuevo no había podido arrancar porque el puerto estaba ocupado.
+
+**Solución:** liberar el puerto (`lsof -ti tcp:3200 | xargs kill`), volver a levantar el build y medir de nuevo: 100 en Accessibility y en Best Practices.
+
+**Para que no se repita:** antes de medir, confirmar que el puerto está libre y que el servidor que responde es el del último build.
+
+### Cerrar sesión cerraba todas las sesiones
+
+**PR:** #12
+
+**Qué pasó:** `signOut()` de Supabase usa por defecto `scope: "global"`: revoca todas las sesiones de la usuaria, en todos los dispositivos. En los tests, el que prueba "Cerrar sesión" habría cerrado también la sesión compartida que usan los demás tests de la admin. Lo mismo le pasaría a Maggie: cerrar sesión en la compu la sacaría también del celular.
+
+**Solución:** `signOut({ scope: "local" })` cierra solo la sesión de ese navegador. El test usa una sesión propia.
+
+### Las plantillas de mail no se pueden editar sin SMTP propio
+
+**PR:** #12
+
+**Qué pasó:** el plan usaba una plantilla de mail propia con `token_hash` para la recuperación de contraseña. Pero en este proyecto de Supabase las plantillas no se pueden editar sin SMTP propio. Además, el SMTP por defecto solo manda mails a los miembros del equipo del proyecto, y pocos por hora.
+
+**Solución:** a pedido de Catalina, `/admin/auth/confirm` acepta las dos formas de link: `?code=` (PKCE, la plantilla por defecto) y `?token_hash=` (para cuando haya SMTP). Si el link no sirve (venció o se abrió en otro navegador), lo explica y ofrece pedir otro. La configuración de producción quedó como `TODO(SMTP)` en el README, con la plantilla en español. Mientras tanto, si Maggie olvida la contraseña, Catalina se la resetea desde el dashboard.
