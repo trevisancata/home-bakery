@@ -1,14 +1,18 @@
 // Respuestas de la API interna: { data } si salió bien, { error } si no.
+// Errores: 400, 401, 403, 404, 409, 422, 429, 502 y 500 genérico.
 // withApi centraliza el manejo de errores de todos los route handlers, y
 // withAdminApi le suma la verificación de sesión y rol de la API de admin.
 
 import { z } from "zod";
 import {
+  BadGatewayError,
   BadRequestError,
   ConflictError,
   ForbiddenError,
   NotFoundError,
+  TooManyRequestsError,
   UnauthorizedError,
+  UnprocessableError,
 } from "@/lib/admin/errors";
 import { type AuthClient, requireAdmin } from "@/lib/auth";
 
@@ -71,6 +75,16 @@ export function errorResponse(context: string, error: unknown) {
   if (error instanceof NotFoundError) return fail(404, { message: error.message });
   if (error instanceof ConflictError) {
     return fail(409, error.spotsLeft === undefined ? { message: error.message } : { message: error.message, spotsLeft: error.spotsLeft });
+  }
+  if (error instanceof UnprocessableError) return fail(422, { message: error.message });
+  if (error instanceof TooManyRequestsError) {
+    const response = fail(429, { message: error.message });
+    response.headers.set("Retry-After", String(error.retryAfterSeconds));
+    return response;
+  }
+  if (error instanceof BadGatewayError) {
+    console.error(`${context} (servicio externo)`);
+    return fail(502, { message: error.message });
   }
   return serverError(context, error);
 }

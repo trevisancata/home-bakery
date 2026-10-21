@@ -4,6 +4,14 @@ const priceFormatter = new Intl.NumberFormat("es-AR", {
   maximumFractionDigits: 0,
 });
 
+// Con centavos (una seña puede tenerlos): siempre dos decimales.
+const centsFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   weekday: "long",
   day: "numeric",
@@ -37,8 +45,9 @@ const timeFormatter = new Intl.DateTimeFormat("es-AR", {
   timeZone: "America/Argentina/Buenos_Aires",
 });
 
+/** Ej.: "$ 30.000" o, si tiene centavos, "$ 16.666,67". */
 export function formatPrice(value: number) {
-  return priceFormatter.format(value);
+  return Number.isInteger(value) ? priceFormatter.format(value) : centsFormatter.format(value);
 }
 
 /** Ej.: "sábado, 17 de octubre, 10:00". */
