@@ -1,11 +1,12 @@
 # Modelo de datos
 
-El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en cuatro migraciones, que se corren una vez y en orden en el SQL Editor:
+El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en cinco migraciones, que se corren una vez y en orden en el SQL Editor:
 
 - [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
 - [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md).
 - [`0003_pagos.sql`](../supabase/migrations/0003_pagos.sql) (E6): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`. El flujo completo está en [`docs/pagos.md`](pagos.md).
 - [`0004_inscripcion_solo_servidor.sql`](../supabase/migrations/0004_inscripcion_solo_servidor.sql) (E6): `crear_inscripcion` pasa a ejecutarse solo con `service_role`, desde la API.
+- [`0005_devoluciones.sql`](../supabase/migrations/0005_devoluciones.sql) (panel del E5): `devuelto_at` y `devuelto_por` en `pagos`, `marcar_devuelto` (solo la admin) y `confirmar_pago` sin volver a marcar un pago ya devuelto.
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -151,7 +152,7 @@ RLS está activado en las nueve tablas. Además, las migraciones revocan todos l
 | `workshop_imagenes` | Las de workshops activos | Lee todas; crea, edita y borra |
 | `inscripciones` | **Ninguna:** sin permisos ni políticas | Lee todas y cambia **solo la columna `estado`**. No borra |
 | `perfiles` | Cada usuaria lee **solo su** perfil | Igual: nadie escribe con la clave publishable |
-| `pagos` | **Ninguna** | Lee todos. Nadie escribe con la clave publishable ni con la sesión: solo `confirmar_pago` (service_role) |
+| `pagos` | **Ninguna** | Lee todos. No escribe directamente: solo puede marcar una devolución con `marcar_devuelto`. El resto lo escribe `confirmar_pago` (service_role) |
 
 Las políticas permisivas se combinan con OR: la admin ve lo activo por la política pública y lo inactivo por la suya.
 
@@ -169,6 +170,7 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 | Ver inscripciones (datos personales) | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Ver los pagos | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Registrar un pago y reservar (`confirmar_pago`) | ✗ | ✗ | ✗ | ✗ | ✓ (webhook y conciliación) |
+| Marcar un pago como devuelto (`marcar_devuelto`) | ✗ | ✗ | ✗ | ✓ | — |
 | Cambiar el estado de una inscripción | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Borrar inscripciones | ✗ | ✗ | ✗ | ✗ | ✓ |
 | Asignar roles (`perfiles`) | ✗ | ✗ | ✗ | ✗ | ✓ (o SQL en el dashboard) |
