@@ -119,7 +119,7 @@ El pago de la seña está explicado en [pagos.md](pagos.md). Lo que importa para
 - **Webhook firmado:** `POST /api/v1/webhooks/mercadopago` valida `x-signature` antes de hacer nada (`lib/pagos/firma.ts`).
   - El HMAC-SHA256 del manifest `id:<data.id>;request-id:<x-request-id>;ts:<ts>;` lo calcula el validador del SDK oficial, con `MP_WEBHOOK_SECRET` como clave, y lo compara en **tiempo constante**: el tiempo de respuesta no revela cuántos caracteres coinciden.
   - El `ts` puede estar a lo sumo **5 minutos** del reloj del servidor. Así no sirve reenviar un aviso viejo capturado.
-  - Si la firma es inválida, faltan headers o el `ts` está fuera de rango: **401**. Al log va solo el motivo, nunca la firma ni el secret.
+  - Si la firma es inválida, faltan headers o el `ts` está fuera de rango: **401**. Al log va solo el motivo y el `x-request-id`, nunca la firma ni el secret.
 - **Nunca se confía en el aviso:** del body solo se usa el id del pago. El estado, el monto y la referencia salen de la API de MP (`GET /v1/payments/{id}`). Un aviso inventado con una firma válida igual tendría que existir en MP.
 - **Nunca se confía en la vuelta del checkout:** la página de resultado ignora `status`, `payment_id` y el resto de los query params. Lee el estado en la base, del lado del servidor.
 - **El monto lo pone la base:** `crear_inscripcion` calcula la seña y `confirmar_pago` reserva solo si lo que cobró MP es exactamente eso, en ARS. El navegador nunca manda un monto.
