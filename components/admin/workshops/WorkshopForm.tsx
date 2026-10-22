@@ -298,7 +298,8 @@ export function WorkshopForm({ workshop, creado }: { workshop: AdminWorkshop | n
               </button>
               <button
                 type="button"
-                autoFocus
+                data-autofocus
+               
                 onClick={() => {
                   setDialogo(false);
                   startTransition(async () => {

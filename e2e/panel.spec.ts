@@ -98,10 +98,10 @@ test.describe("Productos", () => {
     // Una foto grande (3000 × 2000): el navegador la achica y el servidor la pasa a webp de 1600 px.
     const foto = await sharp({ create: { width: 3000, height: 2000, channels: 3, background: "#a88b6c" } }).jpeg().toBuffer();
     await page.locator('input[type="file"]').setInputFiles({ name: "torta.jpg", mimeType: "image/jpeg", buffer: foto });
-    await page.getByRole("button", { name: "Subir" }).click();
+    await page.getByRole("button", { name: "Subir la foto", exact: true }).click();
     await expect(page.getByRole("textbox", { name: "Descripción de la foto" })).toBeFocused();
     await page.getByRole("textbox", { name: "Descripción de la foto" }).fill("Budín de prueba entero, visto de arriba");
-    await page.getByRole("button", { name: "Subir" }).click();
+    await page.getByRole("button", { name: "Subir la foto", exact: true }).click();
     await expect(page.getByRole("img", { name: "Budín de prueba entero, visto de arriba" })).toBeVisible();
 
     const { data } = await (await page.request.get(`/api/v1/admin/productos/${id}`)).json();

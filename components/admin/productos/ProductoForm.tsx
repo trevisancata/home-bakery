@@ -432,7 +432,8 @@ export function ProductoForm({
               </button>
               <button
                 type="button"
-                autoFocus
+                data-autofocus
+               
                 onClick={() => {
                   setBorrarAbierto(false);
                   startTransition(async () => {

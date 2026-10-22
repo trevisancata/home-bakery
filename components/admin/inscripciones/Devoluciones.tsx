@@ -103,7 +103,7 @@ export function Devoluciones({ iniciales }: { iniciales: Devolucion[] }) {
         onClose={() => setAMarcar(null)}
         actions={
           <>
-            <button type="button" autoFocus onClick={() => setAMarcar(null)} className="min-h-12 rounded-full border-trazo border-carbon px-5 font-semibold">
+            <button type="button" data-autofocus onClick={() => setAMarcar(null)} className="min-h-12 rounded-full border-trazo border-carbon px-5 font-semibold">
               {content.refundDialog.cancel}
             </button>
             <button type="button" onClick={confirmar} className="min-h-12 rounded-full bg-chocolate px-5 font-semibold text-hueso">

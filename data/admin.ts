@@ -271,7 +271,7 @@ export const admin = {
     alt: "Descripción de la foto",
     altHint: "Contá qué se ve, para quien no puede verla. Ej.: torta red velvet cortada, con relleno de queso crema.",
     flavor: "Sabor (opcional)",
-    upload: "Subir",
+    upload: "Subir la foto",
     uploading: "Subiendo…",
     preparing: "Preparando la foto…",
     uploaded: "Foto subida.",

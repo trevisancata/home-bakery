@@ -344,7 +344,7 @@ export function Fotos({
         onClose={() => setABorrar(null)}
         actions={
           <>
-            <button type="button" autoFocus onClick={() => setABorrar(null)} className="min-h-12 rounded-full border-trazo border-carbon px-5 font-semibold">
+            <button type="button" data-autofocus onClick={() => setABorrar(null)} className="min-h-12 rounded-full border-trazo border-carbon px-5 font-semibold">
               {content.removeDialog.cancel}
             </button>
             <button type="button" onClick={confirmarBorrado} className="min-h-12 rounded-full bg-error px-5 font-semibold text-white">

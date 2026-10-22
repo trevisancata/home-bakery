@@ -5,7 +5,9 @@ import { type ReactNode, useEffect, useId, useRef } from "react";
 /**
  * Diálogo de confirmación con <dialog> nativo y showModal(): el navegador
  * atrapa el foco adentro, Esc lo cierra y, al cerrarse, el foco vuelve al
- * botón que lo abrió. El foco arranca en la opción segura (cancelar).
+ * botón que lo abrió. El foco arranca en el botón con data-autofocus (la
+ * opción segura): React no pone el atributo autofocus en el HTML, así que
+ * showModal() no lo vería.
  */
 export function ConfirmDialog({
   open,
@@ -18,7 +20,7 @@ export function ConfirmDialog({
   title: string;
   children: ReactNode;
   onClose: () => void;
-  /** Botones; el primero con autoFocus recibe el foco. */
+  /** Botones; el que tenga data-autofocus recibe el foco al abrir. */
   actions: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -32,6 +34,7 @@ export function ConfirmDialog({
     if (open && !dialog.open) {
       retorno.current = document.activeElement as HTMLElement | null;
       dialog.showModal();
+      dialog.querySelector<HTMLElement>("[data-autofocus]")?.focus();
     } else if (!open && dialog.open) {
       dialog.close();
     }
