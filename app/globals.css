@@ -64,6 +64,9 @@
   --color-error: #9a2c1c;
   /* Fondo del aviso de error del login (mockup): error encima da 6.18:1. */
   --color-error-fondo: #f6e3e1;
+  /* Avisos de éxito del panel (mockup): exito sobre exito-fondo da 8.25:1. */
+  --color-exito: #1f4d2a;
+  --color-exito-fondo: #e4efe3;
 
   /* Capa oscura sobre las fotos y videos de portada (rgba(36,28,22) del mockup). */
   --color-capa: #241c16;
