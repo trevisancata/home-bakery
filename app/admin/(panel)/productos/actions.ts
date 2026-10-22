@@ -55,7 +55,7 @@ async function guardarProductoAccion(id: string | null, datos: unknown) {
  * Crear o editar desde el editor (useActionState). Al crear, pasa a la
  * página del producto para poder sumarle fotos.
  */
-export async function guardarProducto(_prev: GuardarProductoEstado, payload: { id: string | null; datos: unknown }) {
+export async function guardarProducto(_prev: GuardarProductoEstado, payload: { id: string | null; datos: unknown }): Promise<GuardarProductoEstado> {
   const resultado = await guardarProductoAccion(payload.id, payload.datos);
   if (resultado.ok && !payload.id) redirect(`/admin/productos/${resultado.data.id}?creado=1`);
   return resultado;

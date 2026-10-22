@@ -10,6 +10,10 @@
 import { z } from "zod";
 import { NotFoundError } from "@/lib/admin/errors";
 
+// Mensajes por defecto de zod en español, para cualquier campo que no
+// tenga uno propio (los del panel tienen uno propio, más claro).
+z.config(z.locales.es());
+
 // Caracteres de control, salvo salto de línea y tabulación.
 const controlChars = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const htmlTag = /<\s*\/?\s*[a-z!?][^>]*>/i;
@@ -35,14 +39,22 @@ export const textoOpcional = (max: number) =>
     .preprocess((value) => (typeof value === "string" && value.trim() === "" ? null : value), texto(max).nullable())
     .optional();
 
-const mes = z.number({ error: "Tiene que ser un mes (1 a 12)." }).int().min(1).max(12);
+const mes = z
+  .number({ error: "Elegí un mes." })
+  .int({ error: "Elegí un mes." })
+  .min(1, { error: "Elegí un mes." })
+  .max(12, { error: "Elegí un mes." });
 const precio = z
   .number({ error: "El precio tiene que ser un número." })
   .min(0, { error: "El precio no puede ser negativo." })
   .max(100_000_000, { error: "El precio es demasiado alto." })
   .multipleOf(0.01, { error: "Usá hasta dos decimales." })
   .nullable();
-const orden = z.number({ error: "El orden tiene que ser un número." }).int().min(0).max(100_000);
+const orden = z
+  .number({ error: "El orden tiene que ser un número." })
+  .int({ error: "El orden tiene que ser un número entero." })
+  .min(0, { error: "El orden no puede ser negativo." })
+  .max(100_000);
 
 /* -------------------------------------------------------------------------- */
 /* Productos                                                                  */
@@ -65,7 +77,12 @@ const productoCampos = {
   /** null = todo el año. */
   season: z.strictObject({ from: mes, to: mes }).nullable().optional(),
   custom: z.boolean().optional(),
-  leadTimeHours: z.number().int().min(0).max(24 * 60).optional(),
+  leadTimeHours: z
+    .number({ error: "Escribí la anticipación en horas." })
+    .int({ error: "Escribí la anticipación en horas enteras." })
+    .min(0, { error: "Escribí la anticipación en horas." })
+    .max(24 * 60, { error: "La anticipación es de hasta 60 días." })
+    .optional(),
   active: z.boolean().optional(),
   featured: z.boolean().optional(),
   order: orden.optional(),
@@ -123,12 +140,32 @@ const workshopCampos = {
   level: z.enum(["Inicial", "Intermedio"], { error: "El nivel es Inicial o Intermedio." }).nullable().optional(),
   includes: textoOpcional(500),
   /** Fecha y hora de inicio, ISO con zona horaria (2026-11-14T15:00:00-03:00). */
-  startsAt: z.iso.datetime({ offset: true, error: "La fecha tiene que ser ISO con zona horaria." }),
-  durationMinutes: z.number().int().min(15).max(24 * 60).optional(),
+  startsAt: z.iso.datetime({ offset: true, error: "Elegí la fecha y la hora." }),
+  durationMinutes: z
+    .number({ error: "Escribí la duración en minutos." })
+    .int({ error: "Escribí la duración en minutos enteros." })
+    .min(15, { error: "La duración es de al menos 15 minutos." })
+    .max(24 * 60, { error: "La duración es de hasta 24 horas." })
+    .optional(),
   price: precio.optional(),
-  depositPercent: z.number().int().min(1).max(100).optional(),
-  capacity: z.number({ error: "El cupo tiene que ser un número." }).int().min(1).max(8, { error: "El cupo es de hasta 8 personas." }).optional(),
-  minimum: z.number().int().min(1).max(8).optional(),
+  depositPercent: z
+    .number({ error: "Escribí el porcentaje de la seña." })
+    .int({ error: "Escribí un porcentaje entero." })
+    .min(1, { error: "La seña es de 1 a 100%." })
+    .max(100, { error: "La seña es de 1 a 100%." })
+    .optional(),
+  capacity: z
+    .number({ error: "El cupo tiene que ser un número." })
+    .int({ error: "El cupo tiene que ser un número entero." })
+    .min(1, { error: "El cupo es de al menos 1 persona." })
+    .max(8, { error: "El cupo es de hasta 8 personas." })
+    .optional(),
+  minimum: z
+    .number({ error: "El mínimo tiene que ser un número." })
+    .int({ error: "El mínimo tiene que ser un número entero." })
+    .min(1, { error: "El mínimo es de al menos 1 persona." })
+    .max(8, { error: "El mínimo es de hasta 8 personas." })
+    .optional(),
   active: z.boolean().optional(),
   featured: z.boolean().optional(),
   isExample: z.boolean().optional(),
