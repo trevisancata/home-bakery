@@ -6,6 +6,7 @@ import { cerrarSesion } from "@/app/admin/actions";
 import { Logo } from "@/components/Logo";
 import { Icono, type NombreIcono } from "@/components/admin/ui/Icono";
 import { admin } from "@/data/admin";
+import { site } from "@/data/site";
 
 const content = admin.panel;
 
@@ -87,7 +88,11 @@ export function PanelNav({ nombre }: { nombre: string }) {
       {/* Mobile: arriba, la cuenta */}
       <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-borde bg-hueso px-2 py-2 lg:hidden">
         <Link href="/admin" className="flex min-h-11 items-center gap-2 rounded-full px-2 no-underline">
-          <Logo alt={admin.brandAlt} className="size-10" imageClassName="w-[70%]" />
+          <span className="flex size-10 items-center justify-center rounded-full bg-taupe">
+            {/* <img> común: el PNG pesa 24 KB y, con sus medidas reales, la relación de aspecto es exacta. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={site.logo.white.src} width={site.logo.white.width} height={site.logo.white.height} alt={admin.brandAlt} className="h-auto w-[70%]" />
+          </span>
           <span className="text-15 font-semibold text-carbon">{content.hello(nombre)}</span>
         </Link>
         <details className="relative">
