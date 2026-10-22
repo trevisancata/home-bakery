@@ -137,7 +137,7 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Solución:**
 - La preferencia **ya no manda `notification_url`**, así MP usa el webhook configurado en el panel, que firma con su clave.
 - `MP_WEBHOOK_SECRET` se usa con `trim()`, por si se pegó con un salto de línea.
-- Cuando la firma falla, el log suma un diagnóstico sin la clave, sin la firma y sin datos personales: `ts`, `x-request-id`, `data.id`, si vino `source_news` y el largo de la clave. Tiene un `TODO` para sacarlo cuando el webhook esté estable.
+- Cuando la firma falla, el log suma un diagnóstico sin la clave, sin la firma y sin datos personales: `ts`, `x-request-id`, `data.id`, si vino `source_news` y el largo de la clave. Se sacó después, cuando el webhook quedó andando (ver [401 del webhook con las credenciales TEST-](#401-del-webhook-con-las-credenciales-test)).
 - Los tests unitarios cubren las tres cosas.
 
 **Para que no se repita:**
@@ -155,3 +155,23 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Solución:** la opción segura lleva `data-autofocus`, y `ConfirmDialog` la enfoca después de `showModal()`. Vale para los cuatro diálogos del panel.
 
 **Para que no se repita:** con `<dialog>` y `showModal()`, no usar `autoFocus` de React: hay que llevar el foco a mano.
+
+### 401 del webhook con las credenciales TEST-
+
+**PR:** `fix/mp-webhook-docs`
+
+**Síntoma:** después del PR #14, el webhook seguía respondiendo **401 SignatureMismatch** a los avisos de los pagos reales del sandbox (pagos con la cuenta compradora de prueba). La clave cargada en `MP_WEBHOOK_SECRET` era la del panel, sin espacios.
+
+**Causa:** se usaban las credenciales de prueba (`TEST-…`). Con ellas, la firma `x-signature` de esos avisos no validaba con la clave secreta del webhook.
+<!-- TODO: confirmar con la documentación de Mercado Pago por qué la firma no valida con las credenciales TEST-. Lo verificado es que con TEST- da 401 y con la configuración de abajo da 200. -->
+
+**Solución:**
+- Se creó la aplicación "Home-Bakery2" **dentro de la cuenta vendedora de prueba**, y se usan **sus credenciales de producción** (`APP_USR-…`) como `MP_ACCESS_TOKEN`.
+- El webhook se configuró en esa aplicación, en **Modo productivo**, solo con el evento **Pagos**, y su clave secreta es `MP_WEBHOOK_SECRET`.
+- Se paga con la cuenta compradora de prueba, en una ventana de incógnito.
+- Verificado: el aviso `payment.created` se entregó con **200** y el pago quedó conciliado.
+- El diagnóstico de la firma que había sumado el PR #14 se sacó: el log de una firma inválida quedó en un `console.warn` con el motivo y el `x-request-id`.
+
+**Para que no se repita:**
+- Los pasos están en [pruebas-mercadopago.md](pruebas-mercadopago.md#configuración-que-funciona), y qué credenciales van en cada etapa, en [pagos.md](pagos.md#qué-credenciales-se-usan-en-cada-etapa).
+- El token y la clave del webhook tienen que ser de la **misma aplicación** y del **mismo modo** (productivo). Al publicar, se cambian los dos juntos por los de la cuenta de Maggie.

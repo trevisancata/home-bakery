@@ -60,6 +60,19 @@ El diagnóstico está en [errores.md](errores.md#401-del-webhook-con-los-pagos-r
 
 **Si cambia el dominio de producción,** hay que actualizar la URL en el panel: ya no sale de `NEXT_PUBLIC_SITE_URL`.
 
+## Qué credenciales se usan en cada etapa
+
+| Etapa | `MP_ACCESS_TOKEN` | Webhook y `MP_WEBHOOK_SECRET` |
+|---|---|---|
+| **Ahora (pruebas)** | Las credenciales **de producción** (`APP_USR-…`) de la aplicación "Home-Bakery2", creada **dentro de la cuenta vendedora de prueba**. No cobran plata real | El webhook de esa aplicación, en **Modo productivo**, solo el evento Pagos, y su clave secreta |
+| **Al publicar** | Las credenciales de producción de la **cuenta real de Maggie**, de una aplicación creada en su cuenta | Un webhook **propio** configurado en esa aplicación, con **su propia clave secreta**. La de la vendedora de prueba deja de servir |
+
+**No se usan las credenciales de prueba (`TEST-…`):** con ellas, la firma de los avisos de los pagos del sandbox no validaba (401 SignatureMismatch). Ver [errores.md](errores.md#401-del-webhook-con-las-credenciales-test).
+
+Al pasar a la cuenta de Maggie hay que cambiar **las dos** variables en Vercel a la vez: un token de una aplicación con la clave del webhook de otra da 401. Los pasos de prueba están en [pruebas-mercadopago.md](pruebas-mercadopago.md#configuración-que-funciona).
+
+TODO: crear la aplicación en la cuenta de Maggie y configurar su webhook antes de publicar.
+
 ## Estados
 
 | Inscripción | Cuándo | Ocupa lugar |
@@ -112,8 +125,8 @@ Los pagos para devolver aparecen en "Para devolver" (en el inicio del panel y en
 
 | Variable | Dónde | Para qué |
 |---|---|---|
-| `MP_ACCESS_TOKEN` | Servidor (Vercel y `.env.local`) | Crear preferencias y consultar pagos. De prueba (`TEST-…`) o de producción (`APP_USR-…`) |
-| `MP_WEBHOOK_SECRET` | Servidor | Validar la firma de los webhooks: la clave del panel (Tus integraciones → Webhooks). Se usa con `trim()` |
+| `MP_ACCESS_TOKEN` | Servidor (Vercel y `.env.local`) | Crear preferencias y consultar pagos. Siempre de producción (`APP_USR-…`): ver [cada etapa](#qué-credenciales-se-usan-en-cada-etapa) |
+| `MP_WEBHOOK_SECRET` | Servidor | Validar la firma de los webhooks: la clave del panel (Tus integraciones → Webhooks → Modo productivo), de la misma aplicación que el token. Se usa con `trim()` |
 | `NEXT_PUBLIC_SITE_URL` | Producción | URL pública para las `back_urls`. Sin ella: `https://$VERCEL_URL` o `http://localhost:3000`. La URL del webhook va en el panel de MP |
 | `SUPABASE_SECRET_KEY` | Servidor | `confirmar_pago` y la página de resultado |
 
