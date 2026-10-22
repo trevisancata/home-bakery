@@ -368,3 +368,58 @@ Abierto el 21/10, sin mergear.
 - **Sin probar todavía con el sandbox real de MP:** faltan las credenciales de prueba. El paso a paso está en `docs/pruebas-mercadopago.md`.
 
 Abierto el 21/10, sin mergear.
+
+## 22/10/2026
+
+### PR #15 · E5: panel de Maggie (`feat/e5-panel-admin`)
+
+**Objetivo:** el panel visual para que Maggie maneje la tienda, los workshops y las inscripciones, fiel a `docs/mockup/admin-*.html` en desktop y mobile. Usa la capa `lib/admin/*` y Server Actions con los mismos esquemas zod.
+
+**Prompt resumido** (pedía leer antes el README del mockup, los mockups del panel y lo que ya había en `app/admin`, y mostrar el plan):
+1. **Layout:**
+   - barra lateral en desktop y menú en mobile, con Productos, Workshops e Inscripciones;
+   - "Pedidos" deshabilitado ("Llega con el carrito"), nombre de la usuaria y Cerrar sesión, y `noindex`;
+   - el inicio resume los próximos workshops, los pendientes de seña y "Para devolver".
+2. **Productos:** buscador y filtros, precio en línea por tamaño (Enter o al salir, con `aria-live`), Pausar/Mostrar con Deshacer de 5 s, estrella de destacado (hasta 4) y "Nuevo producto".
+3. **Editor de producto:** textos, tamaños y precios, fotos (vista previa, webp de 1600 px con sharp, portada, ↑↓, alt obligatorio, borrar con confirmación), visibilidad, anticipación, temporada, sabores y decoraciones, "Ver en la tienda" y borrar con un diálogo que sugiere pausar.
+4. **Workshops:** próximos y pasados, crear y editar (hora de Buenos Aires, cupo de hasta 8, mínimo, fotos, activo, destacado, es_ejemplo) y un aviso si no llega al mínimo de 4.
+5. **Inscripciones:** filtros, estado editable con `cambiar_estado_inscripcion`, pago, WhatsApp de cada persona y "Marcar como devuelto".
+6. **UX:** feedback en cada acción, validación en el cliente y en el servidor con foco al primer error, aviso al salir con cambios, estados vacíos, teclado, 390 px, 44 px y AA.
+7. **Revalidación:** cada guardado revalida las páginas públicas.
+8. **e2e:** precio en línea, pausar, producto con foto, workshop con una inscripta y devolución. Con limpieza, Lighthouse de 95 o más y capturas.
+9. **Docs:** bitácora y `docs/guia-panel.md` para Maggie.
+
+**Respuestas a las preguntas del plan:**
+
+- **Textos en `data/admin.ts`**, la convención del E5 para el panel, y no en `data/site.ts`.
+- **Fotos:** el navegador las achica a 2400 px antes de subirlas, porque Vercel corta los pedidos de más de 4,5 MB, y sharp las pasa a webp de 1600 px en el servidor.
+- **"Marcar como devuelto"** con la migración 0005: `marcar_devuelto` solo para la admin, que guarda cuándo y quién.
+- **Workshops** como el mockup: lista y detalle con las pestañas Inscriptas y Datos, más `/admin/inscripciones` global.
+
+**Ajustes al plan:**
+
+- **`confirmar_pago` recreado en la 0005** con un solo cambio: un aviso repetido de MP no vuelve a marcar "para devolver" un pago ya devuelto. Sin esto, el webhook deshacía lo que marcaba Maggie.
+- **Las fotos de los workshops se ven en la web pública:** `lib/data.ts` las lee y queda resuelto el `TODO(Maggie)` de `toWorkshop`.
+- **Lugares ocupados en el panel** con la misma regla que la base desde la 0003: no cuentan las pendientes vencidas. El aviso de mínimo usa las reservadas.
+- **Mensajes de zod en español** como respaldo (`z.config(z.locales.es())`), y mensajes propios en los campos del panel que no tenían.
+- **Lo que trae el mockup y queda afuera:** "Ajustes", "Escribir a todas", "Descargar lista", "Política de cancelación" (no existe en la base; `TODO(Maggie)`) y arrastrar fotos (se ordenan con ↑↓). El botón flotante de "Nuevo producto" en mobile se reemplazó por el botón del encabezado.
+
+**Correcciones de Claude Code durante el desarrollo** (no fueron pedidas, salieron de su propia verificación):
+
+- **Migración 0005 en PGlite:** se probó antes de pasarla, con 40 chequeos entre los de antes y los nuevos de devoluciones.
+- **El foco de los diálogos caía en "Borrar definitivamente":** `autoFocus` de React no funciona con `showModal()`. Se corrigió con `data-autofocus` (ver [errores.md](errores.md#los-diálogos-enfocaban-borrar-definitivamente)).
+- **"Subir" era ambiguo:** en el editor también existía "Subir tamaño 1", así que el botón pasó a "Subir la foto".
+- **Logo de la barra mobile:** Lighthouse marcaba `image-aspect-ratio` y pasó a un `<img>` con sus medidas reales.
+- **Nada en el render:** el linter no deja actualizar estado dentro de efectos ni llamar a `Date.now()` mientras se renderiza. El resultado del guardado se procesa en la acción de `useActionState` y el "vencida" se calcula en el servidor.
+
+**Resultado:**
+
+- **112 tests en verde** contra Supabase y el mock de MP:
+  - 7 del panel;
+  - 6 unitarios nuevos (fecha de Buenos Aires, número de WhatsApp, precios en formato argentino);
+  - el resto, del E4, el E5 y el E6, ajustados al panel.
+- Al final de la corrida quedaron 0 usuarias, productos, workshops y fotos de prueba. Quedan las 6 inscripciones de las pruebas manuales en sandbox del 21/10.
+- **Lighthouse:** 100 en Accessibility y 100 en Best Practices en las siete pantallas del panel, mobile y desktop.
+- **Error del servidor que no hace fallar los tests:** en la corrida aparece varias veces "The destination stream closed early". Coincide con tests que terminan o navegan mientras una respuesta todavía se está mandando.
+
+Abierto el 22/10, sin mergear.

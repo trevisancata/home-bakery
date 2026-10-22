@@ -2,32 +2,86 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { BadRequestError, fromDbError, NotFoundError } from "@/lib/admin/errors";
-import { obtenerProducto, toAdminImage } from "@/lib/admin/productos";
-import { revalidarProducto } from "@/lib/admin/revalidar";
+import { revalidarProducto, revalidarWorkshops } from "@/lib/admin/revalidar";
 import type { ImagenUpdate } from "@/lib/admin/schemas";
 import type { AuthClient } from "@/lib/auth";
+import { publicUrl } from "@/lib/supabase/storage";
 
-// Fotos de productos en el bucket "productos" (público para leer; subir y
-// borrar, solo la admin por las políticas de storage.objects).
+// Fotos de productos y de workshops, en los buckets "productos" y
+// "workshops" (públicos para leer; subir y borrar, solo la admin por las
+// políticas de storage.objects).
+//
+// Toda foto se guarda como webp de hasta 1600 px de lado: pesa poco, se ve
+// bien en la tienda y no depende de cómo la sacó el celular. El navegador ya
+// la achica antes de subirla (Vercel corta los pedidos de más de 4,5 MB).
 
-/** El mismo límite que el bucket (5 MB). */
-export const maxImageBytes = 5 * 1024 * 1024;
+export type Destino = "productos" | "workshops";
 
-const formats = { webp: "webp", jpeg: "jpg", png: "png" } as const;
-type Format = keyof typeof formats;
+/** Lo que se acepta de entrada (antes de convertir). */
+export const maxImageBytes = 10 * 1024 * 1024;
+/** Lado mayor de la foto guardada. */
+export const maxLado = 1600;
 
-const imagenSelect = "id, ruta, alt, sabor, ancho, alto, portada, orden";
+const config = {
+  productos: { tabla: "producto_imagenes", fk: "producto_id", owner: "productos", select: "id, ruta, alt, sabor, ancho, alto, portada, orden" },
+  workshops: { tabla: "workshop_imagenes", fk: "workshop_id", owner: "workshops", select: "id, ruta, alt, ancho, alto, portada, orden" },
+} as const;
+
 const notFound = "La foto no existe.";
+const formatosEntrada = new Set(["webp", "jpeg", "png"]);
+
+export type AdminImage = {
+  id: string;
+  /** Ruta dentro del bucket. */
+  path: string;
+  src: string;
+  alt: string;
+  flavor: string | null;
+  width: number;
+  height: number;
+  cover: boolean;
+  order: number;
+};
+
+type ImagenRow = {
+  id: string;
+  ruta: string;
+  alt: string;
+  sabor?: string | null;
+  ancho: number;
+  alto: number;
+  portada: boolean;
+  orden: number;
+};
+
+export function toAdminImage(destino: Destino, row: ImagenRow): AdminImage {
+  return {
+    id: row.id,
+    path: row.ruta,
+    src: publicUrl(destino, row.ruta),
+    alt: row.alt,
+    flavor: row.sabor ?? null,
+    width: row.ancho,
+    height: row.alto,
+    cover: row.portada,
+    order: row.orden,
+  };
+}
+
+function revalidar(destino: Destino, slug: string) {
+  if (destino === "productos") revalidarProducto(slug);
+  else revalidarWorkshops();
+}
 
 /**
- * Valida el archivo por su contenido, no por el nombre ni el tipo que manda
- * el navegador (los dos se pueden falsificar): sharp lee el formato real y
- * las medidas.
+ * Valida el archivo por su contenido (no por el nombre ni el tipo que manda
+ * el navegador, que se pueden falsificar) y lo pasa a webp de hasta 1600 px,
+ * enderezado según el EXIF.
  */
-async function leerImagen(file: File) {
+export async function convertirImagen(file: File) {
   if (file.size === 0) throw new BadRequestError("Elegí una foto.", { file: "Elegí una foto." });
   if (file.size > maxImageBytes) {
-    throw new BadRequestError("La foto pesa más de 5 MB.", { file: "La foto pesa más de 5 MB: achicala y probá de nuevo." });
+    throw new BadRequestError("La foto pesa más de 10 MB.", { file: "La foto pesa más de 10 MB: elegí otra." });
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -39,50 +93,64 @@ async function leerImagen(file: File) {
     .catch(() => {
       throw invalid;
     });
-  if (!metadata.format || !(metadata.format in formats) || !metadata.width || !metadata.height) throw invalid;
+  if (!metadata.format || !formatosEntrada.has(metadata.format) || !metadata.width || !metadata.height) throw invalid;
 
-  // Con orientación EXIF 5 a 8 la foto se muestra girada: ancho y alto se invierten.
-  const rotated = (metadata.orientation ?? 1) >= 5;
-  return {
-    buffer,
-    format: metadata.format as Format,
-    width: rotated ? metadata.height : metadata.width,
-    height: rotated ? metadata.width : metadata.height,
-  };
+  const { data, info } = await sharp(buffer)
+    .rotate()
+    .resize(maxLado, maxLado, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toBuffer({ resolveWithObject: true })
+    .catch(() => {
+      throw invalid;
+    });
+  return { buffer: data, width: info.width, height: info.height };
 }
 
-/** Sube una foto al producto. La primera queda como portada. */
+/** Slug y fotos actuales del producto o workshop (404 si no existe). */
+async function dueño(supabase: AuthClient, destino: Destino, ownerId: string) {
+  const c = config[destino];
+  const { data, error } = await supabase.from(c.owner).select("slug").eq("id", ownerId).maybeSingle();
+  if (error) throw fromDbError(error);
+  if (!data) throw new NotFoundError(destino === "productos" ? "El producto no existe." : "El workshop no existe.");
+  const { data: fotos, error: fotosError } = await supabase.from(c.tabla).select("id, orden").eq(c.fk, ownerId);
+  if (fotosError) throw fromDbError(fotosError);
+  return { slug: data.slug as string, fotos: fotos as { id: string; orden: number }[] };
+}
+
+/** Sube una foto (convertida a webp). La primera queda como portada; las demás, al final. */
 export async function subirImagen(
   supabase: AuthClient,
-  productoId: string,
+  destino: Destino,
+  ownerId: string,
   file: File,
   meta: { alt: string; flavor?: string | null },
 ) {
-  const producto = await obtenerProducto(supabase, productoId);
-  const image = await leerImagen(file);
-  const path = `${producto.slug}/${randomUUID()}.${formats[image.format]}`;
+  const c = config[destino];
+  const owner = await dueño(supabase, destino, ownerId);
+  const image = await convertirImagen(file);
+  const path = `${owner.slug}/${randomUUID()}.webp`;
 
-  const bucket = supabase.storage.from("productos");
+  const bucket = supabase.storage.from(destino);
   const { error: uploadError } = await bucket.upload(path, image.buffer, {
-    contentType: `image/${image.format}`,
+    contentType: "image/webp",
     cacheControl: "31536000",
     upsert: false,
   });
   if (uploadError) throw Object.assign(new Error("No se pudo subir la foto"), { code: uploadError.name });
 
   const { data, error } = await supabase
-    .from("producto_imagenes")
+    .from(c.tabla)
     .insert({
-      producto_id: productoId,
+      [c.fk]: ownerId,
       ruta: path,
       alt: meta.alt,
-      sabor: meta.flavor ?? null,
+      ...(destino === "productos" ? { sabor: meta.flavor ?? null } : {}),
       ancho: image.width,
       alto: image.height,
-      portada: producto.images.length === 0,
-      orden: Math.max(-1, ...producto.images.map((img) => img.order)) + 1,
+      portada: owner.fotos.length === 0,
+      orden: Math.max(-1, ...owner.fotos.map((foto) => foto.orden)) + 1,
     })
-    .select(imagenSelect)
+    .select(c.select)
     .single();
   if (error) {
     // Sin fila, el archivo quedaría huérfano en Storage.
@@ -90,74 +158,89 @@ export async function subirImagen(
     throw fromDbError(error);
   }
 
-  revalidarProducto(producto.slug);
-  return toAdminImage(data);
+  revalidar(destino, owner.slug);
+  return toAdminImage(destino, data as unknown as ImagenRow);
 }
 
-async function obtenerImagen(supabase: AuthClient, productoId: string, imagenId: string) {
+async function obtenerImagen(supabase: AuthClient, destino: Destino, ownerId: string, imagenId: string) {
+  const c = config[destino];
   const { data, error } = await supabase
-    .from("producto_imagenes")
-    .select(`${imagenSelect}, producto:productos!inner (slug)`)
+    .from(c.tabla)
+    .select(`${c.select}, owner:${c.owner}!inner (slug)`)
     .eq("id", imagenId)
-    .eq("producto_id", productoId)
+    .eq(c.fk, ownerId)
     .maybeSingle();
   if (error) throw fromDbError(error, notFound);
   if (!data) throw new NotFoundError(notFound);
-  return data as unknown as Parameters<typeof toAdminImage>[0] & { producto: { slug: string } };
+  return data as unknown as ImagenRow & { owner: { slug: string } };
 }
 
 /** Cambia el alt, el sabor, el orden o la portada de una foto. */
-export async function actualizarImagen(supabase: AuthClient, productoId: string, imagenId: string, input: ImagenUpdate) {
-  const actual = await obtenerImagen(supabase, productoId, imagenId);
+export async function actualizarImagen(
+  supabase: AuthClient,
+  destino: Destino,
+  ownerId: string,
+  imagenId: string,
+  input: ImagenUpdate,
+) {
+  const c = config[destino];
+  const actual = await obtenerImagen(supabase, destino, ownerId, imagenId);
 
-  // Hay un índice único de una portada por producto: primero se desmarca la anterior.
+  // Hay un índice único de una portada por dueño: primero se desmarca la anterior.
   if (input.cover && !actual.portada) {
-    const { error } = await supabase
-      .from("producto_imagenes")
-      .update({ portada: false })
-      .eq("producto_id", productoId)
-      .eq("portada", true);
+    const { error } = await supabase.from(c.tabla).update({ portada: false }).eq(c.fk, ownerId).eq("portada", true);
     if (error) throw fromDbError(error);
   }
 
   const row: Record<string, unknown> = {};
   if (input.alt !== undefined) row.alt = input.alt;
-  if (input.flavor !== undefined) row.sabor = input.flavor;
+  if (input.flavor !== undefined && destino === "productos") row.sabor = input.flavor;
   if (input.order !== undefined) row.orden = input.order;
   if (input.cover) row.portada = true;
 
-  const { data, error } = await supabase
-    .from("producto_imagenes")
-    .update(row)
-    .eq("id", imagenId)
-    .select(imagenSelect)
-    .single();
+  const { data, error } = await supabase.from(c.tabla).update(row).eq("id", imagenId).select(c.select).single();
   if (error) throw fromDbError(error, notFound);
 
-  revalidarProducto(actual.producto.slug);
-  return toAdminImage(data);
+  revalidar(destino, actual.owner.slug);
+  return toAdminImage(destino, data as unknown as ImagenRow);
+}
+
+/** Deja las fotos en el orden de `ids` (0, 1, 2…). Los ids tienen que ser todas las fotos del dueño. */
+export async function reordenarImagenes(supabase: AuthClient, destino: Destino, ownerId: string, ids: string[]) {
+  const c = config[destino];
+  const owner = await dueño(supabase, destino, ownerId);
+  const actuales = new Set(owner.fotos.map((foto) => foto.id));
+  if (ids.length !== actuales.size || !ids.every((id) => actuales.has(id))) {
+    throw new BadRequestError("El orden no coincide con las fotos actuales. Recargá la página.");
+  }
+  for (const [orden, id] of ids.entries()) {
+    const { error } = await supabase.from(c.tabla).update({ orden }).eq("id", id).eq(c.fk, ownerId);
+    if (error) throw fromDbError(error);
+  }
+  revalidar(destino, owner.slug);
 }
 
 /** Borra la foto y su archivo. Si era la portada, pasa a serlo la siguiente. */
-export async function borrarImagen(supabase: AuthClient, productoId: string, imagenId: string) {
-  const actual = await obtenerImagen(supabase, productoId, imagenId);
+export async function borrarImagen(supabase: AuthClient, destino: Destino, ownerId: string, imagenId: string) {
+  const c = config[destino];
+  const actual = await obtenerImagen(supabase, destino, ownerId, imagenId);
 
-  const { error } = await supabase.from("producto_imagenes").delete().eq("id", imagenId);
+  const { error } = await supabase.from(c.tabla).delete().eq("id", imagenId);
   if (error) throw fromDbError(error, notFound);
 
-  const { error: storageError } = await supabase.storage.from("productos").remove([actual.ruta]);
+  const { error: storageError } = await supabase.storage.from(destino).remove([actual.ruta]);
   if (storageError) console.error(`No se pudo borrar el archivo de la foto (${storageError.name})`);
 
   if (actual.portada) {
     const { data: siguiente } = await supabase
-      .from("producto_imagenes")
+      .from(c.tabla)
       .select("id")
-      .eq("producto_id", productoId)
+      .eq(c.fk, ownerId)
       .order("orden")
       .limit(1)
       .maybeSingle();
-    if (siguiente) await supabase.from("producto_imagenes").update({ portada: true }).eq("id", siguiente.id);
+    if (siguiente) await supabase.from(c.tabla).update({ portada: true }).eq("id", siguiente.id);
   }
 
-  revalidarProducto(actual.producto.slug);
+  revalidar(destino, actual.owner.slug);
 }

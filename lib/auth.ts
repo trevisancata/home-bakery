@@ -13,7 +13,7 @@ export type AuthClient = Awaited<ReturnType<typeof createAuthClient>>;
 export type AdminSession =
   | { status: "anonima" }
   | { status: "sin-permiso"; userId: string; email: string | null }
-  | { status: "admin"; userId: string; email: string | null; supabase: AuthClient };
+  | { status: "admin"; userId: string; email: string | null; nombre: string; supabase: AuthClient };
 
 /**
  * Quién hace el pedido. getClaims() valida la firma del JWT (no confía en la
@@ -30,7 +30,11 @@ export const getAdminSession = cache(async (): Promise<AdminSession> => {
   const { data: esAdmin, error: rolError } = await supabase.rpc("es_admin");
   if (rolError) throw Object.assign(new Error("No se pudo leer el rol"), { code: rolError.code });
   if (esAdmin !== true) return { status: "sin-permiso", userId, email };
-  return { status: "admin", userId, email, supabase };
+
+  // Para el "Hola, <nombre>" del panel: el de perfiles o, si no hay, el email.
+  const { data: perfil } = await supabase.from("perfiles").select("nombre").eq("id", userId).maybeSingle();
+  const nombre = perfil?.nombre || email?.split("@")[0] || "";
+  return { status: "admin", userId, email, nombre, supabase };
 });
 
 /** Para la API y las Server Actions: lanza 401 o 403. */

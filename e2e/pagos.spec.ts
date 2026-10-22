@@ -333,12 +333,12 @@ test.describe("Panel", () => {
     await cargarPago(request, pagoId, { status: "approved", external_reference: id, transaction_amount: monto + 5 });
     await avisarPago(request, pagoId);
 
-    await page.goto("/admin");
+    await page.goto("/admin/inscripciones");
     const fila = page.getByTestId(`inscripcion-${id}`);
     await expect(fila).toContainText(workshop.name);
-    await expect(fila).toContainText("Pendiente de seña");
+    await expect(fila.getByRole("combobox")).toHaveValue("pendiente_sena");
     await expect(fila).toContainText(pagoId);
     await expect(page.getByRole("heading", { name: "Para devolver" })).toBeVisible();
-    await expect(page.getByRole("row").filter({ hasText: pagoId }).filter({ hasText: "Monto distinto de la seña" })).toBeVisible();
+    await expect(page.getByTestId(`devolucion-${pagoId}`)).toContainText("Monto distinto de la seña");
   });
 });

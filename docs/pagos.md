@@ -86,7 +86,9 @@ Bloquea la inscripción y el workshop (`for update`), registra o actualiza el pa
 | Venció y ya no hay lugar | **Cancelada**; el pago queda **para devolver** (`sin_cupo`) |
 | La inscripción estaba cancelada | Nada; el pago queda **para devolver** (`inscripcion_cancelada`) |
 
-Los pagos para devolver aparecen en `/admin`, en "Para devolver". La devolución se hace a mano desde Mercado Pago.
+Los pagos para devolver aparecen en "Para devolver" (en el inicio del panel y en `/admin/inscripciones`). La devolución se hace a mano desde Mercado Pago y después se marca en el panel con **"Marcar como devuelto"**:
+- `marcar_devuelto(pago_id)` (migración 0005) exige `es_admin()`, apaga `devolucion_pendiente` y guarda `devuelto_at` y `devuelto_por`. La admin sigue sin poder escribir `pagos` directamente: solo puede marcar la devolución.
+- Si después MP repite el aviso de ese pago, `confirmar_pago` (recreada en la 0005) no lo vuelve a marcar "para devolver": un pago con `devuelto_at` queda devuelto.
 
 ### Idempotencia y concurrencia
 

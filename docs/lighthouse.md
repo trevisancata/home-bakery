@@ -2,6 +2,27 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
+## Panel de Maggie (E5)
+
+- **Fecha:** 22/10/2026
+- **Rama:** `feat/e5-panel-admin`
+- **Lighthouse:** 12.8.2, mobile y desktop
+- **Sesión:** usuaria admin temporal, borrada después de medir
+
+| Ruta | Accessibility | Best Practices |
+|---|---|---|
+| `/admin` | 100 | 100 |
+| `/admin/productos` | 100 | 100 |
+| `/admin/productos/[id]` (editor) | 100 | 100 |
+| `/admin/productos/nuevo` | 100 | 100 |
+| `/admin/workshops` | 100 | 100 |
+| `/admin/workshops/[id]` | 100 | 100 |
+| `/admin/inscripciones` | 100 | 100 |
+
+La SEO no se mide porque el panel lleva `noindex` a propósito.
+
+**Corrección a partir de la medición:** en desktop, Best Practices daba 96 por `image-aspect-ratio`. Era el logo de la barra mobile oculta: next/image lo pedía a 96×90, con una relación apenas distinta de la del original. Pasó a un `<img>` común con las medidas reales del PNG (24 KB). El resto se midió antes del cambio, y `/admin/productos`, el editor y `/admin/inscripciones` se volvieron a medir después: 100 y 100.
+
 ## Pago de la seña (E6)
 
 - **Fecha:** 21/10/2026

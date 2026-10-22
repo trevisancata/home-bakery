@@ -143,3 +143,15 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Para que no se repita:**
 - El webhook se configura en un solo lugar, el panel de MP, documentado en [pagos.md](pagos.md#el-webhook-se-configura-en-el-panel-no-en-la-preferencia).
 - Ante un 401, comparar con "Simular notificación": si la simulación da 200, la clave está bien y hay que mirar por dónde llega el aviso.
+
+### Los diálogos enfocaban "Borrar definitivamente"
+
+**PR:** #15 (`feat/e5-panel-admin`)
+
+**Qué pasó:** el e2e de borrar un producto esperaba que, al abrirse el diálogo de confirmación, el foco estuviera en la opción segura ("Pausarlo en su lugar"). Estaba en el primer botón del diálogo. Con el teclado, un Enter de más podía borrar el producto.
+
+**Causa:** el botón tenía `autoFocus`, pero React no pone el atributo `autofocus` en el HTML: lo maneja con JavaScript cuando el elemento se monta. El diálogo está siempre montado y se abre con `showModal()`, que busca el atributo en el HTML, no lo encontraba y enfocaba el primer botón.
+
+**Solución:** la opción segura lleva `data-autofocus`, y `ConfirmDialog` la enfoca después de `showModal()`. Vale para los cuatro diálogos del panel.
+
+**Para que no se repita:** con `<dialog>` y `showModal()`, no usar `autoFocus` de React: hay que llevar el foco a mano.
