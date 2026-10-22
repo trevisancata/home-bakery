@@ -164,7 +164,8 @@ test.describe("Con admin", () => {
     expect(uploaded.status()).toBe(201);
     const { data: image } = await uploaded.json();
     expect(image).toMatchObject({ alt: "Budín de prueba", width: 12, height: 8, cover: true });
-    expect(image.path).toMatch(new RegExp(`^${product.slug}/[0-9a-f-]{36}\\.png$`));
+    // Se guarda como webp (sharp), sin agrandar una foto chica.
+    expect(image.path).toMatch(new RegExp(`^${product.slug}/[0-9a-f-]{36}\\.webp$`));
     expect((await request.get(image.src)).status()).toBe(200);
 
     // Un archivo que dice ser PNG pero no lo es: 400.

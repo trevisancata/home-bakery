@@ -16,7 +16,7 @@ setup("sesión de la admin", async ({ page }) => {
   await page.getByLabel("Contraseña").fill(password);
   await page.getByRole("button", { name: "Ingresar" }).click();
   await page.waitForURL("/admin");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Panel de Home Bakery");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Resumen");
   await page.context().storageState({ path: authFile.admin });
 });
 
