@@ -66,6 +66,7 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
    - [`0002_auth_admin.sql`](supabase/migrations/0002_auth_admin.sql): la tabla `perfiles` (roles), `es_admin()` y los permisos de escritura de la admin (tablas y Storage).
    - [`0003_pagos.sql`](supabase/migrations/0003_pagos.sql): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`.
    - [`0004_inscripcion_solo_servidor.sql`](supabase/migrations/0004_inscripcion_solo_servidor.sql): `crear_inscripcion` solo desde el servidor (`service_role`).
+   - [`0005_devoluciones.sql`](supabase/migrations/0005_devoluciones.sql): marcar como devueltos los pagos que había que devolver.
 3. Copiar `.env.example` a `.env.local` y completarlo con los datos de **Project Settings → API**:
    - `NEXT_PUBLIC_SUPABASE_URL`: la URL del proyecto.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: la clave publishable (`sb_publishable_…`). Es pública y respeta RLS.
@@ -128,7 +129,17 @@ Errores: 400 (con `fields` por campo), 401, 403, 404, 409 y 500 genérico, sin s
 
 ## Panel de administración
 
-El login está en [`/admin/ingresar`](http://localhost:3000/admin/ingresar). La seguridad (sesión, roles, proxy, rate limiting) está explicada en [docs/seguridad.md](docs/seguridad.md). El panel visual llega en el próximo PR. Por ahora hay login, recuperación de contraseña, 403, la API y, en `/admin`, la lista de inscripciones con su pago y los pagos para devolver.
+El login está en [`/admin/ingresar`](http://localhost:3000/admin/ingresar). La seguridad (sesión, roles, proxy, rate limiting) está explicada en [docs/seguridad.md](docs/seguridad.md). Cómo se usa, contado para Maggie, está en [docs/guia-panel.md](docs/guia-panel.md).
+
+| Ruta | Qué hay |
+|---|---|
+| `/admin` | Resumen: próximos workshops con lugares, pendientes de seña y pagos para devolver |
+| `/admin/productos` | Lista con buscador y filtros, precio en línea, pausar con Deshacer y destacados (hasta 4) |
+| `/admin/productos/nuevo` y `/[id]` | Editor: datos, tamaños y precios, fotos (webp de hasta 1600 px), visibilidad, temporada, sabores |
+| `/admin/workshops`, `/nuevo` y `/[id]` | Próximos y pasados; detalle con las pestañas Inscriptas y Datos |
+| `/admin/inscripciones` | Todas, con filtros, estado editable, pago, WhatsApp y "Para devolver" |
+
+Todo usa Server Actions sobre la capa `lib/admin/*`, con los mismos esquemas zod que la API, y cada cambio revalida las páginas públicas.
 
 ### Crear la usuaria admin
 
@@ -227,7 +238,7 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 | `npm start`     | Sirve el build de producción               |
 | `npm run lint`  | Revisa el código con ESLint                |
 | `npm run seed`  | Carga el catálogo y los workshops en Supabase |
-| `npm run test:e2e` | Tests e2e y de la API con Playwright (build de producción). Necesita las cuatro migraciones y `SUPABASE_SECRET_KEY`: crea y borra sus propias usuarias, productos, workshops y pagos de prueba. Mercado Pago es un mock local (`e2e/support/mp-mock.ts`), sin credenciales reales |
+| `npm run test:e2e` | Tests e2e y de la API con Playwright (build de producción). Necesita las cinco migraciones y `SUPABASE_SECRET_KEY`: crea y borra sus propias usuarias, productos, workshops y pagos de prueba. Mercado Pago es un mock local (`e2e/support/mp-mock.ts`), sin credenciales reales |
 | `npm run compare` | Compara el sitio con el mockup              |
 
 Los tests leen y escriben el proyecto de Supabase de `.env.local` sin ensuciar los datos reales: cada test que inscribe crea su propio workshop de prueba (slug `e2e-…`) y lo borra al terminar, con sus inscripciones. Al final de la corrida, un teardown borra cualquier `e2e-…` que haya quedado.

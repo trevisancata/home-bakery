@@ -415,7 +415,7 @@ Abierto el 21/10, sin mergear.
 **Resultado:**
 
 - **112 tests en verde** contra Supabase y el mock de MP:
-  - 9 del panel;
+  - 7 del panel;
   - 6 unitarios nuevos (fecha de Buenos Aires, número de WhatsApp, precios en formato argentino);
   - el resto, del E4, el E5 y el E6, ajustados al panel.
 - Al final de la corrida quedaron 0 usuarias, productos, workshops y fotos de prueba. Quedan las 6 inscripciones de las pruebas manuales en sandbox del 21/10.
