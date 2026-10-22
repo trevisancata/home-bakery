@@ -64,15 +64,20 @@ type Row = {
   }[];
 };
 
-/** Las últimas 200 inscripciones, de la más nueva a la más vieja. */
-export async function listarInscripcionesConPagos(supabase: AuthClient): Promise<InscripcionConPagos[]> {
-  const { data, error } = await supabase
+/** Las últimas 200 inscripciones (o las de un workshop), de la más nueva a la más vieja. */
+export async function listarInscripcionesConPagos(
+  supabase: AuthClient,
+  { workshopId }: { workshopId?: string } = {},
+): Promise<InscripcionConPagos[]> {
+  let query = supabase
     .from("inscripciones")
     .select(
       "id, created_at, nombre, whatsapp, email, experiencia, alergias, como_nos_conocio, cantidad, estado, monto_sena, vence_at, workshop:workshops!inner (id, slug, nombre), pagos (id, mp_payment_id, estado, monto, devolucion_pendiente, motivo_devolucion, devuelto_at, created_at)",
     )
     .order("created_at", { ascending: false })
     .limit(200);
+  if (workshopId) query = query.eq("workshop_id", workshopId);
+  const { data, error } = await query;
   if (error) throw fromDbError(error);
   const ahora = Date.now();
   return (data as unknown as Row[]).map((row) => ({

@@ -363,6 +363,7 @@ export const admin = {
     whatsapp: (nombre: string) => `Escribirle a ${nombre} por WhatsApp`,
     whatsappMessage: (nombre: string, workshop: string) => `¡Hola, ${nombre}! Te escribo por tu inscripción al workshop "${workshop}".`,
     empty: "No hay inscripciones con esos filtros.",
+    count: (n: number) => (n === 1 ? "1 inscripción" : `${n} inscripciones`),
     markRefunded: "Marcar como devuelto",
     markRefundedLabel: (nombre: string) => `Marcar como devuelto el pago de ${nombre}`,
     refundDialog: {
