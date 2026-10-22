@@ -309,6 +309,7 @@ export const admin = {
     back: "Volver a workshops",
     titleNew: "Nuevo workshop",
     created: "Workshop creado. Ahora podés sumarle fotos.",
+    sections: { info: "Datos del workshop", cupo: "Precio y cupo", photos: "Fotos", visibility: "Visibilidad" },
     fields: {
       name: "Nombre",
       summary: "Resumen",
