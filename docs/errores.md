@@ -158,7 +158,7 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 
 ### 401 del webhook con las credenciales TEST-
 
-**PR:** `fix/mp-webhook-docs`
+**PR:** #16 (`fix/mp-webhook-docs`)
 
 **Síntoma:** después del PR #14, el webhook seguía respondiendo **401 SignatureMismatch** a los avisos de los pagos reales del sandbox (pagos con la cuenta compradora de prueba). La clave cargada en `MP_WEBHOOK_SECRET` era la del panel, sin espacios.
 
