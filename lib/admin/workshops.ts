@@ -1,5 +1,6 @@
 import "server-only";
 import { ConflictError, fromDbError, NotFoundError } from "@/lib/admin/errors";
+import { type AdminImage, toAdminImage } from "@/lib/admin/imagenes";
 import { revalidarWorkshops } from "@/lib/admin/revalidar";
 import type { WorkshopCreate, WorkshopUpdate } from "@/lib/admin/schemas";
 import { uniqueSlug } from "@/lib/admin/slug";
@@ -24,10 +25,13 @@ export type AdminWorkshop = {
   active: boolean;
   featured: boolean;
   isExample: boolean;
-  /** Lugares de las inscripciones no canceladas. */
+  /** Lugares ocupados, igual que lugares_ocupados(): reservadas y pendientes que no vencieron. */
   spotsTaken: number;
+  /** Lugares de las inscripciones reservadas (con la seña pagada). */
+  spotsReserved: number;
   /** Cuántas inscripciones tiene (también las canceladas). */
   inscripciones: number;
+  images: AdminImage[];
   createdAt: string;
   updatedAt: string;
 };
@@ -51,21 +55,23 @@ type WorkshopRow = {
   es_ejemplo: boolean;
   created_at: string;
   updated_at: string;
-  inscripciones: { cantidad: number; estado: string }[];
-  workshop_imagenes: { ruta: string }[];
+  inscripciones: { cantidad: number; estado: string; vence_at: string }[];
+  workshop_imagenes: { id: string; ruta: string; alt: string; ancho: number; alto: number; portada: boolean; orden: number }[];
 };
 
 const workshopSelect = `
   id, slug, nombre, resumen, descripcion, nivel, incluye, fecha_inicio, duracion_min,
   precio, sena_porcentaje, cupo, cupo_minimo, activo, destacado, es_ejemplo,
   created_at, updated_at,
-  inscripciones (cantidad, estado),
-  workshop_imagenes (ruta)
+  inscripciones (cantidad, estado, vence_at),
+  workshop_imagenes (id, ruta, alt, ancho, alto, portada, orden)
 `;
 
 const notFound = "El workshop no existe.";
 
-function toAdminWorkshop(row: WorkshopRow): AdminWorkshop {
+const suma = (filas: { cantidad: number }[]) => filas.reduce((total, fila) => total + fila.cantidad, 0);
+
+function toAdminWorkshop(row: WorkshopRow, ahora = Date.now()): AdminWorkshop {
   return {
     id: row.id,
     slug: row.slug,
@@ -83,10 +89,14 @@ function toAdminWorkshop(row: WorkshopRow): AdminWorkshop {
     active: row.activo,
     featured: row.destacado,
     isExample: row.es_ejemplo,
-    spotsTaken: row.inscripciones
-      .filter((inscripcion) => inscripcion.estado !== "cancelada")
-      .reduce((total, inscripcion) => total + inscripcion.cantidad, 0),
+    spotsTaken: suma(
+      row.inscripciones.filter(
+        (i) => i.estado === "reservada" || (i.estado === "pendiente_sena" && new Date(i.vence_at).getTime() > ahora),
+      ),
+    ),
+    spotsReserved: suma(row.inscripciones.filter((i) => i.estado === "reservada")),
     inscripciones: row.inscripciones.length,
+    images: [...row.workshop_imagenes].sort((a, b) => a.orden - b.orden).map((img) => toAdminImage("workshops", img)),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -118,7 +128,7 @@ export async function listarWorkshops(supabase: AuthClient) {
     .select(workshopSelect)
     .order("fecha_inicio", { ascending: false });
   if (error) throw fromDbError(error);
-  return (data as unknown as WorkshopRow[]).map(toAdminWorkshop);
+  return (data as unknown as WorkshopRow[]).map((row) => toAdminWorkshop(row));
 }
 
 async function obtenerRow(supabase: AuthClient, id: string) {

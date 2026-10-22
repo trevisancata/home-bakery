@@ -7,7 +7,7 @@ type Params = { id: string };
 
 /**
  * POST /api/v1/admin/productos/<id>/imagenes (multipart/form-data)
- * Campos: file (webp, jpg o png, hasta 5 MB), alt, flavor (opcional).
+ * Campos: file (webp, jpg o png, hasta 10 MB; se guarda como webp de hasta 1600 px), alt, flavor (opcional).
  * 201 { data: AdminProductImage } · 400 · 404
  */
 export const POST = withAdminApi<Params>("Error al subir la foto", async (request, { params, supabase }) => {
@@ -16,7 +16,7 @@ export const POST = withAdminApi<Params>("Error al subir la foto", async (reques
   // Se corta antes de leer el cuerpo si declara más de lo permitido (+ margen del multipart).
   const length = Number(request.headers.get("content-length") ?? 0);
   if (length > maxImageBytes + 64 * 1024) {
-    throw new BadRequestError("La foto pesa más de 5 MB.", { file: "La foto pesa más de 5 MB: achicala y probá de nuevo." });
+    throw new BadRequestError("La foto pesa más de 10 MB.", { file: "La foto pesa más de 10 MB: elegí otra." });
   }
 
   let form: FormData;
@@ -32,5 +32,5 @@ export const POST = withAdminApi<Params>("Error al subir la foto", async (reques
     alt: form.get("alt") ?? undefined,
     flavor: form.get("flavor") ?? undefined,
   });
-  return ok(await subirImagen(supabase, productoId, file, meta), { status: 201, cache: false });
+  return ok(await subirImagen(supabase, "productos", productoId, file, meta), { status: 201, cache: false });
 });

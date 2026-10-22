@@ -163,7 +163,7 @@ function toProduct(row: ProductoRow): Product {
   };
 }
 
-function toWorkshop(row: WorkshopRow): Workshop {
+function toWorkshop(row: WorkshopRow, images: WorkshopImage[] = []): Workshop {
   return {
     id: row.id,
     slug: row.slug,
@@ -180,8 +180,8 @@ function toWorkshop(row: WorkshopRow): Workshop {
     spotsLeft: row.lugares_libres,
     featured: row.destacado,
     isExample: row.es_ejemplo,
-    // TODO(Maggie): fotos de los workshops (tabla workshop_imagenes).
-    images: [],
+    // Las fotos las carga Maggie desde el panel (tabla workshop_imagenes).
+    images,
   };
 }
 
@@ -243,6 +243,27 @@ export async function getProductCategories() {
 const workshopSelect =
   "id, slug, nombre, resumen, descripcion, nivel, fecha_inicio, duracion_min, precio, sena_porcentaje, cupo, cupo_minimo, destacado, es_ejemplo, lugares_libres";
 
+type WorkshopImagenRow = { workshop_id: string; ruta: string; alt: string; portada: boolean; orden: number };
+
+/** Fotos de los workshops (la portada primero), agrupadas por workshop. RLS deja ver solo las de los activos. */
+async function workshopImages(ids: string[]) {
+  const byWorkshop = new Map<string, WorkshopImage[]>();
+  if (ids.length === 0) return byWorkshop;
+  const { data, error } = await createPublicClient()
+    .from("workshop_imagenes")
+    .select("workshop_id, ruta, alt, portada, orden")
+    .in("workshop_id", ids)
+    .order("portada", { ascending: false })
+    .order("orden");
+  if (error) failed("las fotos de los workshops", error);
+  for (const row of data as WorkshopImagenRow[]) {
+    const list = byWorkshop.get(row.workshop_id) ?? [];
+    list.push({ src: publicUrl("workshops", row.ruta), alt: row.alt });
+    byWorkshop.set(row.workshop_id, list);
+  }
+  return byWorkshop;
+}
+
 /** Workshops activos que todavía no empezaron, del más próximo al más lejano, con los lugares libres. */
 export const getWorkshops = cache(async () => {
   const { data, error } = await createPublicClient()
@@ -250,7 +271,9 @@ export const getWorkshops = cache(async () => {
     .select(workshopSelect)
     .order("fecha_inicio");
   if (error) failed("los workshops", error);
-  return (data as WorkshopRow[]).map(toWorkshop);
+  const rows = data as WorkshopRow[];
+  const images = await workshopImages(rows.map((row) => row.id));
+  return rows.map((row) => toWorkshop(row, images.get(row.id)));
 });
 
 /** Un workshop próximo y activo, o undefined. */
@@ -261,7 +284,10 @@ export const getWorkshop = cache(async (slug: string) => {
     .eq("slug", slug)
     .maybeSingle();
   if (error) failed(`el workshop ${slug}`, error);
-  return data ? toWorkshop(data as WorkshopRow) : undefined;
+  if (!data) return undefined;
+  const row = data as WorkshopRow;
+  const images = await workshopImages([row.id]);
+  return toWorkshop(row, images.get(row.id));
 });
 
 /** El workshop del mes: el destacado o, si no hay, el próximo. */

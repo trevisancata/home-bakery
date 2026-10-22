@@ -1,26 +1,15 @@
 import "server-only";
-import { fromDbError, NotFoundError } from "@/lib/admin/errors";
+import { ConflictError, fromDbError, NotFoundError } from "@/lib/admin/errors";
+import { type AdminImage, toAdminImage } from "@/lib/admin/imagenes";
 import { revalidarProducto } from "@/lib/admin/revalidar";
-import type { ProductoCreate, ProductoUpdate } from "@/lib/admin/schemas";
+import { type ProductoCreate, type ProductoUpdate, tamanoSchema } from "@/lib/admin/schemas";
 import { uniqueSlug } from "@/lib/admin/slug";
 import type { AuthClient } from "@/lib/auth";
-import { publicUrl } from "@/lib/supabase/storage";
 
 // Productos desde el panel. Todas las funciones reciben el cliente con la
 // sesión de la admin: RLS es la última barrera (nunca la secret key).
 
-export type AdminProductImage = {
-  id: string;
-  /** Ruta dentro del bucket "productos". */
-  path: string;
-  src: string;
-  alt: string;
-  flavor: string | null;
-  width: number;
-  height: number;
-  cover: boolean;
-  order: number;
-};
+export type AdminProductImage = AdminImage;
 
 export type AdminProduct = {
   id: string;
@@ -93,19 +82,6 @@ const productoSelect = `
 
 const notFound = "El producto no existe.";
 
-export function toAdminImage(row: ImagenRow): AdminProductImage {
-  return {
-    id: row.id,
-    path: row.ruta,
-    src: publicUrl("productos", row.ruta),
-    alt: row.alt,
-    flavor: row.sabor,
-    width: row.ancho,
-    height: row.alto,
-    cover: row.portada,
-    order: row.orden,
-  };
-}
 
 function toAdminProduct(row: ProductoRow): AdminProduct {
   return {
@@ -132,7 +108,7 @@ function toAdminProduct(row: ProductoRow): AdminProduct {
     sizes: [...row.producto_tamanos]
       .sort((a, b) => a.orden - b.orden)
       .map((size) => ({ id: size.id, label: size.etiqueta, price: size.precio === null ? null : Number(size.precio) })),
-    images: [...row.producto_imagenes].sort((a, b) => a.orden - b.orden).map(toAdminImage),
+    images: [...row.producto_imagenes].sort((a, b) => a.orden - b.orden).map((row) => toAdminImage("productos", row)),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -162,6 +138,21 @@ function toRow(input: ProductoUpdate) {
   return row;
 }
 
+/** Productos destacados a la vez (la sección "Los favoritos de la casa" del inicio). */
+export const maxDestacados = 4;
+
+/** Si el producto quedaría destacado y activo, no puede haber ya otros 4. */
+async function chequearDestacados(supabase: AuthClient, id: string | null, destacado: boolean, activo: boolean) {
+  if (!destacado || !activo) return;
+  let query = supabase.from("productos").select("id", { count: "exact", head: true }).eq("destacado", true).eq("activo", true);
+  if (id) query = query.neq("id", id);
+  const { count, error } = await query;
+  if (error) throw fromDbError(error);
+  if ((count ?? 0) >= maxDestacados) {
+    throw new ConflictError(`Ya hay ${maxDestacados} destacados. Sacá uno antes de sumar otro.`);
+  }
+}
+
 async function reemplazarTamanos(supabase: AuthClient, productoId: string, sizes: NonNullable<ProductoUpdate["sizes"]>) {
   const { error } = await supabase.rpc("reemplazar_tamanos", {
     p_producto_id: productoId,
@@ -189,6 +180,7 @@ export async function obtenerProducto(supabase: AuthClient, id: string) {
 export async function crearProducto(supabase: AuthClient, input: ProductoCreate) {
   const { sizes, ...campos } = input;
   const row = toRow(campos);
+  await chequearDestacados(supabase, null, input.featured ?? false, input.active ?? true);
 
   // Si otra alta tomó el mismo slug entre la consulta y el insert (23505),
   // se reintenta una vez con un slug nuevo.
@@ -220,6 +212,7 @@ export async function actualizarProducto(supabase: AuthClient, id: string, input
   const actual = await obtenerProducto(supabase, id);
   const { sizes, ...campos } = input;
   const row = toRow(campos);
+  await chequearDestacados(supabase, id, input.featured ?? actual.featured, input.active ?? actual.active);
 
   if (Object.keys(row).length > 0) {
     const { error } = await supabase.from("productos").update(row).eq("id", id);
@@ -229,6 +222,25 @@ export async function actualizarProducto(supabase: AuthClient, id: string, input
 
   revalidarProducto(actual.slug);
   return obtenerProducto(supabase, id);
+}
+
+/**
+ * Cambia el precio de un tamaño (edición en línea del panel). null = "Precio
+ * a confirmar". Valida con el mismo esquema que el formulario.
+ */
+export async function actualizarPrecioTamano(supabase: AuthClient, sizeId: string, price: number | null) {
+  const precio = tamanoSchema.shape.price.parse(price);
+  const { data, error } = await supabase
+    .from("producto_tamanos")
+    .update({ precio })
+    .eq("id", sizeId)
+    .select("id, precio, producto:productos!inner (slug)")
+    .maybeSingle();
+  if (error) throw fromDbError(error, "El tamaño no existe.");
+  if (!data) throw new NotFoundError("El tamaño no existe.");
+  const fila = data as unknown as { id: string; precio: number | string | null; producto: { slug: string } };
+  revalidarProducto(fila.producto.slug);
+  return { id: fila.id, price: fila.precio === null ? null : Number(fila.precio) };
 }
 
 /** Borra el producto (tamaños e imágenes en cascada) y sus fotos de Storage. */
