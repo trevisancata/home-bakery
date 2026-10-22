@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   experimental: {
     // forbidden() responde 403 en /admin cuando la cuenta no tiene rol (app/forbidden.tsx).
     authInterrupts: true,
+    // Fotos del panel: el navegador las achica a 2400 px antes de subirlas
+    // (una JPEG así pesa 1-2 MB). Vercel corta igual los pedidos de más de 4,5 MB.
+    serverActions: { bodySizeLimit: "4mb" },
   },
   images: {
     // Fotos del catálogo y de los workshops en Supabase Storage (buckets públicos).

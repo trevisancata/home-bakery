@@ -35,3 +35,23 @@ test.describe("Número de WhatsApp de una inscripta", () => {
     expect(waLink("11 5555-6666", "Hola, Ana")).toBe("https://wa.me/5491155556666?text=Hola%2C%20Ana");
   });
 });
+
+test.describe("Precios escritos como en Argentina", () => {
+  test("entiende puntos de miles y coma decimal", async () => {
+    const { parsePrecio, precioParaInput } = await import("../lib/precio");
+    expect(parsePrecio("12500")).toBe(12500);
+    expect(parsePrecio("12.500")).toBe(12500);
+    expect(parsePrecio("$ 12.500")).toBe(12500);
+    expect(parsePrecio("1.250.000")).toBe(1250000);
+    expect(parsePrecio("12.500,50")).toBe(12500.5);
+    expect(parsePrecio("12500,5")).toBe(12500.5);
+    expect(parsePrecio("99.9")).toBe(99.9);
+    expect(parsePrecio("")).toBeNull();
+    expect(parsePrecio("  ")).toBeNull();
+    expect(Number.isNaN(parsePrecio("doce mil"))).toBe(true);
+    expect(Number.isNaN(parsePrecio("12,345,6"))).toBe(true);
+    expect(precioParaInput(12500)).toBe("12.500");
+    expect(precioParaInput(12500.5)).toBe("12.500,50");
+    expect(precioParaInput(null)).toBe("");
+  });
+});
