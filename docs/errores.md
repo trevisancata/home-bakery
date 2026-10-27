@@ -210,3 +210,15 @@ Revisando los demás, "filtra por destacados" (`e2e/api.spec.ts`) dependía de l
 
 **Para que no se repita:** es la misma regla del 21/10 ([Tests atados a una fecha de ejemplo que ya pasó](#tests-atados-a-una-fecha-de-ejemplo-que-ya-pasó)). Lo que Maggie edita desde el panel (precios, destacados, fotos) no puede ser la base de un test: cada test crea sus propios datos.
 
+
+### Un workshop recién creado no aparecía en /workshops
+
+**PR:** `test/e2e-independientes`
+
+**Qué pasó:** al pasar el test de los workshops de ejemplo a un workshop propio, falló 1 vez de cada 3. El workshop se creaba con la API de admin, que revalida `/workshops`, pero la página mostraba los otros workshops de prueba y no ese.
+
+**Causa:** `/workshops` es estática (ISR) y muchos tests la revalidan en paralelo. Una regeneración que empezó antes del alta puede terminar después y dejar por un momento la versión vieja.
+
+**Solución:** `abrirHastaVer` (`e2e/support/supabase.ts`) recarga la página hasta que se ve lo que creó el test, con un tope de 20 s. La usan los tests de los listados de `/workshops` y `/tienda`. Con 5 repeticiones, 172 de 172.
+
+**Para que no se repita:** en una página con ISR, que el dato esté en la base no garantiza que se vea en la próxima visita. Se espera a que aparezca, no se espera un tiempo fijo.
