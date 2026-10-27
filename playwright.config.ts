@@ -26,7 +26,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? "github" : "list",
+  // En local, además del resumen en la terminal, un reporte html con las
+  // capturas y los traces de las fallas (npm run test:e2e:report).
+  reporter: process.env.CI ? "github" : [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: `http://localhost:${port}`,
     locale: "es-AR",
@@ -34,6 +36,7 @@ export default defineConfig({
     // scroll hasta un elemento; con movimiento reducido el sitio lo desactiva.
     reducedMotion: "reduce",
     trace: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
   projects: [
     // Ingresa con cada usuaria de prueba y guarda la sesión (e2e/.auth/).
