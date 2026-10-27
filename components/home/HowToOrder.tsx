@@ -28,7 +28,7 @@ export function HowToOrder() {
                 {index + 1}
               </span>
               <div className="flex flex-col gap-1 lg:gap-3.5">
-                <h3 className="font-sans text-16 font-bold lg:font-display lg:text-26 lg:font-normal">
+                <h3 className="font-sans text-16 font-semibold lg:font-display lg:text-26 lg:font-normal">
                   <Adaptive full={step.title.full} short={step.title.short} />
                 </h3>
                 <p className="text-15 leading-normal text-secundario lg:text-16 lg:leading-parrafo">

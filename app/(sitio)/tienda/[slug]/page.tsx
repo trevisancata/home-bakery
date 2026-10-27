@@ -129,7 +129,7 @@ export default async function ProductPage({ params }: Props) {
             <dl className="grid gap-x-6 gap-y-3 rounded-card bg-arena p-5 text-15 sm:grid-cols-2 lg:p-6">
               {details.map((detail) => (
                 <div key={detail.term} className="flex flex-col gap-0.5">
-                  <dt className="font-bold">{detail.term}</dt>
+                  <dt className="font-semibold">{detail.term}</dt>
                   <dd>{detail.value}</dd>
                 </div>
               ))}

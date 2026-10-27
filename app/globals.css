@@ -75,11 +75,12 @@
   --color-whatsapp: #25d366;
   --color-whatsapp-oscuro: #0b3b1e;
 
-  --font-display: var(--font-gilda-display), ui-serif, Georgia, serif;
-  --font-script: var(--font-mrs-saint-delafield), cursive;
-  --font-label: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  /* Flechas y otros símbolos que DM Sans no trae: los del sistema, como el mockup. */
+  /* Las familias se cargan en app/layout.tsx; la cursiva se cambia ahí, en una línea. */
+  --font-display: var(--font-gloock), ui-serif, Georgia, serif;
+  --font-script: var(--font-cursiva), cursive;
+  --font-label: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* Flechas y otros símbolos que Poppins no trae: los del sistema, como el mockup. */
   --font-simbolos: system-ui, sans-serif;
 
   /*
@@ -162,11 +163,11 @@
   border-top-width: 1.5px;
 }
 
-/* Palabra manuscrita dentro de un título (Mrs Saint Delafield a 1.75em). */
+/* Palabra manuscrita dentro de un título. El tamaño depende de la cursiva: ver app/layout.tsx. */
 @utility manuscrita {
   padding-inline: 0.08em;
   font-family: var(--font-script);
-  font-size: 1.75em;
+  font-size: var(--tamano-manuscrita, 1.5em);
   font-weight: 400;
   line-height: 0.6;
   letter-spacing: 0;

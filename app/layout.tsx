@@ -1,30 +1,37 @@
 import type { Metadata } from "next";
-import { DM_Sans, Gilda_Display, Mrs_Saint_Delafield, Oswald } from "next/font/google";
+// La cursiva va con alias: para probar otra (p. ej. Dawning_of_a_New_Day)
+// alcanza con cambiar el nombre en esta línea.
+import { Gloock, Poppins, Sacramento as Cursiva } from "next/font/google";
 import { pages, site } from "@/data/site";
 import "./globals.css";
 
-// Gilda Display y Mrs Saint Delafield no son variables: requieren peso.
-const gildaDisplay = Gilda_Display({
-  variable: "--font-gilda-display",
+// Ninguna de las tres es variable: requieren peso.
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+});
+
+const gloock = Gloock({
+  variable: "--font-gloock",
   subsets: ["latin"],
   weight: "400",
 });
 
-const mrsSaintDelafield = Mrs_Saint_Delafield({
-  variable: "--font-mrs-saint-delafield",
+const cursiva = Cursiva({
+  variable: "--font-cursiva",
   subsets: ["latin"],
   weight: "400",
 });
 
-const oswald = Oswald({
-  variable: "--font-oswald",
-  subsets: ["latin"],
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-});
+// Tamaño de la palabra manuscrita (en em del título) para cada cursiva,
+// calibrado contra el mockup aprobado: con el 1.75em de antes, Sacramento
+// queda ~35% más grande. Dawning es más fina y de ascendentes bajos.
+const tamanoManuscrita: Record<string, string> = {
+  Sacramento: "1.4em",
+  "Dawning of a New Day": "1.7em",
+};
+const familiaCursiva = cursiva.style.fontFamily.split(",")[0].replaceAll("'", "");
 
 export const metadata: Metadata = {
   title: {
@@ -45,7 +52,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-AR" className={`${gildaDisplay.variable} ${mrsSaintDelafield.variable} ${oswald.variable} ${dmSans.variable}`}>
+    <html
+      lang="es-AR"
+      className={`${poppins.variable} ${gloock.variable} ${cursiva.variable}`}
+      style={{ "--tamano-manuscrita": tamanoManuscrita[familiaCursiva] } as React.CSSProperties}
+    >
       <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );

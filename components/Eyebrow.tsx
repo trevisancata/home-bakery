@@ -9,7 +9,7 @@ type EyebrowProps = {
   className?: string;
 };
 
-/** Etiqueta corta en mayúsculas que anticipa un título (Oswald, 0.14em). */
+/** Etiqueta corta en mayúsculas que anticipa un título (Poppins, 0.14em). */
 export function Eyebrow({ children, small = false, tone = "chocolate", className = "" }: EyebrowProps) {
   return (
     <p

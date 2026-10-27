@@ -30,7 +30,7 @@ Versión actual: **v6 (04/10/2026)**, con los cambios que pidió Maggie el 01/10
 ## Tokens
 
 - Colores: hueso #F5F4F0 (fondo), carbón #2F2F2F (texto), chocolate #5E4A33 (botones, bandas, footer), taupe #A88B6C (círculo del logo), arena #EAE3D8 (secciones alternas), placeholder #DCD1C3, texto secundario #6B5A50, bordes #E5DDD2, WhatsApp #25D366 con texto #0B3B1E, crema sobre foto #EADFCF.
-- Tipografías: Gilda Display (títulos), Mrs Saint Delafield (una palabra manuscrita por título), Oswald (etiquetas en mayúscula), DM Sans (cuerpo y botones).
+- Tipografías: Gloock (títulos), Sacramento (una palabra manuscrita por título, a 1.4em), Poppins 400 (etiquetas en mayúscula) y Poppins 300/400/500/600 (cuerpo y botones). Reemplazan a las de la v6 (Gilda Display, Mrs Saint Delafield, Oswald y DM Sans); los HTML de este directorio ya usan las nuevas. La cursiva está en comparación con Dawning of a New Day (capturas en `docs/capturas/tipografia-*.png`).
 
 ## Cambios de la v6 (pedidos de Maggie, 01/10)
 
@@ -48,5 +48,5 @@ Versión actual: **v6 (04/10/2026)**, con los cambios que pidió Maggie el 01/10
 - En `inicio-desktop.html` hay una `<section>` vacía entre "Seguí lo que sale del horno" y "Retiros": la sección "Mesas dulces y eventos" se sacó del diseño. No hay que implementarla.
 - Footer del inicio (desktop): logo blanco sin círculo, una columna con título "Inicio" y links a Tienda, Workshops y Maggie (el link "Maggie" va a `/maggie`), columna de Retiros y columna de Contacto. Sin tagline ni línea de copyright.
 - Botón de WhatsApp: círculo de 60 px solo con el ícono, verde #25D366 con ícono #0B3B1E, fijo abajo a la derecha, en desktop y mobile.
-- Menú desplegable mobile: los links usan el estilo de la etiqueta "Foto próximamente" (DM Sans, medium, mayúsculas, `tracking-foto`) en 15 px. Cada link tiene 16 px de padding vertical para llegar a al menos 44 px de alto (WCAG 2.5.8). El link de la página actual va en chocolate; los demás, en carbón. (Ya está así en `inicio-mobile.html` desde la v6.)
+- Menú desplegable mobile: los links usan el estilo de la etiqueta "Foto próximamente" (Poppins, medium, mayúsculas, `tracking-foto`) en 15 px. Cada link tiene 16 px de padding vertical para llegar a al menos 44 px de alto (WCAG 2.5.8). El link de la página actual va en chocolate; los demás, en carbón. (Ya está así en `inicio-mobile.html` desde la v6.)
 - Textos de Maggie: se corrigió solo ortografía (tildes, mayúsculas). No se cambió el contenido. Las frases del inicio son recortes textuales de su presentación.

@@ -44,7 +44,7 @@ export function UpcomingDates({ workshops }: { workshops: Workshop[] }) {
                 </span>
               </p>
               <div className="flex flex-col gap-1">
-                <h3 className={`font-sans text-18 font-bold lg:text-20 ${muted}`}>{workshop.name}</h3>
+                <h3 className={`font-sans text-18 font-semibold lg:text-20 ${muted}`}>{workshop.name}</h3>
                 <p className="text-14 text-secundario">
                   <time dateTime={workshop.startsAt}>{formatDay(workshop.startsAt)}</time> ·{" "}
                   {formatTime(workshop.startsAt)} ·{" "}

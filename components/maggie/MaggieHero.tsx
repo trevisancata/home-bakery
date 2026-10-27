@@ -17,7 +17,7 @@ export function MaggieHero() {
           script={hero.script}
           size="text-44 leading-titulo tracking-titulo lg:text-76 lg:leading-portada xl:text-96"
           // Margen para que el trazo bajo de la manuscrita no pise el texto.
-          className="mb-2 lg:mb-6"
+          className="mb-4 lg:mb-10"
         />
         <p className="font-display text-20 leading-medio lg:text-26">{hero.lead}</p>
       </div>
