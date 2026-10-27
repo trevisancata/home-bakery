@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { eventoIcs } from "../lib/ics";
 import { estadoPago } from "../lib/pagos/estados";
-import { diagnosticoFirma, toleranciaSegundos, validarFirma, webhookSecret } from "../lib/pagos/firma";
+import { toleranciaSegundos, validarFirma, webhookSecret } from "../lib/pagos/firma";
 import { armarPreferencia, statementDescriptor } from "../lib/pagos/preferencia";
 import { vistaResultado } from "../lib/pagos/vista";
 import { createRateLimiter } from "../lib/rate-limit";
@@ -72,17 +72,6 @@ test.describe("Firma del webhook (x-signature)", () => {
     expect(webhookSecret({})).toBe("");
     // Una clave pegada con un salto de línea igual valida la firma.
     expect(validarFirma({ ...valida, secret: webhookSecret({ MP_WEBHOOK_SECRET: `${secret}\r\n` }) })).toEqual({ ok: true });
-  });
-
-  test("el diagnóstico de una firma inválida no incluye la clave ni la firma", () => {
-    const xSignature = firma("123456", "req-1");
-    const texto = diagnosticoFirma({ xSignature, xRequestId: "req-1", dataId: "123456", sourceNews: "webhooks", secret });
-    expect(texto).toBe(`ts=${ts} · x-request-id=req-1 · data.id=123456 · source_news=webhooks · largo de la clave=${secret.length}`);
-    expect(texto).not.toContain(secret);
-    expect(texto).not.toContain(xSignature.split("v1=")[1]);
-    expect(diagnosticoFirma({ xSignature: null, xRequestId: null, dataId: null, sourceNews: null, secret: "" })).toBe(
-      "ts=sin x-signature · x-request-id=sin · data.id=sin · source_news=no · largo de la clave=0",
-    );
   });
 
   test("rechaza un header mal armado", () => {

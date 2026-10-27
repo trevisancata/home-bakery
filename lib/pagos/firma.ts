@@ -53,29 +53,3 @@ export function validarFirma({ xSignature, xRequestId, dataId, secret, now = Dat
 export function webhookSecret(env: { MP_WEBHOOK_SECRET?: string } = { MP_WEBHOOK_SECRET: process.env.MP_WEBHOOK_SECRET }) {
   return (env.MP_WEBHOOK_SECRET ?? "").trim();
 }
-
-export type DiagnosticoFirma = {
-  xSignature: string | null;
-  xRequestId: string | null;
-  dataId: string | null;
-  sourceNews: string | null;
-  secret: string;
-};
-
-/**
- * Datos para entender por qué falló una firma, sin la clave, sin la firma
- * (v1) y sin datos personales: solo ts, x-request-id, data.id (el id del
- * pago), si vino source_news (aviso por notification_url de la preferencia)
- * y el largo de la clave configurada.
- * TODO: sacar este diagnóstico cuando el webhook esté estable en producción.
- */
-export function diagnosticoFirma({ xSignature, xRequestId, dataId, sourceNews, secret }: DiagnosticoFirma) {
-  const ts = xSignature ? (/(?:^|,)\s*ts=([^,]*)/.exec(xSignature)?.[1] ?? "sin ts") : "sin x-signature";
-  return [
-    `ts=${ts}`,
-    `x-request-id=${xRequestId ?? "sin"}`,
-    `data.id=${dataId ?? "sin"}`,
-    `source_news=${sourceNews ?? "no"}`,
-    `largo de la clave=${secret.length}`,
-  ].join(" · ");
-}

@@ -1,6 +1,6 @@
 import { fail, serverError } from "@/lib/api";
 import { conciliarPago } from "@/lib/pagos/conciliar";
-import { diagnosticoFirma, validarFirma, webhookSecret } from "@/lib/pagos/firma";
+import { validarFirma, webhookSecret } from "@/lib/pagos/firma";
 
 /**
  * POST /api/v1/webhooks/mercadopago: avisos de Mercado Pago.
@@ -23,16 +23,9 @@ export async function POST(request: Request) {
   const secret = webhookSecret();
   const firma = validarFirma({ xSignature, xRequestId, dataId, secret });
   if (!firma.ok) {
-    // Nunca la firma (v1) ni el secret. TODO: sacar el diagnóstico cuando el
-    // webhook esté estable en producción.
-    const diagnostico = diagnosticoFirma({
-      xSignature,
-      xRequestId,
-      dataId,
-      sourceNews: url.searchParams.get("source_news"),
-      secret,
-    });
-    console.error(`Webhook de Mercado Pago con firma inválida (${firma.motivo}) · ${diagnostico}`);
+    // Solo el motivo y el x-request-id (para buscarlo en el historial de MP):
+    // nunca la firma (v1) ni el secret.
+    console.warn(`Webhook de Mercado Pago con firma inválida (${firma.motivo}) · x-request-id=${xRequestId ?? "sin"}`);
     return fail(401, { message: "Firma inválida." });
   }
 
