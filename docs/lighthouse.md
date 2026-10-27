@@ -2,6 +2,25 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
+## /workshops con el video del hero
+
+- **Fecha:** 27/10/2026
+- **Rama:** `feat/contenido-maggie-2`
+- **Lighthouse:** 12, emulación mobile, Chromium de Playwright (headless), build de producción
+- **Comparación:** `main` (sin video) contra la rama, 8 corridas alternadas de cada una; se informa la mediana
+
+| | Performance | LCP (simulado) | LCP (observado) | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|---|---|
+| `main` | 89 | 3,51 s | 1,20 s | 100 | 100 | 100 |
+| Rama | 86 | 3,68 s | 1,26 s | 100 | 100 | 100 |
+
+- En `main` el LCP es el `<h1>`; en la rama, el póster del video (en mobile es lo más grande de la pantalla).
+- **El póster se pinta con el primer render:** el LCP observado es igual al FCP en todas las corridas. La diferencia que queda en el simulado (~0,17 s) es la de un LCP de imagen contra uno de texto: Lighthouse le suma a la imagen la descarga estimada en una red lenta.
+- **Correcciones a partir de la medición** (ver [errores.md](errores.md#el-lcp-del-video-esperaba-a-que-arrancara)):
+  1. Con el póster solo como atributo `poster`, Chrome tomaba el LCP cuando arrancaba el video, después de hidratar.
+  2. El póster pasó a un `<img>` debajo del video, con next/image y `preload`: WebP de 9,6 KB en lugar del JPG de 40 KB.
+- Con `prefers-reduced-motion`, el video no pide el MP4 (`preload="none"`) y queda solo el póster.
+
 ## Panel de Maggie (E5)
 
 - **Fecha:** 22/10/2026

@@ -1,6 +1,13 @@
-# Pagos: seña de los workshops con Mercado Pago
+# Pagos: workshops con Mercado Pago
 
-La seña de un workshop se paga con **Mercado Pago Checkout Pro**. El esquema está en [`supabase/migrations/0003_pagos.sql`](../supabase/migrations/0003_pagos.sql), y la prueba manual en sandbox, en [`docs/pruebas-mercadopago.md`](pruebas-mercadopago.md).
+Un workshop se paga **completo al inscribirse** con **Mercado Pago Checkout Pro**: no hay seña ni saldo. El esquema está en [`supabase/migrations/0003_pagos.sql`](../supabase/migrations/0003_pagos.sql), y la prueba manual en sandbox, en [`docs/pruebas-mercadopago.md`](pruebas-mercadopago.md).
+
+## Pago completo (migración 0006)
+
+Maggie decidió cobrar el 100% al inscribirse. La [`0006_pago_completo.sql`](../supabase/migrations/0006_pago_completo.sql) pone `sena_porcentaje` en 100 (default y workshops existentes). No se renombró nada: `sena_porcentaje`, `monto_sena` y el estado `pendiente_sena` quedan como **nombres internos** y en el sitio y el panel se lee "pago" o "total". `crear_inscripcion` y `confirmar_pago` no cambiaron: con el 100% calculan y exigen el total.
+
+- El campo de porcentaje ya no está en el panel. La API de admin todavía lo acepta (`depositPercent`, de 1 a 100).
+- El título de la preferencia es `Inscripción · <workshop> · N lugares`.
 
 TODO: los pedidos de la tienda se pagan con el mismo esquema cuando exista el carrito.
 
@@ -17,9 +24,9 @@ sequenceDiagram
   P->>W: Formulario de inscripción
   W->>DB: crear_inscripcion() con service_role (bloquea el workshop, valida cupo y precio)
   DB-->>W: id, monto_sena, vence_at (+30 min)
-  W->>MP: Crear preferencia (seña, external_reference = id, vence con la reserva, sin notification_url)
+  W->>MP: Crear preferencia (total, external_reference = id, vence con la reserva, sin notification_url)
   MP-->>W: init_point
-  W-->>P: 201 { id, initPoint } → "Pagar la seña con Mercado Pago"
+  W-->>P: 201 { id, initPoint } → "Pagar con Mercado Pago"
   P->>MP: Paga en Checkout Pro
 
   par Webhook (producción, URL del panel de MP)
@@ -94,7 +101,7 @@ Bloquea la inscripción y el workshop (`for update`), registra o actualiza el pa
 | Situación | Resultado |
 |---|---|
 | Ya estaba reservada | Nada (aviso repetido) |
-| El monto o la moneda no son los de la seña | Sigue pendiente; el pago queda **para devolver** (`monto_distinto`) |
+| El monto o la moneda no son los de la inscripción | Sigue pendiente; el pago queda **para devolver** (`monto_distinto`) |
 | Hay lugar, aunque haya vencido | **Reservada** |
 | Venció y ya no hay lugar | **Cancelada**; el pago queda **para devolver** (`sin_cupo`) |
 | La inscripción estaba cancelada | Nada; el pago queda **para devolver** (`inscripcion_cancelada`) |
@@ -111,7 +118,7 @@ Los pagos para devolver aparecen en "Para devolver" (en el inicio del panel y en
 
 ## Decisiones
 
-- **El monto lo calcula la base.** `crear_inscripcion` calcula `monto_sena = round(precio × cantidad × sena_porcentaje / 100, 2)`, y es lo que va a la preferencia. El navegador solo muestra la misma cuenta (`lib/sena.ts`, con tests); nunca la manda. Al confirmar, se compara el monto que cobró MP con el de la base.
+- **El monto lo calcula la base.** `crear_inscripcion` calcula `monto_sena = round(precio × cantidad × sena_porcentaje / 100, 2)`, y es lo que va a la preferencia. El navegador solo muestra la misma cuenta (`lib/sena.ts`, con tests; con el 100%, es el total); nunca la manda. Al confirmar, se compara el monto que cobró MP con el de la base.
 - **No se confía en lo que manda MP sin verificar:**
   - el webhook usa del aviso solo el id y consulta el pago a la API;
   - la página de resultado ignora los query params (`status`, `payment_id`…) y lee la base.
@@ -132,6 +139,6 @@ Los pagos para devolver aparecen en "Para devolver" (en el inicio del panel y en
 
 ## Tests
 
-- **Unitarios** (`e2e/pagos-unit.spec.ts`): firma, seña, preferencia, estados, URL del sitio, `.ics`, rate limiter y la vista del resultado.
+- **Unitarios** (`e2e/pagos-unit.spec.ts`): firma, monto, preferencia, estados, URL del sitio, `.ics`, rate limiter y la vista del resultado.
 - **Integración** (`e2e/pagos.spec.ts`), contra Supabase y un **mock de la API de MP** (`e2e/support/mp-mock.ts`), que Playwright levanta como segundo servidor. `lib/mercadopago.ts` apunta el SDK al mock con `MP_API_BASE_URL` y solo acepta localhost, así el token nunca sale hacia otro host. Los e2e no usan credenciales reales.
 - **Manual en sandbox:** [`docs/pruebas-mercadopago.md`](pruebas-mercadopago.md).

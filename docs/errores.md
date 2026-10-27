@@ -175,3 +175,38 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Para que no se repita:**
 - Los pasos están en [pruebas-mercadopago.md](pruebas-mercadopago.md#configuración-que-funciona), y qué credenciales van en cada etapa, en [pagos.md](pagos.md#qué-credenciales-se-usan-en-cada-etapa).
 - El token y la clave del webhook tienen que ser de la **misma aplicación** y del **mismo modo** (productivo). Al publicar, se cambian los dos juntos por los de la cuenta de Maggie.
+
+## 27/10/2026
+
+### El LCP del video esperaba a que arrancara
+
+**PR:** #17 (`feat/contenido-maggie-2`)
+
+**Qué pasó:** con el reel en el hero de `/workshops`, Lighthouse marcaba el `<video>` como LCP, con casi todo el tiempo en "Render Delay". El póster se descargaba primero, con prioridad alta, pero el LCP recién se registraba cuando el video empezaba a reproducirse. Y el video arranca después de hidratar, porque en el servidor se asume movimiento reducido.
+
+**Solución:**
+- El póster es un `<img>` de next/image con `preload` debajo del video. Se pinta con el HTML y Chrome lo toma como LCP. El primer cuadro del video tiene el mismo tamaño, así que ya no cuenta como un LCP nuevo.
+- next/image lo sirve en WebP (9,6 KB contra 40 KB del JPG).
+- El video no lleva el atributo `poster`, para no descargar la imagen dos veces. Sin reproducir, `preload="none"`, así que con movimiento reducido queda solo el póster.
+- Se comparó contra `main` con 8 corridas de cada uno: el LCP observado quedó prácticamente igual (1,26 s contra 1,20 s). Ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero).
+
+**Para que no se repita:**
+- Con un video arriba de todo, medir el LCP y mirar qué elemento es y en qué fase se va el tiempo.
+- Comparar el LCP **observado** además del simulado, y contra `main` con varias corridas: una sola corrida varía mucho.
+
+### Tests atados a los precios y destacados reales
+
+**PR:** #17 (`feat/contenido-maggie-2`)
+
+**Qué pasó:** el test "detalle con precio a confirmar y temporada" abría "Tarta de frutillas" y esperaba "Precio a confirmar". Maggie pidió $ 10 en todos los productos hasta cargar los reales, y el test falló aunque el código estaba bien. Como el proyecto `rate-limit` depende de `chromium`, esa falla hizo que Playwright tampoco corriera el test de `rate-limit`.
+
+Revisando los demás, "filtra por destacados" (`e2e/api.spec.ts`) dependía de los destacados reales: sin ninguno, pasaba sin probar nada.
+
+**Solución:**
+- `crearProductoDePrueba` y `borrarProductoDePrueba` (`e2e/support/productos.ts`) crean productos "e2e-…" directo en la base.
+- El test de la tienda crea un producto propio (tamaño sin precio, medida y una temporada que arranca en el mes actual), lo verifica y lo borra.
+- El de destacados crea uno destacado y uno común, y comprueba que el filtro deja uno y saca el otro.
+- "No deja destacar más de 4" (`e2e/panel.spec.ts`) completa los 4 directo en la base. Por la API, un destacado sumado en paralelo por otro test hacía fallar la creación con 409.
+
+**Para que no se repita:** es la misma regla del 21/10 ([Tests atados a una fecha de ejemplo que ya pasó](#tests-atados-a-una-fecha-de-ejemplo-que-ya-pasó)). Lo que Maggie edita desde el panel (precios, destacados, fotos) no puede ser la base de un test: cada test crea sus propios datos.
+

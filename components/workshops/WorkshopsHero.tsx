@@ -7,32 +7,37 @@ import { pages } from "@/data/site";
 const { hero } = pages.workshops;
 
 /**
- * Portada de /workshops a todo el ancho, con video de la dinámica de cocina
- * de fondo. Lleva la misma capa y degradé que el carrusel del inicio para
- * que el texto llegue a AA sobre cualquier video.
+ * Portada de /workshops con el reel de los workshops. Es un solo <video>
+ * para los dos tamaños, así no se descarga dos veces:
+ * - Mobile: de fondo a todo el ancho, con la misma capa y degradé que el
+ *   carrusel del inicio para que el texto llegue a AA sobre cualquier cuadro.
+ * - Desktop: el reel es vertical y de baja resolución, así que no se estira:
+ *   va enmarcado al lado del texto, sobre el fondo chocolate.
  */
 export function WorkshopsHero() {
   return (
     <section
       data-surface="dark"
       aria-label={hero.label}
-      className="relative h-160 overflow-hidden bg-chocolate-claro"
+      className="relative h-160 overflow-hidden bg-chocolate-claro lg:h-auto"
     >
-      <BackgroundVideo
-        src={hero.video.src}
-        poster={hero.video.poster}
-        className="absolute inset-0"
-        placeholderClassName="items-start justify-end p-4 lg:px-10 lg:py-7"
-        buttonClassName="right-4 bottom-4 lg:right-20 lg:bottom-20"
-      />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-capa/45" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-linear-to-t from-capa/60 via-capa/55 via-60% to-transparent lg:bg-linear-to-r lg:from-capa/65 lg:via-capa/60 lg:via-50% lg:to-transparent lg:to-85%"
-      />
+      <div className="contenedor flex h-full flex-col justify-end pb-20 lg:grid lg:grid-cols-[1fr_auto] lg:items-center lg:gap-16 lg:py-16">
+        <BackgroundVideo
+          src={hero.video.src}
+          poster={hero.video.poster}
+          posterPreload
+          posterSizes="(min-width: 1024px) 315px, 100vw"
+          className="absolute inset-0 lg:relative lg:inset-auto lg:order-last lg:aspect-9/16 lg:h-140 lg:overflow-hidden lg:rounded-3xl"
+          placeholderClassName="items-start justify-end p-4 lg:p-6"
+          buttonClassName="right-4 bottom-4 lg:right-5 lg:bottom-5"
+        />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-capa/45 lg:hidden" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-linear-to-t from-capa/60 via-capa/55 via-60% to-transparent lg:hidden"
+        />
 
-      <div className="contenedor pointer-events-none relative flex h-full flex-col justify-end pb-20 lg:pb-20">
-        <div className="pointer-events-auto flex max-w-190 flex-col gap-4 lg:gap-5.5">
+        <div className="relative flex max-w-190 flex-col gap-4 lg:gap-5.5">
           <Eyebrow tone="crema">{hero.eyebrow}</Eyebrow>
           <SectionTitle
             as="h1"

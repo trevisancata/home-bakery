@@ -4,7 +4,7 @@ const priceFormatter = new Intl.NumberFormat("es-AR", {
   maximumFractionDigits: 0,
 });
 
-// Con centavos (una seña puede tenerlos): siempre dos decimales.
+// Con centavos (un monto calculado puede tenerlos): siempre dos decimales.
 const centsFormatter = new Intl.NumberFormat("es-AR", {
   style: "currency",
   currency: "ARS",

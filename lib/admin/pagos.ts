@@ -30,7 +30,7 @@ export type InscripcionConPagos = {
   cantidad: number;
   estado: string;
   montoSena: number | null;
-  /** Pendiente de seña y ya vencida: no ocupa lugar. */
+  /** Pendiente de pago y ya vencida: no ocupa lugar. */
   vencida: boolean;
   workshop: string;
   workshopId: string;

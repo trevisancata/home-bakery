@@ -6,7 +6,7 @@ import { toleranciaSegundos, validarFirma, webhookSecret } from "../lib/pagos/fi
 import { armarPreferencia, statementDescriptor } from "../lib/pagos/preferencia";
 import { vistaResultado } from "../lib/pagos/vista";
 import { createRateLimiter } from "../lib/rate-limit";
-import { montoSena, saldo } from "../lib/sena";
+import { montoSena } from "../lib/sena";
 import { siteUrl } from "../lib/site-url";
 
 // Unitarios: no levantan navegador ni tocan la base ni Mercado Pago.
@@ -80,12 +80,14 @@ test.describe("Firma del webhook (x-signature)", () => {
   });
 });
 
-test.describe("Cálculo de la seña", () => {
+test.describe("Cálculo del monto", () => {
   test("precio × lugares × porcentaje / 100", () => {
     expect(montoSena(30000, 1, 50)).toBe(15000);
     expect(montoSena(30000, 3, 50)).toBe(45000);
     expect(montoSena(10000, 3, 30)).toBe(9000);
+    // Pago completo (migración 0006): el total.
     expect(montoSena(25000, 8, 100)).toBe(200000);
+    expect(montoSena(30000, 2, 100)).toBe(60000);
   });
 
   test("redondea al centavo igual que la base (round half up)", () => {
@@ -97,11 +99,6 @@ test.describe("Cálculo de la seña", () => {
   test("sin errores de punto flotante", () => {
     expect(montoSena(0.1 + 0.2, 1, 100)).toBe(0.3);
   });
-
-  test("el saldo es el resto", () => {
-    expect(saldo(33333.33, 1, 50)).toBe(16666.66);
-    expect(saldo(30000, 2, 50)).toBe(30000);
-  });
 });
 
 test.describe("Preferencia de Checkout Pro", () => {
@@ -110,17 +107,17 @@ test.describe("Preferencia de Checkout Pro", () => {
       id: "6f1d2a43-0000-4000-8000-000000000001",
       email: "ana@ejemplo.com",
       cantidad: 2,
-      montoSena: 30000,
+      montoSena: 60000,
       venceAt: "2026-10-21T15:30:00.000Z",
     },
-    workshop: { slug: "tortas-de-capas", nombre: "Tortas de capas", senaPorcentaje: 50 },
+    workshop: { slug: "tortas-de-capas", nombre: "Tortas de capas" },
   };
 
   test("con la URL pública (https): back_urls y auto_return, sin notification_url", () => {
     const pref = armarPreferencia({ ...datos, baseUrl: "https://homebakery.com.ar" });
     const resultado = "https://homebakery.com.ar/workshops/tortas-de-capas/inscripcion/resultado?inscripcion=6f1d2a43-0000-4000-8000-000000000001";
     expect(pref.items).toEqual([
-      { id: "tortas-de-capas", title: "Seña 50% · Tortas de capas · 2 lugares", quantity: 1, unit_price: 30000, currency_id: "ARS" },
+      { id: "tortas-de-capas", title: "Inscripción · Tortas de capas · 2 lugares", quantity: 1, unit_price: 60000, currency_id: "ARS" },
     ]);
     expect(pref.external_reference).toBe(datos.inscripcion.id);
     expect(pref.payer).toEqual({ email: "ana@ejemplo.com" });
@@ -143,7 +140,7 @@ test.describe("Preferencia de Checkout Pro", () => {
 
   test("un lugar en singular", () => {
     const pref = armarPreferencia({ ...datos, inscripcion: { ...datos.inscripcion, cantidad: 1 }, baseUrl: "https://x.com" });
-    expect(pref.items[0].title).toBe("Seña 50% · Tortas de capas · 1 lugar");
+    expect(pref.items[0].title).toBe("Inscripción · Tortas de capas · 1 lugar");
   });
 });
 

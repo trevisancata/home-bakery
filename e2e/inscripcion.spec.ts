@@ -31,7 +31,7 @@ test.describe("Inscripción a un workshop", () => {
     );
   });
 
-  test("envía la inscripción y pasa al paso de la seña", async ({ page, workshop }) => {
+  test("envía la inscripción y pasa al paso del pago", async ({ page, workshop }) => {
     await page.goto(urlOf(workshop.slug));
 
     await page.getByRole("textbox", { name: "Nombre y apellido" }).fill("Ana Pérez");
@@ -42,9 +42,8 @@ test.describe("Inscripción a un workshop", () => {
     await page.getByRole("combobox", { name: "¿Cómo conociste Home Bakery?" }).selectOption("Instagram");
 
     const summary = page.getByRole("complementary", { name: "Resumen del workshop" });
-    await expect(summary.getByText("Total")).toBeVisible();
-    await expect(summary.getByText("Seña para reservar (50%)")).toBeVisible();
-    await expect(summary.getByText("Saldo")).toBeVisible();
+    await expect(summary.getByText("Total a pagar")).toBeVisible();
+    await expect(summary.getByTestId("inscripcion-total")).toHaveText(/30\.000/);
     await summary.getByRole("button", { name: "Un lugar más" }).click();
     await expect(summary.getByText("2 lugares")).toBeAttached();
     await expect(summary.getByRole("button", { name: "Un lugar menos" })).toBeEnabled();
@@ -52,21 +51,21 @@ test.describe("Inscripción a un workshop", () => {
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Continuar al pago" }).click();
 
-    await expect(page.getByRole("heading", { level: 1, name: "Revisá y dejá la seña" })).toBeFocused();
-    await expect(page.getByRole("listitem").filter({ hasText: "2 · Seña" })).toHaveAttribute("aria-current", "step");
+    await expect(page.getByRole("heading", { level: 1, name: "Revisá y pagá" })).toBeFocused();
+    await expect(page.getByRole("listitem").filter({ hasText: "2 · Pago" })).toHaveAttribute("aria-current", "step");
     await expect(summary.getByText("Quedan 4")).toBeVisible();
 
-    // Seña: 50% de 2 × $ 30.000, la misma cuenta que hace la base.
-    await expect(page.getByTestId("pago-sena")).toHaveText(/30\.000/);
-    await expect(page.getByText("El saldo: a confirmar con Maggie.")).toBeVisible();
+    // Total: 2 × $ 30.000, la misma cuenta que hace la base.
+    await expect(page.getByTestId("pago-total")).toHaveText(/60\.000/);
+    await expect(page.getByText("Tu lugar queda reservado con el pago.")).toBeVisible();
     await expect(page.getByText("Guardamos tu lugar 30 minutos mientras pagás.", { exact: false })).toBeVisible();
 
     // WhatsApp queda solo como ayuda.
     const ayuda = page.getByRole("link", { name: "Escribinos por WhatsApp (se abre WhatsApp)" });
     expect(await ayuda.getAttribute("href")).toMatch(/^https:\/\/wa\.me\//);
 
-    // "Pagar la seña con Mercado Pago" lleva al checkout (acá, el del mock de MP), sin pagar.
-    const pagar = page.getByRole("link", { name: "Pagar la seña con Mercado Pago" });
+    // "Pagar con Mercado Pago" lleva al checkout (acá, el del mock de MP), sin pagar.
+    const pagar = page.getByRole("link", { name: "Pagar con Mercado Pago" });
     await expect(pagar).toHaveAttribute("href", /\/checkout\?pref_id=pref-e2e-/);
     await pagar.click();
     await expect(page.getByRole("heading", { name: "Checkout de prueba" })).toBeVisible();

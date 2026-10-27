@@ -22,9 +22,9 @@ import {
 } from "./support/supabase";
 import { authFile } from "./support/usuarios";
 
-// Pagos de la seña contra Supabase y el mock de Mercado Pago
-// (e2e/support/mp-mock.ts). Cada test usa su propio workshop de prueba
-// (cupo 6, $ 30.000, seña del 50%) que se borra al terminar.
+// Pagos contra Supabase y el mock de Mercado Pago (e2e/support/mp-mock.ts).
+// Cada test usa su propio workshop de prueba (cupo 6, $ 30.000, pago
+// completo) que se borra al terminar.
 
 test.skip(!hasSupabase, skipReason);
 
@@ -35,7 +35,7 @@ async function inscribir(request: APIRequestContext, workshop: TestWorkshop, spo
   return { response, body: await response.json() };
 }
 
-/** Inscribe y devuelve el id y la seña que calculó la base. */
+/** Inscribe y devuelve el id y el monto que calculó la base. */
 async function inscripta(request: APIRequestContext, workshop: TestWorkshop, spots = 1) {
   const { response, body } = await inscribir(request, workshop, spots);
   expect(response.status()).toBe(201);
@@ -44,7 +44,7 @@ async function inscripta(request: APIRequestContext, workshop: TestWorkshop, spo
 }
 
 test.describe("Inscripción con preferencia de pago", () => {
-  test("crea la preferencia con la seña que calcula la base", async ({ request, workshop }) => {
+  test("crea la preferencia con el total que calcula la base", async ({ request, workshop }) => {
     const { response, body } = await inscribir(request, workshop, 2);
     expect(response.status()).toBe(201);
     const { id, initPoint } = body.data;
@@ -52,7 +52,7 @@ test.describe("Inscripción con preferencia de pago", () => {
 
     const db = await leerInscripcion(id);
     expect(db).toMatchObject({ estado: "pendiente_sena", mp_init_point: initPoint });
-    expect(Number(db.monto_sena)).toBe(30000);
+    expect(Number(db.monto_sena)).toBe(60000);
     expect(db.mp_preference_id).toMatch(/^pref-e2e-/);
     // Vence en ~30 minutos.
     const minutos = (new Date(db.vence_at).getTime() - Date.now()) / 60_000;
@@ -61,7 +61,7 @@ test.describe("Inscripción con preferencia de pago", () => {
 
     const pref = await preferenciaDe(request, id);
     expect(pref.items).toEqual([
-      expect.objectContaining({ title: `Seña 50% · ${workshop.name} · 2 lugares`, unit_price: 30000, quantity: 1, currency_id: "ARS" }),
+      expect.objectContaining({ title: `Inscripción · ${workshop.name} · 2 lugares`, unit_price: 60000, quantity: 1, currency_id: "ARS" }),
     ]);
     expect(pref.external_reference).toBe(id);
     expect(pref.payer.email).toBe("prueba@ejemplo.com");
@@ -138,7 +138,7 @@ test.describe("Webhook de Mercado Pago", () => {
     expect(await pagosDe(id)).toEqual([expect.objectContaining({ estado: "rejected" })]);
   });
 
-  test("monto distinto de la seña → no reserva y queda para devolver", async ({ request, workshop }) => {
+  test("monto distinto del total → no reserva y queda para devolver", async ({ request, workshop }) => {
     const { id, monto } = await inscripta(request, workshop);
     const pagoId = nuevoPagoId();
     await cargarPago(request, pagoId, { status: "approved", external_reference: id, transaction_amount: monto - 1 });
@@ -270,8 +270,7 @@ test.describe("Página de resultado", () => {
     const titulo = page.getByRole("heading", { level: 1 });
     await expect(titulo).toHaveText("¡Tu lugar está reservado!");
     await expect(titulo).toBeFocused();
-    await expect(page.getByTestId("resultado-sena")).toHaveText(/30\.000/);
-    await expect(page.getByText("El saldo: a confirmar con Maggie.")).toBeVisible();
+    await expect(page.getByTestId("resultado-total")).toHaveText(/60\.000/);
 
     const ics = page.getByRole("link", { name: "Agregar al calendario" });
     await expect(ics).toHaveAttribute("download", "workshop-home-bakery.ics");
@@ -339,6 +338,6 @@ test.describe("Panel", () => {
     await expect(fila.getByRole("combobox")).toHaveValue("pendiente_sena");
     await expect(fila).toContainText(pagoId);
     await expect(page.getByRole("heading", { name: "Para devolver" })).toBeVisible();
-    await expect(page.getByTestId(`devolucion-${pagoId}`)).toContainText("Monto distinto de la seña");
+    await expect(page.getByTestId(`devolucion-${pagoId}`)).toContainText("Monto distinto del total");
   });
 });

@@ -66,8 +66,8 @@ export default async function ResultadoPage({ params, searchParams }: PageProps<
           <p className="text-17 leading-parrafo">{content.reserved.text(formatDay(workshop.fechaInicio), formatTime(workshop.fechaInicio))}</p>
           <dl className="flex flex-col gap-2 rounded-2xl bg-arena p-5 text-15">
             <div className="flex justify-between gap-4">
-              <dt className="text-secundario">{content.reserved.deposit}</dt>
-              <dd data-testid="resultado-sena" className="font-semibold">
+              <dt className="text-secundario">{content.reserved.paid}</dt>
+              <dd data-testid="resultado-total" className="font-semibold">
                 {inscripcion.montoSena === null ? "—" : formatPrice(inscripcion.montoSena)}
               </dd>
             </div>
@@ -76,8 +76,6 @@ export default async function ResultadoPage({ params, searchParams }: PageProps<
               <dd>{content.reserved.spots(inscripcion.cantidad)}</dd>
             </div>
           </dl>
-          {/* TODO(Maggie): cuándo y cómo se paga el saldo. */}
-          <p className="text-15">{pages.inscripcion.pay.balance}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button href={icsHref(ics)} download={content.reserved.calendarFile} size="lg">
               {content.reserved.calendar}

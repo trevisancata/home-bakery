@@ -25,7 +25,7 @@ export function admin() {
 
 export type TestWorkshop = { id: string; slug: string; name: string; precio: number | null };
 
-/** Crea un workshop de prueba activo, dentro de 60 días. Seña del 50%. */
+/** Crea un workshop de prueba activo, dentro de 60 días. Pago completo (100%), como los reales desde la 0006. */
 export async function crearWorkshopDePrueba({
   cupo = 6,
   precio = 30000,
@@ -41,7 +41,7 @@ export async function crearWorkshopDePrueba({
       cupo,
       cupo_minimo: 1,
       precio,
-      sena_porcentaje: 50,
+      sena_porcentaje: 100,
       activo: true,
       es_ejemplo: false,
     })

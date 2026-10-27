@@ -125,6 +125,24 @@ export type RichText = (string | { strong: string } | { text: string; href: stri
  */
 export type HeroSlide = { type: "image" | "video"; src?: string; poster?: string; alt: string };
 
+/** Workshop que ya se hizo, para "Así fueron los workshops" en /workshops. */
+export type PastWorkshop = { name: string; date: string; image?: SiteImage };
+
+// Lista de Maggie (27/10), del más reciente al más viejo. Para sumar uno,
+// agregarlo arriba de todo.
+// TODO(Maggie): una foto de cada uno. Hasta tenerlas, va el placeholder.
+export const pastWorkshops: PastWorkshop[] = [
+  { name: "Postres en shot", date: "Octubre 2026" },
+  { name: "Pastelería para el té VOL. 2", date: "Septiembre 2026" },
+  { name: "Mis tortas básicas", date: "Agosto 2026" },
+  { name: "Diseñá tu propia number cake", date: "Julio 2026" },
+  { name: "Pastelería para adolescentes", date: "Julio 2026" },
+  { name: "Pastelería para el té", date: "Junio 2026" },
+  { name: "Pastelería sin azúcar & sin harina", date: "Mayo 2026" },
+  { name: "Meriendas & snacks", date: "Marzo/abril 2026" },
+  { name: "Postres sin harina", date: "Marzo 2026" },
+];
+
 // TODO(Maggie): 3 o 4 fotos o videos horizontales para la portada. Mientras
 // tanto, placeholders: las fotos del catálogo son todas verticales.
 // Los placeholders son decorativos (alt vacío): no describen fotos que no existen.
@@ -374,8 +392,9 @@ export const pages = {
       script: "cocina",
       text: workshopsStory.meeting,
       cta: { label: "Ver próximas fechas", href: "#agenda" },
-      // TODO(Maggie): reels de los workshops para el video de fondo.
-      video: { src: undefined as string | undefined, poster: undefined as string | undefined },
+      // Reel de Maggie: vertical 9:16 (478x850), sin audio. Es de baja
+      // resolución: en desktop va enmarcado, no a pantalla completa.
+      video: { src: "/videos/workshops-reel.mp4", poster: "/videos/workshops-reel-poster.jpg" },
     },
     teaching: {
       eyebrow: "Cómo enseño",
@@ -387,7 +406,7 @@ export const pages = {
     steps: {
       eyebrow: "Paso a paso",
       title: "Cómo es un workshop",
-      facts: [workshopFacts.duration, workshopFacts.capacity, `En mi cocina de ${site.city}`, "Reservás con una seña del 50%"],
+      facts: [workshopFacts.duration, workshopFacts.capacity, `En mi cocina de ${site.city}`, "Pagás el total al inscribirte"],
       items: [
         { title: "Te recibo", text: workshopsStory.welcome },
         { title: "Demo", text: workshopsStory.demo },
@@ -398,7 +417,7 @@ export const pages = {
     upcoming: {
       eyebrow: "Agenda",
       title: "Próximas fechas",
-      note: "Tu lugar solo queda reservado con la seña.",
+      note: "Tu lugar queda reservado con el pago.",
       spots: (left: number, capacity: number) => `Quedan ${left} de ${capacity}`,
       soldOut: "Agotado",
       cta: "Reservar",
@@ -408,8 +427,8 @@ export const pages = {
       title: "Así fueron los workshops",
       script: "workshops",
       instagram: { label: "Ver más en Instagram", href: site.contact.instagram.url },
-      // TODO(Maggie): nombre, mes/año y foto de 4 workshops pasados. Hasta
-      // tenerlos, solo el título y el link a Instagram.
+      listLabel: "Workshops anteriores",
+      items: pastWorkshops,
     },
     custom: {
       title: "Workshop personalizado",
@@ -428,7 +447,8 @@ export const pages = {
         },
         {
           question: "¿Cómo reservo mi lugar?",
-          answer: "Completá el formulario y dejá una seña del 50%. Tu lugar solo queda reservado con la seña.",
+          // Reescrita por el pago completo (27/10). TODO(Maggie): confirmar el texto.
+          answer: "Completá el formulario y pagá el total con Mercado Pago. Tu lugar queda reservado con el pago.",
         },
         {
           question: "¿Puedo cancelar o pasar mi lugar a otra persona si a último momento no puedo ir?",
@@ -456,8 +476,8 @@ export const pages = {
       parent: { label: "Workshops", href: "/workshops" },
       current: "Inscripción",
     },
-    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Seña", "3 · Reservado"] },
-    title: { form: "Inscribite al workshop", pay: "Revisá y dejá la seña" },
+    steps: { label: "Pasos de la inscripción", items: ["1 · Tus datos", "2 · Pago", "3 · Reservado"] },
+    title: { form: "Inscribite al workshop", pay: "Revisá y pagá" },
     form: {
       requiredNote: "Los campos con * son obligatorios.",
       aboutYou: "Tus datos",
@@ -495,9 +515,7 @@ export const pages = {
       spotsCount: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
       less: "Un lugar menos",
       more: "Un lugar más",
-      total: "Total",
-      deposit: (percent: number) => `Seña para reservar (${percent}%)`,
-      balance: "Saldo",
+      total: "Total a pagar",
       totalTbd: "A confirmar",
     },
     pay: {
@@ -505,17 +523,15 @@ export const pages = {
       experience: (level: string) => `Experiencia: ${level}`,
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
       mercadoPago: {
-        text: "Pagá la seña con Mercado Pago para reservar tu lugar.",
-        amount: "Seña a pagar",
-        cta: "Pagar la seña con Mercado Pago",
+        text: "Pagá el total con Mercado Pago para reservar tu lugar.",
+        amount: "Total a pagar",
+        cta: "Pagar con Mercado Pago",
         redirecting: "Te llevamos a Mercado Pago…",
         // Regla del sistema: la inscripción pendiente vence a los 30 minutos (migración 0003).
         expires: "Guardamos tu lugar 30 minutos mientras pagás. Si no se completa el pago, se libera.",
       },
       help: { text: "¿Problemas para pagar?", cta: "Escribinos por WhatsApp", ctaContext: " (se abre WhatsApp)" },
-      deposit: "Tu lugar solo queda reservado con la seña.",
-      // TODO(Maggie): cuándo y cómo se paga el saldo. No inventar la política.
-      balance: "El saldo: a confirmar con Maggie.",
+      reserved: "Tu lugar queda reservado con el pago.",
     },
     noPrice: { cta: "Consultar por WhatsApp" },
     soldOut: {
@@ -530,18 +546,18 @@ export const pages = {
     reserved: {
       title: "¡Tu lugar está reservado!",
       text: (day: string, time: string) => `Te esperamos el ${day}, a las ${time}.`,
-      deposit: "Seña pagada",
+      paid: "Total pagado",
       spots: (spots: number) => (spots === 1 ? "1 lugar" : `${spots} lugares`),
       calendar: "Agregar al calendario",
       calendarFile: "workshop-home-bakery.ics",
       whatsapp: "Escribirle a Maggie",
-      whatsappMessage: (workshop: string) => `¡Hola, ${site.owner.name}! Ya pagué la seña del workshop "${workshop}".`,
+      whatsappMessage: (workshop: string) => `¡Hola, ${site.owner.name}! Ya pagué el workshop "${workshop}".`,
     },
     pending: {
       title: "Estamos esperando la confirmación del pago",
       text: "Mercado Pago todavía no nos confirmó el pago. Esta página se actualiza sola.",
       notPaid: "Si todavía no pagaste, podés hacerlo ahora: guardamos tu lugar hasta que venza la reserva.",
-      pay: "Pagar la seña",
+      pay: "Pagar",
       timeout: "Todavía no se confirmó. Si ya pagaste, escribinos por WhatsApp y lo revisamos.",
     },
     rejected: {

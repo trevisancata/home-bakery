@@ -1,12 +1,13 @@
 # Modelo de datos
 
-El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en cinco migraciones, que se corren una vez y en orden en el SQL Editor:
+El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en seis migraciones, que se corren una vez y en orden en el SQL Editor:
 
 - [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
 - [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md).
 - [`0003_pagos.sql`](../supabase/migrations/0003_pagos.sql) (E6): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`. El flujo completo está en [`docs/pagos.md`](pagos.md).
 - [`0004_inscripcion_solo_servidor.sql`](../supabase/migrations/0004_inscripcion_solo_servidor.sql) (E6): `crear_inscripcion` pasa a ejecutarse solo con `service_role`, desde la API.
 - [`0005_devoluciones.sql`](../supabase/migrations/0005_devoluciones.sql) (panel del E5): `devuelto_at` y `devuelto_por` en `pagos`, `marcar_devuelto` (solo la admin) y `confirmar_pago` sin volver a marcar un pago ya devuelto.
+- [`0006_pago_completo.sql`](../supabase/migrations/0006_pago_completo.sql): pago completo al inscribirse. `sena_porcentaje` pasa a 100 (default y workshops existentes); los nombres internos no cambian. Ver [pagos.md](pagos.md#pago-completo-migración-0006).
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -75,7 +76,7 @@ erDiagram
     timestamptz fecha_inicio
     int duracion_min
     numeric precio "null = a confirmar"
-    int sena_porcentaje
+    int sena_porcentaje "100 = pago completo"
     int cupo "1 a 8"
     int cupo_minimo
     bool activo
@@ -206,7 +207,7 @@ Reservar un lugar son dos pasos: **mirar cuántos lugares quedan** y **guardar l
    - que el workshop exista, esté activo, no sea de ejemplo y no haya empezado (si no, `HB404`);
    - que tenga precio (si no, `HB422`);
    - que alcancen los lugares (si no, `HB409`, con los lugares libres en `detail`).
-3. **Calcula la seña** (`precio × cantidad × sena_porcentaje / 100`, al centavo) e **inserta** la inscripción pendiente, que vence en 30 minutos. Devuelve el id, la seña y el vencimiento. Los checks de la tabla validan nombre, WhatsApp, email, cantidad (1 a 8) y aceptación de la política; si alguno falla, `23514`.
+3. **Calcula el monto** (`precio × cantidad × sena_porcentaje / 100`, al centavo; con el 100% de la 0006, el total) e **inserta** la inscripción pendiente, que vence en 30 minutos. Devuelve el id, el monto y el vencimiento. Los checks de la tabla validan nombre, WhatsApp, email, cantidad (1 a 8) y aceptación de la política; si alguno falla, `23514`.
 
 Es ACID:
 - **Atómica:** o se guarda todo o nada.

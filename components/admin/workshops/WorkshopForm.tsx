@@ -32,7 +32,6 @@ type Form = {
   hora: string;
   duration: string;
   price: string;
-  deposit: string;
   capacity: number;
   minimum: string;
   includes: string;
@@ -52,7 +51,6 @@ function desdeWorkshop(w: AdminWorkshop | null): Form {
     hora,
     duration: String(w?.durationMinutes ?? 120),
     price: precioParaInput(w?.price ?? null),
-    deposit: String(w?.depositPercent ?? 50),
     capacity: w?.capacity ?? 8,
     minimum: String(w?.minimum ?? 4),
     includes: w?.includes ?? "",
@@ -77,7 +75,6 @@ function aDatos(form: Form) {
       startsAt: isoDesdeBA(form.fecha, form.hora) ?? "",
       durationMinutes: numero(form.duration),
       price: Number.isNaN(price) ? null : price,
-      depositPercent: numero(form.deposit),
       capacity: form.capacity,
       minimum: numero(form.minimum),
       includes: form.includes,
@@ -184,7 +181,6 @@ export function WorkshopForm({ workshop, creado }: { workshop: AdminWorkshop | n
             <h2 id="w-cupo" className="text-24">{content.sections.cupo}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <Campo label={f.price} campo="price" inputMode="decimal" placeholder={admin.editor.pricePlaceholder} value={form.price} onChange={(e) => set("price", e.target.value)} error={errores.price} hint={f.priceHint} />
-              <Campo label={f.deposit} campo="depositPercent" type="number" inputMode="numeric" min={1} max={100} value={form.deposit} onChange={(e) => set("deposit", e.target.value)} error={errores.depositPercent} />
             </div>
             <div className="flex flex-col gap-1.5">
               <span id={`${cupoId}-l`} className="text-14 font-semibold">

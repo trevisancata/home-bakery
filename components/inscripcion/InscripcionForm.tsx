@@ -11,7 +11,7 @@ import { pages, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import type { Workshop } from "@/lib/data";
 import { formatDay, formatMonth, formatPrice, formatTime } from "@/lib/format";
 import { ayudaPagoLink } from "@/lib/inscripcion-whatsapp";
-import { montoSena, saldo } from "@/lib/sena";
+import { montoSena } from "@/lib/sena";
 import {
   experienceOptions,
   fieldErrors,
@@ -212,13 +212,12 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
   }
 
   const title = step === "form" ? content.title.form : content.title.pay;
-  // Total, seña y saldo, con la misma cuenta que la base (lib/sena.ts). Sin
-  // precio confirmado, los tres quedan "A confirmar".
-  const amount = (calc: (price: number) => number) =>
-    workshop.price === null ? content.summary.totalTbd : formatPrice(calc(workshop.price));
-  const total = amount((price) => price * qty);
-  const deposit = amount((price) => montoSena(price, qty, workshop.depositPercent));
-  const balance = amount((price) => saldo(price, qty, workshop.depositPercent));
+  // Total a pagar, con la misma cuenta que la base (lib/sena.ts). Sin precio
+  // confirmado, queda "A confirmar".
+  const total =
+    workshop.price === null
+      ? content.summary.totalTbd
+      : formatPrice(montoSena(workshop.price, qty, workshop.depositPercent));
   // Nadie reserva más que el cupo libre ni más que el cupo máximo de un workshop.
   const maxQty = Math.min(spotsLeft, maxSpotsPerInscripcion);
 
@@ -342,19 +341,11 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
               )}
             </div>
             <dl className="flex flex-col gap-2 border-t border-borde pt-4.5">
-              <div className="flex justify-between gap-4 text-15">
-                <dt className="text-secundario">{content.summary.total}</dt>
-                <dd data-testid="inscripcion-total">{total}</dd>
-              </div>
               <div className="flex justify-between gap-4 text-20 font-semibold">
-                <dt>{content.summary.deposit(workshop.depositPercent)}</dt>
-                <dd data-testid="inscripcion-sena" className="shrink-0 text-right">
-                  {deposit}
+                <dt>{content.summary.total}</dt>
+                <dd data-testid="inscripcion-total" className="shrink-0 text-right">
+                  {total}
                 </dd>
-              </div>
-              <div className="flex justify-between gap-4 text-14 text-secundario">
-                <dt>{content.summary.balance}</dt>
-                <dd data-testid="inscripcion-saldo">{balance}</dd>
               </div>
             </dl>
           </div>
@@ -611,8 +602,8 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                 </p>
                 <p className="flex items-baseline justify-between gap-4 rounded-2xl bg-arena p-4 text-15">
                   <span>{content.pay.mercadoPago.amount}</span>
-                  <strong data-testid="pago-sena" className="text-20">
-                    {deposit}
+                  <strong data-testid="pago-total" className="text-20">
+                    {total}
                   </strong>
                 </p>
                 {initPoint && (
@@ -668,10 +659,7 @@ export function InscripcionForm({ workshop }: { workshop: Workshop }) {
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 8v5M12 16h.01" />
                 </svg>
-                <span className="flex flex-col gap-1">
-                  <span>{content.pay.deposit}</span>
-                  <span>{content.pay.balance}</span>
-                </span>
+                <span>{content.pay.reserved}</span>
               </p>
             </div>
           )}

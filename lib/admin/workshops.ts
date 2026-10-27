@@ -27,7 +27,7 @@ export type AdminWorkshop = {
   isExample: boolean;
   /** Lugares ocupados, igual que lugares_ocupados(): reservadas y pendientes que no vencieron. */
   spotsTaken: number;
-  /** Lugares de las inscripciones reservadas (con la seña pagada). */
+  /** Lugares de las inscripciones reservadas (con el pago aprobado). */
   spotsReserved: number;
   /** Cuántas inscripciones tiene (también las canceladas). */
   inscripciones: number;

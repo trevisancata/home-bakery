@@ -1,4 +1,4 @@
-// Mensaje de WhatsApp para pedir ayuda con el pago de la seña. El pago va
+// Mensaje de WhatsApp para pedir ayuda con el pago. El pago va
 // por Mercado Pago; esto es solo para quien tenga problemas.
 
 import { site, whatsappLink } from "@/data/site";
@@ -9,7 +9,7 @@ type WorkshopInfo = Pick<Workshop, "name" | "startsAt">;
 
 export function ayudaPagoMessage(workshop: WorkshopInfo, nombre?: string) {
   const quien = nombre ? `Soy ${nombre}. ` : "";
-  return `¡Hola, ${site.owner.name}! ${quien}Me inscribí al workshop "${workshop.name}" (${formatDay(workshop.startsAt)}, ${formatTime(workshop.startsAt)}) y tengo un problema con el pago de la seña.`;
+  return `¡Hola, ${site.owner.name}! ${quien}Me inscribí al workshop "${workshop.name}" (${formatDay(workshop.startsAt)}, ${formatTime(workshop.startsAt)}) y tengo un problema con el pago.`;
 }
 
 export function ayudaPagoLink(workshop: WorkshopInfo, nombre?: string) {
