@@ -175,3 +175,21 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Para que no se repita:**
 - Los pasos están en [pruebas-mercadopago.md](pruebas-mercadopago.md#configuración-que-funciona), y qué credenciales van en cada etapa, en [pagos.md](pagos.md#qué-credenciales-se-usan-en-cada-etapa).
 - El token y la clave del webhook tienen que ser de la **misma aplicación** y del **mismo modo** (productivo). Al publicar, se cambian los dos juntos por los de la cuenta de Maggie.
+
+## 27/10/2026
+
+### El LCP del video esperaba a que arrancara
+
+**PR:** `feat/contenido-maggie-2`
+
+**Qué pasó:** con el reel en el hero de `/workshops`, Lighthouse marcaba el `<video>` como LCP, con casi todo el tiempo en "Render Delay". El póster se descargaba primero, con prioridad alta, pero el LCP recién se registraba cuando el video empezaba a reproducirse. Y el video arranca después de hidratar, porque en el servidor se asume movimiento reducido.
+
+**Solución:**
+- El póster es un `<img>` de next/image con `preload` debajo del video. Se pinta con el HTML y Chrome lo toma como LCP. El primer cuadro del video tiene el mismo tamaño, así que ya no cuenta como un LCP nuevo.
+- next/image lo sirve en WebP (9,6 KB contra 40 KB del JPG).
+- El video no lleva el atributo `poster`, para no descargar la imagen dos veces. Sin reproducir, `preload="none"`, así que con movimiento reducido queda solo el póster.
+- Se comparó contra `main` con 8 corridas de cada uno: el LCP observado quedó prácticamente igual (1,26 s contra 1,20 s). Ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero).
+
+**Para que no se repita:**
+- Con un video arriba de todo, medir el LCP y mirar qué elemento es y en qué fase se va el tiempo.
+- Comparar el LCP **observado** además del simulado, y contra `main` con varias corridas: una sola corrida varía mucho.

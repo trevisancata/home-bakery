@@ -13,8 +13,8 @@ En la compu, el menú está a la izquierda. En el celu, abajo: **Inicio**, **Pro
 
 El **Inicio** te muestra de un vistazo:
 - los próximos workshops y cuántos lugares quedan;
-- quién se inscribió y todavía no pagó la seña;
-- si hay alguna seña para devolver.
+- quién se inscribió y todavía no pagó;
+- si hay algún pago para devolver.
 
 ## Cambiar un precio
 
@@ -61,28 +61,29 @@ Las fotos se suben después de guardar el producto por primera vez.
 1. Entrá a **Workshops** y tocá **Nuevo workshop**.
 2. Completá el **nombre**, la **fecha** y la **hora** (hora de Buenos Aires), la duración y el **precio por persona**.
    - **Sin precio, el workshop no acepta inscripciones**: en la web sale "Precio a confirmar".
+   - Al inscribirse se paga **el total**: no hay seña.
 3. Elegí el **cupo** con − y + (hasta 8) y el **mínimo** de personas para hacerlo (4, salvo que lo cambies).
 4. Escribí qué incluye y, si querés, el nivel.
 5. Tocá **Guardar cambios**. Después podés sumarle fotos, igual que a un producto.
 
-En la lista de workshops, si uno todavía no llegó al mínimo de personas con la seña pagada, aparece un aviso en rojo.
+En la lista de workshops, si uno todavía no llegó al mínimo de personas con el pago hecho, aparece un aviso en rojo.
 
 Para que un workshop no se vea más, apagá **Mostrar en la web** en vez de borrarlo. Si ya tiene inscriptas, no se puede borrar.
 
 ## Ver las inscriptas
 
-- En **Workshops**, tocá el workshop: la pestaña **Inscriptas** muestra quién se anotó, cuántos lugares reservó, si pagó la seña, su experiencia y sus alergias.
+- En **Workshops**, tocá el workshop: la pestaña **Inscriptas** muestra quién se anotó, cuántos lugares reservó, si pagó, su experiencia y sus alergias.
 - En **Inscripciones** ves todas, y podés filtrar por workshop o por estado.
 
 Desde ahí podés:
 - **Escribirle por WhatsApp** con el ícono verde. Se abre WhatsApp con un mensaje ya empezado.
-- **Cambiar el estado:** Pendiente de seña, Reservada o Cancelada.
+- **Cambiar el estado:** Pendiente de pago, Reservada o Cancelada.
   - Si cancelás a alguien, su lugar se libera.
   - Si querés volver a reservar una inscripción cancelada y ya no hay lugar, el panel te avisa.
 
-Cuando alguien paga la seña por Mercado Pago, la inscripción pasa sola a **Reservada**. Si no paga en 30 minutos, el lugar se libera solo.
+Cuando alguien paga por Mercado Pago (el total del workshop), la inscripción pasa sola a **Reservada**. Si no paga en 30 minutos, el lugar se libera solo.
 
-## Devolver una seña
+## Devolver un pago
 
 A veces un pago llega cuando ya no quedan lugares, o con un monto distinto. Esos pagos aparecen en **Para devolver** (en el Inicio y en Inscripciones).
 

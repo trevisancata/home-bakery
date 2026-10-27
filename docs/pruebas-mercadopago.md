@@ -1,6 +1,6 @@
 # Prueba manual del pago en sandbox
 
-Paso a paso para probar el pago de la seña con las cuentas y las tarjetas de prueba de Mercado Pago. Los tests automáticos usan un mock de la API (ver [pagos.md](pagos.md#tests)); esta prueba es la que confirma que la integración real funciona.
+Paso a paso para probar el pago de la inscripción con las cuentas y las tarjetas de prueba de Mercado Pago. Los tests automáticos usan un mock de la API (ver [pagos.md](pagos.md#tests)); esta prueba es la que confirma que la integración real funciona.
 
 Datos de prueba según la [documentación de compras de prueba de Checkout Pro](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integration-test/test-purchases). Revisala antes de probar, porque Mercado Pago a veces cambia las tarjetas.
 
@@ -28,7 +28,7 @@ El detalle de cada paso está en [Preparar](#1-preparar-una-sola-vez).
    - en **Tu aplicación → Webhooks → Configurar notificaciones**, en **Modo productivo**, poner la URL `https://<dominio de producción>/api/v1/webhooks/mercadopago` y solo el evento **Pagos**;
    - guardar y copiar la **clave secreta** de ese modo como `MP_WEBHOOK_SECRET` en Vercel.
 5. **URL pública:** `NEXT_PUBLIC_SITE_URL` con la URL de producción, para las `back_urls`. En local, sin https, MP no acepta `auto_return`: la vuelta al sitio es con el botón "Volver al sitio", y el pago se confirma por conciliación. La URL del webhook **no** va en la preferencia, solo en el panel (paso 4; ver [pagos.md](pagos.md#el-webhook-se-configura-en-el-panel-no-en-la-preferencia)).
-6. **Workshop de prueba:** desde Supabase o `PATCH /api/v1/admin/workshops/<id>`, un workshop **activo**, con **precio**, **no de ejemplo** y con fecha futura. Por ejemplo, $ 1.000 con seña del 50%, para que la seña sea de $ 500.
+6. **Workshop de prueba:** desde Supabase o `PATCH /api/v1/admin/workshops/<id>`, un workshop **activo**, con **precio**, **no de ejemplo** y con fecha futura. Por ejemplo, $ 1.000: se paga el total, $ 1.000 por lugar.
 
 > Probá siempre en una **ventana de incógnito**, con la sesión de la cuenta compradora de prueba. Si usás tu cuenta real, MP rechaza el pago o mezcla las credenciales.
 
@@ -54,14 +54,14 @@ El **nombre del titular** decide el resultado. Documento: DNI 12345678.
 
 ## 3. Casos
 
-Para cada caso: inscribirse en el workshop de prueba (`/workshops/<slug>/inscripcion`), pasar a "Revisá y dejá la seña", tocar **"Pagar la seña con Mercado Pago"** e ingresar con la cuenta compradora de prueba.
+Para cada caso: inscribirse en el workshop de prueba (`/workshops/<slug>/inscripcion`), pasar a "Revisá y pagá", tocar **"Pagar con Mercado Pago"** e ingresar con la cuenta compradora de prueba.
 
 ### Aprobado (`APRO`)
 
 1. Pagar con una tarjeta y titular `APRO`.
 2. **Tiene que pasar:**
    - MP vuelve solo a `/workshops/<slug>/inscripcion/resultado?inscripcion=<id>` (en producción, por `auto_return`) con **"¡Tu lugar está reservado!"**;
-   - se muestra la seña cobrada;
+   - se muestra el total pagado;
    - "Agregar al calendario" descarga el `.ics`.
 3. **Dónde verlo:**
    - **`/admin`:** la inscripción en "Reservada" y el pago "Aprobado", con el id de MP.
@@ -73,7 +73,7 @@ Para cada caso: inscribirse en el workshop de prueba (`/workshops/<slug>/inscrip
 
 1. Pagar con titular `OTHE`, y en MP volver al sitio.
 2. **Tiene que pasar:** **"El pago no se aprobó"** y el botón **"Probar de nuevo"**, que lleva otra vez a Checkout Pro, mientras no pasen los 30 minutos.
-3. **Dónde verlo:** en `pagos`, una fila `rejected`; la inscripción sigue `pendiente_sena`. En `/admin`: "Pendiente de seña · Rechazado".
+3. **Dónde verlo:** en `pagos`, una fila `rejected`; la inscripción sigue `pendiente_sena`. En `/admin`: "Pendiente de pago · Rechazado".
 4. **Reintento:** "Probar de nuevo" y pagar con `APRO` → reservada. En `pagos` quedan las dos filas.
 
 ### Pendiente (`CONT`)

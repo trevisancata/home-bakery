@@ -423,3 +423,35 @@ Abierto el 21/10, sin mergear.
 - **Error del servidor que no hace fallar los tests:** en la corrida aparece varias veces "The destination stream closed early". Coincide con tests que terminan o navegan mientras una respuesta todavía se está mandando.
 
 Abierto el 22/10, sin mergear.
+
+## 27/10/2026
+
+### PR · Contenido de Maggie 2 (`feat/contenido-maggie-2`)
+
+**Pedido:** tres cambios de contenido de Maggie:
+1. pago completo al inscribirse, sin seña;
+2. la lista de los 9 workshops de 2026 en "Así fueron los workshops";
+3. el reel de los workshops como video del hero de `/workshops`.
+
+**Decisiones de Catalina durante el plan:**
+
+- La respuesta de la FAQ "¿Cómo reservo mi lugar?" (texto de Maggie del 01/10) hablaba de la seña del 50%. Se reescribió neutral, sin primera persona, con un `TODO(Maggie)` para que la confirme.
+- Las capturas del hero van commiteadas en `docs/capturas/`.
+
+**Qué se hizo:**
+
+- **Migración 0006:** `sena_porcentaje` en 100, como default y en los workshops existentes. Los nombres internos (`sena_porcentaje`, `monto_sena`, `pendiente_sena`) no cambian.
+- **Textos:** "seña" pasó a "pago" o "total" en el sitio, el formulario, el resultado, el título de la preferencia, el WhatsApp y el panel. El resumen de la inscripción quedó en una sola fila, "Total a pagar", y desaparecieron el saldo y su `TODO`. El campo de porcentaje ya no está en el panel.
+- **Workshops pasados:** la lista vive en `data/site.ts` (`pastWorkshops`), con el placeholder "Foto próximamente". En mobile van en una fila con scroll horizontal; desde `sm`, en una grilla de 3×3.
+- **Video:** un solo `<video>`. En mobile va de fondo con la capa oscura; en desktop, enmarcado al lado del texto, a 315×560 (el original es de 478×850), para que no se pixele.
+
+**Correcciones de Claude Code durante el desarrollo:**
+
+- **LCP del video:** Lighthouse tomaba el LCP cuando arrancaba el video, después de hidratar. El póster pasó a un `<img>` con `preload` (ver [errores.md](errores.md#el-lcp-del-video-esperaba-a-que-arrancara)).
+- **Scroll-snap en mobile:** la primera tarjeta quedaba cortada, porque el snap ignoraba el padding. Se resolvió con `scroll-px-4`.
+
+**Resultado:**
+
+- Lint y build en verde.
+- e2e: 108 pasan, 1 falla y 1 no corre. El que falla es de la tienda y no tiene que ver con este PR: espera "Precio a confirmar" en "Tarta de frutillas", y en la base ahora tiene $ 10.
+- Lighthouse de `/workshops`: 100 / 100 / 100. El LCP observado es igual al de `main`, y el simulado sube 0,17 s (ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero)).
