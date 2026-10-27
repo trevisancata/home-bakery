@@ -18,13 +18,13 @@ type InscripcionCreada = {
 
 /**
  * POST /api/v1/inscripciones: crea la inscripción y la preferencia de pago
- * de la seña en Mercado Pago.
+ * en Mercado Pago (el total).
  *
  * 1. crear_inscripcion (Supabase) bloquea el workshop, valida el cupo,
- *    calcula la seña y guarda la inscripción pendiente por 30 minutos. Solo
+ *    calcula el monto y guarda la inscripción pendiente por 30 minutos. Solo
  *    la puede ejecutar service_role (migración 0004): se llama con la
  *    secret key, después de validar el pedido y el rate limit.
- * 2. Con la seña que calculó la base, se crea la preferencia de Checkout Pro.
+ * 2. Con el monto que calculó la base, se crea la preferencia de Checkout Pro.
  *
  * 201 { data: { id, initPoint } } · 400 { error: { message, fields } } · 404 ·
  * 409 { error: { message, spotsLeft } } · 422 sin precio · 429 · 502 si falla MP · 500
@@ -74,7 +74,7 @@ export const POST = withApi("Error al guardar la inscripción", async (request) 
           montoSena: Number(data.monto_sena),
           venceAt: data.vence_at,
         },
-        workshop: { slug: inscripcion.workshopSlug, nombre: data.workshop_nombre, senaPorcentaje: data.sena_porcentaje },
+        workshop: { slug: inscripcion.workshopSlug, nombre: data.workshop_nombre },
         baseUrl: siteUrl(),
       }),
     );

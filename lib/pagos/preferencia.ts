@@ -1,11 +1,11 @@
-// Preferencia de Checkout Pro para la seña de una inscripción. Es puro: lo
-// que se cobra (monto_sena) y el vencimiento vienen de la base.
+// Preferencia de Checkout Pro para el pago de una inscripción (el total). Es
+// puro: lo que se cobra (monto_sena) y el vencimiento vienen de la base.
 
 import type { PreferenceRequest } from "mercadopago/dist/clients/preference/commonTypes";
 
 export type DatosPreferencia = {
   inscripcion: { id: string; email: string; cantidad: number; montoSena: number; venceAt: string };
-  workshop: { slug: string; nombre: string; senaPorcentaje: number };
+  workshop: { slug: string; nombre: string };
   /** URL pública del sitio (lib/site-url.ts). */
   baseUrl: string;
 };
@@ -28,7 +28,7 @@ export function armarPreferencia({ inscripcion, workshop, baseUrl }: DatosPrefer
     items: [
       {
         id: workshop.slug,
-        title: `Seña ${workshop.senaPorcentaje}% · ${workshop.nombre} · ${lugares}`,
+        title: `Inscripción · ${workshop.nombre} · ${lugares}`,
         quantity: 1,
         unit_price: inscripcion.montoSena,
         currency_id: "ARS",

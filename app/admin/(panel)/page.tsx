@@ -15,7 +15,7 @@ export const metadata: Metadata = content.metadata;
 const card = "flex flex-col gap-4 rounded-3xl border border-borde bg-white p-5 lg:p-6";
 const link = "self-start py-2.5 text-15 font-semibold text-chocolate underline hover:text-carbon";
 
-/** Resumen: próximos workshops con lugares, pendientes de seña y pagos para devolver. */
+/** Resumen: próximos workshops con lugares, pendientes de pago y pagos para devolver. */
 export default async function AdminInicio() {
   const session = await requireAdminPage("/admin");
   const [workshops, inscripciones] = await Promise.all([

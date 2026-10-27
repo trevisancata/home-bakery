@@ -149,10 +149,10 @@ const workshopCampos = {
     .optional(),
   price: precio.optional(),
   depositPercent: z
-    .number({ error: "Escribí el porcentaje de la seña." })
+    .number({ error: "Escribí el porcentaje del pago." })
     .int({ error: "Escribí un porcentaje entero." })
-    .min(1, { error: "La seña es de 1 a 100%." })
-    .max(100, { error: "La seña es de 1 a 100%." })
+    .min(1, { error: "El pago es de 1 a 100%." })
+    .max(100, { error: "El pago es de 1 a 100%." })
     .optional(),
   capacity: z
     .number({ error: "El cupo tiene que ser un número." })
