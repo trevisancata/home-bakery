@@ -180,7 +180,7 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 
 ### El LCP del video esperaba a que arrancara
 
-**PR:** `feat/contenido-maggie-2`
+**PR:** #17 (`feat/contenido-maggie-2`)
 
 **Qué pasó:** con el reel en el hero de `/workshops`, Lighthouse marcaba el `<video>` como LCP, con casi todo el tiempo en "Render Delay". El póster se descargaba primero, con prioridad alta, pero el LCP recién se registraba cuando el video empezaba a reproducirse. Y el video arranca después de hidratar, porque en el servidor se asume movimiento reducido.
 

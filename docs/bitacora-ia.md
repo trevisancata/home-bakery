@@ -426,7 +426,7 @@ Abierto el 22/10, sin mergear.
 
 ## 27/10/2026
 
-### PR · Contenido de Maggie 2 (`feat/contenido-maggie-2`)
+### PR #17 · Contenido de Maggie 2 (`feat/contenido-maggie-2`)
 
 **Pedido:** tres cambios de contenido de Maggie:
 1. pago completo al inscribirse, sin seña;
