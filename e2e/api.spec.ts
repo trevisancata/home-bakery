@@ -1,10 +1,10 @@
+import type { APIRequestContext } from "@playwright/test";
 import {
   borrarWorkshopsDePrueba,
   crearWorkshopDePrueba,
   expect,
   hasSupabase,
   lugaresOcupados,
-  proximoWorkshopDeEjemplo,
   skipReason,
   test,
   testSlugPrefix,
@@ -12,6 +12,8 @@ import {
 import { borrarProductoDePrueba, crearProductoDePrueba } from "./support/productos";
 
 test.skip(!hasSupabase, skipReason);
+
+const slugsDe = (data: { slug: string }[]) => data.map((product) => product.slug);
 
 /** Cuerpo válido de una inscripción; se pisa lo que haga falta. */
 function inscripcion(workshopSlug: string, overrides: Record<string, unknown> = {}) {
@@ -27,6 +29,10 @@ function inscripcion(workshopSlug: string, overrides: Record<string, unknown> = 
 }
 
 test.describe("GET /api/v1/categorias", () => {
+  // Es el único dato real que se compara: las categorías son fijas del sitio
+  // (salen del seed) y Maggie no las edita desde el panel. Crear categorías
+  // de prueba cambiaría esta misma lista y los filtros de la tienda mientras
+  // corren los otros tests en paralelo.
   test("devuelve las categorías activas en orden, con caché", async ({ request }) => {
     const response = await request.get("/api/v1/categorias");
     expect(response.status()).toBe(200);
@@ -46,19 +52,33 @@ test.describe("GET /api/v1/categorias", () => {
 
 test.describe("GET /api/v1/productos", () => {
   test("devuelve solo los productos activos", async ({ request }) => {
-    const response = await request.get("/api/v1/productos");
-    expect(response.status()).toBe(200);
-    const { data } = await response.json();
-    // Sin los productos "e2e-…" que crean en paralelo los tests del panel.
-    const slugs: string[] = data.map((product: { slug: string }) => product.slug).filter((slug: string) => !slug.startsWith(testSlugPrefix));
-    expect(slugs).toHaveLength(70);
-    expect(slugs).not.toContain("red-velvet");
+    // Sin contar el total: el catálogo real lo edita Maggie.
+    const activo = await crearProductoDePrueba();
+    const oculto = await crearProductoDePrueba({ active: false });
+    try {
+      const response = await request.get("/api/v1/productos");
+      expect(response.status()).toBe(200);
+      const slugs = slugsDe((await response.json()).data);
+      expect(slugs).toContain(activo.slug);
+      expect(slugs).not.toContain(oculto.slug);
+    } finally {
+      await borrarProductoDePrueba(activo.id);
+      await borrarProductoDePrueba(oculto.id);
+    }
   });
 
   test("filtra por categoría", async ({ request }) => {
-    const { data } = await (await request.get("/api/v1/productos?categoria=budines")).json();
-    expect(data.length).toBeGreaterThan(0);
-    for (const product of data) expect(product.category.slug).toBe("budines");
+    const budin = await crearProductoDePrueba({ categoria: "budines" });
+    const postre = await crearProductoDePrueba({ categoria: "postres" });
+    try {
+      const { data } = await (await request.get("/api/v1/productos?categoria=budines")).json();
+      expect(slugsDe(data)).toContain(budin.slug);
+      expect(slugsDe(data)).not.toContain(postre.slug);
+      for (const product of data) expect(product.category.slug).toBe("budines");
+    } finally {
+      await borrarProductoDePrueba(budin.id);
+      await borrarProductoDePrueba(postre.id);
+    }
   });
 
   test("filtra por destacados", async ({ request }) => {
@@ -94,20 +114,34 @@ test.describe("GET /api/v1/productos", () => {
 
 test.describe("GET /api/v1/productos/[slug]", () => {
   test("devuelve un producto activo", async ({ request }) => {
-    const response = await request.get("/api/v1/productos/budin-de-chocolate");
-    expect(response.status()).toBe(200);
-    const { data } = await response.json();
-    expect(data.name).toBe("Budín de chocolate");
-    expect(data.images.length).toBeGreaterThan(0);
+    const producto = await crearProductoDePrueba({ images: 2 });
+    try {
+      const response = await request.get(`/api/v1/productos/${producto.slug}`);
+      expect(response.status()).toBe(200);
+      const { data } = await response.json();
+      expect(data.name).toBe(producto.name);
+      expect(data.images).toHaveLength(2);
+    } finally {
+      await borrarProductoDePrueba(producto.id);
+    }
   });
 
-  for (const slug of ["red-velvet", "no-existe"]) {
-    test(`responde 404 para ${slug}`, async ({ request }) => {
-      const response = await request.get(`/api/v1/productos/${slug}`);
+  test("responde 404 para un producto oculto", async ({ request }) => {
+    const oculto = await crearProductoDePrueba({ active: false });
+    try {
+      const response = await request.get(`/api/v1/productos/${oculto.slug}`);
       expect(response.status()).toBe(404);
       expect((await response.json()).error.message).toBeTruthy();
-    });
-  }
+    } finally {
+      await borrarProductoDePrueba(oculto.id);
+    }
+  });
+
+  test("responde 404 para un producto que no existe", async ({ request }) => {
+    const response = await request.get(`/api/v1/productos/${testSlugPrefix}no-existe`);
+    expect(response.status()).toBe(404);
+    expect((await response.json()).error.message).toBeTruthy();
+  });
 });
 
 test.describe("GET /api/v1/workshops", () => {
@@ -115,9 +149,16 @@ test.describe("GET /api/v1/workshops", () => {
     const { data } = await (await request.get("/api/v1/workshops")).json();
     const found = data.find((item: { slug: string }) => item.slug === workshop.slug);
     expect(found).toMatchObject({ spotsLeft: 6, capacity: 6, isExample: false });
-    // Los de ejemplo vienen marcados.
-    const ejemplo = await proximoWorkshopDeEjemplo();
-    if (ejemplo) expect(data.find((item: { slug: string }) => item.slug === ejemplo.slug)?.isExample).toBe(true);
+  });
+
+  test("marca los de ejemplo", async ({ request }) => {
+    const ejemplo = await crearWorkshopDePrueba({ esEjemplo: true });
+    try {
+      const { data } = await (await request.get("/api/v1/workshops")).json();
+      expect(data.find((item: { slug: string }) => item.slug === ejemplo.slug)).toMatchObject({ isExample: true });
+    } finally {
+      await borrarWorkshopsDePrueba([ejemplo.id]);
+    }
   });
 });
 
@@ -158,10 +199,13 @@ test.describe("POST /api/v1/inscripciones", () => {
   });
 
   test("404 si el workshop es de ejemplo", async ({ request }) => {
-    const ejemplo = await proximoWorkshopDeEjemplo();
-    test.skip(!ejemplo, "No quedan workshops de ejemplo por venir.");
-    const response = await request.post("/api/v1/inscripciones", { data: inscripcion(ejemplo!.slug) });
-    expect(response.status()).toBe(404);
+    const ejemplo = await crearWorkshopDePrueba({ esEjemplo: true });
+    try {
+      const response = await request.post("/api/v1/inscripciones", { data: inscripcion(ejemplo.slug) });
+      expect(response.status()).toBe(404);
+    } finally {
+      await borrarWorkshopsDePrueba([ejemplo.id]);
+    }
   });
 
   test("409 con los lugares libres si no alcanza el cupo", async ({ request, workshop }) => {
@@ -192,14 +236,28 @@ test.describe("POST /api/v1/inscripciones", () => {
 });
 
 test.describe("Rutas viejas de la API", () => {
-  for (const path of ["categorias", "productos?categoria=budines", "productos/budin-de-chocolate", "workshops"]) {
+  /** La ruta vieja redirige con 308 a la de /api/v1, y siguiendo el redirect responde 200. */
+  async function redirige(request: APIRequestContext, path: string) {
+    const response = await request.get(`/api/${path}`, { maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    expect(response.headers().location).toBe(`/api/v1/${path}`);
+    expect((await request.get(`/api/${path}`)).status()).toBe(200);
+  }
+
+  for (const path of ["categorias", "productos?categoria=budines", "workshops"]) {
     test(`/api/${path} redirige con 308 a /api/v1`, async ({ request }) => {
-      const response = await request.get(`/api/${path}`, { maxRedirects: 0 });
-      expect(response.status()).toBe(308);
-      expect(response.headers().location).toBe(`/api/v1/${path}`);
-      expect((await request.get(`/api/${path}`)).status()).toBe(200);
+      await redirige(request, path);
     });
   }
+
+  test("/api/productos/<slug> redirige con 308 a /api/v1", async ({ request }) => {
+    const producto = await crearProductoDePrueba();
+    try {
+      await redirige(request, `productos/${producto.slug}`);
+    } finally {
+      await borrarProductoDePrueba(producto.id);
+    }
+  });
 
   test("POST /api/inscripciones redirige con 308 (conserva el método)", async ({ request }) => {
     const response = await request.post("/api/inscripciones", { data: inscripcion("no-existe"), maxRedirects: 0 });

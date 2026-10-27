@@ -6,7 +6,7 @@
 // precio (si no, crear_inscripcion responde HB422), y se borran al terminar:
 // primero los pagos, después las inscripciones y al final el workshop.
 
-import { test as base } from "@playwright/test";
+import { type APIRequestContext, expect, type Locator, type Page, test as base } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,11 +25,17 @@ export function admin() {
 
 export type TestWorkshop = { id: string; slug: string; name: string; precio: number | null };
 
-/** Crea un workshop de prueba activo, dentro de 60 días. Pago completo (100%), como los reales desde la 0006. */
+/**
+ * Crea un workshop de prueba activo, dentro de 60 días, directo en la base.
+ * Pago completo (100%), como los reales desde la 0006. Sirve para la API y
+ * la inscripción, que leen la base en cada pedido. Para el listado de
+ * /workshops (estático, ISR), usar crearWorkshopPorApi.
+ */
 export async function crearWorkshopDePrueba({
   cupo = 6,
   precio = 30000,
-}: { cupo?: number; precio?: number | null } = {}): Promise<TestWorkshop> {
+  esEjemplo = false,
+}: { cupo?: number; precio?: number | null; esEjemplo?: boolean } = {}): Promise<TestWorkshop> {
   const slug = `${testSlugPrefix}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const name = "Workshop de prueba (e2e)";
   const { data, error } = await admin()
@@ -43,7 +49,7 @@ export async function crearWorkshopDePrueba({
       precio,
       sena_porcentaje: 100,
       activo: true,
-      es_ejemplo: false,
+      es_ejemplo: esEjemplo,
     })
     .select("id")
     .single();
@@ -74,21 +80,45 @@ export async function borrarWorkshopsDePrueba(ids?: string[]) {
 }
 
 /**
- * El próximo workshop de ejemplo (data/workshops.ts) que todavía no empezó.
- * Las fechas de ejemplo van pasando: los tests no fijan uno por slug.
+ * Crea un workshop de prueba con la API de admin (hace falta un contexto con
+ * la sesión de la admin de prueba). La API revalida /workshops, así aparece
+ * en el listado estático.
  */
-export async function proximoWorkshopDeEjemplo() {
-  const { data, error } = await admin()
-    .from("workshops")
-    .select("slug, nombre")
-    .eq("es_ejemplo", true)
-    .eq("activo", true)
-    .gt("fecha_inicio", new Date().toISOString())
-    .order("fecha_inicio")
-    .limit(1)
-    .maybeSingle();
-  if (error) throw new Error(`No se pudieron leer los workshops de ejemplo: ${error.message}`);
-  return data as { slug: string; nombre: string } | null;
+export async function crearWorkshopPorApi(api: APIRequestContext, { isExample = false }: { isExample?: boolean } = {}) {
+  const response = await api.post("/api/v1/admin/workshops", {
+    data: {
+      name: `E2E Workshop ${Math.random().toString(36).slice(2, 7)}`,
+      startsAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+      capacity: 6,
+      minimum: 1,
+      active: true,
+      isExample,
+    },
+  });
+  if (response.status() !== 201) throw new Error(`No se pudo crear el workshop de prueba (${response.status()}): ${await response.text()}`);
+  const { data } = await response.json();
+  return { id: data.id as string, slug: data.slug as string, name: data.name as string };
+}
+
+/** Borra un workshop de prueba con la API de admin, que vuelve a revalidar /workshops. */
+export async function borrarWorkshopPorApi(api: APIRequestContext, id: string) {
+  const response = await api.delete(`/api/v1/admin/workshops/${id}`);
+  if (response.status() !== 204 && response.status() !== 404) {
+    throw new Error(`No se pudo borrar el workshop de prueba (${response.status()}): ${await response.text()}`);
+  }
+}
+
+/**
+ * Abre una página estática (ISR) hasta que se vea lo que creó el test. La
+ * API de admin la revalida, pero con otros tests revalidando la misma página
+ * en paralelo, una regeneración que empezó antes del alta puede terminar
+ * después y dejar por un momento la versión vieja.
+ */
+export async function abrirHastaVer(page: Page, url: string, locator: (page: Page) => Locator) {
+  await expect(async () => {
+    await page.goto(url);
+    await expect(locator(page)).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
 }
 
 /** Cuántos lugares ocupan las inscripciones de un workshop. */

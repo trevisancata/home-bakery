@@ -245,3 +245,16 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 | `npm run compare` | Compara el sitio con el mockup              |
 
 Los tests leen y escriben el proyecto de Supabase de `.env.local` sin ensuciar los datos reales: cada test que inscribe crea su propio workshop de prueba (slug `e2e-…`) y lo borra al terminar, con sus inscripciones. Al final de la corrida, un teardown borra cualquier `e2e-…` que haya quedado.
+
+### Los e2e no dependen de los datos de producción
+
+Los e2e corren contra el mismo proyecto de Supabase que el sitio, y el catálogo lo edita Maggie desde el panel: precios (hoy, $ 10 en todos hasta cargar los reales), destacados, productos ocultos, fotos. Un test que lee esos datos falla cuando ella cambia algo, aunque el código esté bien. Pasó con un precio y con una fecha de ejemplo vencida (ver [errores.md](docs/errores.md#tests-atados-a-los-precios-y-destacados-reales)).
+
+Por eso:
+- **Cada test crea lo que necesita y lo borra al terminar**, con slug `e2e-…`:
+  - workshops con el fixture `workshop` o `crearWorkshopDePrueba({ esEjemplo })`, y con `crearWorkshopPorApi` cuando tienen que aparecer en `/workshops` (`e2e/support/supabase.ts`);
+  - productos con `crearProductoDePrueba` y `borrarProductoDePrueba`, o con `crearProductoPorApi` y `borrarProductoPorApi` (`e2e/support/productos.ts`).
+- **Se comprueba lo propio, no totales:** que el producto de prueba aparece o no aparece, nunca cuántos productos hay.
+- **Listados estáticos:** `/tienda` y `/workshops` son estáticas (ISR). Para que algo aparezca en el listado se crea con la API de admin, que revalida la página, y el test la abre con `abrirHastaVer`: con otros tests revalidando en paralelo, puede tardar un momento en verse. Para la API pública, el detalle y la inscripción alcanza con insertarlo en la base.
+- **Datos fijos:** las categorías son lo único real que se usa. Salen del seed, Maggie no las edita desde el panel, y una categoría de prueba aparecería en los filtros mientras corren los demás tests.
+- **El teardown** borra al final todo lo `e2e-…` que haya quedado si un test se cortó.
