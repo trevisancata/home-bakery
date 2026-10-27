@@ -457,7 +457,7 @@ Abierto el 22/10, sin mergear.
 - El test de `rate-limit` "no corría" por la config: su proyecto depende de `chromium`, y Playwright no corre un proyecto si falla una de sus dependencias.
 - Lighthouse de `/workshops`: 100 / 100 / 100. El LCP observado es igual al de `main`, y el simulado sube 0,17 s (ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero)).
 
-### PR #… · Clase 12: testing, depuración y calidad (`docs/qa-testing`)
+### PR #20 · Clase 12: testing, depuración y calidad (`docs/qa-testing`)
 
 **Pedido:** entregable de la clase 12:
 1. `docs/testing.md` con QA y QC, la estrategia de los tests, un plan de pruebas manuales, la plantilla de bug con tres reportes reales y cómo depurar;
