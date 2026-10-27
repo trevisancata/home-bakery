@@ -304,25 +304,66 @@ Con el status y la respuesta se sabe si el problema está en el formulario, en l
 
 El filtro de categorías de la tienda ya estaba cubierto en `tienda.spec.ts`; el menú mobile del header (`components/Header.tsx`), no. El test está en `e2e/menu-mobile.spec.ts`.
 
-**Cómo se escribió:** lo escribió Claude Code siguiendo el flujo de [Codegen](#codegen-grabar-un-test-nuevo), pero sin grabarlo: Codegen necesita que alguien use el navegador, y desde la sesión de Claude Code no se puede. Se usaron los mismos locators por rol que genera Codegen y se aplicó la limpieza del paso 5. Para regrabarlo:
+### 1. La grabación con Codegen
+
+Catalina grabó el recorrido con `npm run test:codegen`: abrir el menú, ir a la tienda, abrirlo de nuevo y cerrarlo con Escape. Codegen generó esto:
+
+```ts
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('http://localhost:3000/');
+  await page.getByText('Saltar al contenido48 h de').press('F12');
+  await page.getByText('Saltar al contenido48 h de').press('F12');
+  await page.getByText('Saltar al contenido48 h de').press('F12');
+  await page.getByText('Saltar al contenido48 h de').press('F12');
+  await page.getByText('Saltar al contenido48 h de').press('F12');
+  await page.getByRole('button', { name: 'Menú' }).click();
+  await page.getByRole('link', { name: 'Tienda', exact: true }).click();
+  await page.getByRole('button', { name: 'Menú' }).click();
+  await page.getByRole('button', { name: 'Menú' }).press('Escape');
+});
+```
+
+### 2. Por qué una grabación no se commitea tal cual
+
+Codegen anota **todo** lo que pasa en el navegador, no lo que se quería probar. Esta grabación tiene los problemas típicos:
+
+| Problema | En la grabación | Qué pasa si se deja |
+|---|---|---|
+| **Pasos accidentales** | Las 5 líneas de `press('F12')`: fue para abrir las DevTools, y Codegen las grabó como teclas sobre la página | El test hace cosas que nadie quiso probar, y quien lo lea no sabe por qué están |
+| **Locator frágil** | `getByText('Saltar al contenido48 h de')`: el texto de un contenedor que junta el link "Saltar al contenido" con el comienzo de la barra de avisos | Si cambia el texto de la barra, el test falla en la línea 2, antes de llegar al menú, aunque el menú ande bien |
+| **URL absoluta** | `page.goto('http://localhost:3000/')` | La suite levanta el sitio en el puerto 3100 (`baseURL`): con la URL fija, el test va al servidor de desarrollo o no encuentra nada |
+| **Nombre genérico** | `test('test', …)` | En el reporte, una falla de "test" no dice qué se rompió |
+| **Sin viewport mobile** | No fija el tamaño de pantalla | El botón "Menú" solo existe debajo de `md`. Al grabar, la ventana era angosta; con el viewport de "Desktop Chrome" de la suite (1280 px) el botón está oculto y el `click` falla por timeout |
+| **Sin aserciones** | Solo clics y teclas | El test pasa aunque el menú no se abra, no navegue o no se cierre: solo falla si un elemento no existe |
+
+### 3. Qué se cambió a mano
+
+`e2e/menu-mobile.spec.ts` parte del mismo recorrido, con estos cambios:
+
+- **Se sacaron las 5 líneas de F12** y el locator `getByText` que solo usaban ellas.
+- **Rutas relativas** (`/`, `/tienda`), que usan el `baseURL` de la config.
+- **`test.use({ viewport: { width: 390, height: 844 } })`**, el ancho de un teléfono.
+- **Nombres que dicen qué se comprueba**, agrupados en `test.describe("Menú mobile")`, y **un test por comportamiento**, así una falla dice cuál se rompió:
+  - "se abre, navega a la tienda y se cierra solo";
+  - "Escape lo cierra y devuelve el foco al botón";
+  - "un clic afuera lo cierra" (Codegen no lo grabó).
+- **El link se busca dentro del menú:** `page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Tienda" })`. La grabación necesitaba `exact: true` porque buscaba en toda la página; acotado al menú, solo hay un link "Tienda" y no importa qué otros links tenga la página.
+- **Aserciones**, que la grabación no tenía:
+  - `aria-expanded` del botón, en `"true"` al abrir y `"false"` al cerrar;
+  - los cuatro links del menú, en orden;
+  - `aria-current="page"` en el link de la página actual (Inicio y, después de navegar, Tienda);
+  - la URL `/tienda`, y el menú oculto después de navegar.
+- **Escape desde adentro del menú:** la grabación lo apretaba con el foco en el botón. El test lo aprieta con el foco en un link del menú, que es el caso real con teclado, y comprueba que el foco vuelve al botón (`toBeFocused`).
+
+### 4. Cómo volver a grabarlo
 
 ```bash
 npm run dev
 npm run test:codegen -- --viewport-size=390,844
 ```
 
-Tocar "Menú", después "Tienda", y agregar las aserciones de `aria-expanded` y `aria-current`. Codegen genera algo así:
-
-```ts
-await page.goto("http://localhost:3000/");
-await page.getByRole("button", { name: "Menú" }).click();
-await page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Tienda" }).click();
-```
-
-**Qué se ajustó sobre lo que genera Codegen:**
-- `test.use({ viewport: { width: 390, height: 844 } })`, para que se vea el botón "Menú" (desde `md` el menú queda siempre visible);
-- rutas relativas (`/`, `/tienda`) en lugar de `localhost:3000`;
-- aserciones de accesibilidad: `aria-expanded` del botón, `aria-current="page"` en el link de la página actual y el foco de vuelta en el botón después de Escape;
-- dos casos más que Codegen no graba bien: Escape (una tecla sin elemento) y el clic afuera, en un punto del margen de la página.
+Con `--viewport-size` la grabación ya sale en tamaño de teléfono. Para abrir las DevTools mientras se graba, usar el menú del navegador, no F12, o borrar después las líneas que se graben. Y antes de commitear, la limpieza del paso 5 de [Codegen](#codegen-grabar-un-test-nuevo).
 
 No usa datos de la base, así que no crea ni borra nada.

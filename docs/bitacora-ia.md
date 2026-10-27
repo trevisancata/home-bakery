@@ -471,7 +471,7 @@ Abierto el 22/10, sin mergear.
 - **Plan de pruebas manuales:** 15 casos. El resultado obtenido solo está completo en los verificados el 22/10 (pago `APRO`, webhook y "Simular notificación"); el resto queda como `TODO` hasta correrlos.
 - **`playwright.config.ts`:** `screenshot: "only-on-failure"` y, en local, reporter `list` + `html` sin abrirlo solo. En CI sigue `github`.
 - **Scripts:** `test:e2e:ui`, `test:e2e:report` y `test:codegen` (sobre `localhost:3000`).
-- **Test nuevo, `e2e/menu-mobile.spec.ts`:** el filtro de la tienda ya estaba cubierto; el menú mobile, no. Claude Code no puede usar el navegador de Codegen, así que lo escribió a mano con los locators por rol que genera Codegen. En `docs/testing.md` está cómo regrabarlo.
+- **Test nuevo, `e2e/menu-mobile.spec.ts`:** el filtro de la tienda ya estaba cubierto; el menú mobile, no. Claude Code lo escribió primero a mano, con los locators por rol que genera Codegen, porque no puede usar el navegador de Codegen. Después Catalina grabó el recorrido con `npm run test:codegen`. Se comparó la grabación con el test, y el test quedó igual porque era más robusto. La grabación quedó en `docs/testing.md` como ejemplo de por qué se limpia a mano: pasos accidentales (F12), un locator frágil, URL absoluta, el nombre `test`, sin viewport mobile y sin aserciones.
 
 **Resultado:**
 
