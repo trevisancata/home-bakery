@@ -1,13 +1,14 @@
 import { Button } from "@/components/Button";
+import { ImageFrame } from "@/components/ImageFrame";
 import { SectionTitle } from "@/components/SectionTitle";
-import { pages } from "@/data/site";
+import { pages, ui } from "@/data/site";
 
 const { past, custom } = pages.workshops;
 
 /**
- * "Así fueron los workshops" y el recuadro de workshop personalizado.
- * Mientras Maggie no mande nombre, fecha y foto de los workshops pasados,
- * solo va el título con el link a Instagram (no se inventan nombres).
+ * "Así fueron los workshops" (la lista está en data/site.ts) y el recuadro de
+ * workshop personalizado. En mobile, los workshops van en una fila con scroll
+ * horizontal; desde sm, en una grilla de 3 columnas.
  */
 export function PastWorkshops() {
   return (
@@ -20,6 +21,32 @@ export function PastWorkshops() {
         >
           {past.instagram.label} <span aria-hidden="true" className="font-simbolos">→</span>
         </a>
+      </div>
+
+      {/* Se puede enfocar para mover el scroll con el teclado en mobile. */}
+      <div
+        role="region"
+        aria-label={past.listLabel}
+        tabIndex={0}
+        className="-mx-4 snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0"
+      >
+        <ul className="flex gap-3 sm:grid sm:grid-cols-3 sm:gap-x-5 sm:gap-y-8 lg:gap-x-8 lg:gap-y-10">
+          {past.items.map((item) => (
+            <li key={`${item.name}-${item.date}`} className="flex w-[72%] shrink-0 snap-start flex-col gap-3 sm:w-auto">
+              <ImageFrame
+                src={item.image?.src}
+                alt={item.image?.alt ?? ""}
+                placeholderLabel={ui.imagePending}
+                sizes="(min-width: 640px) 33vw, 72vw"
+                className="aspect-4/3 lg:aspect-3/2"
+              />
+              <div className="flex flex-col gap-1">
+                <h3 className="text-21 lg:text-24">{item.name}</h3>
+                <p className="text-15 text-secundario">{item.date}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="flex flex-col gap-6 rounded-3xl border border-borde p-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:px-12 lg:py-10">
