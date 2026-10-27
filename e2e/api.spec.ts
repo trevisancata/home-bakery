@@ -9,6 +9,7 @@ import {
   test,
   testSlugPrefix,
 } from "./support/supabase";
+import { borrarProductoDePrueba, crearProductoDePrueba } from "./support/productos";
 
 test.skip(!hasSupabase, skipReason);
 
@@ -61,10 +62,22 @@ test.describe("GET /api/v1/productos", () => {
   });
 
   test("filtra por destacados", async ({ request }) => {
-    const response = await request.get("/api/v1/productos?destacados=true");
-    expect(response.status()).toBe(200);
-    const { data } = await response.json();
-    for (const product of data) expect(product.featured).toBe(true);
+    // Productos propios: los destacados reales los elige Maggie y pueden no
+    // existir (el chequeo de abajo pasaría sin probar nada).
+    const destacado = await crearProductoDePrueba({ featured: true });
+    const comun = await crearProductoDePrueba();
+    try {
+      const response = await request.get("/api/v1/productos?destacados=true");
+      expect(response.status()).toBe(200);
+      const { data } = await response.json();
+      const slugs = data.map((product: { slug: string }) => product.slug);
+      expect(slugs).toContain(destacado.slug);
+      expect(slugs).not.toContain(comun.slug);
+      for (const product of data) expect(product.featured).toBe(true);
+    } finally {
+      await borrarProductoDePrueba(destacado.id);
+      await borrarProductoDePrueba(comun.id);
+    }
   });
 
   for (const query of ["categoria=NO%20VALE", "categoria=inexistente", "destacados=quizas"]) {

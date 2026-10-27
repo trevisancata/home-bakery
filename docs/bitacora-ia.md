@@ -453,5 +453,6 @@ Abierto el 22/10, sin mergear.
 **Resultado:**
 
 - Lint y build en verde.
-- e2e: 108 pasan, 1 falla y 1 no corre. El que falla es de la tienda y no tiene que ver con este PR: espera "Precio a confirmar" en "Tarta de frutillas", y en la base ahora tiene $ 10.
+- e2e: 110 en verde. En la primera corrida fallaba uno de la tienda, que esperaba "Precio a confirmar" en "Tarta de frutillas". Maggie había pedido $ 10 en todos los productos hasta cargar los reales. Ver [errores.md](errores.md#tests-atados-a-los-precios-y-destacados-reales).
+- El test de `rate-limit` "no corría" por la config: su proyecto depende de `chromium`, y Playwright no corre un proyecto si falla una de sus dependencias.
 - Lighthouse de `/workshops`: 100 / 100 / 100. El LCP observado es igual al de `main`, y el simulado sube 0,17 s (ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero)).

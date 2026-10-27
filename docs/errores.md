@@ -193,3 +193,20 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Para que no se repita:**
 - Con un video arriba de todo, medir el LCP y mirar qué elemento es y en qué fase se va el tiempo.
 - Comparar el LCP **observado** además del simulado, y contra `main` con varias corridas: una sola corrida varía mucho.
+
+### Tests atados a los precios y destacados reales
+
+**PR:** #17 (`feat/contenido-maggie-2`)
+
+**Qué pasó:** el test "detalle con precio a confirmar y temporada" abría "Tarta de frutillas" y esperaba "Precio a confirmar". Maggie pidió $ 10 en todos los productos hasta cargar los reales, y el test falló aunque el código estaba bien. Como el proyecto `rate-limit` depende de `chromium`, esa falla hizo que Playwright tampoco corriera el test de `rate-limit`.
+
+Revisando los demás, "filtra por destacados" (`e2e/api.spec.ts`) dependía de los destacados reales: sin ninguno, pasaba sin probar nada.
+
+**Solución:**
+- `crearProductoDePrueba` y `borrarProductoDePrueba` (`e2e/support/productos.ts`) crean productos "e2e-…" directo en la base.
+- El test de la tienda crea un producto propio (tamaño sin precio, medida y una temporada que arranca en el mes actual), lo verifica y lo borra.
+- El de destacados crea uno destacado y uno común, y comprueba que el filtro deja uno y saca el otro.
+- "No deja destacar más de 4" (`e2e/panel.spec.ts`) completa los 4 directo en la base. Por la API, un destacado sumado en paralelo por otro test hacía fallar la creación con 409.
+
+**Para que no se repita:** es la misma regla del 21/10 ([Tests atados a una fecha de ejemplo que ya pasó](#tests-atados-a-una-fecha-de-ejemplo-que-ya-pasó)). Lo que Maggie edita desde el panel (precios, destacados, fotos) no puede ser la base de un test: cada test crea sus propios datos.
+

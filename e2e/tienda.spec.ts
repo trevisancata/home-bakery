@@ -1,3 +1,5 @@
+import { currentMonth, seasonRange } from "../lib/temporada";
+import { borrarProductoDePrueba, crearProductoDePrueba } from "./support/productos";
 import { expect, hasSupabase, skipReason, test } from "./support/supabase";
 
 test.skip(!hasSupabase, skipReason);
@@ -50,11 +52,24 @@ test.describe("Tienda", () => {
   });
 
   test("detalle con precio a confirmar y temporada", async ({ page }) => {
-    await page.goto("/tienda/tarta-de-frutillas");
-    await expect(page.getByRole("heading", { level: 1, name: "Tarta de frutillas" })).toBeVisible();
-    await expect(page.getByText("Precio a confirmar")).toBeVisible();
-    await expect(page.getByText("Solo en temporada: de septiembre a febrero")).toBeVisible();
-    await expect(page.getByText("24 cm de diámetro")).toBeVisible();
+    // Producto propio: los precios reales cambian (hoy están todos en $ 10).
+    // La temporada arranca este mes, así el producto está en temporada.
+    const desde = currentMonth();
+    const season = { from: desde, to: (desde % 12) + 1 };
+    const producto = await crearProductoDePrueba({
+      sizes: [{ label: "Único", price: null }],
+      medida: "24 cm de diámetro",
+      season,
+    });
+    try {
+      await page.goto(`/tienda/${producto.slug}`);
+      await expect(page.getByRole("heading", { level: 1, name: producto.name })).toBeVisible();
+      await expect(page.getByText("Precio a confirmar")).toBeVisible();
+      await expect(page.getByText(`Solo en temporada: ${seasonRange(season)}`)).toBeVisible();
+      await expect(page.getByText("24 cm de diámetro")).toBeVisible();
+    } finally {
+      await borrarProductoDePrueba(producto.id);
+    }
   });
 
   test("un producto a medida se consulta por WhatsApp", async ({ page }) => {

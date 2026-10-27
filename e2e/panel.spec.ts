@@ -1,7 +1,7 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import sharp from "sharp";
 import { avisarPago, cargarPago, nuevoPagoId } from "./support/pagos";
-import { categoriaDePrueba } from "./support/productos";
+import { categoriaDePrueba, crearProductoDePrueba } from "./support/productos";
 import { admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
 import { authFile } from "./support/usuarios";
 
@@ -63,8 +63,10 @@ test.describe("Productos", () => {
   });
 
   test("no deja destacar más de 4", async ({ page }) => {
+    // Se completan los 4 directo en la base: por la API, otro test que sume
+    // un destacado en paralelo haría fallar la creación con 409.
     const { count } = await admin().from("productos").select("id", { count: "exact", head: true }).eq("destacado", true).eq("activo", true);
-    for (let i = count ?? 0; i < 4; i++) await crearProducto(page.request, { featured: true });
+    for (let i = count ?? 0; i < 4; i++) await crearProductoDePrueba({ featured: true });
     const quinto = await crearProducto(page.request);
 
     await page.goto(`/admin/productos?q=${encodeURIComponent(quinto.name)}`);
