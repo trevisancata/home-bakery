@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { navigation, ui } from "@/data/site";
+import { esPaginaActual } from "@/lib/navegacion";
 import { Logo } from "./Logo";
 
 const MENU_ID = "menu-mobile";
@@ -42,7 +43,7 @@ export function Header() {
     };
   }, [open]);
 
-  const isCurrent = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const isCurrent = (href: string) => esPaginaActual(pathname, href);
 
   return (
     <header ref={headerRef} className="sticky top-0 z-40 border-b border-borde bg-hueso">

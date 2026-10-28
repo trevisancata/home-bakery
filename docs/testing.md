@@ -122,23 +122,25 @@ Casos para correr a mano antes de publicar un cambio grande o al pasar a las cre
 
 **Automatizado** indica si un e2e cubre lo mismo (con el mock de MP en el caso de los pagos). "Resultado obtenido" y "Estado" solo llevan lo que quedó registrado en la documentación; el resto se completa al correr el caso.
 
+La corrida del 28/10/2026 fue sobre el sitio publicado. Cada resultado dice quién ejecutó el caso: Claude en el navegador integrado (MP-01 a MP-04, MP-14 y, de MP-15, el salto al contenido y el carrusel) o Catalina (el resto).
+
 | ID | Módulo | Precondición | Pasos | Resultado esperado | Resultado obtenido | Estado | Automatizado |
 |---|---|---|---|---|---|---|---|
-| MP-01 | Tienda | Al menos dos categorías con productos | Abrir `/tienda`, elegir una categoría | Se ven solo sus productos y la URL lleva `?categoria=…`; al recargar, sigue filtrada | TODO: completar al correr | Pendiente | Sí (`tienda.spec.ts`) |
-| MP-02 | Tienda | Un producto sin precio y con temporada | Abrir su detalle desde la tarjeta | "Precio a confirmar" y el rango de la temporada | TODO: completar al correr | Pendiente | Sí (`tienda.spec.ts`) |
-| MP-03 | Workshop | Un workshop de ejemplo | Abrir `/workshops` y su inscripción | Aviso "Fecha de ejemplo…" y sin formulario para reservar | TODO: completar al correr | Pendiente | Sí (`inscripcion.spec.ts`) |
-| MP-04 | Inscripción | Workshop activo con precio y cupo | Enviar el formulario vacío; después, un email sin `@` | Errores por campo, foco en el primero; el error del email se anuncia como descripción del campo | TODO: completar al correr | Pendiente | Sí (`inscripcion.spec.ts`) |
+| MP-01 | Tienda | Al menos dos categorías con productos | Abrir `/tienda`, elegir una categoría | Se ven solo sus productos y la URL lleva `?categoria=…`; al recargar, sigue filtrada | 28/10/2026, Claude en el navegador integrado: Budines filtra 6 productos, la URL lleva `?categoria=budines` y sigue filtrada al recargar | Pasó | Sí (`tienda.spec.ts`) |
+| MP-02 | Tienda | Un producto sin precio y con temporada | Abrir su detalle desde la tarjeta | "Precio a confirmar" y el rango de la temporada | 28/10/2026, Claude en el navegador integrado: la temporada se ve ("Solo en temporada: de septiembre a febrero"); "Precio a confirmar" no se pudo probar porque todos los productos tienen precio ($ 10). Lo cubre el e2e | Parcial | Sí (`tienda.spec.ts`) |
+| MP-03 | Workshop | Un workshop de ejemplo | Abrir `/workshops` y su inscripción | Aviso "Fecha de ejemplo…" y sin formulario para reservar | 28/10/2026, Claude en el navegador integrado: los ejemplos muestran el aviso y no tienen formulario, también entrando directo a `/inscripcion` | Pasó | Sí (`inscripcion.spec.ts`) |
+| MP-04 | Inscripción | Workshop activo con precio y cupo | Enviar el formulario vacío; después, un email sin `@` | Errores por campo, foco en el primero; el error del email se anuncia como descripción del campo | 28/10/2026, Claude en el navegador integrado: errores por campo y foco en el primero; el email sin `@` muestra su error en el campo | Pasó | Sí (`inscripcion.spec.ts`) |
 | MP-05 | Pago | Sandbox configurado, workshop de prueba | Inscribirse, "Pagar con Mercado Pago", tarjeta con titular `APRO` | "¡Tu lugar está reservado!", total pagado, `.ics`; en `/admin`, "Reservada" y pago "Aprobado" | Verificado el 22/10/2026: pago conciliado (ver [errores.md](errores.md#401-del-webhook-con-las-credenciales-test)) | Pasó | Parcial (`pagos.spec.ts`, con mock) |
-| MP-06 | Pago | Igual que MP-05 | Pagar con titular `OTHE` y volver al sitio | "El pago no se aprobó" y "Probar de nuevo"; la inscripción sigue pendiente; reintento con `APRO` → reservada | TODO: completar al correr | Pendiente | Parcial (`pagos.spec.ts`, con mock) |
-| MP-07 | Pago | Igual que MP-05 | Pagar con titular `CONT` | "Estamos esperando la confirmación del pago"; se refresca cada 5 s durante 1 minuto | TODO: completar al correr | Pendiente | Parcial (`pagos.spec.ts`, con mock) |
+| MP-06 | Pago | Igual que MP-05 | Pagar con titular `OTHE` y volver al sitio | "El pago no se aprobó" y "Probar de nuevo"; la inscripción sigue pendiente; reintento con `APRO` → reservada | 28/10/2026, Catalina: con titular `OTHE`, "El pago no se aprobó" y "Probar de nuevo"; la inscripción quedó pendiente. El reintento con `APRO` no quedó registrado | Pasó | Parcial (`pagos.spec.ts`, con mock) |
+| MP-07 | Pago | Igual que MP-05 | Pagar con titular `CONT` | "Estamos esperando la confirmación del pago"; se refresca cada 5 s durante 1 minuto | 28/10/2026, Catalina: con titular `CONT`, "Estamos esperando la confirmación del pago". El refresco cada 5 s no quedó registrado | Pasó | Parcial (`pagos.spec.ts`, con mock) |
 | MP-08 | Webhook | Webhook en Modo productivo, deploy en producción | Pagar con `APRO`; mirar el historial de notificaciones de MP | El aviso `payment.created` se entrega con 200 | Verificado el 22/10/2026: 200 y pago conciliado | Pasó | Parcial (`pagos.spec.ts` firma y procesa avisos con el mock) |
 | MP-09 | Webhook | Panel de MP, modo de prueba | "Simular notificación" | 200 | Verificado el 22/10/2026: 200 (ver [errores.md](errores.md#401-del-webhook-con-los-pagos-reales)) | Pasó | No |
-| MP-10 | Panel: login | Usuaria admin | Ingresar con contraseña incorrecta; después, con la correcta | Mensaje genérico con foco; con la correcta, entra a `/admin` | TODO: completar al correr | Pendiente | Sí (`admin.spec.ts`) |
-| MP-11 | Panel: productos | Sesión de admin | Editar el precio de un producto en línea | Se guarda y la tienda muestra el precio nuevo | TODO: completar al correr | Pendiente | Sí (`panel.spec.ts`) |
-| MP-12 | Panel: inscripciones | Una inscripción reservada | Cambiarle el estado desde `/admin/inscripciones` | El estado cambia y el cupo se respeta | TODO: completar al correr | Pendiente | Sí (`panel.spec.ts`, `admin.spec.ts`) |
-| MP-13 | Panel: devolución | Un pago en "Para devolver" | Hacer la devolución en MP y "Marcar como devuelto" (con confirmación) | Pasa a los devueltos y un aviso repetido no lo vuelve a marcar | TODO: completar al correr | Pendiente | Sí (`panel.spec.ts`) |
-| MP-14 | Mobile | Teléfono real o 390 px | Abrir "Menú", ir a Tienda; abrir de nuevo y cerrar con Escape y tocando afuera | El menú se abre debajo del header, marca la página actual y se cierra en los tres casos | TODO: completar al correr | Pendiente | Sí (`menu-mobile.spec.ts`) |
-| MP-15 | Accesibilidad | Solo teclado, sin mouse | Desde `/`: Tab hasta "Saltar al contenido" y Enter; recorrer el carrusel; inscribirse a un workshop; en el panel, abrir un diálogo de borrar | Foco siempre visible; el salto lleva al contenido; el carrusel se maneja con Enter y Espacio; el diálogo enfoca la opción segura | TODO: completar al correr | Pendiente | Parcial (carrusel e inscripción; el diálogo, en `panel.spec.ts`) |
+| MP-10 | Panel: login | Usuaria admin | Ingresar con contraseña incorrecta; después, con la correcta | Mensaje genérico con foco; con la correcta, entra a `/admin` | 28/10/2026, Catalina: con la contraseña incorrecta, mensaje genérico; con la correcta, entra a `/admin` | Pasó | Sí (`admin.spec.ts`) |
+| MP-11 | Panel: productos | Sesión de admin | Editar el precio de un producto en línea | Se guarda y la tienda muestra el precio nuevo | 28/10/2026, Catalina: el precio editado se guarda y se ve en la tienda | Pasó | Sí (`panel.spec.ts`) |
+| MP-12 | Panel: inscripciones | Una inscripción reservada | Cambiarle el estado desde `/admin/inscripciones` | El estado cambia y el cupo se respeta | 28/10/2026, Catalina: el estado de la inscripción cambia desde `/admin/inscripciones` | Pasó | Sí (`panel.spec.ts`, `admin.spec.ts`) |
+| MP-13 | Panel: devolución | Un pago en "Para devolver" | Hacer la devolución en MP y "Marcar como devuelto" (con confirmación) | Pasa a los devueltos y un aviso repetido no lo vuelve a marcar | 28/10/2026, Catalina: no se corrió, no había un pago en "Para devolver" | No ejecutado | Sí (`panel.spec.ts`) |
+| MP-14 | Mobile | Teléfono real o 390 px | Abrir "Menú", ir a Tienda; abrir de nuevo y cerrar con Escape y tocando afuera | El menú se abre debajo del header, marca la página actual y se cierra en los tres casos | 28/10/2026, Claude en el navegador integrado: abre debajo del header, navega a Tienda y se cierra en los tres casos. En la home, "Inicio" no tiene `aria-current="page"` (en `/tienda`, "Tienda" sí): [Bug 4](#bug-4-en-la-home-inicio-no-se-marca-como-página-actual) | Pasó con bug ([Bug 4](#bug-4-en-la-home-inicio-no-se-marca-como-página-actual)) | Sí (`menu-mobile.spec.ts`) |
+| MP-15 | Accesibilidad | Solo teclado, sin mouse | Desde `/`: Tab hasta "Saltar al contenido" y Enter; recorrer el carrusel; inscribirse a un workshop; en el panel, abrir un diálogo de borrar | Foco siempre visible; el salto lleva al contenido; el carrusel se maneja con Enter y Espacio; el diálogo enfoca la opción segura | 28/10/2026, Claude en el navegador integrado: Tab hasta "Saltar al contenido" con foco visible y Enter lleva a `main#contenido`; el carrusel se maneja con Enter y Espacio y se pausa con Enter. 28/10/2026, Catalina: la inscripción se completa solo con teclado y el diálogo de borrar del panel enfoca la opción segura | Pasó | Parcial (carrusel e inscripción; el diálogo, en `panel.spec.ts`) |
 
 ## Reporte de bugs
 
@@ -165,7 +167,7 @@ Casos para correr a mano antes de publicar un cambio grande o al pasar a las cre
 
 **Severidad** es el impacto (¿se pierde plata? ¿se rompe un flujo?) y **prioridad**, la urgencia. Suelen ir juntas, pero no siempre: un test que falla sin que el sitio esté roto tiene severidad baja y prioridad alta, porque bloquea los PRs.
 
-Los tres reportes que siguen salen de [errores.md](errores.md).
+Los bugs 1 a 3 salen de [errores.md](errores.md); el 4, del plan de pruebas manuales (MP-14).
 
 ### Bug 1: el webhook de Mercado Pago respondía 401 a los pagos reales
 
@@ -227,6 +229,28 @@ Los tres reportes que siguen salen de [errores.md](errores.md).
 **Evidencia:** la captura y el trace de la falla: la página se había servido con una versión anterior al alta.
 **Causa:** `/workshops` es estática (ISR). Una regeneración que empezó antes del alta puede terminar después y dejar por un momento la versión vieja.
 **Solución (PR #18):** `abrirHastaVer` (`e2e/support/supabase.ts`) recarga la página hasta que se ve lo que creó el test, con un tope de 20 s. Con 5 repeticiones, 172 de 172.
+
+### Bug 4: en la home, "Inicio" no se marca como página actual
+
+- **Entorno:** producción (Vercel), home `/`, menú mobile (390 px) y de escritorio, rama `main`
+- **Severidad:** baja. La navegación anda; un lector de pantalla no anuncia "página actual" en la home y "Inicio" no se ve resaltado
+- **Prioridad:** media
+
+**Pasos para reproducir:**
+1. Abrir `/` en el sitio publicado (después de que se haya regenerado, por ejemplo tras un cambio desde el panel).
+2. Abrir "Menú".
+3. Inspeccionar el link "Inicio".
+
+**Resultado esperado:** "Inicio" tiene `aria-current="page"`, como "Tienda" en `/tienda`.
+**Resultado obtenido:** ningún link del menú tiene `aria-current`, ni en el HTML que manda el servidor ni después de hidratar.
+
+**Evidencia:**
+- `curl` de `/` en producción: los links "Inicio" no tienen `aria-current`; en `/tienda`, "Tienda" sí;
+- el payload RSC de esa home trae la URL canónica `"c":["","index"]`; el de un `next build` local, `"c":["",""]` y la home sale bien;
+- regenerando la home con `next start` en local, sigue saliendo `"c":["",""]`: pasa solo con la regeneración de Vercel. Por eso el e2e del menú (que corre contra un build nuevo) pasaba.
+
+**Causa:** el Header comparaba `pathname === "/"` para "Inicio". Cuando Vercel regenera la home (ISR, `revalidate = 300` y `revalidatePath("/")` desde el panel), `usePathname()` devuelve `"/index"`, así que la comparación daba falso.
+**Solución (PR #20):** `esPaginaActual` (`lib/navegacion.ts`) toma `"/index"` como el inicio y marca las secciones solo en su ruta o sus subpáginas (`/tienda/…`, no `/tiendas`). El Header la usa en los dos menús y `menu-mobile.spec.ts` la prueba con `"/index"`. Falta verificarlo en producción después del deploy.
 
 ## Depuración
 

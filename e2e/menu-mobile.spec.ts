@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { esPaginaActual } from "../lib/navegacion";
 
 // Ancho de un teléfono: el menú de escritorio se oculta y aparece el botón "Menú".
 test.use({ viewport: { width: 390, height: 844 } });
@@ -52,5 +53,23 @@ test.describe("Menú mobile", () => {
     await page.mouse.click(2, 800);
     await expect(menu).toBeHidden();
     await expect(page).toHaveURL("/");
+  });
+});
+
+// Bug 4 (docs/testing.md): cuando Vercel regenera la home (ISR),
+// usePathname() devuelve "/index". Con next start no pasa, así que se
+// prueba la función.
+test.describe("Página actual del menú", () => {
+  test("la home regenerada (/index) marca Inicio", () => {
+    expect(esPaginaActual("/", "/")).toBe(true);
+    expect(esPaginaActual("/index", "/")).toBe(true);
+    expect(esPaginaActual("/index", "/tienda")).toBe(false);
+  });
+
+  test("las secciones se marcan también en sus subpáginas", () => {
+    expect(esPaginaActual("/tienda", "/tienda")).toBe(true);
+    expect(esPaginaActual("/tienda/budin-de-limon", "/tienda")).toBe(true);
+    expect(esPaginaActual("/tienda", "/")).toBe(false);
+    expect(esPaginaActual("/workshops-viejos", "/workshops")).toBe(false);
   });
 });
