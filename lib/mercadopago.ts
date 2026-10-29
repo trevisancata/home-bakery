@@ -86,7 +86,7 @@ export async function obtenerPago(id: string): Promise<PagoMP | null> {
   }
 }
 
-/** Los pagos de una inscripción (external_reference = id de la inscripción). */
+/** Los pagos con ese external_reference (lib/pagos/referencia.ts), del más nuevo al más viejo. */
 export async function buscarPagos(externalReference: string): Promise<PagoMP[]> {
   const result = await new Payment(mercadoPago()).search({
     options: { external_reference: externalReference, sort: "date_created", criteria: "desc" },

@@ -11,7 +11,7 @@ import { isInSeason, type Season } from "@/lib/temporada";
 export type ProductCategory = { slug: string; name: string; custom: boolean };
 export type ProductImage = { src: string; alt: string; width: number; height: number; flavor: string | null };
 /** Precio en pesos; null = "Precio a confirmar". */
-export type ProductSize = { label: string; price: number | null };
+export type ProductSize = { id: string; label: string; price: number | null };
 
 export type Product = {
   id: string;
@@ -84,7 +84,7 @@ type ProductoRow = {
   sabores: string[];
   decoraciones: string[];
   categoria: CategoriaRow;
-  producto_tamanos: { etiqueta: string; precio: number | string | null; orden: number }[];
+  producto_tamanos: { id: string; etiqueta: string; precio: number | string | null; orden: number }[];
   producto_imagenes: { ruta: string; alt: string; sabor: string | null; ancho: number; alto: number; orden: number }[];
 };
 
@@ -111,7 +111,7 @@ const productoSelect = `
   temporada_desde_mes, temporada_hasta_mes, a_medida, anticipacion_horas, destacado, orden,
   sabores, decoraciones,
   categoria:categorias!inner (slug, nombre, a_medida, orden),
-  producto_tamanos (etiqueta, precio, orden),
+  producto_tamanos (id, etiqueta, precio, orden),
   producto_imagenes (ruta, alt, sabor, ancho, alto, orden)
 `;
 
@@ -157,7 +157,7 @@ function toProduct(row: ProductoRow): Product {
       })),
     sizes: [...row.producto_tamanos]
       .sort((a, b) => a.orden - b.orden)
-      .map((size) => ({ label: size.etiqueta, price: toPrice(size.precio) })),
+      .map((size) => ({ id: size.id, label: size.etiqueta, price: toPrice(size.precio) })),
     flavors: row.sabores,
     decorations: row.decoraciones,
   };
