@@ -227,7 +227,7 @@ Revisando los demás, "filtra por destacados" (`e2e/api.spec.ts`) dependía de l
 
 ### zod entró al JS de todas las páginas
 
-**PR:** `feat/carrito`
+**PR:** #21 (`feat/carrito`)
 
 **Qué pasó:** con el carrito, Lighthouse de `/tienda` mobile bajó de ~74 a ~61, con el TBT de ~470 a ~780 ms. El JS transferido pasó de 158 a 254 KB.
 
@@ -244,7 +244,7 @@ Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-ch
 
 ### El carrito recuperaba una línea recién quitada
 
-**PR:** `feat/carrito`
+**PR:** #21 (`feat/carrito`)
 
 **Qué pasó:** en el e2e, después de "Quitar", el carrito mostraba "Todavía no agregaste nada." y enseguida el header volvía a decir "3 productos".
 
@@ -256,7 +256,7 @@ Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-ch
 
 ### Dos workers generaban el mismo id de pago
 
-**PR:** `feat/carrito`
+**PR:** #21 (`feat/carrito`)
 
 **Qué pasó:** en una corrida falló "rechazar un pedido pagado deja el pago para devolver": el pedido no tenía ningún pago.
 

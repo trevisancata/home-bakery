@@ -459,7 +459,7 @@ Abierto el 22/10, sin mergear.
 
 ## 28/10/2026
 
-### PR #TODO · Carrito y pedidos de la tienda, PR 1 de 2: compra (`feat/carrito`)
+### PR #21 · Carrito y pedidos de la tienda, PR 1 de 2: compra (`feat/carrito`)
 
 **Pedido:** que la tienda venda. Carrito en el navegador, checkout con entrega, día y horario, pago del 100% con Checkout Pro y el registro del pago. Las reglas son de Maggie (ver [contenido-maggie.md](contenido-maggie.md#pedidos-de-la-tienda-confirmado-por-maggie-2810)). **Pagar no confirma el pedido:** Maggie lo acepta o lo rechaza. La pantalla para eso va en el PR 2; acá quedan las funciones de la base, con tests.
 
