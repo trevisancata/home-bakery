@@ -59,11 +59,11 @@ test.describe("Inscripción con preferencia de pago", () => {
     expect(minutos).toBeGreaterThan(28);
     expect(minutos).toBeLessThanOrEqual(30);
 
-    const pref = await preferenciaDe(request, id);
+    const pref = await preferenciaDe(request, `inscripcion:${id}`);
     expect(pref.items).toEqual([
       expect.objectContaining({ title: `Inscripción · ${workshop.name} · 2 lugares`, unit_price: 60000, quantity: 1, currency_id: "ARS" }),
     ]);
-    expect(pref.external_reference).toBe(id);
+    expect(pref.external_reference).toBe(`inscripcion:${id}`);
     expect(pref.payer.email).toBe("prueba@ejemplo.com");
     expect(pref.back_urls.success).toBe(`http://localhost:3100/workshops/${workshop.slug}/inscripcion/resultado?inscripcion=${id}`);
     expect(pref.statement_descriptor).toBe("HOMEBAKERY");
@@ -114,11 +114,12 @@ test.describe("Webhook de Mercado Pago", () => {
   test("approved → la inscripción queda reservada", async ({ request, workshop }) => {
     const { id, monto } = await inscripta(request, workshop, 2);
     const pagoId = nuevoPagoId();
-    await cargarPago(request, pagoId, { status: "approved", external_reference: id, transaction_amount: monto });
+    // La referencia que manda la web desde la 0007.
+    await cargarPago(request, pagoId, { status: "approved", external_reference: `inscripcion:${id}`, transaction_amount: monto });
 
     const response = await avisarPago(request, pagoId);
     expect(response.status()).toBe(200);
-    expect(await response.json()).toMatchObject({ resultado: "registrado", estadoInscripcion: "reservada", cambio: true });
+    expect(await response.json()).toMatchObject({ resultado: "registrado", tipo: "inscripcion", estado: "reservada", cambio: true });
     expect((await leerInscripcion(id)).estado).toBe("reservada");
     expect(await pagosDe(id)).toEqual([
       expect.objectContaining({ mp_payment_id: pagoId, estado: "approved", devolucion_pendiente: false }),
@@ -126,6 +127,14 @@ test.describe("Webhook de Mercado Pago", () => {
 
     const { data } = await (await request.get("/api/v1/workshops")).json();
     expect(data.find((item: { slug: string }) => item.slug === workshop.slug).spotsLeft).toBe(4);
+  });
+
+  test("una inscripción con la referencia vieja (el id solo, antes de la 0007) se sigue registrando", async ({ request, workshop }) => {
+    const { id, monto } = await inscripta(request, workshop);
+    const pagoId = nuevoPagoId();
+    await cargarPago(request, pagoId, { status: "approved", external_reference: id, transaction_amount: monto });
+    expect(await (await avisarPago(request, pagoId)).json()).toMatchObject({ tipo: "inscripcion", estado: "reservada" });
+    expect((await leerInscripcion(id)).estado).toBe("reservada");
   });
 
   test("rejected → sigue pendiente", async ({ request, workshop }) => {
@@ -161,7 +170,7 @@ test.describe("Webhook de Mercado Pago", () => {
     expect(bodies.filter((body) => body.cambio)).toHaveLength(1);
 
     const otra = await avisarPago(request, pagoId);
-    expect(await otra.json()).toMatchObject({ estadoInscripcion: "reservada", cambio: false });
+    expect(await otra.json()).toMatchObject({ estado: "reservada", cambio: false });
     expect(await pagosDe(id)).toHaveLength(1);
     expect(await lugaresOcupados(workshop.id)).toBe(2);
   });
@@ -198,7 +207,7 @@ test.describe("Webhook de Mercado Pago", () => {
     // No existe en MP.
     const inexistente = await avisarPago(request, nuevoPagoId());
     expect(await inexistente.json()).toMatchObject({ resultado: "ignorado", motivo: "pago_inexistente" });
-    // De otra referencia (no es una inscripción).
+    // De otra referencia (no es una inscripción ni un pedido).
     const ajeno = nuevoPagoId();
     await cargarPago(request, ajeno, { status: "approved", external_reference: "pedido-123", transaction_amount: 10 });
     expect(await (await avisarPago(request, ajeno)).json()).toMatchObject({ resultado: "ignorado", motivo: "sin_external_reference" });
@@ -227,7 +236,7 @@ test.describe("Vencimiento y cupo", () => {
     await vencer(id);
     const pagoId = nuevoPagoId();
     await cargarPago(request, pagoId, { status: "approved", external_reference: id, transaction_amount: monto });
-    expect(await (await avisarPago(request, pagoId)).json()).toMatchObject({ estadoInscripcion: "reservada" });
+    expect(await (await avisarPago(request, pagoId)).json()).toMatchObject({ estado: "reservada" });
   });
 
   test("dos pagos aprobados por el último lugar: uno reserva y el otro queda para devolver", async ({ request }) => {

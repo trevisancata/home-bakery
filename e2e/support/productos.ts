@@ -34,6 +34,9 @@ type DatosProducto = {
   /** A medida: se consulta por WhatsApp en vez de pedirse. */
   custom?: boolean;
   flavors?: string[];
+  decorations?: string[];
+  /** Horas de anticipación (por defecto, las de la base: 48). */
+  leadTimeHours?: number;
   featured?: boolean;
   active?: boolean;
   /**
@@ -58,6 +61,8 @@ export async function crearProductoDePrueba({
   season = null,
   custom = false,
   flavors = [],
+  decorations = [],
+  leadTimeHours,
   featured = false,
   active = true,
   images = 0,
@@ -75,6 +80,8 @@ export async function crearProductoDePrueba({
       temporada_hasta_mes: season?.to ?? null,
       a_medida: custom,
       sabores: flavors,
+      decoraciones: decorations,
+      ...(leadTimeHours === undefined ? {} : { anticipacion_horas: leadTimeHours }),
       destacado: featured,
       activo: active,
     })

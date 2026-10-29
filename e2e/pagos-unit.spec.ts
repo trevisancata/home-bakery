@@ -119,7 +119,8 @@ test.describe("Preferencia de Checkout Pro", () => {
     expect(pref.items).toEqual([
       { id: "tortas-de-capas", title: "Inscripción · Tortas de capas · 2 lugares", quantity: 1, unit_price: 60000, currency_id: "ARS" },
     ]);
-    expect(pref.external_reference).toBe(datos.inscripcion.id);
+    // Con prefijo desde la 0007: el mismo webhook atiende inscripciones y pedidos.
+    expect(pref.external_reference).toBe(`inscripcion:${datos.inscripcion.id}`);
     expect(pref.payer).toEqual({ email: "ana@ejemplo.com" });
     expect(pref.back_urls).toEqual({ success: resultado, pending: resultado, failure: resultado });
     expect(pref.auto_return).toBe("approved");
