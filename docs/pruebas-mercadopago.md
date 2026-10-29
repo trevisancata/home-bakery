@@ -98,6 +98,23 @@ Para cada caso: inscribirse en el workshop de prueba (`/workshops/<slug>/inscrip
    - en `/admin` aparece en **"Para devolver"** con el motivo "Llegó sin cupo";
    - la devolución se hace a mano desde la cuenta de MP.
 
+### Pedido de la tienda
+
+Con un producto **activo**, **en temporada**, **no a medida** y con algún tamaño con precio (por ejemplo, $ 1.000):
+
+1. En `/tienda/<producto>`, elegir tamaño y sabor, y tocar **"Agregar al pedido"**. El ícono del carrito muestra el contador.
+2. En `/carrito` → **Continuar**. En el checkout:
+   - completar los datos;
+   - elegir **Retiro**: con menos de $ 400.000, el envío aparece deshabilitado con la explicación;
+   - elegir un día hábil a más de 48 h y una franja.
+3. Tiene que verse el aviso **"Maggie tiene que confirmar tu pedido"**. Pagar con `APRO`.
+4. **Tiene que pasar:**
+   - la página de resultado dice **"¡Recibimos tu pago!"** y "Tu pedido está pagado y Maggie lo va a confirmar; te escribe por WhatsApp", con el número de pedido;
+   - el carrito queda vacío;
+   - en Supabase, el pedido está en `pagado` (**no** `aceptado`) y su pago tiene `pedido_id`;
+   - en MP, el `external_reference` del pago es `pedido:<id>`.
+5. Con `OTHE`, la página dice **"El pago no se aprobó"** con **"Probar de nuevo"**.
+
 ### Preview de Vercel (sin webhook)
 
 En un preview, el aviso de MP no llega (Vercel Authentication). La página de resultado concilia sola: al volver de MP busca los pagos de la inscripción en la API y la reserva igual. Si se cierra la pestaña antes de volver, el pago queda registrado recién cuando se abre la página de resultado; en producción lo registra el webhook.

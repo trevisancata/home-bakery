@@ -222,3 +222,47 @@ Revisando los demás, "filtra por destacados" (`e2e/api.spec.ts`) dependía de l
 **Solución:** `abrirHastaVer` (`e2e/support/supabase.ts`) recarga la página hasta que se ve lo que creó el test, con un tope de 20 s. La usan los tests de los listados de `/workshops` y `/tienda`. Con 5 repeticiones, 172 de 172.
 
 **Para que no se repita:** en una página con ISR, que el dato esté en la base no garantiza que se vea en la próxima visita. Se espera a que aparezca, no se espera un tiempo fijo.
+
+## 29/10/2026
+
+### zod entró al JS de todas las páginas
+
+**PR:** `feat/carrito`
+
+**Qué pasó:** con el carrito, Lighthouse de `/tienda` mobile bajó de ~74 a ~61, con el TBT de ~470 a ~780 ms. El JS transferido pasó de 158 a 254 KB.
+
+**Causa:** el provider del carrito está en el layout de todo el sitio y validaba lo guardado con un esquema de `zod`. Así `zod` completo (~89 KB comprimidos) se cargaba y se ejecutaba en cada página durante la hidratación, aunque solo hiciera falta para leer el carrito.
+
+**Solución:**
+- Lo que hace falta en cada página quedó sin zod (`lib/carrito/lineas.ts`).
+- El esquema (`lib/carrito/esquema.ts`) usa `zod/mini` (~23 KB) y el provider lo carga con `import()` cuando el navegador está libre. Mientras tanto, el carrito no está "listo" y las acciones esperan, así no se escribe encima de lo guardado sin haberlo leído.
+- El checkout sigue usando `zod` completo, porque esa página lo necesita para el formulario.
+
+Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-checkout-pedidos)).
+
+**Para que no se repita:** lo que se monta en el layout se paga en todas las páginas. Antes de importar una librería en un componente del layout, medir el JS de una página que no la usa.
+
+### El carrito recuperaba una línea recién quitada
+
+**PR:** `feat/carrito`
+
+**Qué pasó:** en el e2e, después de "Quitar", el carrito mostraba "Todavía no agregaste nada." y enseguida el header volvía a decir "3 productos".
+
+**Causa:** al abrir `/carrito`, la revisión de precios pide el catálogo a la API. Cuando terminaba, guardaba las líneas **que tenía al empezar**, con los precios actualizados, y pisaba el cambio que había hecho la persona mientras tanto.
+
+**Solución:** el provider expone `update(fn)`, que aplica el cambio sobre el carrito de ese momento y no sobre el de un render viejo. La revisión actualiza el precio solo de las líneas que siguen estando.
+
+**Para que no se repita:** un resultado asincrónico no puede guardar un estado que leyó antes de esperar. Se aplica como cambio sobre el estado actual.
+
+### Dos workers generaban el mismo id de pago
+
+**PR:** `feat/carrito`
+
+**Qué pasó:** en una corrida falló "rechazar un pedido pagado deja el pago para devolver": el pedido no tenía ningún pago.
+
+**Causa:** `nuevoPagoId()` (`e2e/support/pagos.ts`) arrancaba en `Date.now()` en cada worker. Dos workers en paralelo podían generar el mismo id, y el mock de MP pisaba un pago con el otro. La base lo ignoraba, con razón, porque ese pago ya estaba registrado para otro dueño (`HB400`). Con más tests de pagos, la coincidencia se volvió probable.
+
+**Solución:** el id lleva el pid del worker en los últimos tres dígitos y avanza de a mil. Además, el helper `pagado` de los tests de pedidos verifica que el pedido haya quedado `pagado`: si falla, falla ahí y no tres pasos después.
+
+**Para que no se repita:** un id "único" generado en paralelo tiene que incluir algo propio de cada worker, no solo la hora.
+

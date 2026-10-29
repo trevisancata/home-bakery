@@ -1,6 +1,6 @@
 # Modelo de datos
 
-El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El esquema está en seis migraciones, que se corren una vez y en orden en el SQL Editor:
+El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven en Supabase (Postgres). El esquema está en siete migraciones, que se corren una vez y en orden en el SQL Editor:
 
 - [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
 - [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md).
@@ -8,6 +8,13 @@ El catálogo, los workshops y las inscripciones viven en Supabase (Postgres). El
 - [`0004_inscripcion_solo_servidor.sql`](../supabase/migrations/0004_inscripcion_solo_servidor.sql) (E6): `crear_inscripcion` pasa a ejecutarse solo con `service_role`, desde la API.
 - [`0005_devoluciones.sql`](../supabase/migrations/0005_devoluciones.sql) (panel del E5): `devuelto_at` y `devuelto_por` en `pagos`, `marcar_devuelto` (solo la admin) y `confirmar_pago` sin volver a marcar un pago ya devuelto.
 - [`0006_pago_completo.sql`](../supabase/migrations/0006_pago_completo.sql): pago completo al inscribirse. `sena_porcentaje` pasa a 100 (default y workshops existentes); los nombres internos no cambian. Ver [pagos.md](pagos.md#pago-completo-migración-0006).
+- [`0007_pedidos.sql`](../supabase/migrations/0007_pedidos.sql): los pedidos de la tienda.
+  - Tablas `pedidos` y `pedido_items`.
+  - `crear_pedido` (solo `service_role`).
+  - `pagos` pasa a ser de una inscripción **o** de un pedido, con `confirmar_pago(tipo, id, …)`.
+  - `aceptar_pedido` y `rechazar_pedido` (solo admin).
+
+  Ver [Estados de un pedido](#estados-de-un-pedido) y [pagos.md](pagos.md#pedidos-de-la-tienda-migración-0007).
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -22,6 +29,10 @@ erDiagram
   workshops ||--o{ inscripciones : "recibe"
   auth_users ||--o| perfiles : "tiene rol"
   inscripciones ||--o{ pagos : "se paga con"
+  pedidos ||--|{ pedido_items : "tiene"
+  pedidos ||--o{ pagos : "se paga con"
+  productos |o--o{ pedido_items : "snapshot de"
+  producto_tamanos |o--o{ pedido_items : "snapshot de"
 
   categorias {
     uuid id PK
@@ -126,7 +137,65 @@ erDiagram
     bool devolucion_pendiente
     text motivo_devolucion
   }
+  pedidos {
+    uuid id PK
+    bigint numero UK "para WhatsApp"
+    text nombre
+    text email
+    text telefono
+    text entrega "retiro · envio"
+    text direccion "solo con envío"
+    text localidad
+    date fecha
+    text franja "9-13 · 10-13 · 13-16 · 16-19"
+    text notas
+    numeric total "lo calcula crear_pedido"
+    text estado
+    timestamptz vence_at "30 minutos sin pago"
+    timestamptz aceptado_at
+    timestamptz rechazado_at
+    text motivo_rechazo
+  }
+  pedido_items {
+    uuid id PK
+    uuid pedido_id FK
+    uuid producto_id FK "null si se borró"
+    uuid tamano_id FK "null si se borró"
+    text nombre "snapshot"
+    text tamano_etiqueta "snapshot"
+    text sabor
+    text decoracion
+    int cantidad "1 a 20"
+    numeric precio_unitario "de la base"
+    numeric subtotal
+  }
 ```
+
+En `pagos`, `inscripcion_id` y `pedido_id` son los dos opcionales, pero un check (`num_nonnulls(...) = 1`) exige exactamente uno.
+
+### Estados de un pedido
+
+Pagar **no confirma** el pedido: lo confirma Maggie.
+
+```mermaid
+stateDiagram-v2
+  [*] --> pendiente_pago: crear_pedido (POST /api/v1/pedidos)
+  pendiente_pago --> pagado: confirmar_pago (approved, monto exacto)
+  pendiente_pago --> cancelado: falló Mercado Pago al crear la preferencia
+  pendiente_pago --> rechazado: rechazar_pedido (Maggie)
+  pagado --> aceptado: aceptar_pedido (Maggie)
+  pagado --> rechazado: rechazar_pedido → pagos para devolver
+  aceptado --> en_preparacion
+  en_preparacion --> listo
+  listo --> entregado
+  entregado --> [*]
+  rechazado --> [*]
+  cancelado --> [*]
+```
+
+- Un `pendiente_pago` vencido (pasaron los 30 minutos) sigue en ese estado: no ocupa nada. Si igual llega un pago aprobado por el total, pasa a `pagado`.
+- `aceptado → en_preparacion → listo → entregado` los mueve el panel en el PR 2. Hoy no hay función para eso.
+- Un pago aprobado de un pedido `rechazado` o `cancelado`, con otro monto, o un segundo pago del mismo pedido, queda **para devolver** ([pagos.md](pagos.md#pedidos-de-la-tienda-migración-0007)).
 
 Todas las tablas tienen `created_at` y `updated_at`; un trigger (`set_updated_at`) actualiza `updated_at` en cada cambio.
 
@@ -141,7 +210,7 @@ Todas las tablas tienen `created_at` y `updated_at`; un trigger (`set_updated_at
 
 ## Permisos y RLS
 
-RLS está activado en las nueve tablas. Además, las migraciones revocan todos los privilegios de `anon` y `authenticated` y otorgan solo los que hacen falta: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven o se tocan. Para la admin, las políticas exigen `(select public.es_admin())`.
+RLS está activado en las once tablas. Además, las migraciones revocan todos los privilegios de `anon` y `authenticated` y otorgan solo los que hacen falta: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven o se tocan. Para la admin, las políticas exigen `(select public.es_admin())`.
 
 | Tabla | Lectura pública (anon, authenticated) | Admin (`es_admin()`) |
 |---|---|---|
@@ -154,6 +223,7 @@ RLS está activado en las nueve tablas. Además, las migraciones revocan todos l
 | `inscripciones` | **Ninguna:** sin permisos ni políticas | Lee todas y cambia **solo la columna `estado`**. No borra |
 | `perfiles` | Cada usuaria lee **solo su** perfil | Igual: nadie escribe con la clave publishable |
 | `pagos` | **Ninguna** | Lee todos. No escribe directamente: solo puede marcar una devolución con `marcar_devuelto`. El resto lo escribe `confirmar_pago` (service_role) |
+| `pedidos`, `pedido_items` | **Ninguna:** tienen datos personales | Los lee. No escribe directamente: acepta o rechaza con `aceptar_pedido` / `rechazar_pedido`. Los crea `crear_pedido` (service_role) |
 
 Las políticas permisivas se combinan con OR: la admin ve lo activo por la política pública y lo inactivo por la suya.
 
@@ -163,6 +233,10 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 |---|---|---|---|---|---|
 | Ver el catálogo y los workshops activos | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Inscribirse (por `POST /api/v1/inscripciones`) | ✓ | ✓ | ✓ | ✓ | — |
+| Hacer un pedido (por `POST /api/v1/pedidos`) | ✓ | ✓ | ✓ | ✓ | — |
+| Llamar directo a `crear_pedido` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API) |
+| Ver pedidos | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Aceptar o rechazar un pedido | ✗ | ✗ | ✗ | ✓ | — |
 | Llamar directo a `crear_inscripcion` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API, desde la 0004) |
 | Entrar a `/admin` y a `/api/v1/admin` | ✗ (login / 401) | ✗ (403) | ✗ (403) | ✓ | — |
 | Ver lo inactivo | ✗ | ✗ | ✗ | ✓ | ✓ |
@@ -182,7 +256,9 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 
 - **`workshops_publicos`** es una vista con `security_invoker = true`: corre con los permisos de quien consulta, así que respeta el RLS de `workshops` (solo activos). Además filtra los que ya empezaron y calcula `lugares_libres`.
 - **`lugares_ocupados(workshop_id)`** es `security definer`: anon no puede leer `inscripciones`, así que la vista no podría sumar los lugares ocupados. La función solo devuelve el total de lugares, nunca datos de las personas. Desde la 0003 cuenta las **reservadas** y las **pendientes de seña que no vencieron** (`vence_at > now()`). Una pendiente vencida libera el cupo sola, sin un proceso que la cancele.
-- **`confirmar_pago(inscripción, pago, estado, monto, moneda, detalle)`** (0003) es `security definer` y **solo la ejecuta `service_role`**. Registra el pago de MP de forma idempotente y reserva si corresponde. Ver [pagos.md](pagos.md#qué-hace-confirmar_pago).
+- **`confirmar_pago(tipo, id, pago, estado, monto, moneda, detalle)`** (0007, reemplaza la de 0003/0005) es `security definer` y **solo la ejecuta `service_role`**. Registra el pago de MP de forma idempotente. Si es de una inscripción, reserva si corresponde; si es de un pedido, lo pasa a `pagado`. La firma vieja, solo para inscripciones, queda como envoltorio. Ver [pagos.md](pagos.md#qué-hace-confirmar_pago).
+- **`crear_pedido(…)`** (0007) es `security definer` y solo la ejecuta `service_role`. Valida y recalcula todo el pedido desde la base. Con un error de negocio responde `HB422`, con el campo en el `hint`, y la API lo devuelve como 400 en ese campo.
+- **`aceptar_pedido(id)` / `rechazar_pedido(id, motivo)`** (0007) son `security definer` y chequean `es_admin()` adentro, como `marcar_devuelto`. Bloquean el pedido (`for update`), así un webhook que llega a la vez ve el estado nuevo.
 - **`es_admin()`** (0002) es `security definer`, `stable`, con `search_path = ''`. Lee `perfiles` y devuelve si la usuaria actual (`auth.uid()`) es admin. Solo la puede ejecutar `authenticated`.
 - **`cambiar_estado_inscripcion(id, estado)`** (0002) es `security invoker`: corre con el RLS de la admin. Bloquea la inscripción y el workshop (como `crear_inscripcion`) y, si una cancelada vuelve a estar activa y ya no hay lugar, falla con `HB409`. Así el panel no puede sobrevender.
 - **`reemplazar_tamanos(producto_id, tamanos)`** (0002) es `security invoker`. Borra los tamaños de un producto e inserta los nuevos en una sola transacción: si algo falla, quedan los de antes.

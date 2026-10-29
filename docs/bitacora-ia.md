@@ -456,3 +456,59 @@ Abierto el 22/10, sin mergear.
 - e2e: 110 en verde. En la primera corrida fallaba uno de la tienda, que esperaba "Precio a confirmar" en "Tarta de frutillas". Maggie había pedido $ 10 en todos los productos hasta cargar los reales. Ver [errores.md](errores.md#tests-atados-a-los-precios-y-destacados-reales).
 - El test de `rate-limit` "no corría" por la config: su proyecto depende de `chromium`, y Playwright no corre un proyecto si falla una de sus dependencias.
 - Lighthouse de `/workshops`: 100 / 100 / 100. El LCP observado es igual al de `main`, y el simulado sube 0,17 s (ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero)).
+
+## 28/10/2026
+
+### PR #TODO · Carrito y pedidos de la tienda, PR 1 de 2: compra (`feat/carrito`)
+
+**Pedido:** que la tienda venda. Carrito en el navegador, checkout con entrega, día y horario, pago del 100% con Checkout Pro y el registro del pago. Las reglas son de Maggie (ver [contenido-maggie.md](contenido-maggie.md#pedidos-de-la-tienda-confirmado-por-maggie-2810)). **Pagar no confirma el pedido:** Maggie lo acepta o lo rechaza. La pantalla para eso va en el PR 2; acá quedan las funciones de la base, con tests.
+
+**Decisiones de Catalina durante el plan:**
+
+- Los tamaños con "Precio a confirmar" no van al carrito. Si son los únicos, el producto muestra "Consultar precio por WhatsApp", y `crear_pedido` los rechaza.
+- Si el producto tiene sabores, hay que elegir uno. La decoración es opcional ("Sin decoración").
+
+**Decisiones de Claude Code (a revisar):**
+
+- Las 48 h se cuentan hasta el **inicio** de la franja.
+- Los feriados no se contemplan: queda un `TODO(Maggie)`.
+- Un pago aprobado que llega con el pedido ya vencido igual lo pasa a `pagado`: no hay cupo que cuidar y Maggie lo confirma igual.
+- Un segundo pago aprobado del mismo pedido queda para devolver (`pago_duplicado`).
+- El `external_reference` lleva prefijo (`pedido:` / `inscripcion:`), y el id solo se sigue leyendo como inscripción.
+- La `confirmar_pago` vieja queda como envoltorio, así el deploy anterior sigue andando entre la migración y el deploy nuevo.
+
+**Qué se hizo:**
+
+- **Migración 0007:**
+  - tablas `pedidos` (con `numero` para WhatsApp) y `pedido_items` (snapshot; si se borra el producto, `producto_id` queda en null);
+  - `crear_pedido` (solo `service_role`), que valida todo y calcula los precios;
+  - `pagos` de una inscripción **o** un pedido, y `confirmar_pago(tipo, id, …)`;
+  - `aceptar_pedido` y `rechazar_pedido` (solo admin);
+  - RLS: nadie anónimo lee pedidos.
+- **Reglas en una sola config:** `data/site.ts` → `pedidos`. El "Desde $ 400.000 · 10 km" del sitio sale de ahí.
+- **Carrito:** contexto de React + `localStorage` con versión y zod al leer, y `useSyncExternalStore` para que no haya mismatch de hidratación.
+  - El contador del header es visual; el total va en el `aria-label` y "Agregaste … al pedido" se anuncia por `aria-live`.
+  - `/carrito` revisa contra `GET /api/v1/productos` al abrir: avisa si un producto ya no está y bloquea "Continuar", o si cambió el precio, y lo actualiza.
+- **Checkout:** el mismo esquema zod en el cliente y en `POST /api/v1/pedidos` (rate limit, Origin, errores de `withApi`).
+  - El envío queda deshabilitado, con la explicación, si el total no llega a $ 400.000.
+  - Las franjas dependen del día, y un domingo avisa apenas se elige.
+  - Los errores de negocio de la base (`HB422` con el campo en el `hint`) llegan como 400 en ese campo.
+- **Resultado:** `/pedido/resultado` concilia con MP igual que la inscripción y vacía el carrito cuando el pago está aprobado.
+- **El detalle del producto** muestra el formulario cuando se puede pedir. En la tienda, el botón "Muy pronto" pasó a "Elegir".
+
+**Limitación conocida:** las devoluciones de pedidos todavía no se listan en el panel ("Para devolver" sale de las inscripciones). Las muestra el PR 2.
+
+**Correcciones de Claude Code durante el desarrollo** (detalle en [errores.md](errores.md)):
+
+- **zod en todas las páginas:** el provider del carrito traía `zod` completo al layout, y `/tienda` mobile bajó ~13 puntos. Se separó lo que no valida y el esquema usa `zod/mini`, cargado cuando el navegador está libre. La diferencia con `main` quedó dentro del ruido.
+- **Carrera en el carrito:** la revisión de precios pisaba una línea que se había quitado mientras tanto. Ahora aplica el cambio sobre el carrito actual.
+- **CLS:** el footer saltaba cuando aparecía el carrito (0,363 en el checkout mobile). Con `min-h-svh` quedó en 0 a 0,023.
+- **Ids de pago repetidos entre workers** en los e2e: ahora llevan el pid.
+- **Locators:** la tarjeta de la tienda tiene un segundo link al detalle ("Elegir"), así que los tests de la tienda buscan el nombre exacto.
+
+**Resultado:**
+
+- Lint y build en verde.
+- e2e: 159 de 159, incluido rate limit. Hay 48 tests nuevos: 16 en `pedidos-unit`, 21 en `pedidos`, 10 en `carrito` y 1 en `pagos` (la referencia vieja de las inscripciones). Al terminar no queda nada de prueba en la base.
+- Lighthouse: Accessibility y Best Practices en 100 en tienda, carrito y checkout, mobile y desktop. El SEO de carrito y checkout es 63 por el `noindex`, a propósito (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-checkout-pedidos)).
+- La migración 0007 la corrió Catalina en el SQL Editor antes de la suite.

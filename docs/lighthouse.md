@@ -2,6 +2,36 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
+## Tienda, carrito y checkout (pedidos)
+
+- **Fecha:** 29/10/2026
+- **Rama:** `feat/carrito`
+- **Lighthouse:** 12, Chromium de Playwright (headless), build de producción leyendo Supabase
+- **Carrito y checkout medidos con productos:** el carrito vive en `localStorage`. Un perfil de Chromium se llena con Playwright (dos productos reales) y Lighthouse corre sobre ese perfil con `--disable-storage-reset`.
+
+| Ruta | Form factor | Performance | Accessibility | Best Practices | SEO | CLS |
+|---|---|---|---|---|---|---|
+| `/carrito` | mobile | 96 | 100 | 100 | 63 | 0,023 |
+| `/carrito` | desktop | 100 | 100 | 100 | 63 | 0,005 |
+| `/carrito/checkout` | mobile | 90 | 100 | 100 | 63 | 0 |
+| `/carrito/checkout` | desktop | 100 | 100 | 100 | 63 | 0 |
+| `/tienda` | desktop | 100 | 100 | 100 | 100 | 0 |
+
+- **SEO 63 en carrito y checkout es a propósito:** la única auditoría que falla es `is-crawlable`, por el `noindex`. Son páginas de cada visitante, como el resultado de la inscripción.
+- **CLS:** la primera medición dio 0,154 en el carrito y 0,363 en el checkout (mobile). El carrito se lee después de hidratar, y el footer saltaba cuando aparecía la lista. Las dos páginas tienen ahora al menos una pantalla de alto (`min-h-svh`): el footer arranca fuera de la vista y que el contenido crezca no se nota.
+
+**`/tienda` mobile contra `main`**, 4 corridas alternadas de cada una, sin caché; se informa la mediana:
+
+| | Performance | LCP (simulado) | TBT | JS transferido |
+|---|---|---|---|---|
+| `main` | 74 | 4,3 s | 470 ms | 158 KB |
+| Rama, primera versión | 61 | 4,9 s | 780 ms | 254 KB |
+| Rama, final | 72 | 4,5 s | 560 ms | 191 KB |
+
+- **Regresión encontrada y corregida:** el provider del carrito (en el layout de todas las páginas) traía `zod` completo (~89 KB comprimidos) para validar lo guardado. Ver [errores.md](errores.md#zod-entró-al-js-de-todas-las-páginas).
+- Los ~33 KB que quedan son `zod/mini` (~23 KB, cargado cuando el navegador está libre) y el código del carrito y el header. La diferencia en performance está dentro del ruido entre corridas (63–73 en la rama, 69–75 en `main`).
+- **El LCP de ~4 s en `/tienda` mobile ya estaba en `main`:** es el párrafo de la intro, con unos 4 s de *render delay* en la red lenta simulada. No es de este PR. Queda para revisar aparte.
+
 ## /workshops con el video del hero
 
 - **Fecha:** 27/10/2026
