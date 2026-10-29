@@ -9,6 +9,9 @@
     "lint": "eslint",
     "compare": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/compare-mockup.ts",
     "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "test:codegen": "playwright codegen http://localhost:3000",
     "seed": "node --conditions=react-server --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed.ts"
   },
   "dependencies": {
