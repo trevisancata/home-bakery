@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
 import { ImageFrame } from "@/components/ImageFrame";
+import { AgregarAlPedido } from "@/components/tienda/AgregarAlPedido";
 import { pages, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
@@ -43,6 +44,8 @@ export default async function ProductPage({ params }: Props) {
 
   const [cover, ...rest] = product.images;
   const range = product.season ? seasonRange(product.season) : null;
+  // Se puede pedir desde acá: en temporada, no a medida y con algún tamaño con precio.
+  const orderable = !product.custom && product.inSeason && product.sizes.some((size) => size.price !== null);
   const details = [
     { term: text.details.measure, value: product.measure },
     { term: text.details.servings, value: product.servings },
@@ -109,21 +112,24 @@ export default async function ProductPage({ params }: Props) {
             {product.description && <p className="text-17 leading-parrafo lg:text-18">{product.description}</p>}
           </div>
 
-          <section aria-labelledby="tamanos-titulo" className="flex flex-col gap-2">
-            <h2 id="tamanos-titulo" className="font-label text-14 tracking-eyebrow text-chocolate uppercase">
-              {text.sizes}
-            </h2>
-            <ul className="flex flex-col divide-y divide-borde border-y border-borde">
-              {product.sizes.map((size) => (
-                <li key={size.label} className="flex justify-between gap-4 py-3 text-16">
-                  <span>{size.label}</span>
-                  <span className={`shrink-0 font-semibold ${size.price === null ? "text-secundario" : ""}`}>
-                    {size.price === null ? ui.priceTbd : formatPrice(size.price)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {/* Si se puede pedir, los tamaños con su precio se eligen en el formulario de abajo. */}
+          {!orderable && (
+            <section aria-labelledby="tamanos-titulo" className="flex flex-col gap-2">
+              <h2 id="tamanos-titulo" className="font-label text-14 tracking-eyebrow text-chocolate uppercase">
+                {text.sizes}
+              </h2>
+              <ul className="flex flex-col divide-y divide-borde border-y border-borde">
+                {product.sizes.map((size) => (
+                  <li key={size.label} className="flex justify-between gap-4 py-3 text-16">
+                    <span>{size.label}</span>
+                    <span className={`shrink-0 font-semibold ${size.price === null ? "text-secundario" : ""}`}>
+                      {size.price === null ? ui.priceTbd : formatPrice(size.price)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {details.length > 0 && (
             <dl className="grid gap-x-6 gap-y-3 rounded-card bg-arena p-5 text-15 sm:grid-cols-2 lg:p-6">
@@ -136,9 +142,10 @@ export default async function ProductPage({ params }: Props) {
             </dl>
           )}
 
+          {/* Igual con sabores y decoraciones: si se puede pedir, se eligen en el formulario. */}
           {[
-            { title: text.flavors, items: product.flavors },
-            { title: text.decorations, items: product.decorations },
+            { title: text.flavors, items: orderable ? [] : product.flavors },
+            { title: text.decorations, items: orderable ? [] : product.decorations },
           ]
             .filter((list) => list.items.length > 0)
             .map((list) => (
@@ -168,9 +175,16 @@ export default async function ProductPage({ params }: Props) {
                   {content.card.outOfSeason}
                 </Button>
               </>
+            ) : orderable ? (
+              <AgregarAlPedido product={product} />
             ) : (
-              <Button variant="secondary" size="lg" disabled className="sm:self-start">
-                {content.card.soon}
+              // Sin ningún tamaño con precio, no se puede pedir desde acá.
+              <Button
+                href={whatsappLink(whatsappMessages.pricedLater(product.name))}
+                size="lg"
+                className="sm:self-start"
+              >
+                {text.order.priceTbdCta}
               </Button>
             )}
             <Link href="/tienda" className="self-start py-2.5 font-semibold text-chocolate underline hover:text-carbon">

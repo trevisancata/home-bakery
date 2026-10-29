@@ -2,6 +2,8 @@
 // página y etiquetas de la interfaz. Los componentes no tienen textos
 // escritos adentro; todo lo que se lee en pantalla sale de acá.
 
+import { formatPrice } from "@/lib/format";
+
 /* -------------------------------------------------------------------------- */
 /* Negocio                                                                    */
 /* -------------------------------------------------------------------------- */
@@ -59,7 +61,54 @@ export const whatsappMessages = {
   customWorkshop: "¡Hola! Quería consultar por un workshop personalizado.",
   workshopWaitlist: (title: string) => `¡Hola! Avisame si se libera un lugar en el workshop "${title}".`,
   customProduct: (name: string) => `¡Hola! Quería consultar por ${name} a medida.`,
+  pricedLater: (name: string) => `¡Hola! Quería consultar el precio de ${name}.`,
+  orderPaid: (numero: number) => `¡Hola, ${site.owner.name}! Hice el pedido #${numero} y ya lo pagué.`,
+  orderHelp: (numero: number) => `¡Hola! Tengo un problema con el pago del pedido #${numero}.`,
 };
+
+/* -------------------------------------------------------------------------- */
+/* Pedidos de la tienda                                                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Reglas de los pedidos, confirmadas por Maggie (ver
+ * docs/contenido-maggie.md). Las usan el carrito, el checkout y la API; la
+ * base (crear_pedido, migración 0007) repite los números: si cambian, se
+ * cambian en los dos lados.
+ */
+export const pedidos = {
+  entrega: {
+    retiro: {
+      label: `Retiro en ${site.city}`,
+      help: "Si vivís lejos, podés mandar un Uber o una moto a retirarlo.",
+    },
+    envio: {
+      label: "Envío a domicilio",
+      /** Total mínimo del pedido para poder elegir envío (en pesos). */
+      minimo: 400000,
+      /** Distancia máxima. No se calcula: Maggie valida la dirección al aceptar. */
+      radioKm: 10,
+      // TODO(Maggie): costo del envío. Mientras tanto no se cobra y se aclara en el checkout.
+      costo: null as number | null,
+    },
+  },
+  /** Franjas de retiro o entrega por día. Domingo: cerrado. */
+  franjas: {
+    semana: ["10-13", "13-16", "16-19"],
+    sabado: ["9-13"],
+  },
+  // TODO(Maggie): feriados. Hoy se puede elegir un feriado que caiga de lunes a sábado.
+  /** Hasta cuántos días adelante se puede encargar. */
+  maxDiasAdelante: 30,
+  /** Unidades por línea del carrito. */
+  maxCantidad: 20,
+  /** Líneas distintas por pedido. */
+  maxLineas: 30,
+  /** Sin pago, el pedido vence (como las inscripciones). */
+  venceMinutos: 30,
+} as const;
+
+export type Franja = (typeof pedidos.franjas)[keyof typeof pedidos.franjas][number];
 
 export const navigation = [
   { href: "/", label: "Inicio" },
@@ -84,8 +133,12 @@ export const ui = {
   announcementsLabel: "Avisos",
   mainNavLabel: "Principal",
   menuButton: "Menú",
-  // Todavía no hay carrito: el ícono lleva a la tienda hasta que exista.
-  cart: { label: "Carrito", href: "/tienda" },
+  cart: {
+    label: "Carrito",
+    href: "/carrito",
+    count: (n: number) => (n === 0 ? "Carrito, vacío" : n === 1 ? "Carrito, 1 producto" : `Carrito, ${n} productos`),
+    added: (name: string) => `Agregaste ${name} al pedido.`,
+  },
   imagePending: "Foto próximamente",
   // TODO(Maggie): cargar el workshop real. Mientras tanto, las fechas son de ejemplo.
   exampleWorkshop: "Fecha de ejemplo: todavía no hay inscripción abierta",
@@ -154,8 +207,8 @@ export const heroSlides: HeroSlide[] = [
 
 /** Envío a domicilio: solo en pedidos grandes y cerca. */
 const delivery = {
-  minimum: "$400.000",
-  radius: "10 km",
+  minimum: formatPrice(pedidos.entrega.envio.minimo),
+  radius: `${pedidos.entrega.envio.radioKm} km`,
 };
 
 /* -------------------------------------------------------------------------- */
@@ -352,9 +405,9 @@ export const pages = {
     results: (count: number) => (count === 1 ? "1 producto" : `${count} productos`),
     card: {
       detail: (info: string | null) => (info ? `${info} · Por encargo` : "Por encargo"),
-      // Hasta que exista el carrito, el botón queda deshabilitado.
-      soon: "Muy pronto",
-      soonContext: (name: string) => `: agregar ${name} al pedido`,
+      // Tamaño, sabor y decoración se eligen en el detalle.
+      choose: "Elegir",
+      chooseContext: (name: string) => `: ${name}`,
       custom: "A medida",
       outOfSeason: "Fuera de temporada",
     },
@@ -376,6 +429,23 @@ export const pages = {
       flavors: "Sabores",
       decorations: "Decoraciones",
       customCta: "Consultar por WhatsApp",
+      order: {
+        label: "Armá tu pedido",
+        size: "Tamaño",
+        flavor: "Sabor",
+        flavorPlaceholder: "Elegí un sabor",
+        flavorRequired: "Elegí un sabor.",
+        decoration: "Decoración",
+        noDecoration: "Sin decoración",
+        quantity: "Cantidad",
+        less: "Uno menos",
+        more: "Uno más",
+        add: "Agregar al pedido",
+        added: "¡Listo! Lo agregamos a tu pedido.",
+        viewCart: "Ver pedido",
+        priceTbdNote: "Los tamaños con precio a confirmar se consultan por WhatsApp.",
+        priceTbdCta: "Consultar precio por WhatsApp",
+      },
       outOfSeason: (range: string) => `Fuera de temporada. Se hace ${range}.`,
       back: "Volver a la tienda",
     },
@@ -580,6 +650,128 @@ export const pages = {
       text: "Si querés participar, volvé a inscribirte.",
     },
     again: "Volver a inscribirme",
+    help: "Escribinos por WhatsApp",
+    helpContext: " (se abre WhatsApp)",
+  },
+  carrito: {
+    metadata: { title: "Tu pedido", robots: { index: false, follow: false } },
+    title: "Tu pedido",
+    empty: { text: "Todavía no agregaste nada.", cta: "Ir a la tienda" },
+    linesLabel: "Productos del pedido",
+    quantity: (name: string) => `Cantidad de ${name}`,
+    less: (name: string) => `Uno menos de ${name}`,
+    more: (name: string) => `Uno más de ${name}`,
+    remove: "Quitar",
+    removeContext: (name: string) => ` ${name} del pedido`,
+    flavor: (flavor: string) => `Sabor: ${flavor}`,
+    decoration: (decoration: string) => `Decoración: ${decoration}`,
+    unitPrice: (price: string) => `${price} c/u`,
+    subtotal: "Subtotal",
+    total: "Total",
+    checking: "Revisando precios y disponibilidad…",
+    unavailable: "Este producto ya no está disponible. Quitalo para seguir.",
+    priceChanged: (before: string, now: string) => `El precio cambió: antes ${before}, ahora ${now}.`,
+    checkError: "No pudimos revisar los precios. El precio final lo calculamos al confirmar.",
+    leadTime: (hours: number) => `Se encarga con ${hours} h de anticipación como mínimo.`,
+    continue: "Continuar",
+    fixFirst: "Quitá los productos que ya no están disponibles para seguir.",
+    keepShopping: "Seguir comprando",
+  },
+  checkout: {
+    metadata: { title: "Finalizar pedido", robots: { index: false, follow: false } },
+    breadcrumb: { label: "Migas de pan", parent: { label: "Tu pedido", href: "/carrito" }, current: "Finalizar" },
+    title: "Finalizar pedido",
+    empty: { text: "Tu pedido está vacío.", cta: "Ir a la tienda" },
+    requiredNote: "Los campos con * son obligatorios.",
+    contact: {
+      title: "Tus datos",
+      name: "Nombre y apellido",
+      email: "Email",
+      phone: "WhatsApp",
+      phonePlaceholder: "11 ...",
+    },
+    delivery: {
+      title: "Entrega",
+      pickup: pedidos.entrega.retiro.label,
+      pickupHelp: pedidos.entrega.retiro.help,
+      shipping: pedidos.entrega.envio.label,
+      shippingHelp: `Hasta ${pedidos.entrega.envio.radioKm} km. ${site.owner.name} valida la dirección al confirmar el pedido.`,
+      // TODO(Maggie): costo del envío.
+      shippingCost: "Por ahora el envío no tiene cargo.",
+      shippingDisabled: (minimum: string) => `El envío es solo para pedidos desde ${minimum}.`,
+      address: "Dirección",
+      addressPlaceholder: "Calle, número, piso y depto",
+      locality: "Localidad",
+    },
+    when: {
+      title: "Día y horario",
+      date: "Día",
+      slot: "Horario",
+      slotPlaceholder: "Elegí un horario",
+      slotLabel: (slot: string) => {
+        const [from, to] = slot.split("-");
+        return `${from} a ${to} h`;
+      },
+      hours: "Lunes a viernes de 10 a 19 h y sábados de 9 a 13 h. Domingos, cerrado.",
+      leadTime: (hours: number) => `Con al menos ${hours} h de anticipación.`,
+    },
+    notes: { label: "Notas", placeholder: "Ej.: es un regalo, alergias, un mensaje para la torta…" },
+    summary: {
+      title: "Resumen",
+      total: "Total a pagar",
+      shipping: "Envío",
+      shippingFree: "Sin cargo",
+      edit: "Editar pedido",
+    },
+    confirmNotice: {
+      title: `${site.owner.name} tiene que confirmar tu pedido`,
+      text: `Pagás el total ahora con Mercado Pago, pero pagar no confirma el pedido: ${site.owner.name} lo revisa y te escribe por WhatsApp para confirmarlo.`,
+    },
+    expires: `Guardamos el pedido ${pedidos.venceMinutos} minutos mientras pagás.`,
+    submit: "Pagar con Mercado Pago",
+    sending: "Te llevamos a Mercado Pago…",
+    retry: "Reintentar",
+    networkError: "No pudimos enviar el pedido. Revisá tu conexión y probá de nuevo.",
+    serverError: "No pudimos guardar el pedido. Probá de nuevo.",
+    help: { text: "¿Problemas para pagar?", cta: "Escribinos por WhatsApp", ctaContext: " (se abre WhatsApp)" },
+  },
+  pedidoResultado: {
+    metadata: { title: "Tu pedido", robots: { index: false, follow: false } },
+    eyebrow: (numero: number) => `Pedido #${numero}`,
+    paid: {
+      title: "¡Recibimos tu pago!",
+      text: `Tu pedido está pagado y ${site.owner.name} lo va a confirmar; te escribe por WhatsApp.`,
+      when: "Retiro o entrega",
+      total: "Total pagado",
+      whatsapp: `Escribirle a ${site.owner.name}`,
+    },
+    pending: {
+      title: "Estamos esperando la confirmación del pago",
+      text: "Mercado Pago todavía no nos confirmó el pago. Esta página se actualiza sola.",
+      notPaid: "Si todavía no pagaste, podés hacerlo ahora: guardamos el pedido hasta que venza.",
+      pay: "Pagar",
+      timeout: "Todavía no se confirmó. Si ya pagaste, escribinos por WhatsApp y lo revisamos.",
+    },
+    rejected: {
+      title: "El pago no se aprobó",
+      text: "Mercado Pago no aprobó el pago. Podés probar de nuevo, por ejemplo con otro medio de pago.",
+      retry: "Probar de nuevo",
+      expired: "El pedido ya venció. Volvé a tu pedido para intentarlo otra vez.",
+    },
+    expired: {
+      title: "El pedido venció",
+      text: `Pasaron ${pedidos.venceMinutos} minutos sin que se completara el pago.`,
+    },
+    refund: {
+      title: "Tenemos que devolverte el pago",
+      // TODO(Maggie): plazo y forma de la devolución. No prometer nada que no esté confirmado.
+      text: "Recibimos tu pago, pero este pedido no se puede tomar. Escribinos por WhatsApp para coordinar la devolución.",
+    },
+    cancelled: {
+      title: "Este pedido está cancelado",
+      text: "Si querés, armá el pedido de nuevo desde la tienda.",
+    },
+    again: "Volver a mi pedido",
     help: "Escribinos por WhatsApp",
     helpContext: " (se abre WhatsApp)",
   },

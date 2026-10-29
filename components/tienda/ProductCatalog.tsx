@@ -144,10 +144,15 @@ export function CatalogView({ products, categories, category, onCategoryChange }
                       {content.product.customCta}
                       <span className="sr-only">: {product.name}</span>
                     </Button>
+                  ) : product.inSeason ? (
+                    <Button href={`/tienda/${product.slug}`} variant="secondary" size="sm">
+                      {content.card.choose}
+                      <span className="sr-only">{content.card.chooseContext(product.name)}</span>
+                    </Button>
                   ) : (
                     <Button variant="secondary" size="sm" disabled>
-                      {product.inSeason ? content.card.soon : content.card.outOfSeason}
-                      <span className="sr-only">{content.card.soonContext(product.name)}</span>
+                      {content.card.outOfSeason}
+                      <span className="sr-only">{content.card.chooseContext(product.name)}</span>
                     </Button>
                   )
                 }
