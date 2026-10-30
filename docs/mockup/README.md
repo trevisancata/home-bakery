@@ -30,7 +30,7 @@ Versión actual: **v6 (04/10/2026)**, con los cambios que pidió Maggie el 01/10
 ## Tokens
 
 - Colores: hueso #F5F4F0 (fondo), carbón #2F2F2F (texto), chocolate #5E4A33 (botones, bandas, footer), taupe #A88B6C (círculo del logo), arena #EAE3D8 (secciones alternas), placeholder #DCD1C3, texto secundario #6B5A50, bordes #E5DDD2, WhatsApp #25D366 con texto #0B3B1E, crema sobre foto #EADFCF.
-- Tipografías: Gloock (títulos), Sacramento (una palabra manuscrita por título, a 1.4em), Poppins 400 (etiquetas en mayúscula) y Poppins 300/400/500/600 (cuerpo y botones). Reemplazan a las de la v6 (Gilda Display, Mrs Saint Delafield, Oswald y DM Sans); los HTML de este directorio ya usan las nuevas. La cursiva está en comparación con Dawning of a New Day (capturas en `docs/capturas/tipografia-*.png`).
+- Tipografías: Gloock (títulos), Dawning of a New Day (una palabra manuscrita por título, a 1.8em, con un trazo de refuerzo de hasta 1.2 px), Poppins 400 (etiquetas en mayúscula) y Poppins 300/400/500/600 (cuerpo y botones). Reemplazan a las de la v6 (Gilda Display, Mrs Saint Delafield, Oswald y DM Sans); los HTML de este directorio ya usan las nuevas. Maggie eligió Dawning of a New Day el 29/10, entre esa y Sacramento: las capturas de las dos opciones quedan en `docs/capturas/tipografia-sacramento-*.png` y `tipografia-dawning-*.png`.
 
 ## Cambios de la v6 (pedidos de Maggie, 01/10)
 

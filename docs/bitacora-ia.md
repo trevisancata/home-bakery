@@ -478,3 +478,41 @@ Abierto el 22/10, sin mergear.
 - Lint y build en verde.
 - e2e: 114 en verde, incluido el de `rate-limit`. El test nuevo, 9 de 9 con `--repeat-each=3`.
 - En el log del servidor de la corrida completa aparecieron tres "The destination stream closed early". No hicieron fallar ningún test y no aparecen corriendo solo el test nuevo. TODO: ver de qué test salen.
+
+## 29/10/2026
+
+### PR #19 · Tipografía: Poppins, Gloock y la cursiva (`feat/tipografia`)
+
+**Pedido (27/10):** cambiar las fuentes por Poppins (textos y etiquetas), Gloock (títulos) y una cursiva a elegir entre Sacramento y Dawning of a New Day, con capturas de las dos para que Maggie decida.
+
+**Qué se hizo el 27/10:**
+
+- Las fuentes con `next/font/google` en `app/layout.tsx`. La cursiva se importa con alias, así cambiarla es una línea; los tokens de Tailwind apuntan a variables genéricas.
+- El tamaño de la palabra manuscrita sale de una tabla por cursiva y llega a CSS como `--tamano-manuscrita`.
+- Más margen bajo los títulos de portada, para que el trazo bajo no pise la bajada; `font-bold` pasó a `font-semibold` (700 no se carga).
+- La guía de marca, los READMEs y los mockups con las fuentes nuevas, y las capturas de las dos cursivas.
+
+**Decisión:** Maggie eligió **Dawning of a New Day** (29/10). Las capturas de las dos opciones quedan en `docs/capturas/tipografia-sacramento-*.png` y `tipografia-dawning-*.png` como registro.
+
+**Qué se hizo el 29/10:**
+
+- Se trajo `main` (merge, con el #20).
+- **Dawning por defecto:** cambió la línea del import. Sacramento ya no se importa, así que tampoco se descarga (en el build no queda ninguna referencia).
+- **Revisión de la cursiva en todos los lugares donde se usa:** portadas del inicio, `/workshops` y `/maggie`, títulos de sección, banda de workshops, la firma de `/workshops` y el cierre de `/maggie`. El menú mobile no la usa. Se recortó cada uso en mobile (390 px) y desktop (1440 px) y se midió.
+  - **El contraste de color estaba bien** en todos: 7,57:1 chocolate sobre hueso, 6,53:1 sobre arena y 6,37:1 crema sobre chocolate.
+  - **El tamaño tampoco era el problema:** a 1.7em, las minúsculas de Dawning ya medían lo mismo que las de Gloock (medido con canvas).
+  - **Lo que la hacía ver chica y clara era el trazo fino** al lado de un Gloock pesado, sobre todo en los títulos de mobile (51 a 58 px).
+- **Ajustes:**
+  - **Tamaño:** de 1.7em a 1.8em (minúsculas ~1,05 veces las de Gloock).
+  - **Trazo de refuerzo:** `-webkit-text-stroke` del mismo color, con tope: `min(0.025em, 1.2px)`. Sin tope, en las portadas de desktop (165 px) cerraba los huecos de las letras.
+  - Va en la misma tabla por cursiva que el tamaño (`--trazo-manuscrita`); Sacramento queda con trazo 0.
+  - **La frase de cierre de `/maggie`** ("Espero verte pronto en mi cocina.") usa interlineado 1. El de la manuscrita (0.6, pensado para una palabra dentro de un título) juntaba sus líneas.
+- **Guía de marca** (`docs/mockup/guia-de-marca.html`), los mockups HTML (así `npm run compare` sigue comparando contra lo vigente), `docs/mockup/README.md` y `README.md` con Dawning, el tamaño y el trazo.
+- Capturas finales en `docs/capturas/tipografia-final-*.png`: home y `/workshops`, mobile y desktop.
+
+**Para revisar con Maggie:** la guía de marca dice "una o dos palabras por título, nunca frases enteras", pero el cierre de `/maggie` es una frase entera en cursiva. Con el ajuste se lee bien; no se cambió el contenido.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde.
+- e2e: 116 de 116, incluido rate limit.
