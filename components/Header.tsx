@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { navigation, ui } from "@/data/site";
+import { unidadesCarrito } from "@/lib/carrito/lineas";
 import { esPaginaActual } from "@/lib/navegacion";
+import { useCarrito } from "./carrito/CarritoProvider";
 import { Logo } from "./Logo";
 
 const MENU_ID = "menu-mobile";
@@ -14,12 +16,17 @@ const MENU_ID = "menu-mobile";
  * menú · logo · carrito y el menú se despliega debajo (aria-expanded +
  * aria-controls; Escape o un clic afuera lo cierran). Desde md el menú
  * queda siempre visible entre el logo y el carrito.
+ *
+ * El carrito muestra cuántos productos hay: el número es visual y el total
+ * va en el aria-label; "Agregaste … al pedido" se anuncia con aria-live.
  */
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const { lines, announcement } = useCarrito();
+  const count = unidadesCarrito(lines);
 
   useEffect(() => {
     if (!open) return;
@@ -97,8 +104,9 @@ export function Header() {
 
         <Link
           href={ui.cart.href}
-          aria-label={ui.cart.label}
-          className="inline-flex size-11 items-center justify-center rounded-full text-carbon hover:bg-arena md:size-12 md:border md:border-borde"
+          aria-label={ui.cart.count(count)}
+          aria-current={isCurrent(ui.cart.href) ? "page" : undefined}
+          className="relative inline-flex size-11 items-center justify-center rounded-full text-carbon hover:bg-arena md:size-12 md:border md:border-borde"
         >
           <svg
             aria-hidden="true"
@@ -113,7 +121,19 @@ export function Header() {
             <path d="M5 8h14l-1.2 12H6.2L5 8z" />
             <path d="M9 8a3 3 0 0 1 6 0" />
           </svg>
+          {count > 0 && (
+            <span
+              aria-hidden="true"
+              data-testid="carrito-contador"
+              className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-chocolate px-1 text-12 font-semibold text-hueso"
+            >
+              {count > 99 ? "99+" : count}
+            </span>
+          )}
         </Link>
+        <p aria-live="polite" className="sr-only">
+          {announcement}
+        </p>
       </div>
 
       <nav

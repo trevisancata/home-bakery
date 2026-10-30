@@ -33,7 +33,10 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 | ------------ | ---------------------------------------------------------- |
 | `/`          | Inicio: destacados, workshops, Maggie y pedidos            |
 | `/tienda`    | Productos por categoría (filtro en la URL: `?categoria=`)  |
-| `/tienda/[slug]` | Detalle de un producto                                 |
+| `/tienda/[slug]` | Detalle de un producto y "Agregar al pedido"           |
+| `/carrito`   | El pedido: cantidades, avisos de precio y disponibilidad (el carrito vive en el navegador) |
+| `/carrito/checkout` | Datos, entrega, día y horario, y pago del total     |
+| `/pedido/resultado` | Resultado del pago de un pedido (vuelta de Mercado Pago). Pagado no es confirmado: lo confirma Maggie |
 | `/workshops` | Próximas fechas y cómo funcionan                           |
 | `/workshops/[slug]/inscripcion` | Inscripción a un workshop y pago del total |
 | `/workshops/[slug]/inscripcion/resultado` | Resultado del pago (vuelta de Mercado Pago) |
@@ -68,6 +71,7 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
    - [`0004_inscripcion_solo_servidor.sql`](supabase/migrations/0004_inscripcion_solo_servidor.sql): `crear_inscripcion` solo desde el servidor (`service_role`).
    - [`0005_devoluciones.sql`](supabase/migrations/0005_devoluciones.sql): marcar como devueltos los pagos que había que devolver.
    - [`0006_pago_completo.sql`](supabase/migrations/0006_pago_completo.sql): pago completo al inscribirse (`sena_porcentaje` en 100).
+   - [`0007_pedidos.sql`](supabase/migrations/0007_pedidos.sql): pedidos de la tienda (`pedidos`, `pedido_items`, `crear_pedido`), `pagos` de una inscripción o un pedido, y `aceptar_pedido` / `rechazar_pedido`. **Correrla antes de deployar el código que la usa.** La `confirmar_pago` vieja queda como envoltorio, así el deploy anterior sigue andando mientras tanto.
 3. Copiar `.env.example` a `.env.local` y completarlo con los datos de **Project Settings → API**:
    - `NEXT_PUBLIC_SUPABASE_URL`: la URL del proyecto.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: la clave publishable (`sb_publishable_…`). Es pública y respeta RLS.
@@ -111,7 +115,8 @@ API REST versionada en `/api/v1`. Todas las respuestas son `{ data }` si saliero
 | `GET /api/v1/productos/[slug]` | Un producto. 404 si no existe o está oculto |
 | `GET /api/v1/workshops` | Próximos workshops, con lugares libres |
 | `POST /api/v1/inscripciones` | Crea la inscripción y la preferencia de pago: 201 `{ id, initPoint }`, 400, 404, 409 (con `spotsLeft`), 422 (sin precio), 429 (5 por IP cada 10 minutos) o 502 (falló Mercado Pago) |
-| `POST /api/v1/webhooks/mercadopago` | Avisos de pago de Mercado Pago, con firma `x-signature`: 200, 401 si la firma no es válida, 500 para que MP reintente |
+| `POST /api/v1/pedidos` | Crea el pedido de la tienda y la preferencia de pago. Los precios los calcula la base. Responde 201 `{ id, numero, initPoint }`, 400 (con `fields`, también para fecha, horario, envío o productos que ya no están), 403 (`Origin` de otro sitio), 429 (5 por IP cada 10 minutos) o 502 |
+| `POST /api/v1/webhooks/mercadopago` | Avisos de pago de Mercado Pago, con firma `x-signature`. Atiende inscripciones y pedidos, según el `external_reference`. Responde 200, 401 si la firma no es válida o 500 para que MP reintente |
 
 Las rutas sin versión (`/api/categorias`, `/api/productos`…) redirigen con 308 a `/api/v1`. El 308 conserva el método, así que un `POST /api/inscripciones` sigue funcionando.
 
@@ -249,6 +254,6 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 
 ### Tests
 
-114 tests con Playwright: e2e, de la API y unitarios. Necesitan las seis migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
+164 tests con Playwright: e2e, de la API y unitarios. Necesitan las siete migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
 
 La estrategia, el plan de pruebas manuales, los reportes de bugs y cómo depurar una falla están en [docs/testing.md](docs/testing.md).

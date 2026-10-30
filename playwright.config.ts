@@ -21,7 +21,7 @@ export default defineConfig({
   testDir: "e2e",
   // Crea las usuarias de prueba del panel (admin y sin rol).
   globalSetup: "./e2e/support/global-setup.ts",
-  // Borra todo lo de prueba: usuarias, productos, fotos y workshops "e2e-…".
+  // Borra todo lo de prueba: usuarias, pedidos, productos, fotos y workshops "e2e-…".
   globalTeardown: "./e2e/support/teardown.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -74,8 +74,9 @@ export default defineConfig({
         MP_ACCESS_TOKEN: "TEST-e2e",
         MP_WEBHOOK_SECRET: process.env.E2E_MP_WEBHOOK_SECRET,
         NEXT_PUBLIC_SITE_URL: `http://localhost:${port}`,
-        // Los tests inscriben muchas veces desde la misma IP.
+        // Los tests inscriben y hacen pedidos muchas veces desde la misma IP.
         INSCRIPCIONES_RATE_LIMIT_MAX: "1000",
+        PEDIDOS_RATE_LIMIT_MAX: "1000",
       },
     },
   ],

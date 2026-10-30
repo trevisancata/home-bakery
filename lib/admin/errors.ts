@@ -76,7 +76,7 @@ export class BadGatewayError extends Error {
 }
 
 /** Error de PostgREST / Postgres tal como lo devuelve supabase-js. */
-export type DbError = { code?: string; message: string; details?: string | null };
+export type DbError = { code?: string; message: string; details?: string | null; hint?: string | null };
 
 /**
  * Traduce un error de la base a uno con significado HTTP. Lo que no se

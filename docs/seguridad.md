@@ -95,7 +95,7 @@ Todo lo que entra se valida en el servidor con zod (`lib/admin/schemas.ts`), aun
 
 Como el login se hace desde el servidor, Supabase ve la IP de Vercel, no la de quien ingresa. Ese límite "por IP" es entonces uno solo, compartido por todas.
 
-**Los propios** (`lib/rate-limit.ts`). Las inscripciones tienen el suyo (ver [Pagos](#pagos)). El del login:
+**Los propios** (`lib/rate-limit.ts`). Las inscripciones y los pedidos tienen el suyo (ver [Pagos](#pagos)). El del login:
 - Cuenta 5 intentos **fallidos** cada 15 minutos por IP (`x-forwarded-for`, que en Vercel pone la plataforma). Al sexto, "Demasiados intentos. Probá de nuevo en N minutos." y no se llama a Supabase.
 - Un login correcto borra el contador.
 - Vive en memoria: cada instancia de Vercel tiene el suyo y se reinicia con cada cold start. Hay un `TODO(Redis)` para pasarlo a un almacenamiento compartido (por ejemplo, Upstash).
@@ -133,6 +133,16 @@ El pago de los workshops está explicado en [pagos.md](pagos.md). Lo que importa
 - **Inscripciones solo por la API** (migración 0004): `crear_inscripcion` ya no se puede ejecutar con la clave publishable, solo con `service_role`. Antes cualquiera podía llamarla directo por la API de Supabase, saltándose el formulario y el rate limit. Era el riesgo aceptado del E4 ([modelo de datos](modelo-de-datos.md#riesgo-cerrado-la-función-se-podía-ejecutar-con-la-clave-publishable)), y ahora está cerrado. Lo prueba un e2e: el rpc con la clave publishable responde `42501`.
 - **Rate limit de inscripciones:** 5 inscripciones válidas por IP cada 10 minutos (`lib/rate-limit.ts`, en memoria, `TODO(Redis)`), con 429 y `Retry-After`. Frena a quien quiera ocupar el cupo con inscripciones falsas, que igual vencen solas a los 30 minutos.
 - **Datos personales:** `pagos.detalle` guarda solo datos del pago (estado, medio, fechas), nunca los del pagador. La página de resultado no muestra el nombre ni el email: con el id en la URL solo se ve el estado y el monto.
+
+### Pedidos de la tienda (migración 0007)
+
+- **Los precios salen solo de la base.** El checkout no manda precios: zod descarta cualquier campo de más (`unitPrice`, `total`). `crear_pedido` lee el precio de cada tamaño y calcula el total, y `confirmar_pago` solo acepta un pago por ese total exacto, en ARS. El carrito del navegador (localStorage) es solo para mostrar: un e2e manda un precio manipulado y comprueba que se cobra el de la base.
+- **También valida la base:** activo, temporada, a medida, tamaño del producto, sabor, decoración, cantidades, día, franja, anticipación y envío. Saltearse el formulario no cambia nada.
+- **`crear_pedido` solo para `service_role`:** con la clave publishable responde `42501` (e2e).
+- **Origin:** `POST /api/v1/pedidos` rechaza con 403 un `Origin` de otro sitio (`sameOrigin` de `lib/api.ts`, el mismo chequeo del panel). Sin `Origin` (curl, scripts) pasa y lo frena el rate limit.
+- **Rate limit de pedidos:** 5 pedidos válidos por IP cada 10 minutos (`pedidosLimiter`, en memoria, `TODO(Redis)`).
+- **Nadie anónimo lee pedidos** (`pedidos` y `pedido_items`): revoke + RLS con lectura solo para `es_admin()`. La página `/pedido/resultado` lee con la secret key solo el estado, el número, la fecha, la franja y el total: nunca el nombre, el email, el teléfono ni la dirección.
+- **Aceptar y rechazar** son `security definer`, con `es_admin()` adentro: con la clave publishable o sin rol, `42501` (e2e).
 
 ## Por qué las páginas públicas no leen cookies
 

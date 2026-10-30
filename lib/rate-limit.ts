@@ -2,6 +2,7 @@
 //
 // - Login del panel: 5 intentos fallidos cada 15 minutos (app/admin/actions.ts).
 // - Inscripciones: 5 cada 10 minutos (POST /api/v1/inscripciones).
+// - Pedidos de la tienda: 5 cada 10 minutos (POST /api/v1/pedidos).
 //
 // TODO(Redis): vive en la memoria de cada instancia. En Vercel cada
 // instancia tiene su propio Map y se reinicia en cada cold start, así que el
@@ -55,6 +56,12 @@ export const loginLimiter = createRateLimiter({ max: 5, windowMs: 15 * 60 * 1000
  */
 export const inscripcionesLimiter = createRateLimiter({
   max: Number(process.env.INSCRIPCIONES_RATE_LIMIT_MAX) || 5,
+  windowMs: 10 * 60 * 1000,
+});
+
+/** Pedidos válidos por IP. PEDIDOS_RATE_LIMIT_MAX solo existe para los e2e. */
+export const pedidosLimiter = createRateLimiter({
+  max: Number(process.env.PEDIDOS_RATE_LIMIT_MAX) || 5,
   windowMs: 10 * 60 * 1000,
 });
 

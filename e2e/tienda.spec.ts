@@ -43,7 +43,7 @@ const catalogo = (page: Page) => page.getByRole("list", { name: /Todos los produ
 
 test.describe("Tienda", () => {
   test("filtra por categoría y lo refleja en la URL", async ({ page, catalogo: { budin, postre } }) => {
-    await abrirHastaVer(page, "/tienda", () => catalogo(page).getByRole("link", { name: postre.name }));
+    await abrirHastaVer(page, "/tienda", () => catalogo(page).getByRole("link", { name: postre.name, exact: true }));
     await expect(page.getByRole("heading", { level: 2, name: "Todos los productos" })).toBeVisible();
 
     const filtros = page.getByRole("group", { name: "Filtrar por categoría" });
@@ -52,8 +52,8 @@ test.describe("Tienda", () => {
     await expect(page).toHaveURL(/\/tienda\?categoria=budines$/);
     await expect(filtros.getByRole("button", { name: "Budines" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("heading", { level: 2, name: "Budines" })).toBeVisible();
-    await expect(catalogo(page).getByRole("link", { name: budin.name })).toBeVisible();
-    await expect(page.getByRole("link", { name: postre.name })).toHaveCount(0);
+    await expect(catalogo(page).getByRole("link", { name: budin.name, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: postre.name, exact: true })).toHaveCount(0);
     // La categoría de cada tarjeta (el eyebrow) es Budines.
     const categorias = await catalogo(page).locator("article > p:first-of-type").allTextContents();
     expect(new Set(categorias)).toEqual(new Set(["Budines"]));
@@ -63,9 +63,9 @@ test.describe("Tienda", () => {
   });
 
   test("entra directo a una categoría desde la URL", async ({ page, catalogo: { budin, postre } }) => {
-    await abrirHastaVer(page, "/tienda?categoria=postres", () => catalogo(page).getByRole("link", { name: postre.name }));
+    await abrirHastaVer(page, "/tienda?categoria=postres", () => catalogo(page).getByRole("link", { name: postre.name, exact: true }));
     await expect(page.getByRole("heading", { level: 2, name: "Postres" })).toBeVisible();
-    await expect(page.getByRole("link", { name: budin.name })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: budin.name, exact: true })).toHaveCount(0);
   });
 
   test("muestra un estado vacío si la categoría no existe", async ({ page }) => {
@@ -76,8 +76,8 @@ test.describe("Tienda", () => {
   });
 
   test("abre el detalle de un producto desde la tarjeta", async ({ page, catalogo: { budin } }) => {
-    await abrirHastaVer(page, "/tienda?categoria=budines", () => page.getByRole("link", { name: budin.name }));
-    await page.getByRole("link", { name: budin.name }).click();
+    await abrirHastaVer(page, "/tienda?categoria=budines", () => page.getByRole("link", { name: budin.name, exact: true }));
+    await page.getByRole("link", { name: budin.name, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/tienda/${budin.slug}$`));
     await expect(page.getByRole("heading", { level: 1, name: budin.name })).toBeVisible();
     await expect(page).toHaveTitle(new RegExp(budin.name));

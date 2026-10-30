@@ -59,9 +59,28 @@ Indicaciones de Maggie: primero mostrar qué son los workshops, con video de fon
 - Reserva con **seña del 50%**. Pendiente con Maggie: cuándo y cómo se paga el saldo.
 - No hay reembolso; se puede pasar el lugar a otra persona.
 
+## Pedidos de la tienda (confirmado por Maggie, 28/10)
+
+Están en una sola config, [`data/site.ts`](../data/site.ts) → `pedidos`, y la base las vuelve a validar (`crear_pedido`, migración 0007).
+
+- **Entrega:**
+  - **Retiro en San Isidro.** Si el cliente vive lejos, puede mandar un Uber o una moto a retirarlo (se muestra como ayuda en el checkout).
+  - **Envío** solo con un total desde **$ 400.000** y a **10 km o menos**. La distancia no se calcula: el cliente carga dirección y localidad, y Maggie la valida al aceptar.
+- **Horarios de retiro o entrega:** lunes a viernes de 10 a 19 h, en franjas de 10 a 13, 13 a 16 y 16 a 19; sábados de 9 a 13; domingos, cerrado.
+- **Anticipación:** la mayor de los productos del pedido (hoy, 48 h), contada hasta que empieza la franja. Se puede encargar hasta 30 días adelante.
+- **Pago:** el 100% con Mercado Pago al hacer el pedido. No hay mínimo de compra ni tope de pedidos por día.
+- **Maggie tiene que aceptar cada pedido:** pagarlo no lo confirma. Se dice en el checkout y en la página de resultado ("Tu pedido está pagado y Maggie lo va a confirmar; te escribe por WhatsApp").
+- **A medida** (number cakes y tortas a medida): no van al carrito, se consultan por WhatsApp con un mensaje armado.
+- **Inactivos o fuera de temporada:** no se pueden agregar ni comprar.
+
+Decisiones de implementación (no son de Maggie): los tamaños con "Precio a confirmar" no van al carrito; si el producto tiene sabores, hay que elegir uno, y la decoración es opcional.
+
 ## Pendiente de Maggie
 
 - 3 o 4 fotos o videos horizontales para el carrusel de la portada.
 - Reels de los workshops para el video de fondo.
 - Nombre, mes/año y foto de 4 workshops pasados.
 - Saldo de la seña: cuándo y cómo se paga.
+- Costo del envío. Hoy no se cobra y el checkout lo aclara (`TODO(Maggie)` en `data/site.ts`).
+- Feriados: hoy se puede elegir un feriado de lunes a sábado.
+- Plazo y forma de la devolución cuando rechaza un pedido pagado.

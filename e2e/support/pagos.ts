@@ -12,9 +12,13 @@ const secret = () => {
   return value;
 };
 
-let nextPaymentId = Date.now();
-/** Id de pago único (numérico, como los de MP). */
-export const nuevoPagoId = () => String(nextPaymentId++);
+// Los workers corren en paralelo, cada uno con su contador: si todos
+// arrancaran en Date.now(), dos podrían generar el mismo id y el mock
+// pisaría un pago con otro. Los últimos tres dígitos son del proceso, y el
+// contador avanza de a mil (sigue entrando en un entero seguro de JS).
+let nextPaymentId = Date.now() * 1000 + (process.pid % 1000);
+/** Id de pago único entre workers (numérico, como los de MP). */
+export const nuevoPagoId = () => String((nextPaymentId += 1000));
 
 export type PagoMock = {
   status: string;
@@ -33,9 +37,9 @@ export async function cargarPago(request: APIRequestContext, id: string, pago: P
   if (!response.ok()) throw new Error(`El mock no aceptó el pago (${response.status()})`);
 }
 
-/** La preferencia que creó la web para una inscripción. */
-export async function preferenciaDe(request: APIRequestContext, inscripcionId: string) {
-  const response = await request.get(`${mockUrl()}/__mock/preferences?external_reference=${inscripcionId}`);
+/** La preferencia que creó la web, por su external_reference ("inscripcion:<id>" o "pedido:<id>"). */
+export async function preferenciaDe(request: APIRequestContext, referencia: string) {
+  const response = await request.get(`${mockUrl()}/__mock/preferences?external_reference=${encodeURIComponent(referencia)}`);
   return response.ok() ? response.json() : null;
 }
 

@@ -59,7 +59,7 @@ En CI el reporter es `github`, que marca las fallas como anotaciones en el PR.
 
 ## Estrategia de los tests automáticos
 
-Playwright corre todo: los e2e con el navegador, los de la API con `request` y los unitarios, que importan funciones de `lib/` sin abrir ninguna página. Son 114 tests en 14 archivos (`npx playwright test --list`).
+Playwright corre todo: los e2e con el navegador, los de la API con `request` y los unitarios, que importan funciones de `lib/` sin abrir ninguna página. Son 164 tests en 17 archivos (`npx playwright test --list`).
 
 ### Qué cubre cada archivo
 
@@ -68,11 +68,13 @@ Playwright corre todo: los e2e con el navegador, los de la API con `request` y l
 | Archivo | Tests | Qué cubre |
 |---|---|---|
 | `tienda.spec.ts` | 7 | Filtro por categoría y su reflejo en la URL, categoría inexistente, detalle, precio a confirmar y temporada, producto a medida por WhatsApp, producto oculto (404) |
-| `menu-mobile.spec.ts` | 3 | Menú mobile: abrir, navegar y cerrarse; Escape con el foco de vuelta en el botón; clic afuera. [Nuevo en este PR](#cómo-se-hizo-el-test-del-menú-mobile) |
+| `menu-mobile.spec.ts` | 5 | Menú mobile: abrir, navegar y cerrarse; Escape con el foco de vuelta en el botón; clic afuera ([cómo se hizo](#cómo-se-hizo-el-test-del-menú-mobile)). Página actual: la home regenerada (`/index`) marca Inicio, y las subpáginas marcan su sección ([Bug 4](#bug-4-en-la-home-inicio-no-se-marca-como-página-actual)) |
+| `carrito.spec.ts` | 10 | Carrito en el navegador: agregar con tamaño y sabor (sin sabor no deja), contador accesible del header, editar, recargar y quitar; producto desactivado o con otro precio después de agregarlo; carrito guardado roto; a medida por WhatsApp. Checkout con retiro → mock de MP → "¡Recibimos tu pago!" y carrito vacío; envío desde $ 400.000 con dirección; domingo avisa al elegirlo. Resultado pendiente y rechazado con "Probar de nuevo"; 404 con un id inválido |
+| `pedidos.spec.ts` | 21 | `POST /api/v1/pedidos` y la base: precios de la base aunque el cliente mande otros, preferencia con un ítem por línea, envío (total mínimo y dirección), domingo / fuera de horario / antes de 48 h / más de 30 días, productos inactivos, a medida, fuera de temporada o sin precio, sabor y decoración inválidos, `Origin` ajeno (403), 502 si MP falla, clave publishable sin acceso. Webhook: `pagado` (nunca aceptado), idempotente, monto distinto, pago duplicado, vencido. `aceptar_pedido` / `rechazar_pedido` con admin, sin rol y sin sesión, y la devolución con `marcar_devuelto` |
 | `carrusel.spec.ts` | 3 | Carrusel de la portada: avance automático y pausa, manejo con teclado, movimiento reducido |
 | `inscripcion.spec.ts` | 3 | Formulario: errores por campo con foco en el primero, envío y paso del pago, workshops de ejemplo sin inscripción |
 | `api.spec.ts` | 24 | API pública `/api/v1`: categorías, productos (filtros y 400), detalle (404), workshops, inscripciones (400, 404, 409, sin sobreventa con pedidos simultáneos), redirecciones 308 de las rutas viejas |
-| `pagos.spec.ts` | 20 | Preferencia con el total de la base, 422 sin precio, 502 si MP falla; webhook (aprobado, rechazado, monto distinto, duplicados, firma inválida, pagos ajenos); vencimiento y último lugar; página de resultado; inscripción y devoluciones en el panel |
+| `pagos.spec.ts` | 21 | Preferencia con el total de la base (`external_reference` `inscripcion:<id>`), 422 sin precio, 502 si MP falla; webhook (aprobado, referencia vieja sin prefijo, rechazado, monto distinto, duplicados, firma inválida, pagos ajenos); vencimiento y último lugar; página de resultado; inscripción y devoluciones en el panel |
 | `admin.spec.ts` | 11 | Permisos (sin sesión, sin rol, admin), login incorrecto, validación y saneo de la API de admin, origen cruzado (403), productos, fotos en Storage, inscripciones y workshops |
 | `panel.spec.ts` | 7 | Panel de Maggie: precio en línea, pausar y deshacer, tope de 4 destacados, validación con foco, producto con foto, workshop con inscripta, marcar devolución |
 | `cerrar-sesion.spec.ts` | 1 | Cerrar sesión cierra solo la sesión actual y `/admin` vuelve a pedir login |
@@ -86,6 +88,7 @@ Playwright corre todo: los e2e con el navegador, los de la API con `request` y l
 | `pagos-unit.spec.ts` | 21 | Firma `x-signature` del webhook, cálculo del monto (redondeo al centavo), preferencia de Checkout Pro (sin `notification_url`), estados de MP, URL del sitio, `.ics`, rate limiter, qué ve quien vuelve de MP |
 | `panel-unit.spec.ts` | 6 | Fecha y hora de Buenos Aires, número de WhatsApp, precios escritos como en Argentina |
 | `temporada.spec.ts` | 5 | Temporada de un producto: rangos dentro del año y cruzando el año, mes de Buenos Aires, texto del rango |
+| `pedidos-unit.spec.ts` | 16 | Pedidos: franjas por día, inicio de la franja en hora de Buenos Aires, 48 h hasta el inicio, máximo 30 días, mínimo del envío; `external_reference` (con prefijo y el formato viejo); preferencia del pedido; qué ve quien vuelve de pagar; esquema del pedido (descarta precios del cliente); carrito guardado (suma de líneas, versión y datos rotos) |
 
 ### Mock de Mercado Pago
 
@@ -102,11 +105,13 @@ Los e2e corren contra el mismo proyecto de Supabase que el sitio, y el catálogo
 Por eso:
 - **Cada test crea lo que necesita y lo borra al terminar**, con slug `e2e-…`:
   - workshops con el fixture `workshop` o `crearWorkshopDePrueba({ esEjemplo })`, y con `crearWorkshopPorApi` cuando tienen que aparecer en `/workshops` (`e2e/support/supabase.ts`);
-  - productos con `crearProductoDePrueba` y `borrarProductoDePrueba`, o con `crearProductoPorApi` y `borrarProductoPorApi` (`e2e/support/productos.ts`).
+  - productos con `crearProductoDePrueba` y `borrarProductoDePrueba`, o con `crearProductoPorApi` y `borrarProductoPorApi` (`e2e/support/productos.ts`);
+  - pedidos por la API pública con `pedir` y un email `e2e-pedido-…@example.com` (`e2e/support/pedidos.ts`). Los borra el teardown, con sus pagos, antes que los productos. Las fechas salen de `turnoValido()`, calculado con las mismas reglas que el checkout, así que los tests no dependen del día en que corren.
 - **Se comprueba lo propio, no totales:** que el producto de prueba aparece o no aparece, nunca cuántos productos hay.
 - **Listados estáticos:** `/tienda` y `/workshops` son estáticas (ISR). Para que algo aparezca en el listado se crea con la API de admin, que revalida la página, y el test la abre con `abrirHastaVer`: con otros tests revalidando en paralelo, puede tardar un momento en verse. Para la API pública, el detalle y la inscripción alcanza con insertarlo en la base.
 - **Datos fijos:** las categorías son lo único real que se usa. Salen del seed, Maggie no las edita desde el panel, y una categoría de prueba aparecería en los filtros mientras corren los demás tests.
 - **El teardown** borra al final todo lo `e2e-…` que haya quedado si un test se cortó.
+- **Ids de pago únicos entre workers:** `nuevoPagoId()` lleva el pid del worker. Si dos workers generaran el mismo id, el mock pisaría un pago con otro ([errores.md](errores.md#dos-workers-generaban-el-mismo-id-de-pago)).
 
 ### El rate limit va al final
 
@@ -141,6 +146,14 @@ La corrida del 28/10/2026 fue sobre el sitio publicado. Cada resultado dice qui�
 | MP-13 | Panel: devolución | Un pago en "Para devolver" | Hacer la devolución en MP y "Marcar como devuelto" (con confirmación) | Pasa a los devueltos y un aviso repetido no lo vuelve a marcar | 28/10/2026, Catalina: no se corrió, no había un pago en "Para devolver" | No ejecutado | Sí (`panel.spec.ts`) |
 | MP-14 | Mobile | Teléfono real o 390 px | Abrir "Menú", ir a Tienda; abrir de nuevo y cerrar con Escape y tocando afuera | El menú se abre debajo del header, marca la página actual y se cierra en los tres casos | 28/10/2026, Claude en el navegador integrado: abre debajo del header, navega a Tienda y se cierra en los tres casos. En la home, "Inicio" no tiene `aria-current="page"` (en `/tienda`, "Tienda" sí): [Bug 4](#bug-4-en-la-home-inicio-no-se-marca-como-página-actual) | Pasó con bug ([Bug 4](#bug-4-en-la-home-inicio-no-se-marca-como-página-actual)) | Sí (`menu-mobile.spec.ts`) |
 | MP-15 | Accesibilidad | Solo teclado, sin mouse | Desde `/`: Tab hasta "Saltar al contenido" y Enter; recorrer el carrusel; inscribirse a un workshop; en el panel, abrir un diálogo de borrar | Foco siempre visible; el salto lleva al contenido; el carrusel se maneja con Enter y Espacio; el diálogo enfoca la opción segura | 28/10/2026, Claude en el navegador integrado: Tab hasta "Saltar al contenido" con foco visible y Enter lleva a `main#contenido`; el carrusel se maneja con Enter y Espacio y se pausa con Enter. 28/10/2026, Catalina: la inscripción se completa solo con teclado y el diálogo de borrar del panel enfoca la opción segura | Pasó | Parcial (carrusel e inscripción; el diálogo, en `panel.spec.ts`) |
+| MP-16 | Carrito | Un producto que se pueda pedir, con sabores | En su detalle, tocar "Agregar al pedido" sin elegir sabor; después elegir uno y agregar 2 | Sin sabor: "Elegí un sabor." con foco en el campo. Con sabor: "¡Listo! Lo agregamos a tu pedido." y el ícono del carrito muestra 2 | TODO: correrlo | Sin correr | Sí (`carrito.spec.ts`) |
+| MP-17 | Carrito | Un producto en el carrito | Abrir el sitio en dos pestañas; agregar otro producto en una | El contador de la otra pestaña se actualiza solo (evento `storage`) | TODO: correrlo | Sin correr | No |
+| MP-18 | Carrito | DevTools abierto | En Application → Local Storage, poner `homebakery:carrito` en `{roto` y recargar `/carrito` | "Todavía no agregaste nada.", sin errores en la consola | TODO: correrlo | Sin correr | Sí (`carrito.spec.ts`) |
+| MP-19 | Carrito: accesibilidad | VoiceOver (o NVDA) | Agregar un producto desde su detalle; después, ir al ícono del carrito con Tab | Anuncia "Agregaste … al pedido."; el ícono se lee "Carrito, N productos" | TODO: correrlo | Sin correr | Parcial (`carrito.spec.ts` verifica el texto y el nombre accesible, no la lectura) |
+| MP-20 | Checkout: accesibilidad | Solo teclado | Completar el checkout con Tab, flechas y Enter; enviar con un campo vacío | Foco siempre visible; el foco va al primer campo con error y el error se lee como descripción | TODO: correrlo | Sin correr | Parcial (`carrito.spec.ts`, foco en la dirección) |
+| MP-21 | Checkout: día y horario | Teléfono real (iPhone o Android) | Elegir un domingo; después un sábado; después un día a menos de 48 h | Selector de fecha nativo, sin scroll horizontal. Domingo: aviso al elegirlo y horario deshabilitado. Sábado: solo "9 a 13 h". A menos de 48 h: las franjas que no llegan aparecen deshabilitadas | TODO: correrlo | Sin correr | Parcial (`carrito.spec.ts` el domingo; `pedidos.spec.ts` las reglas en la API) |
+| MP-22 | Checkout: envío | Carrito con menos de $ 400.000; después con más | Mirar la opción "Envío a domicilio" | Con menos: deshabilitada, con "El envío es solo para pedidos desde $ 400.000.". Con más: se puede elegir, pide dirección y localidad y aclara que no tiene cargo | TODO: correrlo | Sin correr | Sí (`carrito.spec.ts`, `pedidos.spec.ts`) |
+| MP-23 | Pedido: pago | Sandbox configurado y migración 0007 corrida | Seguir "Pedido de la tienda" en [pruebas-mercadopago.md](pruebas-mercadopago.md#pedido-de-la-tienda) con `APRO`; después otro con `OTHE` | `APRO`: "¡Recibimos tu pago!", número de pedido, carrito vacío; en Supabase el pedido queda `pagado` (no `aceptado`) y el pago tiene `pedido_id`. `OTHE`: "El pago no se aprobó" y "Probar de nuevo" | TODO: correrlo | Sin correr | Parcial (`carrito.spec.ts`, `pedidos.spec.ts`, con mock) |
 
 ## Reporte de bugs
 

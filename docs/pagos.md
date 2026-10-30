@@ -1,4 +1,6 @@
-# Pagos: workshops con Mercado Pago
+# Pagos: workshops y pedidos con Mercado Pago
+
+Un pedido de la tienda se paga igual, completo al hacerlo, pero **pagar no lo confirma**: lo confirma Maggie. Ver [Pedidos de la tienda](#pedidos-de-la-tienda-migración-0007).
 
 Un workshop se paga **completo al inscribirse** con **Mercado Pago Checkout Pro**: no hay seña ni saldo. El esquema está en [`supabase/migrations/0003_pagos.sql`](../supabase/migrations/0003_pagos.sql), y la prueba manual en sandbox, en [`docs/pruebas-mercadopago.md`](pruebas-mercadopago.md).
 
@@ -9,7 +11,41 @@ Maggie decidió cobrar el 100% al inscribirse. La [`0006_pago_completo.sql`](../
 - El campo de porcentaje ya no está en el panel. La API de admin todavía lo acepta (`depositPercent`, de 1 a 100).
 - El título de la preferencia es `Inscripción · <workshop> · N lugares`.
 
-TODO: los pedidos de la tienda se pagan con el mismo esquema cuando exista el carrito.
+## Pedidos de la tienda (migración 0007)
+
+El carrito vive en el navegador. El checkout manda `POST /api/v1/pedidos` **sin precios**: solo productos, tamaños, sabor, decoración y cantidades. [`0007_pedidos.sql`](../supabase/migrations/0007_pedidos.sql):
+
+- `crear_pedido` (solo `service_role`) valida todo y **calcula los precios desde la base**:
+  - productos activos, en temporada y no a medida;
+  - tamaños con precio, sabores y decoraciones válidos;
+  - día, franja y anticipación;
+  - envío solo desde $ 400.000 y con dirección.
+
+  Guarda el pedido `pendiente_pago`, que vence a los 30 minutos, con un snapshot de cada ítem (`pedido_items`).
+- La preferencia lleva un ítem por línea, con el precio que guardó la base, y vuelve a `/pedido/resultado?pedido=<id>`. Mismas reglas que la de inscripción: sin efectivo ni cajero, vence con el pedido y sin `notification_url`.
+- **El mismo webhook** atiende inscripciones y pedidos. El `external_reference` dice de qué es el pago (`lib/pagos/referencia.ts`):
+
+  | Referencia | Es de |
+  |---|---|
+  | `pedido:<id>` | Un pedido |
+  | `inscripcion:<id>` | Una inscripción (desde la 0007) |
+  | `<id>` solo | Una inscripción creada antes de la 0007 |
+
+- **`confirmar_pago(p_tipo, p_id, …)`** reemplaza a la de 0005. Un pago es de una inscripción **o** de un pedido (`check num_nonnulls(...) = 1`), con la misma idempotencia y la misma guarda de `devuelto_at`. La firma vieja (`p_inscripcion_id`, …) queda como envoltorio, así el código que está deployado sigue andando entre correr la migración y el deploy. `TODO`: borrarla en una migración posterior.
+
+Para un pedido, con un pago `approved`:
+
+| Situación | Resultado |
+|---|---|
+| `pendiente_pago`, con el monto exacto (aunque haya vencido) | **`pagado`**: esperando que Maggie lo acepte. **Nunca pasa a `aceptado` solo** |
+| `pendiente_pago` con otro monto o moneda | Sigue pendiente; el pago queda **para devolver** (`monto_distinto`) |
+| Ya hay otro pago aprobado del pedido | El nuevo queda **para devolver** (`pago_duplicado`) |
+| `cancelado` o `rechazado` | El pago queda **para devolver** (`pedido_cancelado` / `pedido_rechazado`) |
+| `pagado` o más adelante, mismo pago | Nada (aviso repetido) |
+
+Maggie acepta o rechaza con `aceptar_pedido` / `rechazar_pedido` (solo admin, migración 0007). Rechazar un pedido pagado deja sus pagos **para devolver** con el mismo circuito que las inscripciones (`marcar_devuelto`). La pantalla del panel va en el PR 2. Hasta entonces, las devoluciones de pedidos **no aparecen** en "Para devolver".
+
+Los estados del pedido están en el [modelo de datos](modelo-de-datos.md#estados-de-un-pedido).
 
 ## El flujo
 
@@ -139,6 +175,7 @@ Los pagos para devolver aparecen en "Para devolver" (en el inicio del panel y en
 
 ## Tests
 
-- **Unitarios** (`e2e/pagos-unit.spec.ts`): firma, monto, preferencia, estados, URL del sitio, `.ics`, rate limiter y la vista del resultado.
+- **Unitarios** (`e2e/pagos-unit.spec.ts`): firma, monto, preferencia, estados, URL del sitio, `.ics`, rate limiter y la vista del resultado. Los de pedidos (`e2e/pedidos-unit.spec.ts`): reglas de día y horario, referencias, la preferencia del pedido, su vista y el carrito guardado.
+- **Pedidos** (`e2e/pedidos.spec.ts` y `e2e/carrito.spec.ts`): la API, la base, el webhook, aceptar y rechazar, y el flujo completo en el navegador.
 - **Integración** (`e2e/pagos.spec.ts`), contra Supabase y un **mock de la API de MP** (`e2e/support/mp-mock.ts`), que Playwright levanta como segundo servidor. `lib/mercadopago.ts` apunta el SDK al mock con `MP_API_BASE_URL` y solo acepta localhost, así el token nunca sale hacia otro host. Los e2e no usan credenciales reales.
 - **Manual en sandbox:** [`docs/pruebas-mercadopago.md`](pruebas-mercadopago.md).

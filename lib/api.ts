@@ -136,8 +136,12 @@ export function withAdminApi<P = Record<string, never>>(
   });
 }
 
-/** Sin Origin (curl, scripts) se acepta: igual necesitan la cookie de sesión. */
-function sameOrigin(request: Request) {
+/**
+ * Si el pedido viene de este mismo sitio (Origin). Sin Origin (curl,
+ * scripts) se acepta: en el panel igual necesitan la cookie de sesión, y en
+ * la API pública los frena el rate limit.
+ */
+export function sameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   if (!origin) return true;
   try {
