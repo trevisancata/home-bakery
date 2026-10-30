@@ -29,8 +29,7 @@ export function MaggieStory() {
                 ))}
               </div>
             ))}
-            {/* Es una frase entera: el interlineado de la manuscrita (pensado para una palabra en un título) juntaba las líneas. */}
-            <p className="mt-2 text-30 leading-none lg:mt-4 [&>.manuscrita]:leading-none">
+            <p className="mt-2 text-30 leading-none lg:mt-4">
               <span className="manuscrita">{story.closing}</span>
             </p>
           </div>

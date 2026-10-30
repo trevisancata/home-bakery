@@ -1,42 +1,31 @@
 import type { Metadata } from "next";
-// La cursiva va con alias: Maggie eligió Dawning of a New Day (29/10). Para
-// cambiarla alcanza con el nombre en esta línea (y su tamaño, abajo); la que
-// no se importa no se descarga.
-import { Dawning_of_a_New_Day as Cursiva, Gloock, Poppins } from "next/font/google";
+import { Dawning_of_a_New_Day, DM_Sans, Gilda_Display, Oswald } from "next/font/google";
 import { pages, site } from "@/data/site";
 import "./globals.css";
 
-// Ninguna de las tres es variable: requieren peso.
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-});
-
-const gloock = Gloock({
-  variable: "--font-gloock",
+// Gilda Display y Dawning of a New Day no son variables: requieren peso.
+const gildaDisplay = Gilda_Display({
+  variable: "--font-gilda-display",
   subsets: ["latin"],
   weight: "400",
 });
 
-const cursiva = Cursiva({
-  variable: "--font-cursiva",
+// Cursiva elegida por Maggie el 29/10 (antes, Mrs Saint Delafield).
+const dawning = Dawning_of_a_New_Day({
+  variable: "--font-dawning",
   subsets: ["latin"],
   weight: "400",
 });
 
-// Tamaño (en em del título) y trazo extra de la palabra manuscrita para cada
-// cursiva. Sacramento: con el 1.75em de antes quedaba ~35% más grande que el
-// mockup. Dawning: a 1.8em sus minúsculas miden ~1,05 veces las de Gloock
-// (medido con canvas), y el trazo (text-stroke del mismo color) compensa lo
-// fina que es al lado de un Gloock pesado en los tamaños chicos. Ver
-// docs/guia-de-marca.md.
-const manuscrita: Record<string, { tamano: string; trazo: string }> = {
-  Sacramento: { tamano: "1.4em", trazo: "0em" },
-  // El trazo tiene tope: en los títulos grandes (165 px) 0.025em cerraba los huecos de las letras.
-  "Dawning of a New Day": { tamano: "1.8em", trazo: "min(0.025em, 1.2px)" },
-};
-const familiaCursiva = cursiva.style.fontFamily.split(",")[0].replaceAll("'", "");
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -57,16 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="es-AR"
-      className={`${poppins.variable} ${gloock.variable} ${cursiva.variable}`}
-      style={
-        {
-          "--tamano-manuscrita": manuscrita[familiaCursiva]?.tamano,
-          "--trazo-manuscrita": manuscrita[familiaCursiva]?.trazo,
-        } as React.CSSProperties
-      }
-    >
+    <html lang="es-AR" className={`${gildaDisplay.variable} ${dawning.variable} ${oswald.variable} ${dmSans.variable}`}>
       <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );

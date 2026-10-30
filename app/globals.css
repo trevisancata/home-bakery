@@ -75,12 +75,11 @@
   --color-whatsapp: #25d366;
   --color-whatsapp-oscuro: #0b3b1e;
 
-  /* Las familias se cargan en app/layout.tsx; la cursiva se cambia ahí, en una línea. */
-  --font-display: var(--font-gloock), ui-serif, Georgia, serif;
-  --font-script: var(--font-cursiva), cursive;
-  --font-label: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  /* Flechas y otros símbolos que Poppins no trae: los del sistema, como el mockup. */
+  --font-display: var(--font-gilda-display), ui-serif, Georgia, serif;
+  --font-script: var(--font-dawning), cursive;
+  --font-label: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Flechas y otros símbolos que DM Sans no trae: los del sistema, como el mockup. */
   --font-simbolos: system-ui, sans-serif;
 
   /*
@@ -163,14 +162,16 @@
   border-top-width: 1.5px;
 }
 
-/* Palabra manuscrita dentro de un título. El tamaño y el trazo dependen de la cursiva: ver app/layout.tsx. */
+/*
+ * Palabra manuscrita dentro de un título (Dawning of a New Day a 1.6em). A ese
+ * tamaño sus minúsculas miden ~1,06 veces las de Gilda Display; más grande es
+ * más ancha y algunos títulos de mobile pasan a otra línea.
+ */
 @utility manuscrita {
   padding-inline: 0.08em;
   font-family: var(--font-script);
-  font-size: var(--tamano-manuscrita, 1.5em);
+  font-size: 1.6em;
   font-weight: 400;
-  /* Engrosa una cursiva fina sin cambiar de fuente: el trazo es del mismo color que la letra. */
-  -webkit-text-stroke: var(--trazo-manuscrita, 0) currentColor;
   line-height: 0.6;
   letter-spacing: 0;
   color: var(--color-chocolate);

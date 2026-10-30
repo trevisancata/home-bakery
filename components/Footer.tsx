@@ -2,7 +2,7 @@ import Link from "next/link";
 import { site, ui } from "@/data/site";
 import { Logo } from "./Logo";
 
-const titleClasses = "font-sans text-15 font-semibold text-hueso";
+const titleClasses = "font-sans text-15 font-bold text-hueso";
 const linkClasses = "text-hueso underline md:no-underline hover:text-white hover:underline";
 
 /**

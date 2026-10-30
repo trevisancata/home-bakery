@@ -133,7 +133,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             script={content.script}
             size="text-48 leading-hero tracking-titulo text-hueso lg:text-92 lg:leading-none"
             // Margen para que el trazo bajo de la manuscrita no pise la bajada.
-            className="mb-5 lg:mb-9"
+            className="mb-1 lg:mb-6"
           />
           <p className="max-w-150 text-16 leading-medio text-hueso lg:text-20 lg:leading-parrafo">{content.text}</p>
           <div className="flex flex-col gap-2.5 lg:mt-2 lg:flex-row lg:gap-4">

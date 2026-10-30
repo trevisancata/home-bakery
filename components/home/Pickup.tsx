@@ -26,13 +26,13 @@ export function Pickup() {
               <dt>
                 <Adaptive full={row.days.full} short={row.days.short} />
               </dt>
-              <dd className={row.closed ? "text-secundario" : "font-semibold"}>{row.time}</dd>
+              <dd className={row.closed ? "text-secundario" : "font-bold"}>{row.time}</dd>
             </div>
           ))}
         </dl>
 
         <div className="mt-1.5 rounded-2xl bg-arena p-4 text-15 leading-medio lg:mt-0 lg:flex lg:flex-col lg:gap-4 lg:rounded-card lg:p-7 lg:leading-parrafo">
-          <p className="hidden text-16 leading-natural font-semibold lg:block">{pickup.farAway.title}</p>
+          <p className="hidden text-16 leading-natural font-bold lg:block">{pickup.farAway.title}</p>
           <p>
             <Adaptive full={<Rich text={pickup.farAway.full} />} short={<Rich text={pickup.farAway.short} />} />
           </p>

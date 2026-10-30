@@ -21,7 +21,7 @@ type SectionTitleProps = {
   className?: string;
 };
 
-/** Título del sistema: Gloock con un acento manuscrito opcional. */
+/** Título del sistema: Gilda Display con un acento manuscrito opcional. */
 export function SectionTitle({ title, script, as: Tag = "h2", id, size, className = "" }: SectionTitleProps) {
   const index = script ? title.indexOf(script) : -1;
 
