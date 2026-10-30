@@ -456,3 +456,25 @@ Abierto el 22/10, sin mergear.
 - e2e: 110 en verde. En la primera corrida fallaba uno de la tienda, que esperaba "Precio a confirmar" en "Tarta de frutillas". Maggie había pedido $ 10 en todos los productos hasta cargar los reales. Ver [errores.md](errores.md#tests-atados-a-los-precios-y-destacados-reales).
 - El test de `rate-limit` "no corría" por la config: su proyecto depende de `chromium`, y Playwright no corre un proyecto si falla una de sus dependencias.
 - Lighthouse de `/workshops`: 100 / 100 / 100. El LCP observado es igual al de `main`, y el simulado sube 0,17 s (ver [lighthouse.md](lighthouse.md#workshops-con-el-video-del-hero)).
+
+### PR #20 · Clase 12: testing, depuración y calidad (`docs/qa-testing`)
+
+**Pedido:** entregable de la clase 12:
+1. `docs/testing.md` con QA y QC, la estrategia de los tests, un plan de pruebas manuales, la plantilla de bug con tres reportes reales y cómo depurar;
+2. capturas y reporte html en local;
+3. scripts para el modo UI, el reporte y Codegen;
+4. un test nuevo hecho con Codegen.
+
+**Qué se hizo:**
+
+- **`docs/testing.md`:** la sección de testing del README se movió ahí; en el README queda un resumen con el link. Los tres reportes de bug salen de [errores.md](errores.md): el 401 del webhook, el test atado al precio real y la falla intermitente por ISR.
+- **Plan de pruebas manuales:** 15 casos. El resultado obtenido solo está completo en los verificados el 22/10 (pago `APRO`, webhook y "Simular notificación"); el resto queda como `TODO` hasta correrlos.
+- **`playwright.config.ts`:** `screenshot: "only-on-failure"` y, en local, reporter `list` + `html` sin abrirlo solo. En CI sigue `github`.
+- **Scripts:** `test:e2e:ui`, `test:e2e:report` y `test:codegen` (sobre `localhost:3000`).
+- **Test nuevo, `e2e/menu-mobile.spec.ts`:** el filtro de la tienda ya estaba cubierto; el menú mobile, no. Claude Code lo escribió primero a mano, con los locators por rol que genera Codegen, porque no puede usar el navegador de Codegen. Después Catalina grabó el recorrido con `npm run test:codegen`. Se comparó la grabación con el test, y el test quedó igual porque era más robusto. La grabación quedó en `docs/testing.md` como ejemplo de por qué se limpia a mano: pasos accidentales (F12), un locator frágil, URL absoluta, el nombre `test`, sin viewport mobile y sin aserciones.
+
+**Resultado:**
+
+- Lint y build en verde.
+- e2e: 114 en verde, incluido el de `rate-limit`. El test nuevo, 9 de 9 con `--repeat-each=3`.
+- En el log del servidor de la corrida completa aparecieron tres "The destination stream closed early". No hicieron fallar ningún test y no aparecen corriendo solo el test nuevo. TODO: ver de qué test salen.
