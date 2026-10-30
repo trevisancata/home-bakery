@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, Gilda_Display, Mrs_Saint_Delafield, Oswald } from "next/font/google";
+import { Dawning_of_a_New_Day, DM_Sans, Gilda_Display, Oswald } from "next/font/google";
 import { pages, site } from "@/data/site";
 import "./globals.css";
 
-// Gilda Display y Mrs Saint Delafield no son variables: requieren peso.
+// Gilda Display y Dawning of a New Day no son variables: requieren peso.
 const gildaDisplay = Gilda_Display({
   variable: "--font-gilda-display",
   subsets: ["latin"],
   weight: "400",
 });
 
-const mrsSaintDelafield = Mrs_Saint_Delafield({
-  variable: "--font-mrs-saint-delafield",
+// Cursiva elegida por Maggie el 29/10 (antes, Mrs Saint Delafield).
+const dawning = Dawning_of_a_New_Day({
+  variable: "--font-dawning",
   subsets: ["latin"],
   weight: "400",
 });
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-AR" className={`${gildaDisplay.variable} ${mrsSaintDelafield.variable} ${oswald.variable} ${dmSans.variable}`}>
+    <html lang="es-AR" className={`${gildaDisplay.variable} ${dawning.variable} ${oswald.variable} ${dmSans.variable}`}>
       <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );

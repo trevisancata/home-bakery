@@ -478,3 +478,52 @@ Abierto el 22/10, sin mergear.
 - Lint y build en verde.
 - e2e: 114 en verde, incluido el de `rate-limit`. El test nuevo, 9 de 9 con `--repeat-each=3`.
 - En el log del servidor de la corrida completa aparecieron tres "The destination stream closed early". No hicieron fallar ningún test y no aparecen corriendo solo el test nuevo. TODO: ver de qué test salen.
+
+## 29/10/2026 y 30/10/2026
+
+### PR #19 · Cursiva: Dawning of a New Day (`feat/tipografia`)
+
+**Decisión:** Maggie eligió Dawning of a New Day, 29/10; se mantienen DM Sans, Gilda Display y Oswald. El PR cambia solo la cursiva: reemplaza a Mrs Saint Delafield.
+
+**Propuesta descartada: Poppins + Gloock.** El PR empezó (27/10) cambiando todas las fuentes: Poppins para textos y etiquetas, Gloock para títulos y una cursiva a elegir entre Sacramento y Dawning of a New Day. Maggie eligió la cursiva sobre capturas hechas con esa combinación.
+- **Por qué se descartó:** el 30/10 cambió el alcance: el PR tiene que modificar únicamente la cursiva. Se volvió a `main` en todo lo demás:
+  - fuentes y tokens `--font-*`;
+  - los márgenes bajo los títulos de portada;
+  - los `font-semibold` que reemplazaban a `font-bold`;
+  - el interlineado del cierre de `/maggie`;
+  - la tabla de tamaño y trazo por cursiva en `app/layout.tsx`.
+- **Lo calibrado para Gloock no sirve con Gilda:** el 29/10 se había llevado Dawning a 1.8em con un trazo de refuerzo (`min(0.025em, 1.2px)`), calibrados contra Gloock, que es mucho más pesada.
+- **Las capturas** de esa propuesta (`tipografia-sacramento-*` y `tipografia-dawning-*`) se sacaron de `docs/capturas`, porque no muestran nada vigente. Quedan en el historial de la rama (commit `1e9ce79`).
+
+**Qué se hizo el 30/10:**
+
+- **Cambio de cursiva:**
+  - `app/layout.tsx` importa `Dawning_of_a_New_Day` en lugar de `Mrs_Saint_Delafield`, que ya no se descarga;
+  - `--font-script` apunta a la variable nueva;
+  - el resto del archivo y de los tokens queda igual que en `main`.
+- **Tamaño y trazo, recalibrados contra Gilda Display.** Mismo método que el 29/10: medición con canvas y recortes de cada uso en mobile (390 px) y desktop (1440 px). Los usos son las portadas del inicio, `/workshops` y `/maggie`, los títulos de sección, la banda de workshops, la firma de `/workshops` y el cierre de `/maggie`.
+  - **Medidas en em del título:**
+
+    | | minúsculas | grosor medio del trazo |
+    |---|---|---|
+    | Gilda Display | 0,47 | 0,091 |
+    | Mrs Saint Delafield a 1.75em (`main`) | 0,39 | 0,076 |
+    | Dawning a 1.8em | 0,56 | 0,062 |
+    | Dawning a 1.6em | 0,50 | 0,055 |
+
+  - **A 1.8em, Dawning es demasiado ancha.** A igual tamaño es ~25% más ancha que Mrs Saint Delafield, y a 1.8em el título "Del diseño a la cocina" y el cierre de `/maggie` pasan a una línea más en mobile. A 1.6em ningún título cambia de cantidad de líneas respecto de `main`, y las minúsculas quedan apenas más altas que las de Gilda (~1,06 veces).
+  - **Sin trazo de refuerzo.** Gilda es una serif liviana. Al lado, Dawning a 1.6em se ve con un peso parecido al de Mrs Saint Delafield en `main`. Con un refuerzo de 0.013em (lo que haría falta para igualar el grosor medido de Mrs Saint Delafield), la portada de desktop quedaba más pesada que el título; con 0.5px no cambiaba nada visible. Se compararon a 2x, en la banda de workshops mobile, la portada de `/maggie` mobile y la del inicio desktop.
+  - **Interlineado:** la descendente de Dawning a 1.6em (0,65em) es más corta que la de Mrs Saint Delafield (0,73em), así que los márgenes de `main` bajo las portadas alcanzan. El cierre de `/maggie` ocupa el mismo alto que en `main`.
+  - **Contraste:** no cambia, porque los colores son los mismos.
+- **Docs actualizados:** guía de marca, mockups HTML (solo la familia y el tamaño de `.script`), `docs/mockup/README.md` y `README.md`.
+- **Capturas finales rehechas:** `docs/capturas/tipografia-final-*.png`, home y `/workshops`, mobile y desktop.
+
+**Para revisar con Maggie:** la guía de marca dice "una o dos palabras por título, nunca frases enteras", pero el cierre de `/maggie` es una frase entera en cursiva. No se cambió el contenido.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde. El CSS del build declara solo DM Sans, Gilda Display, Oswald y Dawning of a New Day.
+- e2e: 116 de 116, incluido rate limit.
+  - En la primera corrida fallaron dos tests de `pagos.spec.ts` ("rejected → sigue pendiente" y "monto distinto"): el webhook no registró el pago.
+  - Solos, con `--repeat-each=3`, pasaron 62 de 62, y la segunda corrida completa pasó entera.
+  - La causa probable es que `nuevoPagoId` es un contador por worker y dos workers pueden mandar el mismo id; el arreglo está en el PR #21.

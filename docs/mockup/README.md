@@ -30,7 +30,7 @@ Versión actual: **v6 (04/10/2026)**, con los cambios que pidió Maggie el 01/10
 ## Tokens
 
 - Colores: hueso #F5F4F0 (fondo), carbón #2F2F2F (texto), chocolate #5E4A33 (botones, bandas, footer), taupe #A88B6C (círculo del logo), arena #EAE3D8 (secciones alternas), placeholder #DCD1C3, texto secundario #6B5A50, bordes #E5DDD2, WhatsApp #25D366 con texto #0B3B1E, crema sobre foto #EADFCF.
-- Tipografías: Gilda Display (títulos), Mrs Saint Delafield (una palabra manuscrita por título), Oswald (etiquetas en mayúscula), DM Sans (cuerpo y botones).
+- Tipografías: Gilda Display (títulos), Dawning of a New Day (una palabra manuscrita por título, a 1.6em), Oswald (etiquetas en mayúscula), DM Sans (cuerpo y botones). Maggie eligió Dawning of a New Day el 29/10 en lugar de Mrs Saint Delafield, la de la v6; las demás no cambiaron y los HTML de este directorio ya usan la cursiva nueva.
 
 ## Cambios de la v6 (pedidos de Maggie, 01/10)
 

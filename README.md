@@ -47,7 +47,7 @@ El contacto vive en el footer y en el botón flotante de WhatsApp.
 
 - **Tokens** en `app/globals.css` (`@theme` de Tailwind v4): hueso, carbón, chocolate, taupe, caramelo,
   greige, arena y texto secundario. Caramelo y greige se usan solo para fondos y bordes (no llegan a AA como texto).
-- **Tipografías** con `next/font/google`: Gilda Display (títulos), Mrs Saint Delafield (acento manuscrito),
+- **Tipografías** con `next/font/google`: Gilda Display (títulos), Dawning of a New Day (acento manuscrito, elegida por Maggie el 29/10),
   Oswald (etiquetas) y DM Sans (cuerpo y botones).
 - **Componentes base** en `components/`: `Button`, `Eyebrow`, `SectionTitle` (prop `script` para la palabra
   manuscrita) e `ImageFrame` (imagen con placeholder de marca mientras no hay foto).
