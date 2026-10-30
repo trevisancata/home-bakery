@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-// La cursiva va con alias: para probar otra (p. ej. Dawning_of_a_New_Day)
-// alcanza con cambiar el nombre en esta línea.
-import { Gloock, Poppins, Sacramento as Cursiva } from "next/font/google";
+// La cursiva va con alias: Maggie eligió Dawning of a New Day (29/10). Para
+// cambiarla alcanza con el nombre en esta línea (y su tamaño, abajo); la que
+// no se importa no se descarga.
+import { Dawning_of_a_New_Day as Cursiva, Gloock, Poppins } from "next/font/google";
 import { pages, site } from "@/data/site";
 import "./globals.css";
 
@@ -24,12 +25,16 @@ const cursiva = Cursiva({
   weight: "400",
 });
 
-// Tamaño de la palabra manuscrita (en em del título) para cada cursiva,
-// calibrado contra el mockup aprobado: con el 1.75em de antes, Sacramento
-// queda ~35% más grande. Dawning es más fina y de ascendentes bajos.
-const tamanoManuscrita: Record<string, string> = {
-  Sacramento: "1.4em",
-  "Dawning of a New Day": "1.7em",
+// Tamaño (en em del título) y trazo extra de la palabra manuscrita para cada
+// cursiva. Sacramento: con el 1.75em de antes quedaba ~35% más grande que el
+// mockup. Dawning: a 1.8em sus minúsculas miden ~1,05 veces las de Gloock
+// (medido con canvas), y el trazo (text-stroke del mismo color) compensa lo
+// fina que es al lado de un Gloock pesado en los tamaños chicos. Ver
+// docs/guia-de-marca.md.
+const manuscrita: Record<string, { tamano: string; trazo: string }> = {
+  Sacramento: { tamano: "1.4em", trazo: "0em" },
+  // El trazo tiene tope: en los títulos grandes (165 px) 0.025em cerraba los huecos de las letras.
+  "Dawning of a New Day": { tamano: "1.8em", trazo: "min(0.025em, 1.2px)" },
 };
 const familiaCursiva = cursiva.style.fontFamily.split(",")[0].replaceAll("'", "");
 
@@ -55,7 +60,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="es-AR"
       className={`${poppins.variable} ${gloock.variable} ${cursiva.variable}`}
-      style={{ "--tamano-manuscrita": tamanoManuscrita[familiaCursiva] } as React.CSSProperties}
+      style={
+        {
+          "--tamano-manuscrita": manuscrita[familiaCursiva]?.tamano,
+          "--trazo-manuscrita": manuscrita[familiaCursiva]?.trazo,
+        } as React.CSSProperties
+      }
     >
       <body className="flex min-h-dvh flex-col">{children}</body>
     </html>

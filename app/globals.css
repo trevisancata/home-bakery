@@ -163,12 +163,14 @@
   border-top-width: 1.5px;
 }
 
-/* Palabra manuscrita dentro de un título. El tamaño depende de la cursiva: ver app/layout.tsx. */
+/* Palabra manuscrita dentro de un título. El tamaño y el trazo dependen de la cursiva: ver app/layout.tsx. */
 @utility manuscrita {
   padding-inline: 0.08em;
   font-family: var(--font-script);
   font-size: var(--tamano-manuscrita, 1.5em);
   font-weight: 400;
+  /* Engrosa una cursiva fina sin cambiar de fuente: el trazo es del mismo color que la letra. */
+  -webkit-text-stroke: var(--trazo-manuscrita, 0) currentColor;
   line-height: 0.6;
   letter-spacing: 0;
   color: var(--color-chocolate);
