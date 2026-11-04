@@ -22,6 +22,11 @@ El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven 
   - `marcar_pedido_pagado` y `marcar_pedido_devuelto` (solo admin); `aceptar_pedido` y `rechazar_pedido` según el medio.
 
   Ver [Estados por medio de pago](#estados-por-medio-de-pago) y [pagos.md](pagos.md#medios-de-pago-migración-0008).
+- [`0009_avanzar_pedido.sql`](../supabase/migrations/0009_avanzar_pedido.sql): el panel de pedidos.
+  - `en_preparacion_at`, `listo_at`, `entregado_at`, `cancelado_at` y `motivo_cancelacion` en `pedidos`.
+  - `avanzar_pedido` y `cancelar_pedido` (solo admin).
+
+  Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -201,8 +206,39 @@ stateDiagram-v2
 ```
 
 - Un `pendiente_pago` vencido (pasaron los 30 minutos) sigue en ese estado: no ocupa nada. Si igual llega un pago aprobado por el total, pasa a `pagado`.
-- `aceptado → en_preparacion → listo → entregado` los mueve el panel en el PR 2. Hoy no hay función para eso.
+- `aceptado → en_preparacion → listo → entregado` los mueve el panel con `avanzar_pedido` (0009). Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
 - Un pago aprobado de un pedido `rechazado` o `cancelado`, con otro monto, o un segundo pago del mismo pedido, queda **para devolver** ([pagos.md](pagos.md#pedidos-de-la-tienda-migración-0007)).
+
+### Transiciones de un pedido
+
+Todas son funciones `security definer` que chequean `es_admin()` adentro (42501) y bloquean el pedido (`for update`). Lo que no está en la tabla, la base lo rechaza con `HB409`.
+
+| Desde | Hacia | Función | Condición |
+|---|---|---|---|
+| `pendiente_pago` | `pagado` | `confirmar_pago` (webhook) o `marcar_pedido_pagado` | MP: monto exacto. Transferencia: aunque haya vencido. Efectivo: guarda el cobro |
+| `pagado` | `aceptado` | `aceptar_pedido` | — |
+| `pendiente_pago` (efectivo) | `aceptado` | `aceptar_pedido` | Sin pago: se cobra al retirar |
+| `pendiente_pago` o `pagado` | `rechazado` | `rechazar_pedido` | Con pago → para devolver |
+| `aceptado` | `en_preparacion` | `avanzar_pedido` | — |
+| `en_preparacion` | `listo` | `avanzar_pedido` | — |
+| `listo` | `entregado` | `avanzar_pedido` | Efectivo sin cobrar: `p_cobrado = true`, que guarda el cobro en el mismo paso |
+| `aceptado`, `en_preparacion` o `listo` | `cancelado` | `cancelar_pedido` | Motivo obligatorio (3 a 500 caracteres, si no 22023). Con pago → para devolver (`pedido_cancelado`) |
+
+```mermaid
+stateDiagram-v2
+  pagado --> aceptado: aceptar_pedido
+  aceptado --> en_preparacion: avanzar_pedido
+  en_preparacion --> listo: avanzar_pedido
+  listo --> entregado: avanzar_pedido (efectivo, con el cobro)
+  aceptado --> cancelado: cancelar_pedido
+  en_preparacion --> cancelado: cancelar_pedido
+  listo --> cancelado: cancelar_pedido
+  entregado --> [*]
+  cancelado --> [*]
+```
+
+- **De a un paso:** `avanzar_pedido` solo acepta el estado siguiente. Saltear o volver atrás → `HB409`; un estado que no es de esta cadena → `22023`.
+- **Cada paso guarda su fecha** (`aceptado_at`, `en_preparacion_at`, `listo_at`, `entregado_at`, `rechazado_at`, `cancelado_at`): el panel arma el historial con eso, los pagos y `pagado_at` / `devuelto_at`.
 
 ### Estados por medio de pago
 
@@ -279,6 +315,7 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 | Aceptar o rechazar un pedido | ✗ | ✗ | ✗ | ✓ | — |
 | Marcar pagado un pedido por transferencia o efectivo (`marcar_pedido_pagado`) | ✗ | ✗ | ✗ | ✓ | — |
 | Marcar devuelto un pedido (`marcar_pedido_devuelto`) | ✗ | ✗ | ✗ | ✓ | — |
+| Avanzar o cancelar un pedido aceptado (`avanzar_pedido`, `cancelar_pedido`) | ✗ | ✗ | ✗ | ✓ | — |
 | Llamar directo a `crear_inscripcion` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API, desde la 0004) |
 | Entrar a `/admin` y a `/api/v1/admin` | ✗ (login / 401) | ✗ (403) | ✗ (403) | ✓ | — |
 | Ver lo inactivo | ✗ | ✗ | ✗ | ✓ | ✓ |
@@ -302,6 +339,7 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 - **`crear_pedido(…)`** (0007) es `security definer` y solo la ejecuta `service_role`. Valida y recalcula todo el pedido desde la base. Con un error de negocio responde `HB422`, con el campo en el `hint`, y la API lo devuelve como 400 en ese campo.
 - **`aceptar_pedido(id)` / `rechazar_pedido(id, motivo)`** (0007, ajustadas en la 0008 según el medio de pago) son `security definer` y chequean `es_admin()` adentro, como `marcar_devuelto`. Bloquean el pedido (`for update`), así un webhook que llega a la vez ve el estado nuevo.
 - **`marcar_pedido_pagado(id)` / `marcar_pedido_devuelto(id)`** (0008): igual, `security definer` con `es_admin()` adentro. Guardan quién y cuándo (`pagado_por`, `devuelto_por`).
+- **`avanzar_pedido(id, estado, cobrado)` / `cancelar_pedido(id, motivo)`** (0009): igual. Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
 - **`es_admin()`** (0002) es `security definer`, `stable`, con `search_path = ''`. Lee `perfiles` y devuelve si la usuaria actual (`auth.uid()`) es admin. Solo la puede ejecutar `authenticated`.
 - **`cambiar_estado_inscripcion(id, estado)`** (0002) es `security invoker`: corre con el RLS de la admin. Bloquea la inscripción y el workshop (como `crear_inscripcion`) y, si una cancelada vuelve a estar activa y ya no hay lugar, falla con `HB409`. Así el panel no puede sobrevender.
 - **`reemplazar_tamanos(producto_id, tamanos)`** (0002) es `security invoker`. Borra los tamaños de un producto e inserta los nuevos en una sola transacción: si algo falla, quedan los de antes.

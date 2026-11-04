@@ -641,3 +641,49 @@ Abierto el 22/10, sin mergear.
   - el plazo salía "5/11" en vez de "05/11".
 - Capturas mobile en `docs/capturas/`: `medios-de-pago-checkout-mobile.png`, `pedido-transferencia-mobile.png`, `pedido-efectivo-mobile.png` y `pedido-pagado-mobile.png`.
 
+
+### Panel de pedidos para Maggie (`feat/panel-pedidos`)
+
+**Pedido:** la pantalla de pedidos del panel, pensada primero para el celular:
+- pestañas por etapa y detalle con acciones (aceptar, rechazar, registrar el pago, avanzar, devolver);
+- avisos por WhatsApp;
+- las devoluciones de pedidos en "Para devolver";
+- tarjetas en el Inicio.
+
+Después se sumó cancelar un pedido aceptado.
+
+**Qué se hizo:**
+
+- **Migración `0009_avanzar_pedido.sql`:**
+  - `avanzar_pedido`: aceptado → en preparación → listo → entregado, de a un paso. Efectivo sin cobrar: `p_cobrado` guarda el cobro en el mismo paso.
+  - `cancelar_pedido`: desde aceptado, en preparación o listo, con motivo; si estaba pagado queda para devolver.
+  - Las fechas de cada paso y el motivo de la cancelación.
+  - Se validó con `pglast` antes de pasarla; la corrió Catalina.
+- **Servidor:**
+  - `lib/admin/pedidos.ts`: lectura con el cliente de la sesión (RLS) y llamadas a las funciones. El HB409 se traduce con el mensaje de la base, porque `fromDbError` tiene el texto del cupo de los workshops.
+  - `lib/admin/pedidos-panel.ts`, pura: pestañas, agrupado por día, estado del pago, historial y aviso de WhatsApp.
+  - Server Actions con `accion()`, zod y `revalidatePath`.
+- **Interfaz:**
+  - "Pedidos" en el menú (5 botones en la barra del celular);
+  - pestañas como links con `?tab=`, con contador; la actual se desplaza a la vista en el celular;
+  - tarjetas y detalle;
+  - `AccionesPedido` con diálogos que arrancan en la opción segura, motivo obligatorio, aviso en `aria-live` y foco en el estado nuevo después de cada acción.
+- **"Para devolver"** junta workshops y pedidos: MP con `marcar_devuelto` y manuales con `marcar_pedido_devuelto`. Resuelve la limitación del #21.
+- **Inicio:** "Pedidos por confirmar", "Transferencias esperando" (con las vencidas) y "Entregas de hoy".
+- **Docs:** guía del panel (sección Pedidos paso a paso, con Cancelar un pedido aceptado), modelo de datos (tabla de transiciones), README, `pagos.md`, `lighthouse.md`, `testing.md` (MP-30 a MP-35) y `errores.md`.
+
+**Decisiones:**
+
+- **Textos de WhatsApp:** borradores cortos en primera persona de Maggie, con `TODO(Maggie): revisar`. Eligió Catalina entre borradores, placeholders o voz neutra. Se sacó una frase que prometía devolver la plata, porque la forma y el plazo de la devolución siguen pendientes de Maggie.
+- **Un pedido de MP que la clienta está pagando** (dentro de los 30 minutos) no va en ninguna pestaña. Vencido, va a "Rechazados y cancelados".
+- **"Pagado por":** `perfiles` solo deja leer el propio, así que el historial dice "vos" u "otra cuenta del panel".
+- **Las tarjetas no llevan `aria-label`:** el nombre del link es su texto (ver `lighthouse.md`).
+- **Las capturas difuminan los pedidos reales** que había en la base (con datos de personas reales). Los de prueba se llaman "… Ejemplo".
+
+**Resultado (04/11):**
+
+- Lint, `tsc` y build en verde.
+- `panel-pedidos.spec.ts` y `pedidos.spec.ts` con `--repeat-each=3`: 128 de 128, después de arreglar los logins repetidos ([errores.md](errores.md#supabase-auth-cortaba-los-logins-de-los-tests-over_request_rate_limit)).
+- Suite completa: 197 de 197, incluido rate limit.
+- Lighthouse del panel: 100 / 100 en accesibilidad y buenas prácticas, en mobile y desktop, en las 9 rutas.
+- Capturas mobile: `panel-pedidos-lista-mobile.png`, `panel-pedidos-detalle-mobile.png` y `panel-inicio-pedidos-mobile.png`.

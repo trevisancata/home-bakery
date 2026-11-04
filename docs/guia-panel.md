@@ -9,12 +9,68 @@ Una guía corta para manejar la tienda y los workshops desde el panel. Todo se p
 3. Si te olvidaste la contraseña, tocá **¿Olvidaste tu contraseña?**.
    <!-- TODO(SMTP): mientras no haya mails propios, pedile a Catalina que te la cambie. -->
 
-En la compu, el menú está a la izquierda. En el celu, abajo: **Inicio**, **Productos**, **Workshops** e **Inscripciones**. **Cerrar sesión** está abajo del menú en la compu y en **Tu cuenta**, arriba a la derecha, en el celu.
+En la compu, el menú está a la izquierda. En el celu, abajo: **Inicio**, **Pedidos**, **Productos**, **Workshops** e **Inscripciones**. **Cerrar sesión** está abajo del menú en la compu y en **Tu cuenta**, arriba a la derecha, en el celu.
 
 El **Inicio** te muestra de un vistazo:
+- los pedidos que tenés que confirmar, las transferencias que estás esperando y lo que se retira o entrega hoy (cada tarjeta te lleva a esos pedidos);
 - los próximos workshops y cuántos lugares quedan;
 - quién se inscribió y todavía no pagó;
 - si hay algún pago para devolver.
+
+## Pedidos
+
+En **Pedidos** están todos los pedidos de la tienda, separados en pestañas. El número entre paréntesis te dice cuántos hay en cada una:
+
+- **Por confirmar:** ya están pagados (o son en efectivo y se pagan al retirar). Te toca aceptarlos o rechazarlos.
+- **Esperando transferencia:** la clienta eligió transferir y tiene 24 h. Los que pasaron el plazo dicen **Vencida**.
+- **En curso:** los que aceptaste, ordenados por día: **Hoy**, **Mañana** y los que siguen.
+- **Entregados.**
+- **Rechazados y cancelados:** también los pagos de Mercado Pago que la clienta no terminó.
+
+Cada tarjeta dice el número de pedido, el nombre, el día y el horario, si retira o va con envío (con la dirección), cómo paga, el total y cuántos productos son. Tocala para ver el pedido completo: los productos con su tamaño, sabor y decoración, los datos de la clienta (con un botón para escribirle por WhatsApp), sus notas y lo que fue pasando.
+
+**Importante:** que un pedido esté pagado no quiere decir que esté confirmado. Lo confirmás vos.
+
+### Aceptar o rechazar
+
+1. En **Por confirmar**, abrí el pedido y revisá el día, el horario y los productos.
+2. Si podés hacerlo, tocá **Aceptar pedido**.
+3. Si no podés, tocá **Rechazar**, escribí el motivo (por ejemplo, "no llego con esa fecha") y confirmá. El motivo es obligatorio: después lo usás para avisarle a la clienta.
+
+Si el pedido estaba pagado y lo rechazás, la plata queda en **Para devolver** (ver [Devolver un pago](#devolver-un-pago)).
+
+### Transferencias
+
+Cuando veas la plata en tu cuenta:
+
+1. En **Esperando transferencia**, abrí el pedido.
+2. Tocá **Ya recibí la transferencia** y confirmá.
+3. El pedido pasa a **Por confirmar**: aceptalo o rechazalo como cualquier otro.
+
+Si la transferencia llegó tarde (el pedido dice **Vencida**), igual la podés registrar. Antes de aceptarlo, fijate si llegás con la fecha: puede haber quedado cerca.
+
+### Efectivo
+
+Los pedidos en efectivo son solo para retiro. Los podés aceptar sin que estén pagados. Cuando te pagan, tocá **Ya lo cobré**. Si te olvidás, al marcarlo como entregado el botón dice **Entregado y cobrado** y queda todo anotado de una vez.
+
+### Mientras lo preparás
+
+En **En curso**, abrí el pedido y tocá el botón que corresponda, en orden:
+
+1. **Empezar a preparar.**
+2. **Listo para retirar** (o **Listo para entregar**, si va con envío).
+3. **Entregado.**
+
+No se puede saltear un paso ni volver atrás.
+
+### Cancelar un pedido aceptado
+
+Si la clienta te avisa que no puede, o a vos se te complica, abrí el pedido y tocá **Cancelar pedido**. Escribí el motivo y confirmá. Si estaba pagado, la plata queda en **Para devolver**. Un pedido entregado ya no se puede cancelar.
+
+### Avisarle a la clienta
+
+Después de aceptar, rechazar, cancelar o marcar como listo, aparece **Avisar por WhatsApp**. Se abre WhatsApp con un mensaje ya escrito (el día y el horario, o el motivo). Leelo y cambialo si querés antes de mandarlo.
+<!-- TODO(Maggie): los mensajes son borradores; decinos si querés otras palabras y los cambiamos. -->
 
 ## Cambiar un precio
 
@@ -85,9 +141,15 @@ Cuando alguien paga por Mercado Pago (el total del workshop), la inscripción pa
 
 ## Devolver un pago
 
-A veces un pago llega cuando ya no quedan lugares, o con un monto distinto. Esos pagos aparecen en **Para devolver** (en el Inicio y en Inscripciones).
+A veces hay que devolver plata:
+- en un workshop, si el pago llega cuando ya no quedan lugares, o con un monto distinto;
+- en un pedido, si lo rechazás o lo cancelás y ya estaba pagado.
 
-1. Devolvé la plata desde tu cuenta de Mercado Pago.
-2. En el panel, tocá **Marcar como devuelto** y confirmá.
+Todo eso aparece en **Para devolver** (en el Inicio y en Inscripciones). Los de pedidos dicen el número de pedido y te llevan a él.
+
+1. Devolvé la plata:
+   - si se pagó con **Mercado Pago**, desde tu cuenta de Mercado Pago;
+   - si fue por **transferencia** o en **efectivo**, como lo arregles con la clienta.
+2. En el panel, tocá **Marcar como devuelto** y confirmá. En un pedido también podés hacerlo desde el pedido, con **Ya hice la devolución**.
 
 Queda anotada la fecha en **Devueltos**.

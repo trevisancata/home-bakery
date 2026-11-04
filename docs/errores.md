@@ -304,3 +304,17 @@ Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-ch
 
 **Solución:** `formatShortDateTime` (`lib/format.ts`) arma día y mes con `formatToParts` y `padStart`. Lo cubre un unitario con fechas fijas.
 
+### Supabase Auth cortaba los logins de los tests (over_request_rate_limit)
+
+**PR:** panel de pedidos (`feat/panel-pedidos`)
+
+**Qué pasó:** con `--repeat-each=3`, 13 tests de pedidos fallaron con "No se pudo ingresar con la usuaria de prueba (over_request_rate_limit)". Corridos una vez, pasaban.
+
+**Causa:** cada test, y cada `pedidoEn` (que lleva un pedido a una etapa con las funciones de la admin), abría una sesión nueva con `signInWithPassword`. Con repeticiones eran cientos de logins en pocos minutos, y Supabase Auth los limita.
+
+**Solución:** `sesionDe` (`e2e/support/pedidos.ts`) guarda una sesión por usuaria y por worker y la reusa; si el login falla, el próximo intento vuelve a probar. Con 3 repeticiones, 128 de 128.
+
+**Para que no se repita:** en los tests, una sesión de Supabase se abre una vez por worker, no en cada test ni en cada helper.
+
+**Aparte:** con `--no-deps` los tests que usan las usuarias de prueba fallan al instante: el teardown de la corrida anterior las borra y el setup, que las crea, no corre. Para repetir un archivo, correrlo con el setup (sin `--no-deps`).
+

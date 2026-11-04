@@ -51,6 +51,29 @@ Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado e
   2. El póster pasó a un `<img>` debajo del video, con next/image y `preload`: WebP de 9,6 KB en lugar del JPG de 40 KB.
 - Con `prefers-reduced-motion`, el video no pide el MP4 (`preload="none"`) y queda solo el póster.
 
+## Panel de pedidos
+
+- **Fecha:** 04/11/2026
+- **Rama:** `feat/panel-pedidos`
+- **Lighthouse:** 12.8.2, Chromium de Playwright (headless), build de producción con el mock de MP
+- **Sesión:** la admin de prueba de los e2e, copiada a un perfil de Chromium; Lighthouse corre sobre ese perfil con `--disable-storage-reset`. Pedidos de prueba en cada etapa (por confirmar, transferencia, en curso hoy y mañana), borrados al terminar.
+
+| Ruta | Mobile (A11y / BP) | Desktop (A11y / BP) |
+|---|---|---|
+| `/admin` | 100 / 100 | 100 / 100 |
+| `/admin/pedidos?tab=por_confirmar` | 100 / 100 | 100 / 100 |
+| `/admin/pedidos?tab=esperando_transferencia` | 100 / 100 | 100 / 100 |
+| `/admin/pedidos?tab=en_curso` | 100 / 100 | 100 / 100 |
+| `/admin/pedidos?tab=entregados` | 100 / 100 | 100 / 100 |
+| `/admin/pedidos?tab=rechazados` | 100 / 100 | 100 / 100 |
+| `/admin/pedidos/[id]` (por confirmar) | 100 / 100 | 100 / 100 |
+| `/admin/pedidos/[id]` (listo, transferencia) | 100 / 100 | 100 / 100 |
+| `/admin/inscripciones` (Para devolver con pedidos) | 100 / 100 | 100 / 100 |
+
+**Corrección a partir de la medición:** las tarjetas de la lista tenían `aria-label="Pedido #N de Nombre"` y Lighthouse marcaba `label-content-name-mismatch` (WCAG 2.5.3: el nombre del link tiene que incluir el texto que se ve). No bajaba el puntaje. Con `aria-labelledby` (nombre y número) seguía, porque la tarjeta muestra más texto. Quedó sin `aria-label`: el nombre es todo el texto de la tarjeta, que empieza por la clienta y el número. Medido de nuevo: ninguna auditoría falla.
+
+Dos corridas dieron 0 / 0 una vez y 100 / 100 al repetirlas, sin cambios en el código: fue la ejecución de Lighthouse, no la página.
+
 ## Panel de Maggie (E5)
 
 - **Fecha:** 22/10/2026
