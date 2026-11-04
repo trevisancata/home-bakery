@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { marcarDevuelto } from "@/app/admin/(panel)/inscripciones/actions";
+import { marcarDevuelto as marcarPedidoDevuelto } from "@/app/admin/(panel)/pedidos/actions";
 import { Aviso, useAviso } from "@/components/admin/ui/Aviso";
 import { ConfirmDialog } from "@/components/admin/ui/ConfirmDialog";
 import { EstadoVacio } from "@/components/admin/ui/EstadoVacio";
@@ -11,13 +13,25 @@ import { formatDay, formatPrice } from "@/lib/format";
 const content = admin.inscripciones;
 const pagos = admin.pagos;
 
+/**
+ * Una devolución pendiente o hecha: un pago de Mercado Pago (de una
+ * inscripción o de un pedido, en pagos) o un pago de un pedido registrado a
+ * mano (transferencia o efectivo, en pedidos).
+ */
 export type Devolucion = {
-  pagoId: string;
-  mpPaymentId: string;
+  /** Única en la lista: el id del pago o "pedido:<id>". */
+  clave: string;
+  tipo: "mp" | "manual";
+  /** El pago (mp) o el pedido (manual) que se marca como devuelto. */
+  id: string;
+  mpPaymentId: string | null;
   monto: number;
   motivo: string | null;
   nombre: string;
-  workshop: string;
+  /** El workshop o "Pedido #N". */
+  concepto: string;
+  /** Link al pedido, si es de un pedido. */
+  href: string | null;
   devueltoAt: string | null;
 };
 
@@ -35,12 +49,12 @@ export function Devoluciones({ iniciales }: { iniciales: Devolucion[] }) {
     setAMarcar(null);
     if (!d) return;
     startTransition(async () => {
-      const resultado = await marcarDevuelto(d.pagoId);
+      const resultado = d.tipo === "mp" ? await marcarDevuelto(d.id) : await marcarPedidoDevuelto(d.id);
       if (!resultado.ok) {
         avisar({ texto: resultado.message, tipo: "error" });
         return;
       }
-      setLista((actual) => actual.map((x) => (x.pagoId === d.pagoId ? { ...x, devueltoAt: resultado.data.devueltoAt } : x)));
+      setLista((actual) => actual.map((x) => (x.clave === d.clave ? { ...x, devueltoAt: resultado.data.devueltoAt } : x)));
       avisar({ texto: content.refunded });
     });
   }
@@ -56,17 +70,26 @@ export function Devoluciones({ iniciales }: { iniciales: Devolucion[] }) {
       ) : (
         <ul className="flex flex-col gap-3">
           {pendientes.map((d) => (
-            <li key={d.pagoId} data-testid={`devolucion-${d.mpPaymentId}`} className="flex flex-col gap-3 rounded-2xl border border-borde bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+            <li key={d.clave} data-testid={`devolucion-${d.mpPaymentId ?? d.clave}`} className="flex flex-col gap-3 rounded-2xl border border-borde bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-0.5 text-14">
                 <strong className="text-15">
                   {d.nombre} · {formatPrice(d.monto)}
                 </strong>
                 <span className="text-secundario">
-                  {d.workshop} · {pagos.reasons[d.motivo ?? ""] ?? d.motivo}
+                  {d.href ? (
+                    <Link href={d.href} className="text-chocolate underline">
+                      {d.concepto}
+                    </Link>
+                  ) : (
+                    d.concepto
+                  )}{" "}
+                  · {pagos.reasons[d.motivo ?? ""] ?? d.motivo}
                 </span>
-                <span className="font-mono text-12 text-secundario">
-                  {pagos.columns.mpId}: {d.mpPaymentId}
-                </span>
+                {d.mpPaymentId && (
+                  <span className="font-mono text-12 text-secundario">
+                    {pagos.columns.mpId}: {d.mpPaymentId}
+                  </span>
+                )}
               </div>
               <button
                 type="button"
@@ -86,9 +109,9 @@ export function Devoluciones({ iniciales }: { iniciales: Devolucion[] }) {
           <h3 className="mt-2 text-20">{content.refundedTitle}</h3>
           <ul className="flex flex-col gap-2 text-14">
             {devueltas.map((d) => (
-              <li key={d.pagoId} className="flex flex-col rounded-xl bg-white px-4 py-2.5">
+              <li key={d.clave} className="flex flex-col rounded-xl bg-white px-4 py-2.5">
                 <span>
-                  {d.nombre} · {formatPrice(d.monto)} · {d.workshop}
+                  {d.nombre} · {formatPrice(d.monto)} · {d.concepto}
                 </span>
                 <span className="text-12 text-secundario">{content.refundedAt(formatDay(d.devueltoAt!))}</span>
               </li>
@@ -112,7 +135,7 @@ export function Devoluciones({ iniciales }: { iniciales: Devolucion[] }) {
           </>
         }
       >
-        {content.refundDialog.text}
+        {aMarcar?.tipo === "manual" ? content.refundManualText : content.refundDialog.text}
       </ConfirmDialog>
       <Aviso aviso={aviso} onClose={cerrar} />
     </section>

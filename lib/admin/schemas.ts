@@ -197,6 +197,24 @@ export const inscripcionUpdateSchema = z.strictObject({
 });
 
 /* -------------------------------------------------------------------------- */
+/* Pedidos                                                                    */
+/* -------------------------------------------------------------------------- */
+
+/** Motivo de un rechazo o una cancelación: obligatorio (la base lo pide para cancelar). */
+export const motivoPedidoSchema = z.strictObject({
+  reason: z
+    .string({ error: "Escribí el motivo (al menos 3 letras)." })
+    .trim()
+    .min(3, { error: "Escribí el motivo (al menos 3 letras)." })
+    .max(500, { error: "Usá menos de 500 caracteres." }),
+});
+
+export const avancePedidoSchema = z.strictObject({
+  status: z.enum(["en_preparacion", "listo", "entregado"], { error: "Estado no válido." }),
+  collected: z.boolean().default(false),
+});
+
+/* -------------------------------------------------------------------------- */
 /* Ids                                                                        */
 /* -------------------------------------------------------------------------- */
 

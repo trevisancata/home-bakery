@@ -5,6 +5,7 @@ import { armarPreferenciaPedido } from "../lib/pagos/preferencia";
 import { leerReferencia, referenciaInscripcion, referenciaPedido } from "../lib/pagos/referencia";
 import { vistaPedido } from "../lib/pagos/vista";
 import { formatShortDateTime } from "../lib/format";
+import { agruparPorDia, avisoWhatsApp, estadoDelPago, historial, type PedidoPanel, pestanaDe, porPestana } from "../lib/admin/pedidos-panel";
 import {
   diaDeSemana,
   fechaBA,
@@ -247,5 +248,107 @@ test.describe("Carrito guardado", () => {
     expect(leerCarrito("{roto")).toEqual([]);
     expect(leerCarrito(null)).toEqual([]);
     expect(carritoSchema.safeParse({ version: 1, lines: [{ ...linea, unitPrice: -1 }] }).success).toBe(false);
+  });
+});
+
+test.describe("Panel de pedidos", () => {
+  const base: PedidoPanel = {
+    id: uuid,
+    numero: 7,
+    nombre: "Ana Prueba",
+    email: "ana@ejemplo.com",
+    telefono: "11 5555-6666",
+    entrega: "retiro",
+    direccion: null,
+    localidad: null,
+    fecha: "2026-10-30",
+    franja: "10-13",
+    notas: null,
+    total: 24000,
+    estado: "pendiente_pago",
+    medioPago: "mercadopago",
+    venceAt: new Date(ahora + 10 * 60_000).toISOString(),
+    createdAt: new Date(ahora - 60_000).toISOString(),
+    pagadoAt: null,
+    pagadoPor: null,
+    aceptadoAt: null,
+    enPreparacionAt: null,
+    listoAt: null,
+    entregadoAt: null,
+    rechazadoAt: null,
+    canceladoAt: null,
+    motivoRechazo: null,
+    motivoCancelacion: null,
+    devolucionPendiente: false,
+    devueltoAt: null,
+    unidades: 2,
+    pagos: [],
+  };
+  const pedido = (extra: Partial<PedidoPanel>): PedidoPanel => ({ ...base, ...extra });
+
+  test("cada pedido en su pestaña; un MP pagándose no aparece; vencido, a rechazados", () => {
+    expect(pestanaDe(pedido({ estado: "pagado" }), ahora)).toBe("por_confirmar");
+    expect(pestanaDe(pedido({ medioPago: "efectivo", venceAt: null }), ahora)).toBe("por_confirmar");
+    expect(pestanaDe(pedido({ medioPago: "transferencia" }), ahora)).toBe("esperando_transferencia");
+    expect(pestanaDe(pedido({ medioPago: "transferencia" }), ahora + 60 * 60_000)).toBe("esperando_transferencia");
+    for (const estado of ["aceptado", "en_preparacion", "listo"]) expect(pestanaDe(pedido({ estado }), ahora)).toBe("en_curso");
+    expect(pestanaDe(pedido({ estado: "entregado" }), ahora)).toBe("entregados");
+    expect(pestanaDe(pedido({ estado: "rechazado" }), ahora)).toBe("rechazados");
+    expect(pestanaDe(pedido({ estado: "cancelado" }), ahora)).toBe("rechazados");
+    expect(pestanaDe(pedido({}), ahora)).toBeNull();
+    expect(pestanaDe(pedido({}), ahora + 11 * 60_000)).toBe("rechazados");
+  });
+
+  test("ordenados por día y franja; en curso, agrupados en Hoy, Mañana y la fecha", () => {
+    const lista = [
+      pedido({ id: "c", numero: 3, estado: "aceptado", fecha: "2026-11-02", franja: "10-13" }),
+      pedido({ id: "b", numero: 2, estado: "listo", fecha: "2026-10-29", franja: "16-19" }),
+      pedido({ id: "a", numero: 1, estado: "aceptado", fecha: "2026-10-29", franja: "10-13" }),
+      pedido({ id: "d", numero: 4, estado: "en_preparacion", fecha: "2026-10-28", franja: "16-19" }),
+    ];
+    const { en_curso } = porPestana(lista, ahora);
+    expect(en_curso.map((p) => p.numero)).toEqual([4, 1, 2, 3]);
+    expect(agruparPorDia(en_curso, ahora).map((d) => [d.etiqueta, d.pedidos.length])).toEqual([
+      ["Hoy", 1],
+      ["Mañana", 2],
+      ["Lunes, 2 de noviembre", 1],
+    ]);
+  });
+
+  test("estado del pago según el medio", () => {
+    const pagoMp = { id: otro, mpPaymentId: "1", estado: "approved", monto: 24000, devolucionPendiente: false, motivoDevolucion: null, devueltoAt: null, createdAt: base.createdAt };
+    expect(estadoDelPago(pedido({ estado: "pagado", pagos: [pagoMp] }), ahora)).toBe("Mercado Pago · pagado");
+    const venceAt = "2026-10-29T20:26:00.000Z";
+    expect(estadoDelPago(pedido({ medioPago: "transferencia", venceAt }), ahora)).toBe("Transferencia · esperando, vence 29/10 17:26 h");
+    expect(estadoDelPago(pedido({ medioPago: "transferencia", venceAt }), Date.parse(venceAt) + 1)).toBe("Transferencia · vencida, sin registrar");
+    expect(estadoDelPago(pedido({ medioPago: "efectivo", venceAt: null, estado: "aceptado" }), ahora)).toBe("Efectivo · a cobrar al retirar");
+    expect(estadoDelPago(pedido({ medioPago: "efectivo", venceAt: null, pagadoAt: base.createdAt }), ahora)).toBe("Efectivo · cobrado");
+    expect(estadoDelPago(pedido({ medioPago: "transferencia", estado: "rechazado", pagadoAt: base.createdAt, devolucionPendiente: true }), ahora)).toBe(
+      "Transferencia · para devolver",
+    );
+  });
+
+  test("historial en orden, con quién registró el pago", () => {
+    const t = (min: number) => new Date(ahora + min * 60_000).toISOString();
+    const eventos = historial(
+      pedido({ medioPago: "transferencia", pagadoAt: t(1), pagadoPor: "yo", aceptadoAt: t(2), enPreparacionAt: t(3) }),
+      "yo",
+    ).map((e) => e.texto);
+    expect(eventos).toEqual(["Pedido hecho", "Pago registrado por vos", "Aceptado", "En preparación"]);
+    expect(historial(pedido({ pagadoAt: t(1), pagadoPor: "otra" }), "yo")[1].texto).toBe("Pago registrado por otra cuenta del panel");
+  });
+
+  test("aviso de WhatsApp: aceptado, listo (retiro o envío), rechazado y cancelado con motivo", () => {
+    const texto = (p: PedidoPanel) => {
+      const href = avisoWhatsApp(p);
+      return href ? new URL(href).searchParams.get("text") : null;
+    };
+    expect(avisoWhatsApp(pedido({ estado: "aceptado" }))).toMatch(/^https:\/\/wa\.me\/5491155556666\?text=/);
+    expect(texto(pedido({ estado: "aceptado" }))).toContain("pedido #7 para el viernes, 30 de octubre, 10 a 13 h");
+    expect(texto(pedido({ estado: "listo" }))).toContain("listo para retirar");
+    expect(texto(pedido({ estado: "listo", entrega: "envio" }))).toContain("te lo llevo");
+    expect(texto(pedido({ estado: "rechazado", motivoRechazo: "no llego con la fecha" }))).toContain("no llego con la fecha");
+    expect(texto(pedido({ estado: "cancelado", motivoCancelacion: "se me complicó" }))).toContain("se me complicó");
+    expect(avisoWhatsApp(pedido({ estado: "pagado" }))).toBeNull();
   });
 });

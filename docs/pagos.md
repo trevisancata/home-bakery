@@ -43,7 +43,7 @@ Para un pedido, con un pago `approved`:
 | `cancelado` o `rechazado` | El pago queda **para devolver** (`pedido_cancelado` / `pedido_rechazado`) |
 | `pagado` o más adelante, mismo pago | Nada (aviso repetido) |
 
-Maggie acepta o rechaza con `aceptar_pedido` / `rechazar_pedido` (solo admin, migración 0007). Rechazar un pedido pagado deja sus pagos **para devolver** con el mismo circuito que las inscripciones (`marcar_devuelto`). La pantalla del panel va en el PR 2. Hasta entonces, las devoluciones de pedidos **no aparecen** en "Para devolver".
+Maggie acepta o rechaza con `aceptar_pedido` / `rechazar_pedido` (solo admin, migración 0007). Rechazar un pedido pagado deja sus pagos **para devolver** con el mismo circuito que las inscripciones (`marcar_devuelto`). Desde el panel de pedidos (`/admin/pedidos`), las devoluciones de pedidos aparecen en **Para devolver** junto con las de los workshops: las de MP con `marcar_devuelto` y las manuales (transferencia o efectivo) con `marcar_pedido_devuelto`. Cancelar un pedido aceptado (`cancelar_pedido`, 0009) deja el pago para devolver igual que rechazarlo, con motivo `pedido_cancelado`.
 
 Los estados del pedido están en el [modelo de datos](modelo-de-datos.md#estados-de-un-pedido).
 

@@ -4,9 +4,11 @@
 
 import { randomBytes } from "node:crypto";
 import type { APIRequestContext } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { fechaMinima, franjasDisponibles, sumarDias } from "../../lib/pedidos/reglas";
 import { admin } from "./supabase";
-import { testEmailDomain, testEmailPrefix } from "./usuarios";
+import { avisarPago, cargarPago, nuevoPagoId } from "./pagos";
+import { testEmailDomain, testEmailPrefix, testUser } from "./usuarios";
 
 /** Email de un pedido de prueba (lo usa el teardown para encontrarlo). */
 export const emailDePedido = () => `${testEmailPrefix}pedido-${randomBytes(4).toString("hex")}${testEmailDomain}`;
@@ -123,4 +125,77 @@ export async function borrarPedidosDePrueba() {
   if (pagos.error) throw new Error(`No se pudieron borrar los pagos de los pedidos: ${pagos.error.message}`);
   const pedidos = await client.from("pedidos").delete().in("id", ids).like("email", `${testEmailPrefix}%${testEmailDomain}`);
   if (pedidos.error) throw new Error(`No se pudieron borrar los pedidos de prueba: ${pedidos.error.message}`);
+}
+
+/** Cliente con la clave publishable, como cualquier visitante. */
+export const clientePublico = () =>
+  createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, { auth: { persistSession: false } });
+
+const sesiones = new Map<string, Promise<ReturnType<typeof clientePublico>>>();
+
+/**
+ * Cliente con la sesión de una usuaria de prueba (para las funciones de la
+ * admin). Una sesión por usuaria y por worker: Supabase Auth limita los
+ * logins seguidos (over_request_rate_limit) y la suite hace cientos de llamadas.
+ */
+export function sesionDe(kind: "admin" | "sinRol") {
+  let sesion = sesiones.get(kind);
+  if (!sesion) {
+    sesion = (async () => {
+      const client = clientePublico();
+      const { error } = await client.auth.signInWithPassword(testUser(kind));
+      if (error) throw new Error(`No se pudo ingresar con la usuaria de prueba (${error.code})`);
+      return client;
+    })();
+    // Si falla, el próximo intento vuelve a probar.
+    sesion.catch(() => sesiones.delete(kind));
+    sesiones.set(kind, sesion);
+  }
+  return sesion;
+}
+
+/** Hasta dónde llevar un pedido de prueba, como lo haría el sitio y la admin. */
+export type Etapa = "pendiente" | "pagado" | "aceptado" | "en_preparacion" | "listo" | "entregado";
+
+/**
+ * Un pedido de prueba en una etapa: lo crea por la API y lo avanza con el
+ * webhook del mock (Mercado Pago) o con las funciones de la admin.
+ */
+export async function pedidoEn(
+  request: APIRequestContext,
+  items: ItemPedido[],
+  { medio = "mercadopago", etapa = "pendiente", datos = {} }: { medio?: "mercadopago" | "transferencia" | "efectivo"; etapa?: Etapa; datos?: Record<string, unknown> } = {},
+) {
+  const { response, body } = await pedir(request, items, { payment: medio, ...datos });
+  if (response.status() !== 201) throw new Error(`No se pudo crear el pedido (${response.status()}): ${JSON.stringify(body)}`);
+  const id = body.data.id as string;
+  const numero = body.data.numero as number;
+  const orden: Etapa[] = ["pendiente", "pagado", "aceptado", "en_preparacion", "listo", "entregado"];
+  const hasta = orden.indexOf(etapa);
+  const client = hasta > 0 ? await sesionDe("admin") : null;
+  const ok = async (p: PromiseLike<{ error: { message: string } | null }>) => {
+    const { error } = await p;
+    if (error) throw new Error(error.message);
+  };
+  let pagoId: string | null = null;
+
+  if (hasta >= 1 && client) {
+    if (medio === "mercadopago") {
+      pagoId = nuevoPagoId();
+      const { total } = await leerPedido(id);
+      await cargarPago(request, pagoId, { status: "approved", external_reference: `pedido:${id}`, transaction_amount: Number(total) });
+      await avisarPago(request, pagoId);
+      if ((await leerPedido(id)).estado !== "pagado") throw new Error("El webhook no dejó el pedido pagado");
+    } else if (medio === "transferencia") {
+      await ok(client.rpc("marcar_pedido_pagado", { p_id: id }));
+    }
+    // Efectivo: "pagado" es "por confirmar" sin cobrar (se acepta sin pago).
+  }
+  if (hasta >= 2 && client) await ok(client.rpc("aceptar_pedido", { p_id: id }));
+  for (const estado of ["en_preparacion", "listo", "entregado"] as const) {
+    if (hasta >= orden.indexOf(estado) && client) {
+      await ok(client.rpc("avanzar_pedido", { p_id: id, p_estado: estado, p_cobrado: estado === "entregado" }));
+    }
+  }
+  return { id, numero, pagoId };
 }

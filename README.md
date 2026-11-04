@@ -73,6 +73,7 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
    - [`0006_pago_completo.sql`](supabase/migrations/0006_pago_completo.sql): pago completo al inscribirse (`sena_porcentaje` en 100).
    - [`0007_pedidos.sql`](supabase/migrations/0007_pedidos.sql): pedidos de la tienda (`pedidos`, `pedido_items`, `crear_pedido`), `pagos` de una inscripción o un pedido, y `aceptar_pedido` / `rechazar_pedido`. **Correrla antes de deployar el código que la usa.** La `confirmar_pago` vieja queda como envoltorio, así el deploy anterior sigue andando mientras tanto.
    - [`0008_medios_de_pago.sql`](supabase/migrations/0008_medios_de_pago.sql): medios de pago de los pedidos (Mercado Pago, transferencia y efectivo), `marcar_pedido_pagado` y `marcar_pedido_devuelto`. **Correrla antes de deployar el código que la usa.**
+   - [`0009_avanzar_pedido.sql`](supabase/migrations/0009_avanzar_pedido.sql): panel de pedidos. `avanzar_pedido` (aceptado → en preparación → listo → entregado, de a un paso) y `cancelar_pedido`, solo admin. **Correrla antes de deployar el código que la usa.**
 3. Copiar `.env.example` a `.env.local` y completarlo con los datos de **Project Settings → API**:
    - `NEXT_PUBLIC_SUPABASE_URL`: la URL del proyecto.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: la clave publishable (`sb_publishable_…`). Es pública y respeta RLS.
