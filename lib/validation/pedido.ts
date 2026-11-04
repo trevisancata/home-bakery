@@ -54,6 +54,7 @@ export const pedidoSchema = z
         { error: "Revisá el número: tiene que tener entre 8 y 15 dígitos, con código de área." },
       ),
     delivery: z.enum(["retiro", "envio"], { error: "Elegí cómo lo recibís." }),
+    payment: z.enum(["mercadopago", "transferencia", "efectivo"], { error: "Elegí cómo pagás." }),
     address: optionalText(200),
     locality: optionalText(80),
     date: z.string({ error: "Elegí un día." }),
@@ -68,6 +69,10 @@ export const pedidoSchema = z
     if (pedido.delivery === "envio") {
       if (!pedido.address) ctx.addIssue({ code: "custom", path: ["address"], message: "Ingresá la dirección." });
       if (!pedido.locality) ctx.addIssue({ code: "custom", path: ["locality"], message: "Ingresá la localidad." });
+      // La base también lo rechaza (crear_pedido y el check pedidos_efectivo_solo_retiro).
+      if (pedido.payment === "efectivo") {
+        ctx.addIssue({ code: "custom", path: ["payment"], message: "El efectivo es solo para retiro. Elegí otro medio de pago o retiro." });
+      }
     }
     // La anticipación se valida con 0 h acá; con la de los productos, en el checkout y en la base.
     const fecha = validarFechaFranja(pedido.date, pedido.slot, 0);
@@ -76,7 +81,18 @@ export const pedidoSchema = z
 
 export type PedidoInput = z.input<typeof pedidoSchema>;
 export type Pedido = z.output<typeof pedidoSchema>;
-export type PedidoField = "name" | "email" | "phone" | "delivery" | "address" | "locality" | "date" | "slot" | "notes" | "items";
+export type PedidoField =
+  | "name"
+  | "email"
+  | "phone"
+  | "delivery"
+  | "payment"
+  | "address"
+  | "locality"
+  | "date"
+  | "slot"
+  | "notes"
+  | "items";
 export type PedidoFieldErrors = Partial<Record<PedidoField, string>>;
 
 /** El primer error de cada campo (los de los ítems, en "items"), listo para mostrar debajo del input. */

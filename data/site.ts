@@ -64,6 +64,7 @@ export const whatsappMessages = {
   pricedLater: (name: string) => `¡Hola! Quería consultar el precio de ${name}.`,
   orderPaid: (numero: number) => `¡Hola, ${site.owner.name}! Hice el pedido #${numero} y ya lo pagué.`,
   orderHelp: (numero: number) => `¡Hola! Tengo un problema con el pago del pedido #${numero}.`,
+  transferProof: (numero: number) => `¡Hola! Te mando el comprobante de la transferencia del pedido #${numero}.`,
 };
 
 /* -------------------------------------------------------------------------- */
@@ -104,9 +105,43 @@ export const pedidos = {
   maxCantidad: 20,
   /** Líneas distintas por pedido. */
   maxLineas: 30,
-  /** Sin pago, el pedido vence (como las inscripciones). */
-  venceMinutos: 30,
+  /**
+   * Medios de pago. El total es el mismo en los tres (sin descuentos) y en
+   * todos Maggie tiene que aceptar el pedido. La base (crear_pedido,
+   * migración 0008) repite los plazos.
+   */
+  mediosPago: {
+    mercadopago: {
+      label: "Mercado Pago",
+      help: "Tarjeta, dinero en cuenta y otros medios de Mercado Pago.",
+      /** Sin pago, el pedido vence (como las inscripciones). */
+      venceMinutos: 30,
+    },
+    transferencia: {
+      label: "Transferencia",
+      help: "Te mostramos los datos de la cuenta y mandás el comprobante por WhatsApp.",
+      /** Si Maggie no la marcó como pagada en este plazo, el pedido vence. */
+      venceHoras: 24,
+      // TODO(Maggie): datos bancarios reales. Al cargarlos, deEjemplo: false.
+      cuenta: {
+        alias: "HOMEBAKERY.PRUEBA",
+        cbu: "0000000000000000000000",
+        titular: "Datos de ejemplo",
+        banco: "—",
+      },
+      /** Mientras sea true, el checkout y el resultado avisan que no hay que transferir. */
+      deEjemplo: true,
+    },
+    efectivo: {
+      label: "Efectivo",
+      help: "A pagar al retirar.",
+      /** Solo con retiro: con envío la opción no aparece (y la base lo rechaza). */
+      soloRetiro: true,
+    },
+  },
 } as const;
+
+export type MedioPago = keyof typeof pedidos.mediosPago;
 
 export type Franja = (typeof pedidos.franjas)[keyof typeof pedidos.franjas][number];
 
@@ -723,13 +758,34 @@ export const pages = {
       shippingFree: "Sin cargo",
       edit: "Editar pedido",
     },
+    payment: {
+      title: "Medio de pago",
+      cashShippingNote: "El efectivo es solo para retiro.",
+      sampleData: "Datos de ejemplo: todavía no transfieras.",
+    },
     confirmNotice: {
       title: `${site.owner.name} tiene que confirmar tu pedido`,
-      text: `Pagás el total ahora con Mercado Pago, pero pagar no confirma el pedido: ${site.owner.name} lo revisa y te escribe por WhatsApp para confirmarlo.`,
+      text: {
+        mercadopago: `Pagás el total ahora con Mercado Pago, pero pagar no confirma el pedido: ${site.owner.name} lo revisa y te escribe por WhatsApp para confirmarlo.`,
+        transferencia: `Pagar no confirma el pedido: ${site.owner.name} lo revisa y te escribe por WhatsApp para confirmarlo.`,
+        efectivo: `Pagás al retirar. ${site.owner.name} revisa el pedido y te escribe por WhatsApp para confirmarlo.`,
+      },
     },
-    expires: `Guardamos el pedido ${pedidos.venceMinutos} minutos mientras pagás.`,
-    submit: "Pagar con Mercado Pago",
-    sending: "Te llevamos a Mercado Pago…",
+    expires: {
+      mercadopago: `Guardamos el pedido ${pedidos.mediosPago.mercadopago.venceMinutos} minutos mientras pagás.`,
+      transferencia: `Tenés ${pedidos.mediosPago.transferencia.venceHoras} h para transferir; si no, el pedido vence.`,
+      efectivo: null,
+    },
+    submit: {
+      mercadopago: "Pagar con Mercado Pago",
+      transferencia: "Hacer el pedido",
+      efectivo: "Hacer el pedido",
+    },
+    sending: {
+      mercadopago: "Te llevamos a Mercado Pago…",
+      transferencia: "Guardando el pedido…",
+      efectivo: "Guardando el pedido…",
+    },
     retry: "Reintentar",
     networkError: "No pudimos enviar el pedido. Revisá tu conexión y probá de nuevo.",
     serverError: "No pudimos guardar el pedido. Probá de nuevo.",
@@ -741,6 +797,8 @@ export const pages = {
     paid: {
       title: "¡Recibimos tu pago!",
       text: `Tu pedido está pagado y ${site.owner.name} lo va a confirmar; te escribe por WhatsApp.`,
+      // Efectivo: se marca pagado al cobrarlo, ya con el pedido aceptado.
+      textCash: "Tu pedido está pagado.",
       when: "Retiro o entrega",
       total: "Total pagado",
       whatsapp: `Escribirle a ${site.owner.name}`,
@@ -760,7 +818,31 @@ export const pages = {
     },
     expired: {
       title: "El pedido venció",
-      text: `Pasaron ${pedidos.venceMinutos} minutos sin que se completara el pago.`,
+      text: `Pasaron ${pedidos.mediosPago.mercadopago.venceMinutos} minutos sin que se completara el pago.`,
+      textTransfer: `Pasaron ${pedidos.mediosPago.transferencia.venceHoras} h sin que se registrara la transferencia. Si ya transferiste, escribinos por WhatsApp con el comprobante.`,
+    },
+    transfer: {
+      title: "Hacé la transferencia",
+      text: `Transferí el monto exacto y mandá el comprobante por WhatsApp con el número de pedido. ${site.owner.name} registra el pago y después confirma el pedido.`,
+      sampleData: "Datos de ejemplo: todavía no transfieras.",
+      account: "Datos de la cuenta",
+      alias: "Alias",
+      cbu: "CBU/CVU",
+      holder: "Titular",
+      bank: "Banco",
+      amount: "Monto exacto",
+      deadline: (cuando: string) => `Tenés tiempo hasta el ${cuando}.`,
+      copy: "Copiar",
+      copyContext: (dato: string) => ` ${dato.toLowerCase()}`,
+      copied: (dato: string) => `${dato} copiado.`,
+      copyFailed: "No se pudo copiar. Seleccionalo y copialo a mano.",
+      whatsapp: "Mandar el comprobante por WhatsApp",
+    },
+    cash: {
+      title: "Pedido recibido: pagás al retirar",
+      text: `Lo pagás en efectivo cuando lo retirás. ${site.owner.name} revisa el pedido y te escribe por WhatsApp para confirmarlo.`,
+      when: "Retiro",
+      total: "Total a pagar al retirar",
     },
     refund: {
       title: "Tenemos que devolverte el pago",
