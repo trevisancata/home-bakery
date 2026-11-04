@@ -4,13 +4,17 @@ import { agregarLinea, claveLinea, type Linea } from "../lib/carrito/lineas";
 import { armarPreferenciaPedido } from "../lib/pagos/preferencia";
 import { leerReferencia, referenciaInscripcion, referenciaPedido } from "../lib/pagos/referencia";
 import { vistaPedido } from "../lib/pagos/vista";
+import { formatShortDateTime } from "../lib/format";
 import {
+  diaDeSemana,
+  fechaBA,
   fechaMaxima,
   fechaMinima,
   franjasDelDia,
   franjasDisponibles,
   inicioFranja,
   puedeEnvio,
+  sumarDias,
   validarFechaFranja,
 } from "../lib/pedidos/reglas";
 import { pedidoSchema } from "../lib/validation/pedido";
@@ -58,7 +62,12 @@ test.describe("Días y horarios", () => {
     expect(validarFechaFranja("2026-10-31", "9-13", 48, ahora)).toBeNull();
   });
 
-  test("envío solo desde $400.000", () => {
+  test("plazo de la transferencia: dd/mm hh:mm en hora de Buenos Aires, con ceros", () => {
+    expect(formatShortDateTime("2026-11-05T20:26:00Z")).toBe("05/11 17:26 h");
+    expect(formatShortDateTime("2026-01-01T02:05:00Z")).toBe("31/12 23:05 h");
+  });
+
+    test("envío solo desde $400.000", () => {
     expect(puedeEnvio(399999)).toBe(false);
     expect(puedeEnvio(400000)).toBe(true);
   });
@@ -107,7 +116,13 @@ test.describe("Preferencia de un pedido", () => {
 });
 
 test.describe("Qué ve quien vuelve de pagar un pedido", () => {
-  const base = { venceAt: new Date(ahora + 10 * 60_000).toISOString(), pagos: [] };
+  const base = {
+    medioPago: "mercadopago" as const,
+    venceAt: new Date(ahora + 10 * 60_000).toISOString(),
+    pagadoAt: null,
+    devolucionPendiente: false,
+    pagos: [],
+  };
   const pago = (estado: string, devolucionPendiente = false) => ({ estado, devolucionPendiente, createdAt: new Date(ahora).toISOString() });
 
   test("pagado (y lo que sigue) es 'pagado, esperando confirmación', nunca confirmado", () => {
@@ -126,7 +141,34 @@ test.describe("Qué ve quien vuelve de pagar un pedido", () => {
     expect(vistaPedido({ ...base, estado: "rechazado", pagos: [pago("approved", true)] }, ahora)).toEqual({ tipo: "devolucion" });
     expect(vistaPedido({ ...base, estado: "cancelado" }, ahora)).toEqual({ tipo: "cancelada" });
   });
+
+  test("transferencia: datos hasta que vence a las 24 h; registrada, pagado; rechazada con pago, devolución", () => {
+    const venceAt = new Date(ahora + 24 * 3_600_000).toISOString();
+    const transferencia = { ...base, medioPago: "transferencia" as const, venceAt, estado: "pendiente_pago" };
+    expect(vistaPedido(transferencia, ahora)).toEqual({ tipo: "transferencia", venceAt });
+    expect(vistaPedido(transferencia, ahora + 24 * 3_600_000 + 1)).toEqual({ tipo: "vencida" });
+    // Registrada por la admin (aunque haya sido después del plazo).
+    expect(vistaPedido({ ...transferencia, estado: "pagado", pagadoAt: venceAt }, ahora + 25 * 3_600_000)).toEqual({ tipo: "pagado" });
+    expect(vistaPedido({ ...transferencia, estado: "rechazado", pagadoAt: venceAt, devolucionPendiente: true }, ahora)).toEqual({
+      tipo: "devolucion",
+    });
+  });
+
+  test("efectivo: a pagar al retirar (aunque esté aceptado) hasta que se cobra; no vence", () => {
+    const efectivo = { ...base, medioPago: "efectivo" as const, venceAt: null, estado: "pendiente_pago" };
+    expect(vistaPedido(efectivo, ahora + 365 * 24 * 3_600_000)).toEqual({ tipo: "efectivo" });
+    expect(vistaPedido({ ...efectivo, estado: "aceptado" }, ahora)).toEqual({ tipo: "efectivo" });
+    expect(vistaPedido({ ...efectivo, estado: "entregado", pagadoAt: new Date(ahora).toISOString() }, ahora)).toEqual({ tipo: "pagado" });
+    expect(vistaPedido({ ...efectivo, estado: "rechazado" }, ahora)).toEqual({ tipo: "cancelada" });
+  });
 });
+
+/** El próximo lunes con al menos dos días de margen: el esquema rechaza fechas pasadas. */
+function proximoLunes() {
+  let fecha = sumarDias(fechaBA(Date.now()), 2);
+  while (diaDeSemana(fecha) !== 1) fecha = sumarDias(fecha, 1);
+  return fecha;
+}
 
 test.describe("Esquema del pedido", () => {
   const valido = {
@@ -134,7 +176,8 @@ test.describe("Esquema del pedido", () => {
     email: "ana@ejemplo.com",
     phone: "11 5555-6666",
     delivery: "retiro",
-    date: "2026-11-02",
+    payment: "mercadopago",
+    date: proximoLunes(),
     slot: "10-13",
     items: [{ productId: uuid, sizeId: otro, quantity: 1 }],
   };
@@ -156,6 +199,21 @@ test.describe("Esquema del pedido", () => {
     expect(errores({ date: "2026-10-31", slot: "10-13" })).toContain("slot");
     expect(errores({ items: [{ ...valido.items[0], quantity: 21 }] })).toContain("items.0.quantity");
     expect(errores({ items: [] })).toContain("items");
+  });
+
+  test("medio de pago: los tres con retiro; efectivo con envío, no; sin medio, error", () => {
+    for (const payment of ["mercadopago", "transferencia", "efectivo"]) {
+      expect(pedidoSchema.safeParse({ ...valido, payment }).success).toBe(true);
+    }
+    const errores = (data: object) => {
+      const result = pedidoSchema.safeParse({ ...valido, ...data });
+      return result.success ? [] : result.error.issues.map((issue) => issue.path.join("."));
+    };
+    const envio = { delivery: "envio", address: "Calle 123", locality: "San Isidro" };
+    expect(errores({ ...envio, payment: "efectivo" })).toEqual(["payment"]);
+    expect(errores({ ...envio, payment: "transferencia" })).toEqual([]);
+    expect(errores({ payment: undefined })).toEqual(["payment"]);
+    expect(errores({ payment: "cripto" })).toEqual(["payment"]);
   });
 });
 

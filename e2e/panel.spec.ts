@@ -2,7 +2,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import sharp from "sharp";
 import { avisarPago, cargarPago, nuevoPagoId } from "./support/pagos";
 import { categoriaDePrueba, crearProductoDePrueba } from "./support/productos";
-import { admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
+import { abrirHastaNoVer, abrirHastaVer, admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
 import { authFile } from "./support/usuarios";
 
 // Panel de Maggie con la admin de prueba. Todo lo que se crea es "E2E …"
@@ -41,8 +41,7 @@ test.describe("Productos", () => {
 
   test("pausar lo saca de la tienda y Deshacer lo vuelve a mostrar", async ({ page }) => {
     const producto = await crearProducto(page.request);
-    await page.goto("/tienda");
-    await expect(page.getByText(producto.name).first()).toBeVisible();
+    await abrirHastaVer(page, "/tienda", (p) => p.getByText(producto.name).first());
 
     await page.goto(`/admin/productos?q=${encodeURIComponent(producto.name)}`);
     const sw = page.getByRole("switch", { name: `Mostrar ${producto.name} en la tienda` });
@@ -51,14 +50,13 @@ test.describe("Productos", () => {
     await expect(aviso(page, `${producto.name} quedó pausado y ya no se ve en la tienda.`)).toBeVisible();
     await expect(sw).toHaveAttribute("aria-checked", "false");
 
+    // /tienda es ISR: con otros tests revalidando en paralelo, puede tardar en verse el cambio.
     const tienda = await page.context().newPage();
-    await tienda.goto("/tienda");
-    await expect(tienda.getByText(producto.name)).toHaveCount(0);
+    await abrirHastaNoVer(tienda, "/tienda", (p) => p.getByText(producto.name));
 
     await page.getByRole("button", { name: "Deshacer" }).click();
     await expect(aviso(page, `${producto.name} vuelve a estar en la tienda.`)).toBeVisible();
-    await tienda.reload();
-    await expect(tienda.getByText(producto.name).first()).toBeVisible();
+    await abrirHastaVer(tienda, "/tienda", (p) => p.getByText(producto.name).first());
     await tienda.close();
   });
 

@@ -184,6 +184,64 @@ test.describe("Checkout", () => {
     await expect(page.getByText("Los domingos no hay retiros ni entregas. Elegí otro día.")).toBeVisible();
     await expect(page.getByRole("combobox", { name: "Horario", exact: true })).toBeDisabled();
   });
+
+  test("transferencia: datos de ejemplo, copiar, monto y WhatsApp; el carrito se vacía", async ({ page, budin }) => {
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await agregar(page, budin, { cantidad: 2 });
+    await page.goto("/carrito/checkout");
+    const email = emailDePedido();
+    await completarDatos(page, email);
+    await page.getByRole("radio", { name: /^Transferencia/ }).check();
+    await expect(page.getByRole("note")).toHaveText("Datos de ejemplo: todavía no transfieras.");
+    await page.getByRole("button", { name: "Hacer el pedido" }).click();
+
+    await expect(page.getByRole("heading", { level: 1, name: "Hacé la transferencia" })).toBeVisible();
+    const id = await pedidoDe(email);
+    expect(page.url()).toContain(`/pedido/resultado?pedido=${id}`);
+    await expect(page.getByRole("note")).toHaveText("Datos de ejemplo: todavía no transfieras.");
+    await expect(page.getByText("HOMEBAKERY.PRUEBA")).toBeVisible();
+    await expect(page.getByTestId("resultado-total")).toHaveText("$ 24.000");
+    await expect(page.getByText(/^Tenés tiempo hasta el \d{2}\/\d{2} \d{2}:\d{2} h\.$/)).toBeVisible();
+
+    await page.getByRole("button", { name: "Copiar alias" }).click();
+    await expect(page.getByText("Alias copiado.")).toBeVisible();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("HOMEBAKERY.PRUEBA");
+    await page.getByRole("button", { name: "Copiar monto exacto" }).click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("24000");
+
+    const { numero } = await leerPedido(id);
+    const href = await page.getByRole("link", { name: /Mandar el comprobante por WhatsApp/ }).getAttribute("href");
+    expect(new URL(href!).searchParams.get("text")).toContain(`#${numero}`);
+    await expect(carrito(page)).toHaveAccessibleName("Carrito, vacío");
+    expect(await leerPedido(id)).toMatchObject({ medio_pago: "transferencia", estado: "pendiente_pago" });
+  });
+
+  test("efectivo: a pagar al retirar, sin pasar por Mercado Pago", async ({ page, budin }) => {
+    await agregar(page, budin);
+    await page.goto("/carrito/checkout");
+    const email = emailDePedido();
+    await completarDatos(page, email);
+    await page.getByRole("radio", { name: /^Efectivo/ }).check();
+    await page.getByRole("button", { name: "Hacer el pedido" }).click();
+
+    await expect(page.getByRole("heading", { level: 1, name: "Pedido recibido: pagás al retirar" })).toBeVisible();
+    await expect(page.getByTestId("resultado-total")).toHaveText("$ 12.000");
+    await expect(carrito(page)).toHaveAccessibleName("Carrito, vacío");
+    expect(await leerPedido(await pedidoDe(email))).toMatchObject({ medio_pago: "efectivo", vence_at: null });
+  });
+
+  test("con envío, el efectivo no aparece (y si estaba elegido vuelve a Mercado Pago)", async ({ page, budin }) => {
+    await agregar(page, budin, { tamano: "Grande" });
+    await page.goto("/carrito/checkout");
+    await page.getByRole("radio", { name: /^Efectivo/ }).check();
+    await page.getByRole("radio", { name: /Envío a domicilio/ }).check();
+    await expect(page.getByRole("radio", { name: /^Efectivo/ })).toHaveCount(0);
+    await expect(page.getByText("El efectivo es solo para retiro.")).toBeVisible();
+    await expect(page.getByRole("radio", { name: /^Mercado Pago/ })).toBeChecked();
+
+    await page.getByRole("radio", { name: /Retiro en/ }).check();
+    await expect(page.getByRole("radio", { name: /^Efectivo/ })).toBeVisible();
+  });
 });
 
 test.describe("Resultado del pago", () => {

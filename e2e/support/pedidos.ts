@@ -45,6 +45,7 @@ export async function pedir(request: APIRequestContext, items: ItemPedido[], dat
       email: emailDePedido(),
       phone: "11 5555-6666",
       delivery: "retiro",
+      payment: "mercadopago",
       ...turnoValido(),
       items,
       ...datos,
@@ -60,7 +61,13 @@ export type PedidoDb = {
   total: number | string;
   entrega: string;
   direccion: string | null;
-  vence_at: string;
+  medio_pago: string;
+  vence_at: string | null;
+  created_at: string;
+  pagado_at: string | null;
+  pagado_por: string | null;
+  devolucion_pendiente: boolean;
+  devuelto_at: string | null;
   mp_preference_id: string | null;
   mp_init_point: string | null;
 };
@@ -68,7 +75,9 @@ export type PedidoDb = {
 export async function leerPedido(id: string): Promise<PedidoDb> {
   const { data, error } = await admin()
     .from("pedidos")
-    .select("id, numero, estado, total, entrega, direccion, vence_at, mp_preference_id, mp_init_point")
+    .select(
+      "id, numero, estado, total, entrega, direccion, medio_pago, vence_at, created_at, pagado_at, pagado_por, devolucion_pendiente, devuelto_at, mp_preference_id, mp_init_point",
+    )
     .eq("id", id)
     .single();
   if (error) throw new Error(`No se pudo leer el pedido: ${error.message}`);
@@ -94,7 +103,7 @@ export async function pagosDePedido(pedidoId: string) {
   return data;
 }
 
-/** Hace vencer un pedido pendiente (como si hubieran pasado los 30 minutos). */
+/** Hace vencer un pedido pendiente (como si hubieran pasado los 30 minutos o las 24 h). */
 export async function vencerPedido(id: string) {
   const { error } = await admin().from("pedidos").update({ vence_at: new Date(Date.now() - 60_000).toISOString() }).eq("id", id);
   if (error) throw new Error(`No se pudo vencer el pedido: ${error.message}`);

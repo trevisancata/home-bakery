@@ -85,12 +85,18 @@ conProducto.describe("Crear un pedido", () => {
       { productId: producto.id, sizeId: producto.chico, flavor: "Limón", decoration: "Flores", quantity: 2 },
     ]);
     expect(response.status()).toBe(201);
-    expect(body.data).toEqual({ id: expect.any(String), numero: expect.any(Number), initPoint: expect.stringContaining("/checkout") });
+    expect(body.data).toEqual({
+      id: expect.any(String),
+      numero: expect.any(Number),
+      initPoint: expect.stringContaining("/checkout"),
+      resultUrl: `/pedido/resultado?pedido=${body.data.id}`,
+    });
 
     const pedido = await leerPedido(body.data.id);
     expect(pedido).toMatchObject({ estado: "pendiente_pago", entrega: "retiro", direccion: null, numero: body.data.numero });
     expect(Number(pedido.total)).toBe(24000);
-    const minutos = (new Date(pedido.vence_at).getTime() - Date.now()) / 60_000;
+    expect(pedido.medio_pago).toBe("mercadopago");
+    const minutos = (new Date(pedido.vence_at!).getTime() - Date.now()) / 60_000;
     expect(minutos).toBeGreaterThan(28);
     expect(minutos).toBeLessThanOrEqual(30);
     expect(await itemsDe(body.data.id)).toEqual([
@@ -347,5 +353,123 @@ conProducto.describe("Aceptar y rechazar (base)", () => {
       expect((await client.rpc("rechazar_pedido", { p_id: id })).error?.code).toBe("42501");
     }
     expect((await leerPedido(id)).estado).toBe("pagado");
+  });
+});
+
+conProducto.describe("Medios de pago", () => {
+  const item = (producto: Producto) => [{ productId: producto.id, sizeId: producto.chico, flavor: "Limón", quantity: 1 }];
+  const envio = { delivery: "envio", address: "Calle de Prueba 123", locality: "San Isidro" };
+
+  conProducto("transferencia: sin Mercado Pago y vence a las 24 h", async ({ request, producto }) => {
+    const { response, body } = await pedir(request, item(producto), { payment: "transferencia" });
+    expect(response.status()).toBe(201);
+    expect(body.data).toMatchObject({ initPoint: null, resultUrl: `/pedido/resultado?pedido=${body.data.id}` });
+    const pedido = await leerPedido(body.data.id);
+    expect(pedido).toMatchObject({ medio_pago: "transferencia", estado: "pendiente_pago", mp_preference_id: null, mp_init_point: null });
+    const horas = (new Date(pedido.vence_at!).getTime() - new Date(pedido.created_at).getTime()) / 3_600_000;
+    expect(horas).toBeCloseTo(24, 2);
+  });
+
+  conProducto("efectivo con retiro: sin Mercado Pago y no vence", async ({ request, producto }) => {
+    const { response, body } = await pedir(request, item(producto), { payment: "efectivo" });
+    expect(response.status()).toBe(201);
+    expect(body.data.initPoint).toBeNull();
+    expect(await leerPedido(body.data.id)).toMatchObject({ medio_pago: "efectivo", vence_at: null, mp_preference_id: null });
+  });
+
+  conProducto("efectivo con envío: la API responde 400 y la base también lo rechaza", async ({ request }) => {
+    // Total de $450.000: el envío está permitido, solo falla el medio de pago.
+    const grande = await budin();
+    try {
+      const items = [{ productId: grande.id, sizeId: grande.grande, flavor: "Limón", quantity: 1 }];
+      const { response, body } = await pedir(request, items, { ...envio, payment: "efectivo" });
+      expect(response.status()).toBe(400);
+      expect(Object.keys(body.error.fields)).toEqual(["payment"]);
+
+      // Directo contra la base, salteando el esquema de la API.
+      const { error } = await admin().rpc("crear_pedido", {
+        p_nombre: "Prueba E2E",
+        p_email: emailDePedido(),
+        p_telefono: "11 5555-6666",
+        p_entrega: "envio",
+        p_direccion: envio.address,
+        p_localidad: envio.locality,
+        p_fecha: turnoValido().date,
+        p_franja: turnoValido().slot,
+        p_notas: null,
+        p_items: [{ producto_id: grande.id, tamano_id: grande.grande, sabor: "Limón", cantidad: 1 }],
+        p_medio_pago: "efectivo",
+      });
+      expect(error).toMatchObject({ code: "HB422", hint: "payment" });
+
+      // Y el check de la tabla, aunque se cambie después de crearlo.
+      const { body: conEnvio } = await pedir(request, items, { ...envio, payment: "transferencia" });
+      const update = await admin().from("pedidos").update({ medio_pago: "efectivo", vence_at: null }).eq("id", conEnvio.data.id);
+      expect(update.error?.code).toBe("23514");
+    } finally {
+      await borrarProductoDePrueba(grande.id);
+    }
+  });
+
+  conProducto("marcar_pedido_pagado: la admin registra una transferencia, aunque haya vencido", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { data: usuario } = await client.auth.getUser();
+
+    const { body } = await pedir(request, item(producto), { payment: "transferencia" });
+    // Sin pagar, una transferencia no se puede aceptar.
+    expect((await client.rpc("aceptar_pedido", { p_id: body.data.id })).error?.code).toBe("HB409");
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: body.data.id })).error).toBeNull();
+    expect(await leerPedido(body.data.id)).toMatchObject({ estado: "pagado", pagado_por: usuario.user?.id, pagado_at: expect.any(String) });
+    // Dos veces, no.
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: body.data.id })).error?.code).toBe("HB409");
+    expect((await client.rpc("aceptar_pedido", { p_id: body.data.id })).error).toBeNull();
+    expect((await leerPedido(body.data.id)).estado).toBe("aceptado");
+
+    // La plata llegó tarde: vencida, la admin la registra igual.
+    const { body: tarde } = await pedir(request, item(producto), { payment: "transferencia" });
+    await vencerPedido(tarde.data.id);
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: tarde.data.id })).error).toBeNull();
+    expect((await leerPedido(tarde.data.id)).estado).toBe("pagado");
+  });
+
+  conProducto("marcar_pedido_pagado: vencida y rechazada, no; Mercado Pago, no; sin rol, no", async ({ request, producto }) => {
+    const client = await sesion("admin");
+
+    const { body: rechazada } = await pedir(request, item(producto), { payment: "transferencia" });
+    await vencerPedido(rechazada.data.id);
+    expect((await client.rpc("rechazar_pedido", { p_id: rechazada.data.id })).error).toBeNull();
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: rechazada.data.id })).error?.code).toBe("HB409");
+
+    const { body: mp } = await pedir(request, item(producto));
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: mp.data.id })).error?.code).toBe("HB409");
+
+    const { body: transferencia } = await pedir(request, item(producto), { payment: "transferencia" });
+    for (const otro of [await sesion("sinRol"), publica()]) {
+      expect((await otro.rpc("marcar_pedido_pagado", { p_id: transferencia.data.id })).error?.code).toBe("42501");
+    }
+    expect((await leerPedido(transferencia.data.id)).estado).toBe("pendiente_pago");
+  });
+
+  conProducto("efectivo: se acepta sin pago y se marca pagado al entregar, sin volver atrás", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { body } = await pedir(request, item(producto), { payment: "efectivo" });
+    expect((await client.rpc("aceptar_pedido", { p_id: body.data.id })).error).toBeNull();
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: body.data.id })).error).toBeNull();
+    expect(await leerPedido(body.data.id)).toMatchObject({ estado: "aceptado", pagado_at: expect.any(String) });
+  });
+
+  conProducto("rechazar una transferencia ya registrada la deja para devolver a mano", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { body } = await pedir(request, item(producto), { payment: "transferencia" });
+    expect((await client.rpc("marcar_pedido_pagado", { p_id: body.data.id })).error).toBeNull();
+    expect((await client.rpc("rechazar_pedido", { p_id: body.data.id, p_motivo: "Prueba" })).error).toBeNull();
+    expect(await leerPedido(body.data.id)).toMatchObject({ estado: "rechazado", devolucion_pendiente: true });
+    expect(await pagosDePedido(body.data.id)).toEqual([]);
+
+    expect((await (await sesion("sinRol")).rpc("marcar_pedido_devuelto", { p_id: body.data.id })).error?.code).toBe("42501");
+    expect((await client.rpc("marcar_pedido_devuelto", { p_id: body.data.id })).error).toBeNull();
+    expect(await leerPedido(body.data.id)).toMatchObject({ devolucion_pendiente: false, devuelto_at: expect.any(String) });
+    // Ya devuelta, no se puede marcar otra vez.
+    expect((await client.rpc("marcar_pedido_devuelto", { p_id: body.data.id })).error?.code).toBe("HB404");
   });
 });
