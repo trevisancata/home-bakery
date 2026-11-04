@@ -3,12 +3,13 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { z } from "zod";
 import { Button } from "@/components/Button";
+import { CopiarDato } from "@/components/carrito/CopiarDato";
 import { VaciarCarrito } from "@/components/carrito/VaciarCarrito";
 import { Eyebrow } from "@/components/Eyebrow";
 import { RefrescoPendiente } from "@/components/inscripcion/RefrescoPendiente";
 import { TituloConFoco } from "@/components/inscripcion/TituloConFoco";
 import { pages, pedidos, whatsappLink, whatsappMessages } from "@/data/site";
-import { formatDay, formatPrice } from "@/lib/format";
+import { formatDay, formatPrice, formatShortDateTime } from "@/lib/format";
 import { resultadoPedido } from "@/lib/pagos/resultado-pedido";
 import { vistaPedido } from "@/lib/pagos/vista";
 
@@ -20,8 +21,9 @@ export const metadata: Metadata = content.metadata;
 export const dynamic = "force-dynamic";
 
 /**
- * Adonde vuelve Mercado Pago (back_urls) después de pagar un pedido. Los
- * query params de MP se ignoran: el estado sale de la base, del lado del
+ * Adonde vuelve Mercado Pago (back_urls) después de pagar un pedido, y
+ * adonde va el checkout con transferencia (datos de la cuenta) o efectivo.
+ * Los query params de MP se ignoran: el estado sale de la base, del lado del
  * servidor, después de conciliar con la API de MP. Pagado no es confirmado:
  * Maggie acepta el pedido después.
  */
@@ -51,6 +53,15 @@ export default async function PedidoResultadoPage({ searchParams }: PageProps<"/
     </Button>
   );
 
+  const cuenta = pedidos.mediosPago.transferencia.cuenta;
+  const datosDeEjemplo = pedidos.mediosPago.transferencia.deEjemplo && (
+    <p role="note" className="w-full rounded-2xl bg-error-fondo px-5 py-4 font-semibold text-error">
+      {content.transfer.sampleData}
+    </p>
+  );
+  // El monto para pegar en el banco: sin "$" ni puntos de miles.
+  const montoParaCopiar = Number.isInteger(pedido.total) ? String(pedido.total) : pedido.total.toFixed(2).replace(".", ",");
+
   let title: string;
   let body: ReactNode;
   switch (vista.tipo) {
@@ -59,7 +70,7 @@ export default async function PedidoResultadoPage({ searchParams }: PageProps<"/
       body = (
         <>
           <VaciarCarrito />
-          <p className="text-17 leading-parrafo">{content.paid.text}</p>
+          <p className="text-17 leading-parrafo">{pedido.medioPago === "efectivo" ? content.paid.textCash : content.paid.text}</p>
           <dl className="flex w-full flex-col gap-2 rounded-2xl bg-arena p-5 text-15">
             <div className="flex justify-between gap-4">
               <dt className="text-secundario">{content.paid.when}</dt>
@@ -81,6 +92,81 @@ export default async function PedidoResultadoPage({ searchParams }: PageProps<"/
             {content.paid.whatsapp}
             <span className="sr-only">{content.helpContext}</span>
           </Button>
+        </>
+      );
+      break;
+    case "transferencia": {
+      const t = content.transfer;
+      const datos = [
+        { dato: t.alias, valor: cuenta.alias },
+        { dato: t.cbu, valor: cuenta.cbu },
+        { dato: t.holder, valor: cuenta.titular },
+        { dato: t.bank, valor: cuenta.banco },
+      ];
+      title = t.title;
+      body = (
+        <>
+          <VaciarCarrito />
+          {datosDeEjemplo}
+          <p className="text-17 leading-parrafo">{t.text}</p>
+          <section aria-labelledby="transferencia-cuenta" className="flex w-full flex-col gap-3 rounded-2xl bg-arena p-5">
+            <h2 id="transferencia-cuenta" className="text-19 font-semibold">
+              {t.account}
+            </h2>
+            <dl className="flex flex-col gap-3 text-15">
+              {datos.map(({ dato, valor }) => (
+                <div key={dato} className="flex flex-col gap-1 border-b border-borde pb-3 last:border-0 last:pb-0">
+                  <dt className="text-secundario">{dato}</dt>
+                  <dd className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-semibold break-all">{valor}</span>
+                    <CopiarDato dato={dato} valor={valor} />
+                  </dd>
+                </div>
+              ))}
+              <div className="flex flex-col gap-1">
+                <dt className="text-secundario">{t.amount}</dt>
+                <dd className="flex flex-wrap items-center justify-between gap-2">
+                  <span data-testid="resultado-total" className="text-20 font-semibold">
+                    {formatPrice(pedido.total)}
+                  </span>
+                  <CopiarDato dato={t.amount} valor={montoParaCopiar} />
+                </dd>
+              </div>
+            </dl>
+          </section>
+          <p className="font-semibold">{t.deadline(formatShortDateTime(vista.venceAt))}</p>
+          <Button
+            href={whatsappLink(whatsappMessages.transferProof(pedido.numero))}
+            target="_blank"
+            rel="noopener noreferrer"
+            size="lg"
+          >
+            {t.whatsapp}
+            <span className="sr-only">{content.helpContext}</span>
+          </Button>
+        </>
+      );
+      break;
+    }
+    case "efectivo":
+      title = content.cash.title;
+      body = (
+        <>
+          <VaciarCarrito />
+          <p className="text-17 leading-parrafo">{content.cash.text}</p>
+          <dl className="flex w-full flex-col gap-2 rounded-2xl bg-arena p-5 text-15">
+            <div className="flex justify-between gap-4">
+              <dt className="text-secundario">{content.cash.when}</dt>
+              <dd className="text-right">{cuando}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-secundario">{content.cash.total}</dt>
+              <dd data-testid="resultado-total" className="font-semibold">
+                {formatPrice(pedido.total)}
+              </dd>
+            </div>
+          </dl>
+          {ayuda}
         </>
       );
       break;
@@ -124,8 +210,13 @@ export default async function PedidoResultadoPage({ searchParams }: PageProps<"/
       title = content.expired.title;
       body = (
         <>
-          <p className="text-17 leading-parrafo">{content.expired.text}</p>
-          {volver}
+          <p className="text-17 leading-parrafo">
+            {pedido.medioPago === "transferencia" ? content.expired.textTransfer : content.expired.text}
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {volver}
+            {pedido.medioPago === "transferencia" && ayuda}
+          </div>
         </>
       );
       break;
