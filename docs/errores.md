@@ -266,3 +266,41 @@ Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-ch
 
 **Para que no se repita:** un id "único" generado en paralelo tiene que incluir algo propio de cada worker, no solo la hora.
 
+## 30/10/2026
+
+### Un producto pausado seguía en /tienda en la suite completa
+
+**PR:** medios de pago (`feat/medios-de-pago`)
+
+**Qué pasó:** "pausar lo saca de la tienda y Deshacer lo vuelve a mostrar" (`panel.spec.ts`) falló en una corrida completa: a los 5 s de pausar, `/tienda` seguía mostrando el producto. Solo, con 5 repeticiones, pasó 37 de 37.
+
+**Causa:** `/tienda` es estática (ISR). El panel la revalida al pausar, pero con otros tests revalidando en paralelo, una regeneración que empezó antes puede terminar después y servir por un momento la versión vieja. Es el mismo caso que [un workshop recién creado no aparecía en /workshops](#un-workshop-recién-creado-no-aparecía-en-workshops); este test había quedado sin el arreglo.
+
+**Solución:** `abrirHastaNoVer` en `e2e/support/supabase.ts` (como `abrirHastaVer`, pero espera que el elemento no esté) después de pausar, y `abrirHastaVer` después de "Deshacer". Las dos recargan hasta 20 s. Registrado como [Bug 5](testing.md#bug-5-falla-intermitente-un-producto-pausado-seguía-en-tienda).
+
+**Para que no se repita:** todo test que lee `/tienda` o `/workshops` después de cambiar algo desde el panel o la API de admin las abre con `abrirHastaVer` o `abrirHastaNoVer`, nunca con un `goto` o un `reload` solos.
+
+## 04/11/2026
+
+### Un unitario del esquema de pedidos dependía del día en que corría
+
+**PR:** medios de pago (`feat/medios-de-pago`); el test venía del #21.
+
+**Qué pasó:** "acepta un pedido válido…" (`pedidos-unit.spec.ts`) pasó el 30/10 y falló el 04/11 sin cambios en el esquema.
+
+**Causa:** el pedido "válido" tenía una fecha fija, el lunes 02/11/2026. El esquema rechaza las fechas que ya pasaron (`validarFechaFranja` con 0 h), así que desde el 02/11 dejó de ser válido.
+
+**Solución:** la fecha sale de `proximoLunes()`, calculada desde hoy con las mismas funciones que el checkout. Las fechas fijas que quedan son las de los casos de error (un domingo, un sábado con una franja de semana), que fallan igual en cualquier día.
+
+**Para que no se repita:** en un test, una fecha que tiene que ser válida se calcula desde hoy (`turnoValido()`, `proximoLunes()`), nunca se escribe fija. Las fijas solo sirven con un `now` fijo o para casos que tienen que fallar.
+
+### El plazo de la transferencia salía sin el cero del día
+
+**PR:** medios de pago.
+
+**Qué pasó:** el resultado decía "Tenés tiempo hasta el 5/11 17:26 h." y el e2e esperaba dd/mm.
+
+**Causa:** `Intl.DateTimeFormat("es-AR", { day: "2-digit" })` no rellena el día con cero en esta combinación de opciones.
+
+**Solución:** `formatShortDateTime` (`lib/format.ts`) arma día y mes con `formatToParts` y `padStart`. Lo cubre un unitario con fechas fijas.
+

@@ -68,10 +68,17 @@ Están en una sola config, [`data/site.ts`](../data/site.ts) → `pedidos`, y la
   - **Envío** solo con un total desde **$ 400.000** y a **10 km o menos**. La distancia no se calcula: el cliente carga dirección y localidad, y Maggie la valida al aceptar.
 - **Horarios de retiro o entrega:** lunes a viernes de 10 a 19 h, en franjas de 10 a 13, 13 a 16 y 16 a 19; sábados de 9 a 13; domingos, cerrado.
 - **Anticipación:** la mayor de los productos del pedido (hoy, 48 h), contada hasta que empieza la franja. Se puede encargar hasta 30 días adelante.
-- **Pago:** el 100% con Mercado Pago al hacer el pedido. No hay mínimo de compra ni tope de pedidos por día.
+- **Pago:** el 100% al hacer el pedido. No hay mínimo de compra ni tope de pedidos por día. Desde la migración 0008 hay tres medios, con el mismo total (sin descuentos); se detallan abajo.
 - **Maggie tiene que aceptar cada pedido:** pagarlo no lo confirma. Se dice en el checkout y en la página de resultado ("Tu pedido está pagado y Maggie lo va a confirmar; te escribe por WhatsApp").
 - **A medida** (number cakes y tortas a medida): no van al carrito, se consultan por WhatsApp con un mensaje armado.
 - **Inactivos o fuera de temporada:** no se pueden agregar ni comprar.
+
+**Medios de pago (pedido del 30/10, en `pedidos.mediosPago`):**
+
+- **Mercado Pago:** como antes; el pedido vence a los 30 minutos sin pago.
+- **Transferencia:** el checkout muestra los datos de la cuenta y la clienta manda el comprobante por WhatsApp con el número de pedido. Si Maggie no la registra en 24 h, el pedido vence para la clienta. Maggie puede registrarla igual si la plata llegó tarde.
+- **Efectivo:** solo con retiro, "a pagar al retirar"; no vence.
+- En los tres, Maggie tiene que aceptar el pedido.
 
 Decisiones de implementación (no son de Maggie): los tamaños con "Precio a confirmar" no van al carrito; si el producto tiene sabores, hay que elegir uno, y la decoración es opcional.
 
@@ -84,3 +91,4 @@ Decisiones de implementación (no son de Maggie): los tamaños con "Precio a con
 - Costo del envío. Hoy no se cobra y el checkout lo aclara (`TODO(Maggie)` en `data/site.ts`).
 - Feriados: hoy se puede elegir un feriado de lunes a sábado.
 - Plazo y forma de la devolución cuando rechaza un pedido pagado.
+- **Datos bancarios reales** para la transferencia (alias, CBU/CVU, titular y banco). Hoy son de ejemplo y el sitio avisa "Datos de ejemplo: todavía no transfieras" (`TODO(Maggie)` en `data/site.ts`).

@@ -583,3 +583,61 @@ Abierto el 22/10, sin mergear.
   - En la primera corrida fallaron dos tests de `pagos.spec.ts` ("rejected → sigue pendiente" y "monto distinto"): el webhook no registró el pago.
   - Solos, con `--repeat-each=3`, pasaron 62 de 62, y la segunda corrida completa pasó entera.
   - La causa probable es que `nuevoPagoId` es un contador por worker y dos workers pueden mandar el mismo id; el arreglo está en el PR #21.
+
+## 30/10/2026
+
+### Medios de pago de los pedidos: Mercado Pago, transferencia y efectivo (`feat/medios-de-pago`)
+
+**Pedido:** sumar transferencia y efectivo a los pedidos de la tienda. Con transferencia, el checkout no va a MP: muestra los datos de la cuenta con "Copiar", el monto y el WhatsApp para el comprobante, con 24 h de plazo. El efectivo es solo con retiro y no vence. Sin descuentos. Datos bancarios de ejemplo con aviso visible, y en los tres medios Maggie acepta el pedido. Además, arreglar el test intermitente de `panel.spec.ts`.
+
+**Qué se hizo:**
+
+- **Migración `0008_medios_de_pago.sql`:**
+  - `pedidos.medio_pago` (default `mercadopago` para los existentes);
+  - checks: efectivo solo con retiro, y `vence_at` nulo solo con efectivo;
+  - `pagado_at` / `pagado_por` y `devolucion_pendiente` / `devuelto_at` / `devuelto_por`;
+  - `crear_pedido` con `p_medio_pago`;
+  - `marcar_pedido_pagado` y `marcar_pedido_devuelto` (admin);
+  - `aceptar_pedido` y `rechazar_pedido` según el medio;
+  - una guarda en `confirmar_pago`.
+  - Se validó la sintaxis con el parser de Postgres (`pglast`) antes de pasarla.
+- **Config en `data/site.ts` → `pedidos.mediosPago`:** plazos, datos de ejemplo con `deEjemplo: true` y `TODO(Maggie)`.
+- **Mismo zod en el cliente y en la API**, con efectivo → retiro. La API, sin MP, devuelve `initPoint: null` y `resultUrl`.
+- **Checkout:**
+  - radios de medio de pago; con envío, el efectivo no aparece (y si estaba elegido vuelve a MP);
+  - aviso de datos de ejemplo;
+  - textos del aviso y del botón según el medio;
+  - sin MP, vacía el carrito y va al resultado.
+- **Resultado:**
+  - vista "Hacé la transferencia": datos con `CopiarDato` (anuncia "… copiado." con `aria-live`), monto exacto, plazo en hora de Buenos Aires y WhatsApp con el número de pedido;
+  - vista "pagás al retirar";
+  - vencida con texto propio para la transferencia;
+  - pagado según el medio.
+  - Solo concilia con MP si el pedido es de MP.
+- **Test intermitente de panel:** `abrirHastaNoVer` (nuevo) y `abrirHastaVer` en las tres lecturas de `/tienda` del test. Registrado como Bug 5 en `testing.md` y en `errores.md`.
+
+**Decisiones mías (se pueden cambiar):**
+
+- **El vencimiento se lee, como en las inscripciones:** no hay cron que pase a `cancelado`. Solo afecta a la clienta. Por pedido de Catalina, la admin puede registrar una transferencia vencida (la plata puede llegar tarde) y después decide si acepta.
+- **Efectivo:**
+  - se crea en `pendiente_pago` sin vencimiento;
+  - se puede aceptar sin pago;
+  - `marcar_pedido_pagado` guarda quién y cuándo, y solo pasa a `pagado` si estaba en `pendiente_pago`, así marcarlo al entregar no hace retroceder un pedido aceptado.
+  - El resultado dice "pagás al retirar" hasta que se cobra.
+- **Devolución manual en `pedidos`, no en `pagos`:** `pagos` es de MP (`mp_payment_id`). Rechazar un pedido con `pagado_at` lo deja con `devolucion_pendiente`, y `marcar_pedido_devuelto` lo cierra.
+- **`crear_pedido` con `p_medio_pago default 'mercadopago'`:** el código deployado llama con parámetros nombrados y sigue andando entre la migración y el deploy.
+- **El monto se copia sin "$" ni puntos de miles** (por ejemplo, `24000`), para pegarlo en la app del banco.
+- **Los medios de pago no se registran como confirmados por Maggie** en `contenido-maggie.md`: vinieron en el pedido del 30/10. Pendiente: los datos bancarios reales.
+
+**Limitación conocida:** el panel todavía no tiene pantalla de pedidos. Marcar pagado, aceptar, rechazar y marcar devuelto existen como funciones de la base, con tests; la pantalla va en el PR 2.
+
+**Resultado (04/11):**
+
+- La 0008 la corrió Catalina en el SQL Editor (Success).
+- Lint, `tsc` y build en verde.
+- e2e: **178 de 178**, incluido rate limit. `panel.spec.ts` con `--repeat-each=5`: 37 de 37.
+- **Dos arreglos en la primera corrida** (ver [errores.md](errores.md#04112026)):
+  - un unitario de #21 tenía una fecha fija que ya pasó;
+  - el plazo salía "5/11" en vez de "05/11".
+- Capturas mobile en `docs/capturas/`: `medios-de-pago-checkout-mobile.png`, `pedido-transferencia-mobile.png`, `pedido-efectivo-mobile.png` y `pedido-pagado-mobile.png`.
+

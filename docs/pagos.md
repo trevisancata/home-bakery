@@ -47,6 +47,25 @@ Maggie acepta o rechaza con `aceptar_pedido` / `rechazar_pedido` (solo admin, mi
 
 Los estados del pedido están en el [modelo de datos](modelo-de-datos.md#estados-de-un-pedido).
 
+## Medios de pago (migración 0008)
+
+Un pedido se paga con **Mercado Pago**, **transferencia** o **efectivo**. Las reglas están en [`data/site.ts`](../data/site.ts) → `pedidos.mediosPago` y la base las repite ([`0008_medios_de_pago.sql`](../supabase/migrations/0008_medios_de_pago.sql)). En los tres el total es el mismo y **Maggie tiene que aceptar** el pedido.
+
+| | Mercado Pago | Transferencia | Efectivo |
+|---|---|---|---|
+| Entrega | Retiro o envío | Retiro o envío | **Solo retiro** (zod, `crear_pedido` y el check `pedidos_efectivo_solo_retiro`) |
+| Al hacer el pedido | Preferencia y redirección a MP | Sin MP: `/pedido/resultado` con los datos de la cuenta | Sin MP: `/pedido/resultado`, "a pagar al retirar" |
+| Vence | 30 min | 24 h | No vence (`vence_at` nulo) |
+| Quién registra el pago | El webhook (`confirmar_pago`) | La admin (`marcar_pedido_pagado`), aunque haya vencido | La admin (`marcar_pedido_pagado`), al cobrar |
+| Aceptar sin pago | No | No | Sí |
+| Devolución | En `pagos` (`marcar_devuelto`) | Manual: `pedidos.devolucion_pendiente` → `marcar_pedido_devuelto` | Igual que transferencia, si se cobró antes de rechazar |
+
+- **El vencimiento se lee:** no hay un proceso que cancele; un `pendiente_pago` vencido se muestra vencido. Solo afecta a la clienta: la admin puede registrar una transferencia que llegó tarde.
+- **El carrito se vacía** al crear un pedido por transferencia o efectivo (el pedido ya está hecho); con MP, cuando el pago se aprueba.
+- **Datos de la cuenta:** hoy son **de ejemplo** (`deEjemplo: true`), y el checkout y el resultado muestran "Datos de ejemplo: todavía no transfieras". `TODO(Maggie)`: los datos reales.
+- **Un pago de MP** que llegue para un pedido por transferencia o efectivo (no tiene link de pago, no debería pasar) queda para devolver y no cambia el estado.
+- `crear_pedido` cambió de firma con `p_medio_pago default 'mercadopago'`: el código anterior llama con parámetros nombrados y sigue andando entre la migración y el deploy.
+
 ## El flujo
 
 ```mermaid
