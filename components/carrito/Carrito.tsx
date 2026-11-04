@@ -9,6 +9,7 @@ import { ImageFrame } from "@/components/ImageFrame";
 import { pages, ui } from "@/data/site";
 import { claveLinea, totalCarrito, type Linea } from "@/lib/carrito/lineas";
 import { formatPrice } from "@/lib/format";
+import { etiquetaVisible } from "@/lib/tamano";
 
 const content = pages.carrito;
 
@@ -120,7 +121,7 @@ function LineaCarrito({
           </span>
         </div>
         <p className="text-14 text-secundario">
-          {[linea.sizeLabel, linea.flavor && content.flavor(linea.flavor), linea.decoration && content.decoration(linea.decoration), content.unitPrice(formatPrice(linea.unitPrice))]
+          {[etiquetaVisible(linea.sizeLabel, linea.sizeCount), linea.flavor && content.flavor(linea.flavor), linea.decoration && content.decoration(linea.decoration), content.unitPrice(formatPrice(linea.unitPrice))]
             .filter(Boolean)
             .join(" · ")}
         </p>

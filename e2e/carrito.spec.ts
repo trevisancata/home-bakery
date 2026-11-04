@@ -112,6 +112,37 @@ test.describe("Carrito", () => {
     await expect(page.getByText("Todavía no agregaste nada.")).toBeVisible();
   });
 
+  test("tamaño único: sin selector, con el precio junto al título y sin \"Único\" en el carrito y el checkout", async ({ page }) => {
+    const producto = await crearProductoDePrueba({ sizes: [{ label: "Único", price: 9000 }], flavors: ["Limón"] });
+    try {
+      await page.goto(`/tienda/${producto.slug}`);
+      await expect(page.getByTestId("precio-unico")).toHaveText("$ 9.000");
+      await expect(page.getByRole("group", { name: "Tamaño" })).toHaveCount(0);
+      await expect(page.getByRole("radio")).toHaveCount(0);
+      await page.getByLabel("Sabor").selectOption("Limón");
+      await page.getByRole("button", { name: /Agregar al pedido · \$ 9\.000/ }).click();
+      await expect(page.getByText("¡Listo! Lo agregamos a tu pedido.")).toBeVisible();
+
+      await page.goto("/carrito");
+      await expect(page.getByText("Sabor: Limón · $ 9.000 c/u", { exact: true })).toBeVisible();
+      await expect(page.getByText(/Único/)).toHaveCount(0);
+      await page.goto("/carrito/checkout");
+      await expect(page.getByTestId("checkout-total")).toHaveText("$ 9.000");
+      await expect(page.getByText(/Único/)).toHaveCount(0);
+    } finally {
+      await borrarProductoDePrueba(producto.id);
+    }
+  });
+
+  test("con dos tamaños, el selector sigue y el carrito dice cuál", async ({ page, budin }) => {
+    await page.goto(`/tienda/${budin.slug}`);
+    await expect(page.getByRole("group", { name: "Tamaño" }).getByRole("radio")).toHaveCount(2);
+    await expect(page.getByTestId("precio-unico")).toHaveCount(0);
+    await agregar(page, budin, { tamano: "Grande" });
+    await page.goto("/carrito");
+    await expect(page.getByText(/^Grande · Sabor: Limón/)).toBeVisible();
+  });
+
   test("a medida: no se agrega, se consulta por WhatsApp", async ({ page }) => {
     const producto = await crearProductoDePrueba({ custom: true, sizes: [{ label: "Único", price: 50000 }] });
     try {

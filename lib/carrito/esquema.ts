@@ -19,6 +19,8 @@ export const lineaSchema = z.object({
   sizeId: z.uuid(),
   name: texto(),
   sizeLabel: texto(),
+  /** Cuántos tamaños tiene el producto: con uno, la etiqueta ("Único") no se muestra. Opcional: los carritos guardados antes no lo tienen. */
+  sizeCount: z.optional(z.int().check(z.gte(1))),
   flavor: z.nullable(z.string()),
   decoration: z.nullable(z.string()),
   quantity: z.int().check(z.gte(1), z.lte(pedidos.maxCantidad)),

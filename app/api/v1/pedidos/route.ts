@@ -4,6 +4,7 @@ import { crearPreferencia } from "@/lib/mercadopago";
 import { armarPreferenciaPedido, rutaResultadoPedido } from "@/lib/pagos/preferencia";
 import { clientIp, pedidosLimiter } from "@/lib/rate-limit";
 import { siteUrl } from "@/lib/site-url";
+import { etiquetaVisible } from "@/lib/tamano";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pedidoSchema } from "@/lib/validation/pedido";
 
@@ -99,14 +100,22 @@ export const POST = withApi("Error al guardar el pedido", async (request) => {
       .eq("pedido_id", id)
       .order("created_at");
     if (items.error) throw Object.assign(new Error("No se pudieron leer los ítems"), { code: items.error.code });
+    // Cuántos tamaños tiene cada producto: con uno solo, el título no lleva "Único".
+    const filas = items.data as ItemRow[];
+    const productoIds = [...new Set(filas.map((item) => item.producto_id).filter((pid): pid is string => pid !== null))];
+    const tamanos = await admin.from("producto_tamanos").select("producto_id").in("producto_id", productoIds);
+    const cantidadDeTamanos = new Map<string, number>();
+    for (const fila of tamanos.data ?? []) {
+      cantidadDeTamanos.set(fila.producto_id, (cantidadDeTamanos.get(fila.producto_id) ?? 0) + 1);
+    }
     preferencia = await crearPreferencia(
       armarPreferenciaPedido({
         // Con Mercado Pago, crear_pedido siempre devuelve vence_at.
         pedido: { id, numero, email: pedido.email, venceAt: data.vence_at! },
-        items: (items.data as ItemRow[]).map((item) => ({
+        items: filas.map((item) => ({
           productoId: item.producto_id,
           nombre: item.nombre,
-          tamano: item.tamano_etiqueta,
+          tamano: etiquetaVisible(item.tamano_etiqueta, item.producto_id ? cantidadDeTamanos.get(item.producto_id) : null),
           sabor: item.sabor,
           cantidad: item.cantidad,
           precioUnitario: Number(item.precio_unitario),

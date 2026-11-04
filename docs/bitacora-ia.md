@@ -687,3 +687,32 @@ Después se sumó cancelar un pedido aceptado.
 - Suite completa: 197 de 197, incluido rate limit.
 - Lighthouse del panel: 100 / 100 en accesibilidad y buenas prácticas, en mobile y desktop, en las 9 rutas.
 - Capturas mobile: `panel-pedidos-lista-mobile.png`, `panel-pedidos-detalle-mobile.png` y `panel-inicio-pedidos-mobile.png`.
+
+### Fix: tamaño único (`fix/tamano-unico`)
+
+**Pedido:** con un solo tamaño (hoy siempre "Único"), la clienta veía un selector "Tamaño" con una sola opción ya marcada. Sacarlo y no mostrar "Único" en ningún lado.
+
+**Qué se hizo:**
+
+- **Helper `lib/tamano.ts`:**
+  - `tamanoUnico(sizes)`: un solo tamaño y con precio. Decide si hay selector.
+  - `mostrarTamano(etiqueta, cantidadDeTamanos?)` / `etiquetaVisible`: manda la cantidad de tamaños del producto. Sin ella (pedidos ya hechos, carritos guardados antes, productos borrados), decide la etiqueta: "Único", sin importar mayúsculas, tildes ni espacios, no se muestra.
+- **Detalle del producto:** con un tamaño, sin el fieldset (el tamaño se elige solo) y con el precio grande debajo del título, además del botón. La lista de tamaños de un producto que no se puede pedir dice "Precio" en vez de "Único".
+- **Carrito y checkout:** la línea guarda `sizeCount`, opcional en el esquema, así los carritos guardados siguen siendo válidos. La revisión de precios lo actualiza en cada visita.
+- **Preferencia de MP:** la API cuenta los tamaños de cada producto (`producto_tamanos`) y el título no lleva "Único". El pedido guarda la etiqueta igual (es el snapshot).
+- **Panel (detalle del pedido):** por la etiqueta, porque el pedido no guarda cuántos tamaños tenía el producto.
+- **Lugares que no mostraban el tamaño y no cambiaron:**
+  - la tarjeta del catálogo (precio y presentación);
+  - la página de resultado (no lista los ítems);
+  - la lista del panel (muestra la cantidad de productos);
+  - los mensajes de WhatsApp (no nombran productos).
+
+**Decisión mía:** el selector se oculta solo si el producto tiene **un único tamaño** y con precio. Con un tamaño con precio y otro "Precio a confirmar", el selector queda, porque si no se perdería el aviso del que está por confirmar.
+
+**Nota de proceso:** el primer intento de formatear `AgregarAlPedido` con `npx prettier` reformateó todo el archivo con el ancho por defecto (80); el repo no tiene configuración de prettier y usa líneas más largas. Se restauró y el cambio se aplicó a mano.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde.
+- Suite completa: 203 de 203, incluido rate limit. Antes, los archivos tocados dieron 87 de 87.
+- Capturas antes y después del detalle en mobile: `docs/capturas/tamano-unico-antes-mobile.png` y `tamano-unico-despues-mobile.png`.

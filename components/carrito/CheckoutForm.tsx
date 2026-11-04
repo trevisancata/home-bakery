@@ -9,6 +9,7 @@ import { disponible, useRevision } from "@/components/carrito/useRevision";
 import { pages, pedidos, whatsappLink, whatsappMessages, type MedioPago } from "@/data/site";
 import { claveLinea, totalCarrito } from "@/lib/carrito/lineas";
 import { formatPrice } from "@/lib/format";
+import { etiquetaVisible } from "@/lib/tamano";
 import {
   anticipacionDe,
   fechaMaxima,
@@ -287,7 +288,7 @@ export function CheckoutForm() {
               <span className={disponible(revision, linea) ? "" : "text-secundario line-through"}>
                 {linea.quantity} × {linea.name}
                 <span className="block text-13 text-secundario">
-                  {[linea.sizeLabel, linea.flavor, linea.decoration].filter(Boolean).join(" · ")}
+                  {[etiquetaVisible(linea.sizeLabel, linea.sizeCount), linea.flavor, linea.decoration].filter(Boolean).join(" · ")}
                 </span>
               </span>
               <span className="shrink-0 font-semibold">{formatPrice(linea.unitPrice * linea.quantity)}</span>

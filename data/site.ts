@@ -461,6 +461,8 @@ export const pages = {
       leadTime: (hours: number) => `${hours} h`,
       season: (range: string) => `Solo en temporada: ${range}`,
       sizes: "Tamaños",
+      /** En la lista de tamaños, si hay uno solo (sin "Único"). */
+      price: "Precio",
       flavors: "Sabores",
       decorations: "Decoraciones",
       customCta: "Consultar por WhatsApp",
