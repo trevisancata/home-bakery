@@ -59,7 +59,7 @@ En CI el reporter es `github`, que marca las fallas como anotaciones en el PR.
 
 ## Estrategia de los tests automáticos
 
-Playwright corre todo: los e2e con el navegador, los de la API con `request` y los unitarios, que importan funciones de `lib/` sin abrir ninguna página. Son 164 tests en 17 archivos (`npx playwright test --list`).
+Playwright corre todo: los e2e con el navegador, los de la API con `request` y los unitarios, que importan funciones de `lib/` sin abrir ninguna página. Son 178 tests en 17 archivos (`npx playwright test --list`).
 
 ### Qué cubre cada archivo
 
@@ -69,8 +69,8 @@ Playwright corre todo: los e2e con el navegador, los de la API con `request` y l
 |---|---|---|
 | `tienda.spec.ts` | 7 | Filtro por categoría y su reflejo en la URL, categoría inexistente, detalle, precio a confirmar y temporada, producto a medida por WhatsApp, producto oculto (404) |
 | `menu-mobile.spec.ts` | 5 | Menú mobile: abrir, navegar y cerrarse; Escape con el foco de vuelta en el botón; clic afuera ([cómo se hizo](#cómo-se-hizo-el-test-del-menú-mobile)). Página actual: la home regenerada (`/index`) marca Inicio, y las subpáginas marcan su sección ([Bug 4](#bug-4-en-la-home-inicio-no-se-marca-como-página-actual)) |
-| `carrito.spec.ts` | 10 | Carrito en el navegador: agregar con tamaño y sabor (sin sabor no deja), contador accesible del header, editar, recargar y quitar; producto desactivado o con otro precio después de agregarlo; carrito guardado roto; a medida por WhatsApp. Checkout con retiro → mock de MP → "¡Recibimos tu pago!" y carrito vacío; envío desde $ 400.000 con dirección; domingo avisa al elegirlo. Resultado pendiente y rechazado con "Probar de nuevo"; 404 con un id inválido |
-| `pedidos.spec.ts` | 21 | `POST /api/v1/pedidos` y la base: precios de la base aunque el cliente mande otros, preferencia con un ítem por línea, envío (total mínimo y dirección), domingo / fuera de horario / antes de 48 h / más de 30 días, productos inactivos, a medida, fuera de temporada o sin precio, sabor y decoración inválidos, `Origin` ajeno (403), 502 si MP falla, clave publishable sin acceso. Webhook: `pagado` (nunca aceptado), idempotente, monto distinto, pago duplicado, vencido. `aceptar_pedido` / `rechazar_pedido` con admin, sin rol y sin sesión, y la devolución con `marcar_devuelto` |
+| `carrito.spec.ts` | 13 | Carrito en el navegador: agregar con tamaño y sabor (sin sabor no deja), contador accesible del header, editar, recargar y quitar; producto desactivado o con otro precio después de agregarlo; carrito guardado roto; a medida por WhatsApp. Checkout con retiro → mock de MP → "¡Recibimos tu pago!" y carrito vacío; envío desde $ 400.000 con dirección; domingo avisa al elegirlo. Transferencia: aviso de datos de ejemplo, datos de la cuenta, "Copiar" (alias y monto), plazo, WhatsApp con el número y carrito vacío; efectivo → "pagás al retirar"; con envío, el efectivo no aparece. Resultado pendiente y rechazado con "Probar de nuevo"; 404 con un id inválido |
+| `pedidos.spec.ts` | 28 | `POST /api/v1/pedidos` y la base: precios de la base aunque el cliente mande otros, preferencia con un ítem por línea, envío (total mínimo y dirección), domingo / fuera de horario / antes de 48 h / más de 30 días, productos inactivos, a medida, fuera de temporada o sin precio, sabor y decoración inválidos, `Origin` ajeno (403), 502 si MP falla, clave publishable sin acceso. Webhook: `pagado` (nunca aceptado), idempotente, monto distinto, pago duplicado, vencido. `aceptar_pedido` / `rechazar_pedido` con admin, sin rol y sin sesión, y la devolución con `marcar_devuelto`. Medios de pago: transferencia sin MP y con vencimiento a las 24 h, efectivo sin vencimiento, efectivo con envío rechazado por la API (400), por `crear_pedido` (`HB422`) y por el check de la tabla (23514); `marcar_pedido_pagado` (admin, transferencia vencida, vencida y rechazada, MP, sin rol y sin sesión), aceptar según el medio y devolución manual con `marcar_pedido_devuelto` |
 | `carrusel.spec.ts` | 3 | Carrusel de la portada: avance automático y pausa, manejo con teclado, movimiento reducido |
 | `inscripcion.spec.ts` | 3 | Formulario: errores por campo con foco en el primero, envío y paso del pago, workshops de ejemplo sin inscripción |
 | `api.spec.ts` | 24 | API pública `/api/v1`: categorías, productos (filtros y 400), detalle (404), workshops, inscripciones (400, 404, 409, sin sobreventa con pedidos simultáneos), redirecciones 308 de las rutas viejas |
@@ -88,7 +88,7 @@ Playwright corre todo: los e2e con el navegador, los de la API con `request` y l
 | `pagos-unit.spec.ts` | 21 | Firma `x-signature` del webhook, cálculo del monto (redondeo al centavo), preferencia de Checkout Pro (sin `notification_url`), estados de MP, URL del sitio, `.ics`, rate limiter, qué ve quien vuelve de MP |
 | `panel-unit.spec.ts` | 6 | Fecha y hora de Buenos Aires, número de WhatsApp, precios escritos como en Argentina |
 | `temporada.spec.ts` | 5 | Temporada de un producto: rangos dentro del año y cruzando el año, mes de Buenos Aires, texto del rango |
-| `pedidos-unit.spec.ts` | 16 | Pedidos: franjas por día, inicio de la franja en hora de Buenos Aires, 48 h hasta el inicio, máximo 30 días, mínimo del envío; `external_reference` (con prefijo y el formato viejo); preferencia del pedido; qué ve quien vuelve de pagar; esquema del pedido (descarta precios del cliente); carrito guardado (suma de líneas, versión y datos rotos) |
+| `pedidos-unit.spec.ts` | 20 | Pedidos: franjas por día, inicio de la franja en hora de Buenos Aires, 48 h hasta el inicio, máximo 30 días, mínimo del envío; plazo de la transferencia (dd/mm hh:mm); `external_reference` (con prefijo y el formato viejo); preferencia del pedido; qué ve quien vuelve de pagar (también transferencia, vencida o registrada, y efectivo); esquema del pedido (descarta precios del cliente; medio de pago, efectivo solo con retiro); carrito guardado (suma de líneas, versión y datos rotos) |
 
 ### Mock de Mercado Pago
 
@@ -108,7 +108,7 @@ Por eso:
   - productos con `crearProductoDePrueba` y `borrarProductoDePrueba`, o con `crearProductoPorApi` y `borrarProductoPorApi` (`e2e/support/productos.ts`);
   - pedidos por la API pública con `pedir` y un email `e2e-pedido-…@example.com` (`e2e/support/pedidos.ts`). Los borra el teardown, con sus pagos, antes que los productos. Las fechas salen de `turnoValido()`, calculado con las mismas reglas que el checkout, así que los tests no dependen del día en que corren.
 - **Se comprueba lo propio, no totales:** que el producto de prueba aparece o no aparece, nunca cuántos productos hay.
-- **Listados estáticos:** `/tienda` y `/workshops` son estáticas (ISR). Para que algo aparezca en el listado se crea con la API de admin, que revalida la página, y el test la abre con `abrirHastaVer`: con otros tests revalidando en paralelo, puede tardar un momento en verse. Para la API pública, el detalle y la inscripción alcanza con insertarlo en la base.
+- **Listados estáticos:** `/tienda` y `/workshops` son estáticas (ISR). Para que algo aparezca en el listado se crea con la API de admin, que revalida la página, y el test la abre con `abrirHastaVer`: con otros tests revalidando en paralelo, puede tardar un momento en verse. Para lo que tiene que desaparecer (un producto pausado), `abrirHastaNoVer` ([Bug 5](#bug-5-falla-intermitente-un-producto-pausado-seguía-en-tienda)). Para la API pública, el detalle y la inscripción alcanza con insertarlo en la base.
 - **Datos fijos:** las categorías son lo único real que se usa. Salen del seed, Maggie no las edita desde el panel, y una categoría de prueba aparecería en los filtros mientras corren los demás tests.
 - **El teardown** borra al final todo lo `e2e-…` que haya quedado si un test se cortó.
 - **Ids de pago únicos entre workers:** `nuevoPagoId()` lleva el pid del worker. Si dos workers generaran el mismo id, el mock pisaría un pago con otro ([errores.md](errores.md#dos-workers-generaban-el-mismo-id-de-pago)).
@@ -154,6 +154,12 @@ La corrida del 28/10/2026 fue sobre el sitio publicado. Cada resultado dice qui�
 | MP-21 | Checkout: día y horario | Teléfono real (iPhone o Android) | Elegir un domingo; después un sábado; después un día a menos de 48 h | Selector de fecha nativo, sin scroll horizontal. Domingo: aviso al elegirlo y horario deshabilitado. Sábado: solo "9 a 13 h". A menos de 48 h: las franjas que no llegan aparecen deshabilitadas | TODO: correrlo | Sin correr | Parcial (`carrito.spec.ts` el domingo; `pedidos.spec.ts` las reglas en la API) |
 | MP-22 | Checkout: envío | Carrito con menos de $ 400.000; después con más | Mirar la opción "Envío a domicilio" | Con menos: deshabilitada, con "El envío es solo para pedidos desde $ 400.000.". Con más: se puede elegir, pide dirección y localidad y aclara que no tiene cargo | TODO: correrlo | Sin correr | Sí (`carrito.spec.ts`, `pedidos.spec.ts`) |
 | MP-23 | Pedido: pago | Sandbox configurado y migración 0007 corrida | Seguir "Pedido de la tienda" en [pruebas-mercadopago.md](pruebas-mercadopago.md#pedido-de-la-tienda) con `APRO`; después otro con `OTHE` | `APRO`: "¡Recibimos tu pago!", número de pedido, carrito vacío; en Supabase el pedido queda `pagado` (no `aceptado`) y el pago tiene `pedido_id`. `OTHE`: "El pago no se aprobó" y "Probar de nuevo" | TODO: correrlo | Sin correr | Parcial (`carrito.spec.ts`, `pedidos.spec.ts`, con mock) |
+| MP-24 | Checkout: medio de pago | Migración 0008 corrida; carrito con más de $ 400.000 | Elegir Efectivo; después Envío a domicilio; después volver a Retiro | Con envío, Efectivo desaparece, se lee "El efectivo es solo para retiro." y queda elegido Mercado Pago; con retiro, vuelve a aparecer | TODO: correrlo | Sin correr | Sí (`carrito.spec.ts`) |
+| MP-25 | Transferencia: copiar en mobile | Teléfono real (iPhone y Android), sitio con https | Hacer un pedido por transferencia; tocar "Copiar" en el alias, el CBU y el monto; pegar en la app del banco o en notas | Cada "Copiar" deja el dato en el portapapeles y muestra "… copiado."; el monto se pega sin "$" ni puntos. Arriba se ve "Datos de ejemplo: todavía no transfieras." | TODO: correrlo | Sin correr | En parte (`carrito.spec.ts`, en Chromium de escritorio) |
+| MP-26 | Transferencia: accesibilidad | VoiceOver (o NVDA) | En el resultado de una transferencia, ir con Tab a "Copiar" del alias y activarlo | El botón se lee "Copiar alias"; al activarlo se anuncia "Alias copiado." | TODO: correrlo | Sin correr | No |
+| MP-27 | Transferencia: WhatsApp y plazo | Pedido por transferencia recién hecho | Mirar el plazo; tocar "Mandar el comprobante por WhatsApp" | El plazo es 24 h después del pedido, en hora de Buenos Aires (dd/mm hh:mm h). WhatsApp abre con "…comprobante de la transferencia del pedido #N." | TODO: correrlo | Sin correr | En parte (`carrito.spec.ts`: formato del plazo y número en el mensaje) |
+| MP-28 | Transferencia vencida | Un pedido por transferencia con `vence_at` en el pasado (SQL Editor) | Abrir su resultado; después, como admin, `marcar_pedido_pagado` y volver a abrirlo | Primero: "El pedido venció" con "Volver a mi pedido" y WhatsApp. Después de marcarlo: "¡Recibimos tu pago!" | TODO: correrlo | Sin correr | Sí (`pedidos.spec.ts` y `pedidos-unit.spec.ts`) |
+| MP-29 | Efectivo | Migración 0008 corrida | Hacer un pedido con retiro y Efectivo | No pasa por Mercado Pago: "Pedido recibido: pagás al retirar", con día, franja y total; el carrito queda vacío | TODO: correrlo | Sin correr | Sí (`carrito.spec.ts`) |
 
 ## Reporte de bugs
 
@@ -265,6 +271,23 @@ Los bugs 1 a 3 salen de [errores.md](errores.md); el 4, del plan de pruebas manu
 **Causa:** el Header comparaba `pathname === "/"` para "Inicio". Cuando Vercel regenera la home (ISR, `revalidate = 300` y `revalidatePath("/")` desde el panel), `usePathname()` devuelve `"/index"`, así que la comparación daba falso.
 **Solución (PR #20):** `esPaginaActual` (`lib/navegacion.ts`) toma `"/index"` como el inicio y marca las secciones solo en su ruta o sus subpáginas (`/tienda/…`, no `/tiendas`). El Header la usa en los dos menús y `menu-mobile.spec.ts` la prueba con `"/index"`. Falta verificarlo en producción después del deploy.
 
+
+### Bug 5: falla intermitente, un producto pausado seguía en /tienda
+
+- **Entorno:** local, `npm run test:e2e`, rama `feat/carrito` (después del merge del #19)
+- **Severidad:** baja. Para quien visita el sitio, el producto pausado desaparece en la visita siguiente
+- **Prioridad:** alta. Un test intermitente hace que nadie confíe en la suite
+
+**Pasos para reproducir:**
+1. Correr la suite completa.
+2. Falla "pausar lo saca de la tienda y Deshacer lo vuelve a mostrar" (`panel.spec.ts`) de vez en cuando; solo, pasa siempre (37 de 37 con 5 repeticiones).
+
+**Resultado esperado:** después de pausar, `/tienda` no muestra el producto.
+**Resultado obtenido:** a los 5 s, `/tienda` todavía lo mostraba (`toHaveCount(0)` recibió 2).
+
+**Evidencia:** la salida de Playwright (`Expected: 0, Received: 2`).
+**Causa:** la misma que el [Bug 3](#bug-3-falla-intermitente-un-workshop-recién-creado-no-aparecía-en-workshops): `/tienda` es ISR, y una regeneración que empezó antes de pausar puede terminar después.
+**Solución (PR de medios de pago):** `abrirHastaNoVer` (`e2e/support/supabase.ts`), hermano de `abrirHastaVer`, recarga hasta que el producto ya no se ve; después de "Deshacer", `abrirHastaVer` en lugar de un `reload()`.
 ## Depuración
 
 ### Trace Viewer: ver qué pasó en una falla

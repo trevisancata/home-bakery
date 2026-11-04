@@ -15,6 +15,13 @@ El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven 
   - `aceptar_pedido` y `rechazar_pedido` (solo admin).
 
   Ver [Estados de un pedido](#estados-de-un-pedido) y [pagos.md](pagos.md#pedidos-de-la-tienda-migración-0007).
+- [`0008_medios_de_pago.sql`](../supabase/migrations/0008_medios_de_pago.sql): medios de pago de los pedidos.
+  - `pedidos.medio_pago` (`mercadopago`, `transferencia`, `efectivo`), con checks: efectivo solo con retiro, y `vence_at` nulo solo con efectivo.
+  - `pagado_at` / `pagado_por` (pago marcado a mano) y `devolucion_pendiente` / `devuelto_at` / `devuelto_por` (devolución manual).
+  - `crear_pedido` recibe `p_medio_pago`.
+  - `marcar_pedido_pagado` y `marcar_pedido_devuelto` (solo admin); `aceptar_pedido` y `rechazar_pedido` según el medio.
+
+  Ver [Estados por medio de pago](#estados-por-medio-de-pago) y [pagos.md](pagos.md#medios-de-pago-migración-0008).
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -197,6 +204,39 @@ stateDiagram-v2
 - `aceptado → en_preparacion → listo → entregado` los mueve el panel en el PR 2. Hoy no hay función para eso.
 - Un pago aprobado de un pedido `rechazado` o `cancelado`, con otro monto, o un segundo pago del mismo pedido, queda **para devolver** ([pagos.md](pagos.md#pedidos-de-la-tienda-migración-0007)).
 
+### Estados por medio de pago
+
+En los tres medios Maggie tiene que **aceptar** el pedido, y el total es el mismo (sin descuentos).
+
+```mermaid
+stateDiagram-v2
+  state "Mercado Pago" as mp {
+    [*] --> pendiente_pago: vence a los 30 min
+    pendiente_pago --> pagado: confirmar_pago (webhook)
+    pagado --> aceptado: aceptar_pedido
+  }
+  state "Transferencia" as tr {
+    [*] --> pendiente_pago_t: vence a las 24 h
+    pendiente_pago_t --> pagado_t: marcar_pedido_pagado (aunque haya vencido)
+    pagado_t --> aceptado_t: aceptar_pedido
+    pagado_t --> rechazado_t: rechazar_pedido → devolución manual
+  }
+  state "Efectivo (solo retiro)" as ef {
+    [*] --> pendiente_pago_e: no vence
+    pendiente_pago_e --> aceptado_e: aceptar_pedido (sin pago)
+    pendiente_pago_e --> pagado_e: marcar_pedido_pagado
+    pagado_e --> aceptado_e: aceptar_pedido
+    aceptado_e --> aceptado_e: marcar_pedido_pagado (al entregar, no cambia el estado)
+  }
+```
+
+(Los sufijos `_t` y `_e` son solo para el diagrama: los estados se llaman igual en los tres medios.)
+
+- **Vencer no cambia el estado:** un `pendiente_pago` con `vence_at` pasado se lee como vencido, igual que una inscripción. La clienta lo ve vencido y no puede seguir con ese pedido. La admin igual puede registrar una transferencia vencida, porque la plata puede llegar tarde, y después decide si lo acepta.
+- **Mercado Pago no se marca a mano:** `marcar_pedido_pagado` responde `HB409`.
+- **Aceptar:** un pedido `pagado`, o uno en efectivo en `pendiente_pago`. Una transferencia o un MP sin pagar, no.
+- **Rechazar con un pago marcado a mano** (`pagado_at`) deja el pedido con `devolucion_pendiente`. La admin lo cierra con `marcar_pedido_devuelto`. Las devoluciones de MP siguen en `pagos`.
+
 Todas las tablas tienen `created_at` y `updated_at`; un trigger (`set_updated_at`) actualiza `updated_at` en cada cambio.
 
 **Decisiones del esquema:**
@@ -237,6 +277,8 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 | Llamar directo a `crear_pedido` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API) |
 | Ver pedidos | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Aceptar o rechazar un pedido | ✗ | ✗ | ✗ | ✓ | — |
+| Marcar pagado un pedido por transferencia o efectivo (`marcar_pedido_pagado`) | ✗ | ✗ | ✗ | ✓ | — |
+| Marcar devuelto un pedido (`marcar_pedido_devuelto`) | ✗ | ✗ | ✗ | ✓ | — |
 | Llamar directo a `crear_inscripcion` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API, desde la 0004) |
 | Entrar a `/admin` y a `/api/v1/admin` | ✗ (login / 401) | ✗ (403) | ✗ (403) | ✓ | — |
 | Ver lo inactivo | ✗ | ✗ | ✗ | ✓ | ✓ |
@@ -258,7 +300,8 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 - **`lugares_ocupados(workshop_id)`** es `security definer`: anon no puede leer `inscripciones`, así que la vista no podría sumar los lugares ocupados. La función solo devuelve el total de lugares, nunca datos de las personas. Desde la 0003 cuenta las **reservadas** y las **pendientes de seña que no vencieron** (`vence_at > now()`). Una pendiente vencida libera el cupo sola, sin un proceso que la cancele.
 - **`confirmar_pago(tipo, id, pago, estado, monto, moneda, detalle)`** (0007, reemplaza la de 0003/0005) es `security definer` y **solo la ejecuta `service_role`**. Registra el pago de MP de forma idempotente. Si es de una inscripción, reserva si corresponde; si es de un pedido, lo pasa a `pagado`. La firma vieja, solo para inscripciones, queda como envoltorio. Ver [pagos.md](pagos.md#qué-hace-confirmar_pago).
 - **`crear_pedido(…)`** (0007) es `security definer` y solo la ejecuta `service_role`. Valida y recalcula todo el pedido desde la base. Con un error de negocio responde `HB422`, con el campo en el `hint`, y la API lo devuelve como 400 en ese campo.
-- **`aceptar_pedido(id)` / `rechazar_pedido(id, motivo)`** (0007) son `security definer` y chequean `es_admin()` adentro, como `marcar_devuelto`. Bloquean el pedido (`for update`), así un webhook que llega a la vez ve el estado nuevo.
+- **`aceptar_pedido(id)` / `rechazar_pedido(id, motivo)`** (0007, ajustadas en la 0008 según el medio de pago) son `security definer` y chequean `es_admin()` adentro, como `marcar_devuelto`. Bloquean el pedido (`for update`), así un webhook que llega a la vez ve el estado nuevo.
+- **`marcar_pedido_pagado(id)` / `marcar_pedido_devuelto(id)`** (0008): igual, `security definer` con `es_admin()` adentro. Guardan quién y cuándo (`pagado_por`, `devuelto_por`).
 - **`es_admin()`** (0002) es `security definer`, `stable`, con `search_path = ''`. Lee `perfiles` y devuelve si la usuaria actual (`auth.uid()`) es admin. Solo la puede ejecutar `authenticated`.
 - **`cambiar_estado_inscripcion(id, estado)`** (0002) es `security invoker`: corre con el RLS de la admin. Bloquea la inscripción y el workshop (como `crear_inscripcion`) y, si una cancelada vuelve a estar activa y ya no hay lugar, falla con `HB409`. Así el panel no puede sobrevender.
 - **`reemplazar_tamanos(producto_id, tamanos)`** (0002) es `security invoker`. Borra los tamaños de un producto e inserta los nuevos en una sola transacción: si algo falla, quedan los de antes.

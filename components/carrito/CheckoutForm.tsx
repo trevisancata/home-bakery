@@ -6,7 +6,7 @@ import { flushSync } from "react-dom";
 import { Button } from "@/components/Button";
 import { useCarrito } from "@/components/carrito/CarritoProvider";
 import { disponible, useRevision } from "@/components/carrito/useRevision";
-import { pages, pedidos, whatsappLink, whatsappMessages } from "@/data/site";
+import { pages, pedidos, whatsappLink, whatsappMessages, type MedioPago } from "@/data/site";
 import { claveLinea, totalCarrito } from "@/lib/carrito/lineas";
 import { formatPrice } from "@/lib/format";
 import {
@@ -27,6 +27,7 @@ type Values = {
   email: string;
   phone: string;
   delivery: "retiro" | "envio";
+  payment: MedioPago;
   address: string;
   locality: string;
   date: string;
@@ -41,6 +42,7 @@ const initialValues: Values = {
   email: "",
   phone: "",
   delivery: "retiro",
+  payment: "mercadopago",
   address: "",
   locality: "",
   date: "",
@@ -49,7 +51,19 @@ const initialValues: Values = {
 };
 
 /** Orden de los campos en pantalla: el foco va al primero con error. */
-const fieldOrder: PedidoField[] = ["items", "name", "email", "phone", "delivery", "address", "locality", "date", "slot", "notes"];
+const fieldOrder: PedidoField[] = [
+  "items",
+  "name",
+  "email",
+  "phone",
+  "delivery",
+  "address",
+  "locality",
+  "payment",
+  "date",
+  "slot",
+  "notes",
+];
 
 const ids: Record<PedidoField, string> = {
   items: "pedido-items",
@@ -57,6 +71,7 @@ const ids: Record<PedidoField, string> = {
   email: "pedido-email",
   phone: "pedido-telefono",
   delivery: "pedido-entrega",
+  payment: "pedido-medio-pago",
   address: "pedido-direccion",
   locality: "pedido-localidad",
   date: "pedido-fecha",
@@ -68,13 +83,14 @@ const inputClasses =
   "h-12 rounded-xl border bg-white px-3.5 text-15 font-normal text-carbon placeholder:text-secundario aria-invalid:border-error aria-invalid:border-2";
 
 /**
- * Checkout del pedido: datos, entrega, día y horario, notas y resumen. Valida
- * con el mismo esquema que la API (lib/validation/pedido.ts) más la
- * anticipación y el mínimo del envío, que dependen del carrito. Si sale
- * bien, va a Mercado Pago. Pagar no confirma el pedido: lo confirma Maggie.
+ * Checkout del pedido: datos, entrega, medio de pago, día y horario, notas y
+ * resumen. Valida con el mismo esquema que la API (lib/validation/pedido.ts)
+ * más la anticipación y el mínimo del envío, que dependen del carrito. Si
+ * sale bien, va a Mercado Pago o, con transferencia o efectivo, a la página
+ * del pedido. Pagar no confirma el pedido: lo confirma Maggie.
  */
 export function CheckoutForm() {
-  const { lines, ready } = useCarrito();
+  const { lines, ready, clear } = useCarrito();
   const revision = useRevision();
   const [values, setValues] = useState<Values>(initialValues);
   const [errors, setErrors] = useState<PedidoFieldErrors>({});
@@ -113,6 +129,11 @@ export function CheckoutForm() {
   const maxDate = fechaMaxima();
   const franjas = values.date ? franjasDelDia(values.date) : [];
   const libres = values.date ? franjasDisponibles(values.date, horas) : [];
+  // Con envío, el efectivo no aparece.
+  const medios = (Object.keys(pedidos.mediosPago) as MedioPago[]).filter(
+    (medio) => !(medio === "efectivo" && values.delivery === "envio"),
+  );
+  const expires = content.expires[values.payment];
 
   function payload(next: Values = values) {
     return {
@@ -148,6 +169,8 @@ export function CheckoutForm() {
 
   function update<K extends keyof Values>(field: K, value: Values[K]) {
     const next = { ...values, [field]: value };
+    // El efectivo es solo con retiro: al elegir envío, vuelve a Mercado Pago.
+    if (field === "delivery" && value === "envio" && next.payment === "efectivo") next.payment = "mercadopago";
     // Al cambiar el día, si la franja elegida ya no existe ese día, se borra.
     if (field === "date" && !(franjasDelDia(String(value)) as readonly string[]).includes(next.slot)) next.slot = "";
     setValues(next);
@@ -189,8 +212,11 @@ export function CheckoutForm() {
       return;
     }
 
-    // La API responde { data: { id, numero, initPoint } } o { error: { message, fields? } }.
-    const { data, error }: { data?: { initPoint?: string }; error?: { message?: string; fields?: PedidoFieldErrors } } =
+    // La API responde { data: { id, numero, initPoint, resultUrl } } o { error: { message, fields? } }.
+    const {
+      data,
+      error,
+    }: { data?: { initPoint?: string | null; resultUrl?: string }; error?: { message?: string; fields?: PedidoFieldErrors } } =
       await response.json().catch(() => ({}));
 
     if (response.status === 201 && data?.initPoint) {
@@ -198,6 +224,15 @@ export function CheckoutForm() {
       setRedirecting(true);
       setStatus({ kind: "idle" });
       window.location.assign(data.initPoint);
+      return;
+    }
+
+    if (response.status === 201 && data?.resultUrl) {
+      // Transferencia o efectivo: el pedido ya está hecho, el carrito se vacía ahora.
+      setRedirecting(true);
+      setStatus({ kind: "idle" });
+      clear();
+      window.location.assign(data.resultUrl);
       return;
     }
 
@@ -432,6 +467,47 @@ export function CheckoutForm() {
           )}
         </fieldset>
 
+        <fieldset
+          aria-describedby={[errors.payment && `${ids.payment}-error`, values.delivery === "envio" && "pedido-efectivo-ayuda"]
+            .filter(Boolean)
+            .join(" ") || undefined}
+          className="flex flex-col gap-3"
+        >
+          <legend className={legend}>{content.payment.title}</legend>
+          {medios.map((medio, index) => (
+            <label
+              key={medio}
+              className="flex cursor-pointer gap-3 rounded-xl border border-borde-control px-4 py-3 has-checked:border-chocolate has-checked:bg-arena"
+            >
+              <input
+                // El id (y el foco de un error) van en la primera opción, como en entrega.
+                {...(index === 0 ? a11y("payment") : {})}
+                type="radio"
+                name="medio-pago"
+                value={medio}
+                checked={values.payment === medio}
+                onChange={() => update("payment", medio)}
+                className="mt-1 size-4 accent-chocolate"
+              />
+              <span className="flex flex-col gap-0.5">
+                <span className="font-semibold">{pedidos.mediosPago[medio].label}</span>
+                <span className="text-14 text-secundario">{pedidos.mediosPago[medio].help}</span>
+              </span>
+            </label>
+          ))}
+          {values.delivery === "envio" && (
+            <p id="pedido-efectivo-ayuda" className="text-14 text-secundario">
+              {content.payment.cashShippingNote}
+            </p>
+          )}
+          {values.payment === "transferencia" && pedidos.mediosPago.transferencia.deEjemplo && (
+            <p role="note" className="rounded-xl bg-error-fondo px-4 py-3 font-semibold text-error">
+              {content.payment.sampleData}
+            </p>
+          )}
+          {errorMessage("payment")}
+        </fieldset>
+
         <fieldset className="flex flex-col gap-4">
           <legend className={legend}>{content.when.title}</legend>
           <p id="pedido-horarios" className="text-14 leading-parrafo text-secundario">
@@ -498,8 +574,8 @@ export function CheckoutForm() {
           <h2 id="pedido-confirma" className="text-19 font-semibold">
             {content.confirmNotice.title}
           </h2>
-          <p className="leading-parrafo">{content.confirmNotice.text}</p>
-          <p className="text-14 text-secundario">{content.expires}</p>
+          <p className="leading-parrafo">{content.confirmNotice.text[values.payment]}</p>
+          {expires && <p className="text-14 text-secundario">{expires}</p>}
         </section>
 
         {status.kind === "error" && (
@@ -515,7 +591,7 @@ export function CheckoutForm() {
 
         <div className="flex flex-col gap-3">
           <Button type="submit" size="lg" disabled={sending || hayNoDisponibles} className="sm:self-start">
-            {sending ? content.sending : content.submit}
+            {sending ? content.sending[values.payment] : content.submit[values.payment]}
           </Button>
           <p className="text-14 text-secundario">
             {content.help.text}{" "}

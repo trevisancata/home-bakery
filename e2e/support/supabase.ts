@@ -121,6 +121,14 @@ export async function abrirHastaVer(page: Page, url: string, locator: (page: Pag
   }).toPass({ timeout: 20_000 });
 }
 
+/** Lo contrario de abrirHastaVer: recarga hasta que lo que sacó el test (pausado, borrado) ya no se ve. */
+export async function abrirHastaNoVer(page: Page, url: string, locator: (page: Page) => Locator) {
+  await expect(async () => {
+    await page.goto(url);
+    await expect(locator(page)).toHaveCount(0, { timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
+}
+
 /** Cuántos lugares ocupan las inscripciones de un workshop. */
 export async function lugaresOcupados(workshopId: string) {
   const { data, error } = await admin()

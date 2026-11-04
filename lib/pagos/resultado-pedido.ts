@@ -25,7 +25,10 @@ type Row = {
   entrega: "retiro" | "envio";
   fecha: string;
   franja: string;
-  vence_at: string;
+  medio_pago: "mercadopago" | "transferencia" | "efectivo";
+  vence_at: string | null;
+  pagado_at: string | null;
+  devolucion_pendiente: boolean;
   mp_init_point: string | null;
   pagos: { estado: string; devolucion_pendiente: boolean; created_at: string }[];
 };
@@ -33,7 +36,9 @@ type Row = {
 async function leer(id: string): Promise<ResultadoPedido | null> {
   const { data, error } = await createAdminClient()
     .from("pedidos")
-    .select("id, numero, estado, total, entrega, fecha, franja, vence_at, mp_init_point, pagos (estado, devolucion_pendiente, created_at)")
+    .select(
+      "id, numero, estado, total, entrega, fecha, franja, medio_pago, vence_at, pagado_at, devolucion_pendiente, mp_init_point, pagos (estado, devolucion_pendiente, created_at)",
+    )
     .eq("id", id)
     // Next memoiza los fetch GET iguales dentro de un render: sin esto, la
     // segunda lectura (después de conciliar) devolvería la primera.
@@ -49,7 +54,10 @@ async function leer(id: string): Promise<ResultadoPedido | null> {
     entrega: data.entrega,
     fecha: data.fecha,
     franja: data.franja,
+    medioPago: data.medio_pago,
     venceAt: data.vence_at,
+    pagadoAt: data.pagado_at,
+    devolucionPendiente: data.devolucion_pendiente,
     initPoint: data.mp_init_point,
     pagos: data.pagos.map((pago) => ({
       estado: pago.estado,
@@ -60,12 +68,13 @@ async function leer(id: string): Promise<ResultadoPedido | null> {
 }
 
 /**
- * Estado real del pedido. Si sigue pendiente de pago, primero concilia con
- * Mercado Pago (por si el webhook no llegó o llega tarde) y vuelve a leer.
+ * Estado real del pedido. Si se paga con Mercado Pago y sigue pendiente,
+ * primero concilia con MP (por si el webhook no llegó o llega tarde) y
+ * vuelve a leer. Transferencia y efectivo los registra la admin a mano.
  */
 export async function resultadoPedido(id: string) {
   const pedido = await leer(id);
-  if (!pedido || pedido.estado !== "pendiente_pago") return pedido;
+  if (!pedido || pedido.estado !== "pendiente_pago" || pedido.medioPago !== "mercadopago") return pedido;
   try {
     await conciliarPedido(id);
   } catch (error) {

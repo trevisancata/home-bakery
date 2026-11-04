@@ -1,13 +1,13 @@
 import { BadGatewayError, BadRequestError, ForbiddenError, fromDbError, TooManyRequestsError } from "@/lib/admin/errors";
 import { ok, readJson, sameOrigin, withApi } from "@/lib/api";
 import { crearPreferencia } from "@/lib/mercadopago";
-import { armarPreferenciaPedido } from "@/lib/pagos/preferencia";
+import { armarPreferenciaPedido, rutaResultadoPedido } from "@/lib/pagos/preferencia";
 import { clientIp, pedidosLimiter } from "@/lib/rate-limit";
 import { siteUrl } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pedidoSchema } from "@/lib/validation/pedido";
 
-type PedidoCreado = { pedido_id: string; numero: number; total: number | string; vence_at: string };
+type PedidoCreado = { pedido_id: string; numero: number; total: number | string; vence_at: string | null };
 
 type ItemRow = {
   producto_id: string | null;
@@ -19,11 +19,12 @@ type ItemRow = {
 };
 
 /** Campos que crear_pedido puede marcar en el "hint" de un HB422. */
-const camposDeLaBase = new Set(["items", "date", "slot", "delivery"]);
+const camposDeLaBase = new Set(["items", "date", "slot", "delivery", "payment"]);
 
 /**
- * POST /api/v1/pedidos: crea el pedido de la tienda y la preferencia de pago
- * en Mercado Pago (el total).
+ * POST /api/v1/pedidos: crea el pedido de la tienda y, si se paga con
+ * Mercado Pago, la preferencia de pago (el total). Con transferencia o
+ * efectivo no hay preferencia: la página de resultado muestra cómo pagar.
  *
  * 1. Solo desde este sitio (Origin), con el esquema del checkout y el rate limit.
  * 2. crear_pedido (Supabase, solo service_role) valida productos, tamaños,
@@ -33,7 +34,7 @@ const camposDeLaBase = new Set(["items", "date", "slot", "delivery"]);
  *
  * Pagar no confirma el pedido: queda "pagado" hasta que Maggie lo acepta.
  *
- * 201 { data: { id, numero, initPoint } } · 400 { error: { message, fields } } ·
+ * 201 { data: { id, numero, initPoint, resultUrl } } (initPoint es null sin Mercado Pago) · 400 { error: { message, fields } } ·
  * 403 si viene de otro sitio · 429 · 502 si falla MP · 500
  */
 export const POST = withApi("Error al guardar el pedido", async (request) => {
@@ -63,6 +64,7 @@ export const POST = withApi("Error al guardar el pedido", async (request) => {
       p_fecha: pedido.date,
       p_franja: pedido.slot,
       p_notas: pedido.notes ?? null,
+      p_medio_pago: pedido.payment,
       p_items: pedido.items.map((item) => ({
         producto_id: item.productId,
         tamano_id: item.sizeId,
@@ -83,6 +85,11 @@ export const POST = withApi("Error al guardar el pedido", async (request) => {
 
   const id = data.pedido_id;
   const numero = Number(data.numero);
+  const resultUrl = rutaResultadoPedido(id);
+
+  if (pedido.payment !== "mercadopago") {
+    return ok({ id, numero, initPoint: null, resultUrl }, { status: 201, cache: false });
+  }
 
   let preferencia: { id: string; initPoint: string };
   try {
@@ -94,7 +101,8 @@ export const POST = withApi("Error al guardar el pedido", async (request) => {
     if (items.error) throw Object.assign(new Error("No se pudieron leer los ítems"), { code: items.error.code });
     preferencia = await crearPreferencia(
       armarPreferenciaPedido({
-        pedido: { id, numero, email: pedido.email, venceAt: data.vence_at },
+        // Con Mercado Pago, crear_pedido siempre devuelve vence_at.
+        pedido: { id, numero, email: pedido.email, venceAt: data.vence_at! },
         items: (items.data as ItemRow[]).map((item) => ({
           productoId: item.producto_id,
           nombre: item.nombre,
@@ -121,5 +129,5 @@ export const POST = withApi("Error al guardar el pedido", async (request) => {
     .eq("id", id);
   if (updateError) console.error(`No se pudo guardar la preferencia del pedido (${updateError.code})`);
 
-  return ok({ id, numero, initPoint: preferencia.initPoint }, { status: 201, cache: false });
+  return ok({ id, numero, initPoint: preferencia.initPoint, resultUrl }, { status: 201, cache: false });
 });

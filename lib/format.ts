@@ -75,3 +75,17 @@ export function formatMonth(isoDate: string) {
 export function formatTime(isoDate: string) {
   return `${timeFormatter.format(new Date(isoDate))} h`;
 }
+
+const shortDateFormatter = new Intl.DateTimeFormat("es-AR", {
+  day: "2-digit",
+  month: "2-digit",
+  timeZone: "America/Argentina/Buenos_Aires",
+});
+
+/** Ej.: "05/11 14:30 h" (hora de Buenos Aires). */
+export function formatShortDateTime(isoDate: string) {
+  // es-AR no rellena el día con cero aunque se pida "2-digit": se arma a mano.
+  const parts = shortDateFormatter.formatToParts(new Date(isoDate));
+  const part = (type: "day" | "month") => (parts.find((p) => p.type === type)?.value ?? "").padStart(2, "0");
+  return `${part("day")}/${part("month")} ${formatTime(isoDate)}`;
+}
