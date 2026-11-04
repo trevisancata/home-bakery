@@ -6,14 +6,15 @@ import {
   itemsDe,
   leerPedido,
   pagosDePedido,
+  pedidoEn,
   pedir,
+  sesionDe,
   tamanosDe,
   turnoValido,
   vencerPedido,
 } from "./support/pedidos";
 import { borrarProductoDePrueba, crearProductoDePrueba, type TestProducto } from "./support/productos";
 import { admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
-import { testUser } from "./support/usuarios";
 import { diaDeSemana, fechaBA, franjasDelDia, sumarDias } from "../lib/pedidos/reglas";
 
 // Pedidos de la tienda contra Supabase y el mock de Mercado Pago. Cada test
@@ -61,13 +62,8 @@ function antesDe48h() {
 const publica = () =>
   createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, { auth: { persistSession: false } });
 
-/** Cliente con la sesión de una usuaria de prueba (para aceptar_pedido / rechazar_pedido). */
-async function sesion(kind: "admin" | "sinRol") {
-  const client = publica();
-  const { error } = await client.auth.signInWithPassword(testUser(kind));
-  if (error) throw new Error(`No se pudo ingresar con la usuaria de prueba (${error.code})`);
-  return client;
-}
+/** Cliente con la sesión de una usuaria de prueba (una por worker, ver sesionDe). */
+const sesion = sesionDe;
 
 /** Un pedido pagado por el webhook (approved por el total). */
 async function pagado(request: Parameters<typeof pedir>[0], producto: Producto) {
@@ -471,5 +467,79 @@ conProducto.describe("Medios de pago", () => {
     expect(await leerPedido(body.data.id)).toMatchObject({ devolucion_pendiente: false, devuelto_at: expect.any(String) });
     // Ya devuelta, no se puede marcar otra vez.
     expect((await client.rpc("marcar_pedido_devuelto", { p_id: body.data.id })).error?.code).toBe("HB404");
+  });
+});
+
+conProducto.describe("Avanzar y cancelar (base, migración 0009)", () => {
+  const item = (producto: Producto) => [{ productId: producto.id, sizeId: producto.chico, flavor: "Limón", quantity: 1 }];
+
+  conProducto("avanza de a un paso hasta entregado y guarda cuándo", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { id } = await pedidoEn(request, item(producto), { etapa: "aceptado" });
+    for (const estado of ["en_preparacion", "listo", "entregado"]) {
+      expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: estado })).error).toBeNull();
+    }
+    const { data } = await admin().from("pedidos").select("estado, en_preparacion_at, listo_at, entregado_at").eq("id", id).single();
+    expect(data).toMatchObject({ estado: "entregado", en_preparacion_at: expect.any(String), listo_at: expect.any(String), entregado_at: expect.any(String) });
+  });
+
+  conProducto("no se puede saltear, volver atrás ni avanzar sin aceptar", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { id: pagado } = await pedidoEn(request, item(producto), { etapa: "pagado" });
+    expect((await client.rpc("avanzar_pedido", { p_id: pagado, p_estado: "en_preparacion" })).error?.code).toBe("HB409");
+
+    const { id } = await pedidoEn(request, item(producto), { etapa: "aceptado" });
+    expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: "listo" })).error?.code).toBe("HB409");
+    expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: "en_preparacion" })).error).toBeNull();
+    expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: "en_preparacion" })).error?.code).toBe("HB409");
+    expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: "aceptado" })).error?.code).toBe("22023");
+    expect((await leerPedido(id)).estado).toBe("en_preparacion");
+  });
+
+  conProducto("efectivo: entregarlo sin cobrar pide marcar el cobro en el mismo paso", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { id } = await pedidoEn(request, item(producto), { medio: "efectivo", etapa: "listo" });
+    expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: "entregado" })).error?.code).toBe("HB409");
+    expect((await leerPedido(id)).estado).toBe("listo");
+    expect((await client.rpc("avanzar_pedido", { p_id: id, p_estado: "entregado", p_cobrado: true })).error).toBeNull();
+    expect(await leerPedido(id)).toMatchObject({ estado: "entregado", pagado_at: expect.any(String) });
+  });
+
+  conProducto("cancelar desde aceptado, en preparación y listo, con motivo", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    for (const etapa of ["aceptado", "en_preparacion", "listo"] as const) {
+      const { id } = await pedidoEn(request, item(producto), { medio: "efectivo", etapa });
+      expect((await client.rpc("cancelar_pedido", { p_id: id, p_motivo: "La clienta no puede" })).error).toBeNull();
+      const { data } = await admin().from("pedidos").select("estado, motivo_cancelacion, cancelado_at, devolucion_pendiente").eq("id", id).single();
+      // Efectivo sin cobrar: no hay nada para devolver.
+      expect(data).toMatchObject({ estado: "cancelado", motivo_cancelacion: "La clienta no puede", cancelado_at: expect.any(String), devolucion_pendiente: false });
+    }
+  });
+
+  conProducto("cancelar uno pagado lo deja para devolver (MP en pagos, transferencia en el pedido)", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const mp = await pedidoEn(request, item(producto), { etapa: "aceptado" });
+    expect((await client.rpc("cancelar_pedido", { p_id: mp.id, p_motivo: "Se me complicó" })).error).toBeNull();
+    expect(await pagosDePedido(mp.id)).toEqual([
+      expect.objectContaining({ mp_payment_id: mp.pagoId, devolucion_pendiente: true, motivo_devolucion: "pedido_cancelado" }),
+    ]);
+
+    const transferencia = await pedidoEn(request, item(producto), { medio: "transferencia", etapa: "en_preparacion" });
+    expect((await client.rpc("cancelar_pedido", { p_id: transferencia.id, p_motivo: "Se me complicó" })).error).toBeNull();
+    expect(await leerPedido(transferencia.id)).toMatchObject({ estado: "cancelado", devolucion_pendiente: true });
+  });
+
+  conProducto("entregado no se cancela; sin motivo, no; sin rol o sin sesión, no", async ({ request, producto }) => {
+    const client = await sesion("admin");
+    const { id: entregado } = await pedidoEn(request, item(producto), { etapa: "entregado" });
+    expect((await client.rpc("cancelar_pedido", { p_id: entregado, p_motivo: "Prueba" })).error?.code).toBe("HB409");
+
+    const { id } = await pedidoEn(request, item(producto), { etapa: "aceptado" });
+    expect((await client.rpc("cancelar_pedido", { p_id: id, p_motivo: "  " })).error?.code).toBe("22023");
+    for (const otro of [await sesion("sinRol"), publica()]) {
+      expect((await otro.rpc("cancelar_pedido", { p_id: id, p_motivo: "Prueba" })).error?.code).toBe("42501");
+      expect((await otro.rpc("avanzar_pedido", { p_id: id, p_estado: "en_preparacion" })).error?.code).toBe("42501");
+    }
+    expect((await leerPedido(id)).estado).toBe("aceptado");
   });
 });
