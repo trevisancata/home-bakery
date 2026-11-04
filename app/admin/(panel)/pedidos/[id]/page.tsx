@@ -10,6 +10,7 @@ import { NotFoundError } from "@/lib/admin/errors";
 import { leerPedido } from "@/lib/admin/pedidos";
 import { avisoWhatsApp, cuando, entregaDe, estadoDelPago, historial, vencido } from "@/lib/admin/pedidos-panel";
 import { requireAdminPage } from "@/lib/auth";
+import { etiquetaVisible } from "@/lib/tamano";
 import { formatDay, formatPrice, formatTime } from "@/lib/format";
 import { waLink } from "@/lib/whatsapp-numero";
 
@@ -75,7 +76,7 @@ export default async function PedidoPage({ params }: PageProps<"/admin/pedidos/[
                     <strong>
                       {item.cantidad} × {item.nombre}
                     </strong>
-                    <span className="text-14 text-secundario">{[item.tamano, item.sabor, item.decoracion].filter(Boolean).join(" · ")}</span>
+                    <span className="text-14 text-secundario">{[etiquetaVisible(item.tamano), item.sabor, item.decoracion].filter(Boolean).join(" · ")}</span>
                     <span className="text-13 text-secundario">
                       {d.columns.price}: {formatPrice(item.precioUnitario)}
                     </span>

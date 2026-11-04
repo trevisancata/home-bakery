@@ -54,7 +54,7 @@ export function useRevision(): Revision {
         const productos = new Map(data.map((producto) => [producto.id, producto]));
         const lineas: Record<string, EstadoLinea> = {};
         for (const linea of lines) lineas[claveLinea(linea)] = revisar(linea, productos);
-        // Precio y anticipación actualizados en lo guardado (el aviso queda en
+        // Precio, anticipación y cantidad de tamaños actualizados en lo guardado (el aviso queda en
         // pantalla). Sobre el carrito de ahora: si mientras tanto cambió, manda ese.
         update((actuales) =>
           actuales.map((linea) => {
@@ -65,6 +65,7 @@ export function useRevision(): Revision {
               ...linea,
               unitPrice: estado.tipo === "precio" ? estado.ahora : linea.unitPrice,
               leadTimeHours: producto.leadTimeHours,
+              sizeCount: producto.sizes.length,
             };
           }),
         );

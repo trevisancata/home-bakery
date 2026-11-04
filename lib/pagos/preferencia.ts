@@ -66,7 +66,7 @@ export function armarPreferencia({ inscripcion, workshop, baseUrl }: DatosPrefer
 export type DatosPreferenciaPedido = {
   pedido: { id: string; numero: number; email: string; venceAt: string };
   /** Los ítems con el precio que guardó la base (pedido_items). */
-  items: { productoId: string | null; nombre: string; tamano: string; sabor: string | null; cantidad: number; precioUnitario: number }[];
+  items: { productoId: string | null; nombre: string; tamano: string | null; sabor: string | null; cantidad: number; precioUnitario: number }[];
   baseUrl: string;
 };
 

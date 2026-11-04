@@ -9,6 +9,7 @@ import { AgregarAlPedido } from "@/components/tienda/AgregarAlPedido";
 import { pages, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { etiquetaVisible, tamanoUnico } from "@/lib/tamano";
 import { seasonRange } from "@/lib/temporada";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -46,6 +47,8 @@ export default async function ProductPage({ params }: Props) {
   const range = product.season ? seasonRange(product.season) : null;
   // Se puede pedir desde acá: en temporada, no a medida y con algún tamaño con precio.
   const orderable = !product.custom && product.inSeason && product.sizes.some((size) => size.price !== null);
+  // Un solo tamaño: el precio va junto al título y no se muestra "Único".
+  const precioUnico = tamanoUnico(product.sizes) ? product.sizes[0].price : null;
   const details = [
     { term: text.details.measure, value: product.measure },
     { term: text.details.servings, value: product.servings },
@@ -109,11 +112,16 @@ export default async function ProductPage({ params }: Props) {
           <div className="flex flex-col gap-3">
             <Eyebrow>{product.category.name}</Eyebrow>
             <h1 className="text-44 leading-titulo lg:text-56">{product.name}</h1>
+            {precioUnico !== null && (
+              <p data-testid="precio-unico" className="text-26 font-semibold lg:text-30">
+                {formatPrice(precioUnico)}
+              </p>
+            )}
             {product.description && <p className="text-17 leading-parrafo lg:text-18">{product.description}</p>}
           </div>
 
           {/* Si se puede pedir, los tamaños con su precio se eligen en el formulario de abajo. */}
-          {!orderable && (
+          {!orderable && precioUnico === null && (
             <section aria-labelledby="tamanos-titulo" className="flex flex-col gap-2">
               <h2 id="tamanos-titulo" className="font-label text-14 tracking-eyebrow text-chocolate uppercase">
                 {text.sizes}
@@ -121,7 +129,7 @@ export default async function ProductPage({ params }: Props) {
               <ul className="flex flex-col divide-y divide-borde border-y border-borde">
                 {product.sizes.map((size) => (
                   <li key={size.label} className="flex justify-between gap-4 py-3 text-16">
-                    <span>{size.label}</span>
+                    <span>{etiquetaVisible(size.label, product.sizes.length) ?? text.price}</span>
                     <span className={`shrink-0 font-semibold ${size.price === null ? "text-secundario" : ""}`}>
                       {size.price === null ? ui.priceTbd : formatPrice(size.price)}
                     </span>

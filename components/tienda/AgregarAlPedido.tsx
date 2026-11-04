@@ -8,6 +8,7 @@ import { useCarrito } from "@/components/carrito/CarritoProvider";
 import { pages, ui } from "@/data/site";
 import type { Product } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { tamanoUnico } from "@/lib/tamano";
 
 const text = pages.tienda.product.order;
 
@@ -18,7 +19,9 @@ const selectClasses =
  * Elegir tamaño, sabor y decoración y sumarlo al carrito. Solo para
  * productos que se pueden pedir (activos, en temporada, no a medida, con
  * algún tamaño con precio): el detalle decide antes cuándo mostrarlo. Los
- * tamaños "Precio a confirmar" se ven pero no se pueden elegir.
+ * tamaños "Precio a confirmar" se ven pero no se pueden elegir. Con un solo
+ * tamaño no hay nada que elegir: no se muestra el selector (el precio está
+ * junto al título y en el botón).
  */
 export function AgregarAlPedido({ product }: { product: Product }) {
   const { add, announce } = useCarrito();
@@ -33,6 +36,7 @@ export function AgregarAlPedido({ product }: { product: Product }) {
 
   const size = conPrecio.find((s) => s.id === sizeId);
   const hasFlavors = product.flavors.length > 0;
+  const unico = tamanoUnico(product.sizes);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,6 +53,7 @@ export function AgregarAlPedido({ product }: { product: Product }) {
       sizeId: size.id,
       name: product.name,
       sizeLabel: size.label,
+      sizeCount: product.sizes.length,
       flavor: flavor || null,
       decoration: decoration || null,
       quantity,
@@ -67,32 +72,34 @@ export function AgregarAlPedido({ product }: { product: Product }) {
         {text.label}
       </h2>
 
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 font-semibold">{text.size}</legend>
-        {product.sizes.map((s) => (
-          <label
-            key={s.id}
-            className={`flex min-h-11 items-center justify-between gap-4 rounded-xl border px-3.5 py-2 ${
-              s.price === null ? "border-borde text-secundario" : "cursor-pointer border-borde-control has-checked:border-chocolate has-checked:bg-arena"
-            }`}
-          >
-            <span className="flex items-center gap-3">
-              <input
-                type="radio"
-                name={`${id}-tamano`}
-                value={s.id}
-                checked={sizeId === s.id}
-                disabled={s.price === null}
-                onChange={() => setSizeId(s.id)}
-                className="size-4 accent-chocolate"
-              />
-              {s.label}
-            </span>
-            <span className="font-semibold">{s.price === null ? ui.priceTbd : formatPrice(s.price)}</span>
-          </label>
-        ))}
-        {product.sizes.some((s) => s.price === null) && <p className="text-13 text-secundario">{text.priceTbdNote}</p>}
-      </fieldset>
+      {!unico && (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-2 font-semibold">{text.size}</legend>
+          {product.sizes.map((s) => (
+            <label
+              key={s.id}
+              className={`flex min-h-11 items-center justify-between gap-4 rounded-xl border px-3.5 py-2 ${
+                s.price === null ? "border-borde text-secundario" : "cursor-pointer border-borde-control has-checked:border-chocolate has-checked:bg-arena"
+              }`}
+            >
+              <span className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  name={`${id}-tamano`}
+                  value={s.id}
+                  checked={sizeId === s.id}
+                  disabled={s.price === null}
+                  onChange={() => setSizeId(s.id)}
+                  className="size-4 accent-chocolate"
+                />
+                {s.label}
+              </span>
+              <span className="font-semibold">{s.price === null ? ui.priceTbd : formatPrice(s.price)}</span>
+            </label>
+          ))}
+          {product.sizes.some((s) => s.price === null) && <p className="text-13 text-secundario">{text.priceTbdNote}</p>}
+        </fieldset>
+      )}
 
       {hasFlavors && (
         <div className="flex flex-col gap-1.5">
