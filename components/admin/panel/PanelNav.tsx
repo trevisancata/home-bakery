@@ -54,13 +54,6 @@ export function PanelNav({ nombre }: { nombre: string }) {
               </Link>
             );
           })}
-          <span aria-disabled="true" className="flex min-h-12 items-center gap-3 rounded-xl px-4 text-15 text-crema-suave">
-            <Icono nombre="pedidos" />
-            <span className="flex flex-col">
-              {content.orders.label}
-              <span className="text-12">{content.orders.note}</span>
-            </span>
-          </span>
         </nav>
         <div className="mt-auto flex flex-col gap-1">
           <a
@@ -106,10 +99,6 @@ export function PanelNav({ nombre }: { nombre: string }) {
               {content.viewSite}
               <span className="sr-only">{content.viewSiteContext}</span>
             </a>
-            <span aria-disabled="true" className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-15 text-secundario">
-              <Icono nombre="pedidos" />
-              {content.orders.label} · {content.orders.note}
-            </span>
             <form action={cerrarSesion}>
               <button type="submit" className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-15 text-carbon hover:bg-arena">
                 <Icono nombre="usuaria" />
@@ -123,7 +112,7 @@ export function PanelNav({ nombre }: { nombre: string }) {
       {/* Mobile: abajo, las secciones */}
       <nav
         aria-label={content.navLabel}
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-borde bg-white px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-borde bg-white px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
       >
         {content.nav.map((item) => {
           const actual = activo(pathname, item.href);
