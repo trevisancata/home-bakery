@@ -5,6 +5,7 @@ import { armarPreferenciaPedido } from "../lib/pagos/preferencia";
 import { leerReferencia, referenciaInscripcion, referenciaPedido } from "../lib/pagos/referencia";
 import { vistaPedido } from "../lib/pagos/vista";
 import { formatShortDateTime } from "../lib/format";
+import { etiquetaVisible, mostrarTamano, tamanoUnico } from "../lib/tamano";
 import { agruparPorDia, avisoWhatsApp, estadoDelPago, historial, type PedidoPanel, pestanaDe, porPestana } from "../lib/admin/pedidos-panel";
 import {
   diaDeSemana,
@@ -350,5 +351,32 @@ test.describe("Panel de pedidos", () => {
     expect(texto(pedido({ estado: "rechazado", motivoRechazo: "no llego con la fecha" }))).toContain("no llego con la fecha");
     expect(texto(pedido({ estado: "cancelado", motivoCancelacion: "se me complicó" }))).toContain("se me complicó");
     expect(avisoWhatsApp(pedido({ estado: "pagado" }))).toBeNull();
+  });
+});
+
+test.describe("Tamaño único", () => {
+  test("se muestra solo si el producto tiene más de un tamaño", () => {
+    expect(mostrarTamano("Grande", 2)).toBe(true);
+    expect(mostrarTamano("Único", 1)).toBe(false);
+    // Manda la cantidad, no el texto: un tamaño único con otro nombre tampoco se muestra.
+    expect(mostrarTamano("Porción", 1)).toBe(false);
+    expect(mostrarTamano("Único", 2)).toBe(true);
+  });
+
+  test("sin la cantidad (pedidos ya hechos, carritos viejos), decide la etiqueta", () => {
+    for (const etiqueta of ["Único", "único", " UNICO ", "Unico"]) expect(mostrarTamano(etiqueta)).toBe(false);
+    expect(mostrarTamano("Grande")).toBe(true);
+    expect(mostrarTamano("Grande", null)).toBe(true);
+    expect(mostrarTamano("")).toBe(false);
+    expect(mostrarTamano(null)).toBe(false);
+    expect([etiquetaVisible("Único"), "Limón"].filter(Boolean).join(" · ")).toBe("Limón");
+    expect(etiquetaVisible(" Grande ", 2)).toBe("Grande");
+  });
+
+  test("selector oculto solo con un tamaño y con precio", () => {
+    expect(tamanoUnico([{ price: 9000 }])).toBe(true);
+    expect(tamanoUnico([{ price: null }])).toBe(false);
+    expect(tamanoUnico([{ price: 9000 }, { price: null }])).toBe(false);
+    expect(tamanoUnico([{ price: 9000 }, { price: 12000 }])).toBe(false);
   });
 });

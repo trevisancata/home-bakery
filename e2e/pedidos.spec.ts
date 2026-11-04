@@ -105,6 +105,20 @@ conProducto.describe("Crear un pedido", () => {
     expect(pedido.mp_init_point).toBe(body.data.initPoint);
   });
 
+  test("con un solo tamaño, el título de Mercado Pago no dice \"Único\"", async ({ request }) => {
+    const unico = await crearProductoDePrueba({ sizes: [{ label: "Único", price: 9000 }] });
+    try {
+      const [tamano] = await tamanosDe(unico.id);
+      const { body } = await pedir(request, [{ productId: unico.id, sizeId: tamano.id, quantity: 1 }]);
+      const pref = await preferenciaDe(request, `pedido:${body.data.id}`);
+      expect(pref.items).toEqual([expect.objectContaining({ title: unico.name, unit_price: 9000 })]);
+      // En el pedido queda guardado igual (el snapshot no cambia).
+      expect(await itemsDe(body.data.id)).toEqual([expect.objectContaining({ tamano_etiqueta: "Único" })]);
+    } finally {
+      await borrarProductoDePrueba(unico.id);
+    }
+  });
+
   conProducto("un precio manipulado en el cliente se ignora: se cobra el de la base", async ({ request, producto }) => {
     const { response, body } = await pedir(request, [
       { productId: producto.id, sizeId: producto.chico, flavor: "Naranja", quantity: 3, unitPrice: 1 } as never,
