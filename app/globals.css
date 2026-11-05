@@ -10,6 +10,9 @@
  *   secundario  sobre hueso  5.96:1   sobre arena  5.14:1
  *   hueso       sobre chocolate 7.62:1
  *   blanco      sobre taupe  3.19:1  (solo para el logo, que es gráfico)
+ *   blanco      sobre taupe-header 4.55:1  (menú, íconos y contador del header)
+ *   hueso       sobre taupe-header 4.13:1  (foco visible del header)
+ *   taupe-header sobre blanco 4.55:1  (número del contador del carrito)
  *   blanco      sobre chocolate 8.39:1  (logo del footer)
  *   whatsapp-oscuro sobre whatsapp 6.38:1  (botón flotante)
  *   hueso-suave sobre chocolate 5.17:1  (texto secundario del footer)
@@ -41,6 +44,12 @@
   --color-carbon: #2f2f2f;
   --color-chocolate: #5e4a33;
   --color-taupe: #a88b6c;
+  /*
+   * Fondo del header: el taupe del círculo del logo, apenas más oscuro (solo
+   * baja la luminosidad, en OKLab) para que el menú en blanco llegue a
+   * 4.5:1. Con el taupe, el blanco da 3.19:1.
+   */
+  --color-taupe-header: #8d7153;
   --color-caramelo: #b99b75;
   --color-greige: #c4b4a1;
   --color-arena: #eae3d8;

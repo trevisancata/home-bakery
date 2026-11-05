@@ -308,13 +308,11 @@ export const pages = {
       primaryCta: { label: "Ver la tienda", href: "/tienda" },
       secondaryCta: { label: "Conocé los workshops", href: "/workshops" },
       carousel: {
-        controls: "Controles del carrusel",
         slide: (n: number, total: number) => `${n} de ${total}`,
-        dot: (n: number) => `Diapositiva ${n}`,
-        previous: "Diapositiva anterior",
-        next: "Diapositiva siguiente",
-        pause: "Pausar el carrusel",
-        play: "Reanudar el carrusel",
+        // Se anuncia con aria-live al cambiar de foto.
+        position: (n: number, total: number) => `Foto ${n} de ${total}`,
+        previous: "Foto anterior",
+        next: "Foto siguiente",
       },
     },
     howToOrder: {
@@ -378,17 +376,10 @@ export const pages = {
       // TODO(Maggie): reels de los workshops para el video de fondo.
       video: { src: undefined as string | undefined, poster: undefined as string | undefined },
     },
-    instagram: {
-      eyebrow: "Desde la cocina",
-      title: "Seguí lo que sale del horno",
-      intro: "Recetas, tutoriales y lo que se hornea cada semana.",
-      // Placeholders hasta conectar los posts reales: son decorativos.
-      posts: Array.from({ length: 6 }, (): SiteImage => ({ alt: "" })),
-    },
     pickup: {
       eyebrow: { full: "Retiros", short: `Take away en ${site.city}` },
       title: "Pasá a buscarlo",
-      text: `Take away en la casa de ${site.owner.name}, en ${site.city}. La dirección exacta te llega con la confirmación del pedido.`,
+      text: `Take away en ${site.city}. La dirección exacta te llega con la confirmación del pedido.`,
       hours: [
         { days: { full: "Lunes a viernes", short: "Lun a Vie" }, time: site.hours[0].time },
         { days: { full: "Sábados", short: "Sábados" }, time: site.hours[1].time },
