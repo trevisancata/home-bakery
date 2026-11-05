@@ -739,7 +739,7 @@ Después se sumó cancelar un pedido aceptado.
 - **Textos:** "Take away en la casa de Maggie, en San Isidro" solo aparecía en la sección Retiros del inicio (`data/site.ts`). No estaba en los metadatos ni en `docs/contenido-maggie.md`. Los mockups de `docs/mockup/` no se tocaron, porque son la referencia original.
 - **"Seguí lo que sale del horno":** se borraron `InstagramFeed`, sus textos y su uso en la home. No tenía tests ni docs propios. El link a Instagram del footer y el de "Así fueron los workshops" quedan.
 - **Carrusel:**
-  - sin autoplay, sin pausa y sin los puntos;
+  - sin autoplay ni pausa; los puntos ya no son botones;
   - se cambia deslizando (pointer events con `touch-action: pan-y pinch-zoom`, umbral de 40 px y solo si el movimiento es más horizontal que vertical) o con las flechas "Foto anterior" / "Foto siguiente";
   - las flechas miden 44 px, están a los costados y dan la vuelta.
   - En reposo, el ícono (hueso al 80% sobre capa/30) da 3,15:1 sobre una foto blanca con la capa; con hover o foco, 4,6:1.
@@ -760,12 +760,15 @@ Después se sumó cancelar un pedido aceptado.
 
 **Decisiones mías:**
 
-- **Sin puntos en el carrusel:** el pedido nombra solo el swipe y las flechas. La posición se anuncia, pero no se ve; si hace falta, se pueden sumar puntos decorativos.
+- **Puntos del carrusel:** en la primera versión no había, porque el pedido nombraba solo el swipe y las flechas. En la revisión, Catalina pidió puntos chicos y sutiles:
+  - son decorativos (`aria-hidden`), porque "Foto 2 de 3" ya lo anuncia el `aria-live`;
+  - no reciben clics;
+  - el actual es más ancho (16 px contra 6 px), así que no depende solo del color.
 - **El nombre accesible de los videos del carrusel:** el `<video>` pasó a ser decorativo (`aria-hidden`), como en `/workshops`. Hoy no hay videos en el carrusel ni textos alternativos cargados.
 - **Los textos del carrusel no reciben clics** (`pointer-events: none`), para que tocar la foto llegue al video. Los botones sí.
 
 **Resultado:**
 
 - Lint, `tsc` y build en verde.
-- Suite completa: 212 de 212, incluido rate limit.
+- Suite completa: 212 de 212, incluido rate limit. Con los puntos, 213 de 213.
 - Capturas antes y después en `docs/capturas/ajustes-*`: header desktop y menú mobile (más la variante con círculo y el foco), portada mobile y desktop, y `/workshops` con el video andando. Las del "antes" salen de `main` en un worktree, sin el indicador de Next.

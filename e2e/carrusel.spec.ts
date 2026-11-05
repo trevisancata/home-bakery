@@ -56,6 +56,24 @@ test.describe("Carrusel de la portada", () => {
     await expect(announcement(page)).toHaveText("Foto 3 de 3");
   });
 
+  test("los puntos marcan la foto actual y son decorativos", async ({ page }) => {
+    await page.goto("/");
+    const dots = page.getByTestId("carrusel-puntos");
+    const current = dots.locator("[data-actual]");
+
+    await expect(dots).toHaveAttribute("aria-hidden", "true");
+    await expect(dots.locator("span")).toHaveCount(3);
+    await expect(current).toHaveCount(1);
+    await expect(dots.locator("span").nth(0)).toHaveAttribute("data-actual", "");
+
+    await carousel(page).getByRole("button", { name: "Foto siguiente" }).click();
+    await expect(dots.locator("span").nth(1)).toHaveAttribute("data-actual", "");
+    await expect(current).toHaveCount(1);
+    // No se pueden tocar ni enfocar: los controles son las flechas y el swipe.
+    await expect(dots.locator("button")).toHaveCount(0);
+    await expect(dots).toHaveCSS("pointer-events", "none");
+  });
+
   test("se maneja con el teclado y el foco se ve", async ({ page }) => {
     await page.goto("/");
     const next = carousel(page).getByRole("button", { name: "Foto siguiente" });

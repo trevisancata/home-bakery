@@ -159,6 +159,22 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               <path d="M9 5l7 7-7 7" />
             </svg>
           </button>
+          {/* Solo visuales: la posición ya la anuncia el aria-live. La actual es más ancha, no solo más clara. */}
+          <div
+            aria-hidden="true"
+            data-testid="carrusel-puntos"
+            className="pointer-events-none absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 lg:bottom-8"
+          >
+            {slides.map((_, i) => (
+              <span
+                key={i}
+                data-actual={i === index ? "" : undefined}
+                className={`h-1.5 rounded-full transition-all motion-safe:duration-300 ${
+                  i === index ? "w-4 bg-hueso/90" : "w-1.5 bg-hueso/45"
+                }`}
+              />
+            ))}
+          </div>
           <p aria-live="polite" className="sr-only">
             {announcement}
           </p>
