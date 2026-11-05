@@ -2,7 +2,6 @@ import { AboutMaggie } from "@/components/home/AboutMaggie";
 import { Favorites } from "@/components/home/Favorites";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { HowToOrder } from "@/components/home/HowToOrder";
-import { InstagramFeed } from "@/components/home/InstagramFeed";
 import { Pickup } from "@/components/home/Pickup";
 import { WorkshopBand } from "@/components/home/WorkshopBand";
 import { heroSlides } from "@/data/site";
@@ -24,7 +23,6 @@ export default async function Home() {
       {featuredProducts.length > 0 && <Favorites products={featuredProducts} />}
       <AboutMaggie />
       <WorkshopBand nextWorkshop={featuredWorkshop} />
-      <InstagramFeed />
       <Pickup />
     </>
   );

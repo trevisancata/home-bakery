@@ -69,6 +69,9 @@ test.describe("Carrito", () => {
     await agregar(page, budin, { cantidad: 2 });
     await expect(carrito(page)).toHaveAccessibleName("Carrito, 2 productos");
     await expect(page.getByTestId("carrito-contador")).toHaveText("2");
+    // Blanco con el número en taupe-header (4.55:1), sobre el fondo del header.
+    await expect(page.getByTestId("carrito-contador")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(page.getByTestId("carrito-contador")).toHaveCSS("color", "rgb(141, 113, 83)");
     // El aviso del header (aria-live).
     await expect(page.getByText(`Agregaste ${budin.name} al pedido.`)).toBeAttached();
 

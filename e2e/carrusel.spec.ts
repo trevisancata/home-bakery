@@ -7,77 +7,140 @@ function visibleSlide(page: Page) {
   return page.locator('[aria-roledescription="diapositiva"]:not([aria-hidden="true"])');
 }
 
+function carousel(page: Page) {
+  return page.getByRole("region", { name: carouselName });
+}
+
+/** El aviso de aria-live: "Foto 2 de 3". */
+function announcement(page: Page) {
+  return carousel(page).locator('[aria-live="polite"]');
+}
+
+/** Un punto vacío del carrusel (arriba, entre las flechas y lejos de los textos). */
+async function emptySpot(page: Page) {
+  const box = (await carousel(page).boundingBox())!;
+  return { x: box.x + box.width / 2, y: box.y + box.height * 0.2 };
+}
+
 test.describe("Carrusel de la portada", () => {
   test.describe("sin movimiento reducido", () => {
     test.use({ reducedMotion: "no-preference" });
 
-    test("avanza solo cada 6 s y se frena con el botón de pausa", async ({ page }) => {
+    test("no avanza solo y no tiene botón de pausa", async ({ page }) => {
       await page.clock.install();
       await page.goto("/");
-      const carousel = page.getByRole("region", { name: carouselName });
       await expect(visibleSlide(page)).toHaveAttribute("aria-label", "1 de 3");
 
-      await page.clock.runFor(6_100);
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
-
-      await carousel.getByRole("button", { name: "Pausar el carrusel" }).click();
-      await expect(carousel.getByRole("button", { name: "Reanudar el carrusel" })).toBeVisible();
-
-      // Sin mouse ni foco adentro: si sigue quieta, es por la pausa.
+      // Sin mouse ni foco adentro, que antes también lo frenaban.
       await page.mouse.move(0, 0);
-      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
-      await page.clock.runFor(20_000);
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
-
-      await carousel.getByRole("button", { name: "Reanudar el carrusel" }).click();
-      await page.mouse.move(0, 0);
-      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
-      await page.clock.runFor(6_100);
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "3 de 3");
-    });
-
-    test("se maneja con el teclado", async ({ page }) => {
-      await page.clock.install();
-      await page.goto("/");
-      const carousel = page.getByRole("region", { name: carouselName });
-      const controls = carousel.getByRole("group", { name: "Controles del carrusel" });
-
-      // Orden de tabulación: anterior, puntos, siguiente, pausa.
-      await controls.getByRole("button", { name: "Diapositiva anterior" }).focus();
-      for (let i = 0; i < 4; i++) await page.keyboard.press("Tab");
-      await expect(controls.getByRole("button", { name: "Diapositiva siguiente" })).toBeFocused();
-
-      await page.keyboard.press("Enter");
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
-      await expect(controls.getByRole("button", { name: "Diapositiva 2" })).toHaveAttribute("aria-current", "true");
-
-      await page.keyboard.press("Shift+Tab");
-      await expect(controls.getByRole("button", { name: "Diapositiva 3" })).toBeFocused();
-      await page.keyboard.press("Space");
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "3 de 3");
-      await expect(controls.getByRole("button", { name: "Diapositiva 3" })).toHaveAttribute("aria-current", "true");
-
-      // Con el foco adentro no avanza solo.
-      await page.clock.runFor(20_000);
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "3 de 3");
-
-      await page.keyboard.press("Shift+Tab");
-      await page.keyboard.press("Shift+Tab");
-      await page.keyboard.press("Shift+Tab");
-      await expect(controls.getByRole("button", { name: "Diapositiva anterior" })).toBeFocused();
-      await page.keyboard.press("Enter");
-      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+      await page.clock.runFor(30_000);
+      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "1 de 3");
+      await expect(carousel(page).getByRole("button", { name: /pausar|reanudar/i })).toHaveCount(0);
+      // Al cargar no se anuncia nada.
+      await expect(announcement(page)).toHaveText("");
     });
   });
 
-  test("con movimiento reducido no avanza solo", async ({ page }) => {
-    // playwright.config.ts corre con reducedMotion: "reduce".
-    await page.clock.install();
+  test("las flechas cambian de foto, dan la vuelta y lo anuncian", async ({ page }) => {
     await page.goto("/");
-    const carousel = page.getByRole("region", { name: carouselName });
+    const next = carousel(page).getByRole("button", { name: "Foto siguiente" });
+    const previous = carousel(page).getByRole("button", { name: "Foto anterior" });
 
-    await expect(carousel.getByRole("button", { name: "Reanudar el carrusel" })).toBeVisible();
-    await page.clock.runFor(20_000);
+    await next.click();
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+    await expect(announcement(page)).toHaveText("Foto 2 de 3");
+
+    await previous.click();
+    await previous.click();
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "3 de 3");
+    await expect(announcement(page)).toHaveText("Foto 3 de 3");
+  });
+
+  test("se maneja con el teclado y el foco se ve", async ({ page }) => {
+    await page.goto("/");
+    const next = carousel(page).getByRole("button", { name: "Foto siguiente" });
+    const previous = carousel(page).getByRole("button", { name: "Foto anterior" });
+
+    // Desde el último botón de la portada, Tab llega a las flechas.
+    await carousel(page).getByRole("link", { name: "Conocé los workshops" }).focus();
+    await page.keyboard.press("Tab");
+    await expect(previous).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(next).toBeFocused();
+    // Foco visible: contorno hueso de 3 px (data-surface="dark").
+    await expect(next).toHaveCSS("outline-style", "solid");
+    await expect(next).toHaveCSS("outline-color", "rgb(245, 244, 240)");
+
+    await page.keyboard.press("Enter");
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+    await page.keyboard.press("Space");
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "3 de 3");
+    await expect(announcement(page)).toHaveText("Foto 3 de 3");
+
+    await page.keyboard.press("Shift+Tab");
+    await expect(previous).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+  });
+
+  test("se arrastra con el mouse", async ({ page }) => {
+    await page.goto("/");
+    const { x, y } = await emptySpot(page);
+
+    // Hacia la izquierda: la siguiente.
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x - 150, y, { steps: 5 });
+    await page.mouse.up();
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+    await expect(announcement(page)).toHaveText("Foto 2 de 3");
+
+    // Hacia la derecha: la anterior.
+    await page.mouse.move(x - 150, y);
+    await page.mouse.down();
+    await page.mouse.move(x, y, { steps: 5 });
+    await page.mouse.up();
     await expect(visibleSlide(page)).toHaveAttribute("aria-label", "1 de 3");
+
+    // Un movimiento corto o vertical es un clic o un scroll, no cambia.
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x - 20, y + 120, { steps: 5 });
+    await page.mouse.up();
+    await expect(visibleSlide(page)).toHaveAttribute("aria-label", "1 de 3");
+  });
+
+  test.describe("en un teléfono", () => {
+    test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+    test("se desliza con el dedo", async ({ page }) => {
+      await page.goto("/");
+      const { x, y } = await emptySpot(page);
+      // Toques reales (CDP): el navegador genera los pointer events como en un teléfono.
+      const cdp = await page.context().newCDPSession(page);
+      const swipe = async (fromX: number, toX: number) => {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: fromX, y }] });
+        for (let i = 1; i <= 5; i++) {
+          const at = fromX + ((toX - fromX) * i) / 5;
+          await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at, y }] });
+        }
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      };
+
+      await swipe(x + 120, x - 120);
+      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+      await expect(announcement(page)).toHaveText("Foto 2 de 3");
+
+      await swipe(x - 120, x + 120);
+      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "1 de 3");
+
+      // Las flechas también están, con 44 px de área táctil.
+      const next = carousel(page).getByRole("button", { name: "Foto siguiente" });
+      const box = (await next.boundingBox())!;
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      await next.tap();
+      await expect(visibleSlide(page)).toHaveAttribute("aria-label", "2 de 3");
+    });
   });
 });

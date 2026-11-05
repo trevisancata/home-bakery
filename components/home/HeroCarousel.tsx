@@ -1,79 +1,79 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type FocusEvent } from "react";
-import { preload } from "react-dom";
+import { useRef, useState, type MouseEvent, type PointerEvent } from "react";
+import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
 import { SectionTitle } from "@/components/SectionTitle";
 import { pages, ui, type HeroSlide } from "@/data/site";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 const content = pages.home.hero;
 const labels = content.carousel;
 
-/** Cada cuánto avanza solo, en milisegundos. */
-const interval = 6000;
+/** Lo mínimo que hay que deslizar en horizontal para cambiar de foto, en px. */
+const swipeThreshold = 40;
 
 // Colores de los placeholders mientras no hay fotos: se alternan para que
 // se note el cambio de diapositiva.
 const placeholderTones = ["bg-chocolate-claro", "bg-chocolate", "bg-taupe"];
 
-const controlClass =
-  "flex size-11 shrink-0 items-center justify-center rounded-full border-trazo border-hueso bg-capa/25 text-hueso transition-colors hover:bg-capa/60 lg:size-12";
+// Sutiles a los costados de la foto. En reposo, el ícono (hueso al 80% sobre
+// capa/30) da 3.15:1 sobre una foto blanca con la capa del carrusel; con hover
+// o foco, 4.6:1.
+const arrowClass =
+  "absolute top-1/3 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-capa/30 text-hueso/80 transition-colors hover:bg-capa/55 hover:text-hueso focus-visible:bg-capa/55 focus-visible:text-hueso lg:top-1/2";
 
 /**
  * Portada del inicio: carrusel a todo el ancho con fotos o videos, una capa
  * oscura y los textos de Maggie encima.
  *
- * Accesibilidad (WCAG 2.2.2): anterior / siguiente, un punto por diapositiva
- * y botón de pausa siempre visible. Avanza solo cada 6 s, salvo que la
- * persona lo pause, tenga el mouse o el foco adentro, o haya pedido reducir
- * el movimiento. Mientras avanza solo, los cambios no se anuncian.
+ * No avanza solo: se cambia deslizando con el dedo, arrastrando con el mouse
+ * o con las flechas de los costados, que son botones con nombre y foco
+ * visible. Cada cambio anuncia "Foto 2 de 3" (aria-live polite). Los videos
+ * se pausan con su propio ícono o tocándolos (BackgroundVideo).
  */
 export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const total = slides.length;
   const [index, setIndex] = useState(0);
-  // null: lo que corresponda según prefers-reduced-motion; si no, lo que eligió la persona.
-  const [choice, setChoice] = useState<boolean | null>(null);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const reducedMotion = useReducedMotion();
-  const videos = useRef<(HTMLVideoElement | null)[]>([]);
+  // Vacío al cargar, para no anunciar nada hasta que la persona cambie de foto.
+  const [announcement, setAnnouncement] = useState("");
+  const drag = useRef<{ x: number; y: number } | null>(null);
+  const dragged = useRef(false);
 
-  const playing = choice ?? !reducedMotion;
   const hasControls = total > 1;
-  const rotating = hasControls && playing && !hovered && !focused;
 
-  const first = slides[0];
-  if (first?.type === "video" && first.poster) {
-    // La primera diapositiva es la imagen principal de la página (LCP).
-    preload(first.poster, { as: "image", fetchPriority: "high" });
-  }
+  const go = (next: number) => {
+    const target = (next + total) % total;
+    setIndex(target);
+    setAnnouncement(labels.position(target + 1, total));
+  };
 
-  // Se reinicia en cada cambio, así cada diapositiva dura 6 s completos.
-  useEffect(() => {
-    if (!rotating) return;
-    const timer = setTimeout(() => setIndex((current) => (current + 1) % total), interval);
-    return () => clearTimeout(timer);
-  }, [rotating, index, total]);
+  const onPointerDown = (event: PointerEvent<HTMLElement>) => {
+    dragged.current = false;
+    if (!hasControls || event.button !== 0) return;
+    // Desde un link o un botón, es un clic.
+    if ((event.target as Element).closest("a, button")) return;
+    drag.current = { x: event.clientX, y: event.clientY };
+  };
 
-  // Solo se reproduce el video visible, y la pausa también lo frena.
-  useEffect(() => {
-    videos.current.forEach((video, i) => {
-      if (!video) return;
-      if (i === index && playing) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-    });
-  }, [index, playing]);
+  const onPointerUp = (event: PointerEvent<HTMLElement>) => {
+    const start = drag.current;
+    drag.current = null;
+    if (!start) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < swipeThreshold || Math.abs(dx) < Math.abs(dy)) return;
+    dragged.current = true;
+    go(index + (dx < 0 ? 1 : -1));
+  };
 
-  const go = (next: number) => setIndex((next + total) % total);
-
-  const onBlur = (event: FocusEvent<HTMLElement>) => {
-    if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
+  // Después de arrastrar, el clic no pausa el video que quedó abajo.
+  const onClickCapture = (event: MouseEvent<HTMLElement>) => {
+    if (!dragged.current) return;
+    dragged.current = false;
+    event.preventDefault();
+    event.stopPropagation();
   };
 
   return (
@@ -81,13 +81,14 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       data-surface="dark"
       aria-roledescription="carrusel"
       aria-label={content.label}
-      className="relative h-160 overflow-hidden bg-chocolate lg:h-180"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setFocused(true)}
-      onBlur={onBlur}
+      // pan-y: el scroll vertical sigue siendo del navegador; el horizontal, del carrusel.
+      className="relative h-160 touch-pan-y touch-pinch-zoom overflow-hidden bg-chocolate select-none lg:h-180"
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerCancel={() => (drag.current = null)}
+      onClickCapture={onClickCapture}
     >
-      <div aria-live={rotating ? "off" : "polite"} className="absolute inset-0">
+      <div className="absolute inset-0">
         {slides.map((slide, i) => {
           const active = i === index;
           return (
@@ -103,10 +104,8 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               <SlideMedia
                 slide={slide}
                 first={i === 0}
+                active={active}
                 tone={placeholderTones[i % placeholderTones.length]}
-                videoRef={(video) => {
-                  videos.current[i] = video;
-                }}
               />
             </div>
           );
@@ -124,7 +123,8 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
         className="pointer-events-none absolute inset-0 hidden bg-linear-to-t from-capa/40 to-transparent to-40% lg:block"
       />
 
-      <div className="contenedor relative flex h-full flex-col justify-end gap-4 pb-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:pb-22">
+      {/* Deja pasar los toques al video de abajo, salvo en los botones. */}
+      <div className="contenedor pointer-events-none relative flex h-full flex-col justify-end gap-4 pb-5 lg:pb-22">
         <div className="flex max-w-195 flex-col gap-4 lg:gap-6">
           <Eyebrow tone="crema">{content.eyebrow}</Eyebrow>
           <SectionTitle
@@ -136,7 +136,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             className="mb-1 lg:mb-6"
           />
           <p className="max-w-150 text-16 leading-medio text-hueso lg:text-20 lg:leading-parrafo">{content.text}</p>
-          <div className="flex flex-col gap-2.5 lg:mt-2 lg:flex-row lg:gap-4">
+          <div className="pointer-events-auto flex flex-col gap-2.5 lg:mt-2 lg:flex-row lg:gap-4">
             <Button href={content.primaryCta.href} variant="light">
               {content.primaryCta.label}
             </Button>
@@ -145,55 +145,25 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             </Button>
           </div>
         </div>
-
-        {hasControls && (
-          <div role="group" aria-label={labels.controls} className="flex items-center gap-1 lg:gap-2.5">
-            <button type="button" className={controlClass} aria-label={labels.previous} onClick={() => go(index - 1)}>
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 5l-7 7 7 7" />
-              </svg>
-            </button>
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={labels.dot(i + 1)}
-                aria-current={i === index ? "true" : undefined}
-                onClick={() => go(i)}
-                className="group flex h-11 w-8 items-center justify-center rounded-full"
-              >
-                <span
-                  aria-hidden="true"
-                  className={`size-3 rounded-full border-trazo border-hueso transition-colors ${
-                    i === index ? "bg-hueso" : "bg-capa/25 group-hover:bg-hueso/60"
-                  }`}
-                />
-              </button>
-            ))}
-            <button type="button" className={controlClass} aria-label={labels.next} onClick={() => go(index + 1)}>
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              className={controlClass}
-              aria-label={playing ? labels.pause : labels.play}
-              onClick={() => setChoice(!playing)}
-            >
-              {playing ? (
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M9 6v12M15 6v12" />
-                </svg>
-              ) : (
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4.5" fill="currentColor">
-                  <path d="M8 5.5v13l11-6.5z" />
-                </svg>
-              )}
-            </button>
-          </div>
-        )}
       </div>
+
+      {hasControls && (
+        <>
+          <button type="button" className={`${arrowClass} left-2 lg:left-5`} aria-label={labels.previous} onClick={() => go(index - 1)}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </button>
+          <button type="button" className={`${arrowClass} right-2 lg:right-5`} aria-label={labels.next} onClick={() => go(index + 1)}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <p aria-live="polite" className="sr-only">
+            {announcement}
+          </p>
+        </>
+      )}
     </section>
   );
 }
@@ -201,11 +171,11 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
 type SlideMediaProps = {
   slide: HeroSlide;
   first: boolean;
+  active: boolean;
   tone: string;
-  videoRef: (video: HTMLVideoElement | null) => void;
 };
 
-function SlideMedia({ slide, first, tone, videoRef }: SlideMediaProps) {
+function SlideMedia({ slide, first, active, tone }: SlideMediaProps) {
   if (!slide.src) {
     return (
       <div className={`absolute inset-0 flex items-start justify-end p-4 lg:px-10 lg:py-7 ${tone}`}>
@@ -218,20 +188,17 @@ function SlideMedia({ slide, first, tone, videoRef }: SlideMediaProps) {
 
   if (slide.type === "video") {
     return (
-      <video
-        ref={videoRef}
+      <BackgroundVideo
         src={slide.src}
         poster={slide.poster}
-        muted
-        loop
-        playsInline
-        preload={first ? "auto" : "metadata"}
-        aria-label={slide.alt || undefined}
-        aria-hidden={slide.alt ? undefined : true}
-        className="absolute inset-0 size-full object-cover"
+        // La primera diapositiva es la imagen principal de la página (LCP).
+        posterPreload={first}
+        active={active}
+        className="absolute inset-0"
+        buttonClassName="right-4 top-4 lg:right-10 lg:top-7"
       />
     );
   }
 
-  return <Image src={slide.src} alt={slide.alt} fill sizes="100vw" preload={first} className="object-cover" />;
+  return <Image src={slide.src} alt={slide.alt} fill sizes="100vw" preload={first} draggable={false} className="object-cover" />;
 }

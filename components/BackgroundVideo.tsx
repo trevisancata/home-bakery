@@ -17,6 +17,8 @@ type BackgroundVideoProps = {
   tone?: string;
   /** Posición del botón de pausa dentro del contenedor. */
   buttonClassName?: string;
+  /** En un carrusel, solo se reproduce el video de la diapositiva visible. */
+  active?: boolean;
   /** Ubicación de la etiqueta del placeholder. */
   placeholderClassName?: string;
   /** Clases del <video> (por defecto, cubre todo el contenedor). */
@@ -25,9 +27,10 @@ type BackgroundVideoProps = {
 };
 
 /**
- * Video decorativo de fondo: sin audio, en loop y con póster. Tiene un botón
- * de pausa visible (WCAG 2.2.2) y con prefers-reduced-motion se queda en el
- * póster. En el servidor se asume movimiento reducido, así que el HTML no
+ * Video decorativo de fondo: sin audio, en loop y con póster. Se pausa y se
+ * reanuda con un ícono chico en una esquina (WCAG 2.2.2: "Pausar video", 32 px
+ * de área táctil) o tocando el video. Con prefers-reduced-motion se queda en
+ * el póster. En el servidor se asume movimiento reducido, así que el HTML no
  * lleva autoplay: arranca recién al hidratar, y lo primero que se ve es el
  * póster.
  *
@@ -46,7 +49,8 @@ export function BackgroundVideo({
   posterPreload = false,
   posterSizes = "100vw",
   tone = "bg-chocolate-claro",
-  buttonClassName = "right-4 bottom-4",
+  buttonClassName = "right-3 bottom-3",
+  active = true,
   placeholderClassName = "items-end p-3 lg:p-4",
   videoClassName = "absolute inset-0 size-full object-cover",
   className = "",
@@ -55,15 +59,17 @@ export function BackgroundVideo({
   const [choice, setChoice] = useState<boolean | null>(null);
   const video = useRef<HTMLVideoElement>(null);
   const playing = choice ?? !reducedMotion;
+  const running = playing && active;
+  const toggle = () => setChoice(!playing);
 
   useEffect(() => {
     if (!video.current) return;
-    if (playing) {
+    if (running) {
       video.current.play().catch(() => {});
     } else {
       video.current.pause();
     }
-  }, [playing]);
+  }, [running]);
 
   if (!src) {
     return (
@@ -78,34 +84,37 @@ export function BackgroundVideo({
   return (
     <div className={`${tone} ${className}`}>
       {poster && (
-        <Image src={poster} alt="" fill preload={posterPreload} sizes={posterSizes} className="object-cover" />
+        <Image src={poster} alt="" fill preload={posterPreload} sizes={posterSizes} draggable={false} className="object-cover" />
       )}
       <video
         ref={video}
         src={src}
-        autoPlay={playing}
+        autoPlay={running}
         muted
         loop
         playsInline
-        preload={playing ? "metadata" : "none"}
+        preload={running ? "metadata" : "none"}
         aria-hidden="true"
-        className={videoClassName}
+        // Atajo con el mouse o el dedo; con el teclado, el botón.
+        onClick={toggle}
+        className={`cursor-pointer ${videoClassName}`}
       />
+      {/* Chico y sutil, pero el ícono hueso sobre capa/55 da 3.3:1 aun sobre un cuadro blanco. */}
       <button
         type="button"
-        onClick={() => setChoice(!playing)}
-        className={`absolute z-20 inline-flex min-h-11 items-center gap-2 rounded-full border-trazo border-hueso bg-capa/25 px-4.5 text-14 font-semibold text-hueso transition-colors hover:bg-capa/60 lg:min-h-12 ${buttonClassName}`}
+        aria-label={playing ? ui.video.pause : ui.video.play}
+        onClick={toggle}
+        className={`absolute z-20 flex size-8 items-center justify-center rounded-full bg-capa/55 text-hueso transition-colors hover:bg-capa/80 focus-visible:bg-capa/80 ${buttonClassName}`}
       >
         {playing ? (
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
             <path d="M9 6v12M15 6v12" />
           </svg>
         ) : (
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4.5" fill="currentColor">
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-3.5" fill="currentColor">
             <path d="M8 5.5v13l11-6.5z" />
           </svg>
         )}
-        {playing ? ui.video.pause : ui.video.play}
       </button>
     </div>
   );

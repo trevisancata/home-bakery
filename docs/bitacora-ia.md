@@ -716,3 +716,56 @@ Después se sumó cancelar un pedido aceptado.
 - Lint, `tsc` y build en verde.
 - Suite completa: 203 de 203, incluido rate limit. Antes, los archivos tocados dieron 87 de 87.
 - Capturas antes y después del detalle en mobile: `docs/capturas/tamano-unico-antes-mobile.png` y `tamano-unico-despues-mobile.png`.
+
+## 04/11/2026
+
+### Fix: ajustes visuales (`fix/ajustes-visuales`)
+
+**Pedido:** header con el fondo del círculo del logo y todo en blanco si el contraste da; "Take away en San Isidro" en lugar de "en la casa de Maggie"; sacar "Seguí lo que sale del horno"; carrusel sin autoplay ni pausa, con swipe y flechas sutiles; video de fondo con un ícono chico de pausa en lugar del botón grande.
+
+**Qué se hizo:**
+
+- **Header y menú mobile:**
+  - fondo `taupe-header` (#8D7153), token nuevo en `globals.css`;
+  - menú, ícono del menú, carrito y contador en blanco;
+  - logo blanco sin círculo;
+  - página actual con borde blanco (desktop) o una barra a la izquierda (mobile), hover con borde blanco al 60% y foco hueso por `data-surface="dark"`.
+  - La barra de avisos no cambió.
+- **Color:** con el taupe del logo (#A88B6C), el blanco da 3,19:1. Alcanza para los íconos (3:1) pero no para el texto del menú (4,5:1). Se bajó solo la luminosidad (OKLab, mismo tono y croma) hasta el primer color que llega a 4,5:1:
+  - blanco sobre #8D7153: 4,55:1;
+  - foco hueso: 4,13:1;
+  - número del contador (#8D7153 sobre blanco): 4,55:1.
+- **Logo:** con círculo, el taupe queda apenas más claro que el fondo (1,42:1) y se ve como un disco desteñido. Se usa el blanco sin círculo (`public/brand`), con el mismo alto para que el header no cambie de tamaño. Para volver al círculo alcanza con `LOGO_EN_CIRCULO` en `Header.tsx`. Capturas de las dos variantes.
+- **Textos:** "Take away en la casa de Maggie, en San Isidro" solo aparecía en la sección Retiros del inicio (`data/site.ts`). No estaba en los metadatos ni en `docs/contenido-maggie.md`. Los mockups de `docs/mockup/` no se tocaron, porque son la referencia original.
+- **"Seguí lo que sale del horno":** se borraron `InstagramFeed`, sus textos y su uso en la home. No tenía tests ni docs propios. El link a Instagram del footer y el de "Así fueron los workshops" quedan.
+- **Carrusel:**
+  - sin autoplay, sin pausa y sin los puntos;
+  - se cambia deslizando (pointer events con `touch-action: pan-y pinch-zoom`, umbral de 40 px y solo si el movimiento es más horizontal que vertical) o con las flechas "Foto anterior" / "Foto siguiente";
+  - las flechas miden 44 px, están a los costados y dan la vuelta.
+  - En reposo, el ícono (hueso al 80% sobre capa/30) da 3,15:1 sobre una foto blanca con la capa; con hover o foco, 4,6:1.
+  - Cada cambio anuncia "Foto 2 de 3" con `aria-live="polite"`. Al cargar, el aviso está vacío.
+  - Después de arrastrar, el clic no le llega al video de abajo.
+- **Videos (`BackgroundVideo`):**
+  - el botón grande pasó a un ícono de 32 px en una esquina (`aria-label` "Pausar video" / "Reproducir video");
+  - un clic o un toque en el video también lo pausa y lo reanuda;
+  - con `prefers-reduced-motion`, solo el póster, como antes.
+  - Sobre un cuadro blanco, el ícono hueso sobre capa/55 da 3,3:1.
+  - En `/workshops` mobile el ícono va arriba, lejos del botón de WhatsApp.
+  - Los videos del carrusel usan el mismo componente: solo se reproduce el de la foto visible.
+- **Tests:**
+  - `carrusel.spec.ts` reescrito: sin autoplay, flechas, teclado con foco visible, arrastre con mouse y swipe con toques reales por CDP;
+  - nuevos `header.spec.ts` (colores, contraste, página actual, hover, foco, menú mobile) y `video.spec.ts` (ícono, clic, toque, movimiento reducido);
+  - en `carrito.spec.ts`, el color del contador.
+- **Docs:** en `testing.md`, la tabla de archivos, el MP-15 y los casos manuales nuevos MP-18 (swipe en un teléfono real) y MP-19 (pausa del video tocándolo).
+
+**Decisiones mías:**
+
+- **Sin puntos en el carrusel:** el pedido nombra solo el swipe y las flechas. La posición se anuncia, pero no se ve; si hace falta, se pueden sumar puntos decorativos.
+- **El nombre accesible de los videos del carrusel:** el `<video>` pasó a ser decorativo (`aria-hidden`), como en `/workshops`. Hoy no hay videos en el carrusel ni textos alternativos cargados.
+- **Los textos del carrusel no reciben clics** (`pointer-events: none`), para que tocar la foto llegue al video. Los botones sí.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde.
+- Suite completa: 212 de 212, incluido rate limit.
+- Capturas antes y después en `docs/capturas/ajustes-*`: header desktop y menú mobile (más la variante con círculo y el foco), portada mobile y desktop, y `/workshops` con el video andando. Las del "antes" salen de `main` en un worktree, sin el indicador de Next.
