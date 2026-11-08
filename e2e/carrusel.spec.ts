@@ -23,6 +23,30 @@ async function emptySpot(page: Page) {
 }
 
 test.describe("Carrusel de la portada", () => {
+  test("tres fotos, en orden y con alt, sin video; la primera con preload", async ({ page }) => {
+    await page.goto("/");
+    const fotos = [
+      { archivo: "inicio-1-minis", alt: /^Bandeja de mini postres/ },
+      { archivo: "inicio-2-torta-frutos-rojos", alt: /^Torta de capas con dulce de leche/ },
+      { archivo: "inicio-3-tortas", alt: /^Pavlova con frutos rojos/ },
+    ];
+    const slides = carousel(page).locator('[aria-roledescription="diapositiva"]');
+    await expect(slides).toHaveCount(3);
+    for (const [i, foto] of fotos.entries()) {
+      const img = slides.nth(i).locator("img");
+      await expect(img).toHaveCount(1);
+      await expect(img).toHaveAttribute("src", new RegExp(foto.archivo));
+      await expect(img).toHaveAttribute("alt", foto.alt);
+      // Cada una con su encuadre (se recortan en desktop).
+      await expect(img).toHaveClass(/object-\[50%_\d+%\]/);
+    }
+    await expect(carousel(page).locator("video")).toHaveCount(0);
+    await expect(carousel(page).getByText(/próximamente/)).toHaveCount(0);
+    // La primera es el LCP: se precarga desde el <head>.
+    await expect(page.locator('link[rel="preload"][as="image"][imagesrcset*="inicio-1-minis"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="preload"][as="image"][imagesrcset*="inicio-2"]')).toHaveCount(0);
+  });
+
   test.describe("sin movimiento reducido", () => {
     test.use({ reducedMotion: "no-preference" });
 

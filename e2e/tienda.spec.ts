@@ -42,15 +42,24 @@ test.skip(!hasSupabase, skipReason);
 const catalogo = (page: Page) => page.getByRole("list", { name: /Todos los productos|Budines|Postres/ });
 
 test.describe("Tienda", () => {
-  test("filtra por categoría y lo refleja en la URL", async ({ page, catalogo: { budin, postre } }) => {
+  test("filtra por categoría con el desplegable y lo refleja en la URL", async ({ page, catalogo: { budin, postre } }) => {
     await abrirHastaVer(page, "/tienda", () => catalogo(page).getByRole("link", { name: postre.name, exact: true }));
     await expect(page.getByRole("heading", { level: 2, name: "Todos los productos" })).toBeVisible();
 
-    const filtros = page.getByRole("group", { name: "Filtrar por categoría" });
-    await filtros.getByRole("button", { name: "Budines" }).click();
+    // Select nativo con label visible; ya no hay botones de categoría.
+    const filtro = page.getByRole("combobox", { name: "Categoría" });
+    // El texto propio del label (sin las opciones del select que envuelve) se ve.
+    const label = page.locator("label", { has: filtro });
+    await expect(label).toBeVisible();
+    expect(await label.evaluate((el) => el.firstChild?.textContent?.trim())).toBe("Categoría");
+    await expect(filtro).toHaveValue("");
+    await expect(filtro.locator("option").first()).toHaveText("Todo");
+    await expect(page.getByRole("button", { name: "Budines" })).toHaveCount(0);
 
+    // Elegir la opción ya filtra, sin botón extra.
+    await filtro.selectOption({ label: "Budines" });
     await expect(page).toHaveURL(/\/tienda\?categoria=budines$/);
-    await expect(filtros.getByRole("button", { name: "Budines" })).toHaveAttribute("aria-pressed", "true");
+    await expect(filtro).toHaveValue("budines");
     await expect(page.getByRole("heading", { level: 2, name: "Budines" })).toBeVisible();
     await expect(catalogo(page).getByRole("link", { name: budin.name, exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: postre.name, exact: true })).toHaveCount(0);
@@ -58,13 +67,34 @@ test.describe("Tienda", () => {
     const categorias = await catalogo(page).locator("article > p:first-of-type").allTextContents();
     expect(new Set(categorias)).toEqual(new Set(["Budines"]));
 
-    await filtros.getByRole("button", { name: "Todo" }).click();
+    // Con recarga, sigue filtrada.
+    await page.reload();
+    await expect(page.getByRole("combobox", { name: "Categoría" })).toHaveValue("budines");
+    await expect(page.getByRole("heading", { level: 2, name: "Budines" })).toBeVisible();
+
+    await filtro.selectOption({ label: "Postres" });
+    await expect(page).toHaveURL(/\/tienda\?categoria=postres$/);
+    await expect(catalogo(page).getByRole("link", { name: postre.name, exact: true })).toBeVisible();
+
+    // Atrás vuelve a la categoría anterior (y el select la muestra); otra vez, a todo.
+    await page.goBack();
+    await expect(page).toHaveURL(/\/tienda\?categoria=budines$/);
+    await expect(filtro).toHaveValue("budines");
+    await expect(page.getByRole("heading", { level: 2, name: "Budines" })).toBeVisible();
+    await page.goBack();
+    await expect(page).toHaveURL(/\/tienda$/);
+    await expect(filtro).toHaveValue("");
+    await expect(page.getByRole("heading", { level: 2, name: "Todos los productos" })).toBeVisible();
+
+    await filtro.selectOption({ label: "Budines" });
+    await filtro.selectOption({ label: "Todo" });
     await expect(page).toHaveURL(/\/tienda$/);
   });
 
   test("entra directo a una categoría desde la URL", async ({ page, catalogo: { budin, postre } }) => {
     await abrirHastaVer(page, "/tienda?categoria=postres", () => catalogo(page).getByRole("link", { name: postre.name, exact: true }));
     await expect(page.getByRole("heading", { level: 2, name: "Postres" })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: "Categoría" })).toHaveValue("postres");
     await expect(page.getByRole("link", { name: budin.name, exact: true })).toHaveCount(0);
   });
 

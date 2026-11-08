@@ -11,10 +11,15 @@ function Items({ items }: { items: string[] }) {
   ));
 }
 
-/** Barra de avisos en chocolate, arriba de todo. En mobile muestra la versión corta. */
+/**
+ * Barra de avisos blanca, arriba de todo. En mobile muestra la versión corta.
+ * Texto carbon sobre blanco: 13.39:1. Contra el header (taupe-header) el
+ * blanco ya da 4.55:1, así que se distinguen sin borde; con el contenido
+ * (hueso) no se toca, porque la barra queda arriba del header.
+ */
 export function AnnouncementBar() {
   return (
-    <aside aria-label={ui.announcementsLabel} data-surface="dark" className="bg-chocolate text-hueso">
+    <aside aria-label={ui.announcementsLabel} className="bg-white text-carbon">
       <p className="contenedor py-2.25 text-center text-12 leading-natural md:hidden">
         <Items items={announcements.short} />
       </p>

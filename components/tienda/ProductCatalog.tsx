@@ -23,12 +23,18 @@ function byPrice(direction: 1 | -1) {
   };
 }
 
+const selectLabel = "flex min-w-0 flex-col gap-1.5 text-14 text-secundario lg:flex-row lg:items-center lg:gap-2.5";
+const selectClass = "h-11 w-full min-w-0 rounded-full border border-borde-control bg-hueso px-4 text-14 text-carbon";
+
 type CatalogProps = { products: Product[]; categories: ProductCategory[] };
 
 /**
  * Catálogo filtrado por la categoría de la URL (?categoria=). Usa
  * useSearchParams, así que la página lo envuelve en un <Suspense> con
  * CatalogView completo de fallback: /tienda sigue siendo estática.
+ *
+ * Cada cambio de categoría es una entrada nueva del historial (push): el
+ * botón atrás vuelve a la categoría anterior, y al recargar se mantiene.
  */
 export function CatalogFromUrl(props: CatalogProps) {
   const router = useRouter();
@@ -39,7 +45,7 @@ export function CatalogFromUrl(props: CatalogProps) {
       {...props}
       category={category}
       onCategoryChange={(slug) =>
-        router.replace(slug ? `/tienda?categoria=${encodeURIComponent(slug)}` : "/tienda", { scroll: false })
+        router.push(slug ? `/tienda?categoria=${encodeURIComponent(slug)}` : "/tienda", { scroll: false })
       }
     />
   );
@@ -51,7 +57,7 @@ type CatalogViewProps = CatalogProps & {
   onCategoryChange?: (slug: string | null) => void;
 };
 
-/** Filtros por categoría, orden y grilla de productos de la tienda. */
+/** Filtro por categoría (select nativo), orden y grilla de productos de la tienda. */
 export function CatalogView({ products, categories, category, onCategoryChange }: CatalogViewProps) {
   const [sort, setSort] = useState<Sort>("destacados");
 
@@ -60,44 +66,34 @@ export function CatalogView({ products, categories, category, onCategoryChange }
   if (sort === "menor-precio") visible.sort(byPrice(1));
   if (sort === "mayor-precio") visible.sort(byPrice(-1));
 
-  const chips = [
-    { slug: null, label: content.filter.all },
-    ...categories.map((item) => ({ slug: item.slug, label: item.name })),
-  ];
-
   return (
     <>
-      <div className="flex flex-col gap-4 border-y border-borde py-4.5 lg:flex-row lg:items-center lg:justify-between">
-        <div
-          role="group"
-          aria-label={content.filter.label}
-          className="-mx-4 flex gap-2.5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-wrap lg:px-0"
-        >
-          {chips.map((chip) => {
-            const pressed = chip.slug === category || (chip.slug === null && category === null);
-            return (
-              <button
-                key={chip.label}
-                type="button"
-                aria-pressed={pressed}
-                onClick={() => onCategoryChange?.(chip.slug)}
-                className={`h-11 shrink-0 rounded-full border px-5 text-14 ${
-                  pressed
-                    ? "border-carbon bg-chocolate font-semibold text-hueso"
-                    : "border-borde-control bg-hueso font-medium text-carbon hover:border-chocolate"
-                }`}
-              >
-                {chip.label}
-              </button>
-            );
-          })}
-        </div>
-        <label className="flex items-center gap-2.5 text-14 text-secundario">
+      {/* En mobile, dos columnas con el label arriba (los selects quedan
+          alineados); desde lg, en fila con el label al costado. */}
+      <div className="grid grid-cols-2 gap-3 border-y border-borde py-4.5 lg:flex lg:items-center lg:justify-between">
+        {/* Cambiar la opción ya filtra: no hace falta un botón. Una categoría
+            de la URL que no existe deja "Todo" elegido y el estado vacío. */}
+        <label className={selectLabel}>
+          {content.filter.label}
+          <select
+            value={current?.slug ?? ""}
+            onChange={(event) => onCategoryChange?.(event.target.value || null)}
+            className={`${selectClass} lg:w-60`}
+          >
+            <option value="">{content.filter.all}</option>
+            {categories.map((item) => (
+              <option key={item.slug} value={item.slug}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={selectLabel}>
           {content.sort.label}
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as Sort)}
-            className="h-11 rounded-full border border-borde-control bg-hueso px-4 text-14 text-carbon"
+            className={`${selectClass} lg:w-auto`}
           >
             {content.sort.options.map((option) => (
               <option key={option.value} value={option.value}>

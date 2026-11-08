@@ -1,9 +1,11 @@
 import { expect, test, type Locator } from "@playwright/test";
 
-// Fondo del header: --color-taupe-header (app/globals.css).
+// Header, footer y barra de avisos. Fondo del header y del footer:
+// --color-taupe-header (app/globals.css).
 const headerBackground = "rgb(141, 113, 83)";
 const white = "rgb(255, 255, 255)";
 const hueso = "rgb(245, 244, 240)";
+const carbon = "rgb(47, 47, 47)";
 
 /** Contraste WCAG entre dos colores rgb(...) como los devuelve getComputedStyle. */
 function contrast(a: string, b: string) {
@@ -86,3 +88,74 @@ test.describe("Header", () => {
     });
   });
 });
+
+/** Color y tamaño de cada elemento con texto propio y visible adentro de `root`. */
+const textos = (root: Locator) =>
+  root.evaluate((element) =>
+    [...element.querySelectorAll("*")]
+      .filter((el) => [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent!.trim()))
+      .filter((el) => (el as HTMLElement).offsetParent !== null || getComputedStyle(el).position === "fixed")
+      .map((el) => ({ texto: el.textContent!.trim().slice(0, 30), color: getComputedStyle(el).color, size: getComputedStyle(el).fontSize })),
+  );
+
+test.describe("Footer", () => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    test(`mismo fondo que el header y todo el texto en blanco, con AA (${viewport.width} px)`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const footer = page.locator("footer");
+      await expect(footer).toHaveCSS("background-color", headerBackground);
+
+      const lista = await textos(footer);
+      expect(lista.length).toBeGreaterThan(viewport.width < 768 ? 2 : 8);
+      // También el más chico (el copyright de 13 px en mobile).
+      for (const { texto, color } of lista) {
+        expect(color, texto).toBe(white);
+        expect(contrast(color, headerBackground), texto).toBeGreaterThanOrEqual(4.5);
+      }
+    });
+  }
+
+  test("hover y foco visibles en los links", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const link = page.getByRole("navigation", { name: "Secundaria" }).getByRole("link").first();
+
+    // Desde md, sin hover no llevan subrayado; con hover, sí.
+    await expect(link).toHaveCSS("text-decoration-line", "none");
+    await link.hover();
+    await expect(link).toHaveCSS("text-decoration-line", "underline");
+
+    // Con el teclado: contorno hueso (3:1 o más sobre el fondo).
+    await page.mouse.move(0, 0);
+    await link.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(link).toBeFocused();
+    await expect(link).toHaveCSS("outline-style", "solid");
+    await expect(link).toHaveCSS("outline-color", hueso);
+    expect(contrast(hueso, headerBackground)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+test.describe("Barra de avisos", () => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    test(`fondo blanco con texto oscuro, con AA, y se distingue del header (${viewport.width} px)`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const barra = page.getByRole("complementary", { name: "Avisos" });
+      await expect(barra).toHaveCSS("background-color", white);
+      await expect(barra).toContainText("48 h");
+
+      const lista = await textos(barra);
+      expect(lista.length).toBeGreaterThan(0);
+      for (const { texto, color } of lista) {
+        expect(color, texto).toBe(carbon);
+        expect(contrast(color, white), texto).toBeGreaterThanOrEqual(4.5);
+      }
+      // Pegada al header, pero con un fondo bien distinto.
+      expect(contrast(white, await css(page.locator("header"), "background-color"))).toBeGreaterThanOrEqual(3);
+    });
+  }
+});
+

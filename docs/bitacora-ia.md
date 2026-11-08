@@ -807,3 +807,40 @@ Después se sumó cancelar un pedido aceptado.
 - Suite completa: 216 pasaron, 1 falló y 1 no corrió (rate limit, que depende de que pase todo `chromium`). El que falló es `pedidos.spec.ts` › "domingo, fuera de horario, antes de 48 h…", y no tiene que ver con este cambio. La corrida fue un sábado a las 22:30: como mañana es domingo, `antesDe48h()` elige hoy con una franja que ya pasó, y la API responde con la anticipación del producto ("0 h") en lugar de "48 h". Queda para un fix aparte del test.
 - Capturas en mobile (390 px) en `docs/capturas/workshops-pasados-*`: el panel sin foto, subiendo (vista previa y descripción) y con la foto ("Aparece en el sitio"), y la sección en `/workshops`. Se hicieron con workshops `e2e-…` temporales, que se borraron después.
 
+## 08/11/2026
+
+### Ajustes visuales 2 (`fix/ajustes-visuales-2`)
+
+**Pedido:** footer con el fondo del header y texto blanco; barra de avisos blanca con texto oscuro; filtro de la tienda como desplegable; "Cómo enseño" sin firma ni foto; las 3 fotos de Maggie en la portada del inicio; foto en lugar del video en la portada de `/workshops`. Con tests, Lighthouse y capturas antes y después.
+
+**Qué se hizo:**
+
+- **Footer:** fondo `taupe-header` (#8D7153) y todo el texto en blanco, 4.55:1 (también el copyright de 13 px). El divisor pasó a blanco al 30%. Hover: subrayado (desde md, que sin hover no lo lleva; en mobile se engrosa). Foco: el contorno hueso de `data-surface="dark"` (4.13:1).
+- **Barra de avisos:** blanca con texto `carbon` (13.39:1). Contra el header da 4.55:1, así que se distingue sin borde, y no toca el contenido porque queda arriba del header. Sin `data-surface="dark"`, el foco vuelve al chocolate.
+- **Tienda:** el filtro de categorías pasó de botones a un `select` nativo con label visible "Categoría" y la opción "Todo". Elegir ya filtra. Cada cambio es un `router.push` (antes `replace`), así el botón atrás vuelve a la categoría anterior; la recarga mantiene `?categoria=`. En mobile, los dos selects van en dos columnas con el label arriba; en la primera versión quedaban desalineados (se vio en la captura).
+- **"Cómo enseño":** sin la firma en cursiva ni el marco "Foto próximamente". Queda el texto, con el párrafo grande a un ancho de línea acotado. Se borraron `signature`, `image` y la grilla `ensenanza`.
+- **Portada del inicio:** las 3 fotos en `heroSlides`, con alt descriptivo y un `objectPosition` por foto (son verticales y en desktop queda a la vista ~37% del alto). La primera con `preload`. Se sacó el slide de video vacío.
+- **Portada de `/workshops`:** la foto con `preload`, de fondo en mobile (con la misma capa) y enmarcada en 3:4 en desktop. Se borraron el reel y su póster de `public/videos`. `BackgroundVideo` queda: lo usa la banda de workshops del inicio, que espera los reels de Maggie.
+- **Tests:**
+  - `header.spec.ts` suma el footer (fondo, todo el texto en blanco con AA en 390 y 1440 px, hover y foco) y la barra de avisos;
+  - `carrusel.spec.ts` suma un test de las 3 fotos (orden, alt, encuadre, sin video, preload solo en la primera);
+  - `tienda.spec.ts` usa el desplegable, con recarga y botón atrás;
+  - `video.spec.ts` se reemplazó por `workshops-portada.spec.ts` (foto, sin video ni pausa, fondo en mobile, enmarcada en desktop, "Cómo enseño" sin firma ni foto).
+- **Docs:** `testing.md` (tabla, MP-19 retirado, MP-40 a MP-42), `lighthouse.md`, `contenido-maggie.md` y README.
+
+**Decisiones mías (se pueden cambiar):**
+
+- **Sin borde en la barra de avisos:** el blanco contra el `taupe-header` ya da 4.55:1. El pedido decía "si hace falta".
+- **El carrusel sigue aceptando videos** (el tipo y `BackgroundVideo`), aunque hoy no tenga ninguno.
+- **Las fotos 2 y 3 del carrusel se piden después del `load`:** la medición mostró que competían con la primera, que es el LCP.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde.
+- Suite completa: 228 pasaron y 1 se salteó, incluido rate limit. El salteado es "sin fotos, la sección no aparece" (`workshops-pasados.spec.ts`), porque la base tiene una foto real en "Meriendas & snacks".
+- Lighthouse mobile (medianas, ver `lighthouse.md`):
+  - `/workshops`: LCP 3,81 → 3,79 s y Performance 80 → 84;
+  - `/`: LCP 4,10 → 4,45 s y Performance 82 → 80, dentro del rango de las corridas. Ahora el LCP es la foto y no el `<h1>`, y en los dos casos lo domina el *render delay* que ya estaba en `main`;
+  - Accessibility, Best Practices y SEO: 100 en las dos rutas.
+- Capturas antes y después en `docs/capturas/ajustes2-*`, en mobile (390 px) y desktop (1440 px): portada del inicio y sus otras dos fotos, footer, tienda, portada de `/workshops` y "Cómo enseño".
+
