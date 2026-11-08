@@ -38,6 +38,11 @@ const monthFormatter = new Intl.DateTimeFormat("es-AR", {
   timeZone: "America/Argentina/Buenos_Aires",
 });
 
+const yearFormatter = new Intl.DateTimeFormat("es-AR", {
+  year: "numeric",
+  timeZone: "America/Argentina/Buenos_Aires",
+});
+
 const timeFormatter = new Intl.DateTimeFormat("es-AR", {
   hour: "2-digit",
   minute: "2-digit",
@@ -69,6 +74,11 @@ export function formatDayNumber(isoDate: string) {
 export function formatMonth(isoDate: string) {
   const month = monthFormatter.format(new Date(isoDate));
   return month.charAt(0).toUpperCase() + month.slice(1);
+}
+
+/** Ej.: "Octubre 2026". */
+export function formatMonthYear(isoDate: string) {
+  return `${formatMonth(isoDate)} ${yearFormatter.format(new Date(isoDate))}`;
 }
 
 /** Ej.: "10:00 h". */

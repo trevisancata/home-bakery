@@ -213,24 +213,6 @@ export type RichText = (string | { strong: string } | { text: string; href: stri
  */
 export type HeroSlide = { type: "image" | "video"; src?: string; poster?: string; alt: string };
 
-/** Workshop que ya se hizo, para "Así fueron los workshops" en /workshops. */
-export type PastWorkshop = { name: string; date: string; image?: SiteImage };
-
-// Lista de Maggie (27/10), del más reciente al más viejo. Para sumar uno,
-// agregarlo arriba de todo.
-// TODO(Maggie): una foto de cada uno. Hasta tenerlas, va el placeholder.
-export const pastWorkshops: PastWorkshop[] = [
-  { name: "Postres en shot", date: "Octubre 2026" },
-  { name: "Pastelería para el té VOL. 2", date: "Septiembre 2026" },
-  { name: "Mis tortas básicas", date: "Agosto 2026" },
-  { name: "Diseñá tu propia number cake", date: "Julio 2026" },
-  { name: "Pastelería para adolescentes", date: "Julio 2026" },
-  { name: "Pastelería para el té", date: "Junio 2026" },
-  { name: "Pastelería sin azúcar & sin harina", date: "Mayo 2026" },
-  { name: "Meriendas & snacks", date: "Marzo/abril 2026" },
-  { name: "Postres sin harina", date: "Marzo 2026" },
-];
-
 // TODO(Maggie): 3 o 4 fotos o videos horizontales para la portada. Mientras
 // tanto, placeholders: las fotos del catálogo son todas verticales.
 // Los placeholders son decorativos (alt vacío): no describen fotos que no existen.
@@ -526,7 +508,9 @@ export const pages = {
       script: "workshops",
       instagram: { label: "Ver más en Instagram", href: site.contact.instagram.url },
       listLabel: "Workshops anteriores",
-      items: pastWorkshops,
+      // Salen de la base: los que ya pasaron y tienen foto de cómo fue (la
+      // sube Maggie desde el panel). Se muestran los últimos `max`.
+      max: 9,
     },
     custom: {
       title: "Workshop personalizado",
