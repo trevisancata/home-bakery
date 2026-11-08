@@ -2,6 +2,33 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
+## Portadas con fotos, footer y barra de avisos (ajustes visuales 2)
+
+- **Fecha:** 08/11/2026
+- **Rama:** `fix/ajustes-visuales-2`
+- **Lighthouse:** 12, emulación mobile, Chromium de Playwright (headless), build de producción leyendo Supabase
+- **Comparación:** `main` (antes) contra la rama (después), sin caché. Se informa la mediana: 3 corridas de cada una, y 5 de `/` en la versión final de la rama
+
+| Ruta | | Performance | LCP (simulado) | Elemento LCP | TBT | CLS | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|---|---|---|---|---|
+| `/` | antes | 82 | 4,10 s (3,96–4,54) | `<h1>` del carrusel | 250 ms | 0 | 100 | 100 | 100 |
+| `/` | después | 80 | 4,45 s (4,18–5,08) | primera foto del carrusel | 285 ms | 0 | 100 | 100 | 100 |
+| `/workshops` | antes | 80 | 3,81 s (3,81–4,28) | póster del video | 368 ms | 0 | 100 | 100 | 100 |
+| `/workshops` | después | 84 | 3,79 s (3,72–4,32) | foto de la portada | 243 ms | 0 | 100 | 100 | 100 |
+
+- **`/workshops`:** igual o mejor. La foto (72 KB en WebP, 750 px) reemplaza al póster y al video, que ya no se descarga. Tiene `preload`.
+- **`/`:** el LCP pasa del `<h1>` a la primera foto, que tiene `preload` (57 KB). La diferencia de medianas (+0,35 s) cae dentro del rango de las corridas. En las dos versiones, el LCP lo domina el *render delay* (~3,5–4 s en la CPU lenta simulada), que ya estaba en `main`: es el mismo que se anotó para `/tienda`.
+- **Corrección a partir de la medición:** en la primera versión, las fotos 2 y 3 del carrusel se descargaban junto con la primera (88 y 70 KB): están en la pantalla, apiladas y transparentes, así que `loading="lazy"` no las frena. En una corrida le sumaban 866 ms de *load delay* al LCP. Ahora se piden después del evento `load` (o antes, si la persona cambia de foto). La mediana quedó igual porque manda el *render delay*, pero la primera foto ya no compite por la red.
+- **Contraste sobre las fotos:** la capa y el degradé de las portadas no cambiaron, así que vale la medición del peor caso (foto blanca pura) de [Contraste del texto sobre las portadas](#contraste-del-texto-sobre-las-portadas): todo el texto queda en 4.5:1 o más.
+- **Footer y barra de avisos** (medidos con los colores del CSS, también en `header.spec.ts`):
+
+  | Texto | Fondo | Contraste |
+  |---|---|---|
+  | Footer: títulos, links, horarios y copyright (13 px), en blanco | `taupe-header` #8D7153 | 4.55:1 |
+  | Footer: foco (contorno hueso) | `taupe-header` | 4.13:1 (indicador de foco: pide 3:1) |
+  | Barra de avisos: texto carbon #2F2F2F | blanco | 13.39:1 |
+  | Barra de avisos contra el header | blanco / `taupe-header` | 4.55:1 (se distinguen sin borde) |
+
 ## Tienda, carrito y checkout (pedidos)
 
 - **Fecha:** 29/10/2026
