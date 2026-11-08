@@ -144,6 +144,11 @@ El pago de los workshops está explicado en [pagos.md](pagos.md). Lo que importa
 - **Nadie anónimo lee pedidos** (`pedidos` y `pedido_items`): revoke + RLS con lectura solo para `es_admin()`. La página `/pedido/resultado` lee con la secret key solo el estado, el número, la fecha, la franja y el total: nunca el nombre, el email, el teléfono ni la dirección.
 - **Aceptar y rechazar** son `security definer`, con `es_admin()` adentro: con la clave publishable o sin rol, `42501` (e2e).
 
+### Workshops pasados (migración 0010)
+
+- **Lectura pública acotada:** `workshops_pasados(limite)` es `security definer` (los pasados están inactivos y el RLS no se los muestra a anon), pero devuelve solo nombre, fecha y foto de los que ya pasaron, no son de ejemplo y tienen foto. Nunca inscripciones, precios ni cupo, y como mucho 50 filas. El e2e chequea las columnas.
+- **Subir y quitar la foto de cómo fue**, con `poner_foto_recuerdo` / `quitar_foto_recuerdo`: `security definer` con `es_admin()` adentro. Con la clave publishable o sin rol, `42501` (e2e). El archivo pasa por la misma validación que las demás fotos (contenido real con sharp, webp de 1600 px) y por las políticas de Storage de la admin.
+
 ## Por qué las páginas públicas no leen cookies
 
 Leer cookies vuelve dinámica una página: se renderiza en cada visita y pierde el ISR. Por eso:

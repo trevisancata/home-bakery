@@ -82,11 +82,29 @@ Están en una sola config, [`data/site.ts`](../data/site.ts) → `pedidos`, y la
 
 Decisiones de implementación (no son de Maggie): los tamaños con "Precio a confirmar" no van al carrito; si el producto tiene sabores, hay que elegir uno, y la decoración es opcional.
 
+## Workshops que ya se hicieron
+
+Lista de Maggie (27/10), del más reciente al más viejo. Desde la migración 0010 están en la base como workshops pasados (inactivos y sin precio). Maggie pasó solo el mes: la fecha cargada es aproximada, el día 15 de cada mes. **TODO(Maggie): confirmar las fechas.**
+
+| Workshop | Mes que pasó Maggie | Fecha cargada (aprox.) |
+|---|---|---|
+| Postres en shot | Octubre 2026 | 15/10/2026 |
+| Pastelería para el té VOL. 2 | Septiembre 2026 | 15/09/2026 |
+| Mis tortas básicas | Agosto 2026 | 15/08/2026 |
+| Diseñá tu propia number cake | Julio 2026 | 15/07/2026 |
+| Pastelería para adolescentes | Julio 2026 | 15/07/2026 |
+| Pastelería para el té | Junio 2026 | 15/06/2026 |
+| Pastelería sin azúcar & sin harina | Mayo 2026 | 15/05/2026 |
+| Meriendas & snacks | Marzo/abril 2026 | 15/04/2026 (se cargó en abril) |
+| Postres sin harina | Marzo 2026 | 15/03/2026 |
+
+En el sitio se ve solo el mes y el año ("Octubre 2026"). Aparecen cuando tienen foto de cómo fue.
+
 ## Pendiente de Maggie
 
 - 3 o 4 fotos o videos horizontales para el carrusel de la portada.
 - Reels de los workshops para el video de fondo.
-- Nombre, mes/año y foto de 4 workshops pasados.
+- Una foto de cómo fue de cada workshop pasado: la sube Maggie desde el panel (ver [guia-panel.md](guia-panel.md#después-de-un-workshop-subir-la-foto)). Sin fotos, la sección "Así fueron los workshops" no aparece.
 - Saldo de la seña: cuándo y cómo se paga.
 - Costo del envío. Hoy no se cobra y el checkout lo aclara (`TODO(Maggie)` en `data/site.ts`).
 - Feriados: hoy se puede elegir un feriado de lunes a sábado.

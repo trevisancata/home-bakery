@@ -3,6 +3,7 @@ import { avisarPago, cargarPago, nuevoPagoId, preferenciaDe } from "./support/pa
 import {
   domingo,
   emailDePedido,
+  fueraDeHorario,
   itemsDe,
   leerPedido,
   pagosDePedido,
@@ -10,12 +11,13 @@ import {
   pedir,
   sesionDe,
   tamanosDe,
+  turnoAntesDe,
   turnoValido,
   vencerPedido,
 } from "./support/pedidos";
 import { borrarProductoDePrueba, crearProductoDePrueba, type TestProducto } from "./support/productos";
 import { admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
-import { diaDeSemana, fechaBA, franjasDelDia, sumarDias } from "../lib/pedidos/reglas";
+import { diaDeSemana, fechaBA, sumarDias } from "../lib/pedidos/reglas";
 
 // Pedidos de la tienda contra Supabase y el mock de Mercado Pago. Cada test
 // usa productos de prueba propios ("e2e-…", con precios propios), nunca el
@@ -51,12 +53,6 @@ const conProducto = test.extend<{ producto: Producto }>({
 /** Un día de lunes a sábado (si cae domingo, el siguiente). */
 const habil = (fecha: string) => (diaDeSemana(fecha) === 0 ? sumarDias(fecha, 1) : fecha);
 
-/** Un día y horario válidos para el calendario pero a menos de 48 h: hoy o mañana, la última franja. */
-function antesDe48h() {
-  const hoy = fechaBA(Date.now());
-  const date = diaDeSemana(sumarDias(hoy, 1)) === 0 ? hoy : sumarDias(hoy, 1);
-  return { date, slot: franjasDelDia(date).at(-1)! };
-}
 
 /** Cliente con la clave publishable, como cualquier visitante. */
 const publica = () =>
@@ -157,18 +153,27 @@ conProducto.describe("Crear un pedido", () => {
     expect(body.error.fields).toMatchObject({ address: expect.any(String), locality: expect.any(String) });
   });
 
-  conProducto("domingo, fuera de horario, antes de 48 h y más de 30 días → 400 en el campo", async ({ request, producto }) => {
-    const items = [{ productId: producto.id, sizeId: producto.chico, flavor: "Limón", quantity: 1 }];
-    const casos: [Record<string, string>, "date" | "slot", string][] = [
-      [{ date: domingo(), slot: "10-13" }, "date", "domingos"],
-      [{ ...turnoValido(), slot: "19-22" }, "slot", "horario"],
-      [antesDe48h(), "date", "48 h"],
-      [{ date: habil(sumarDias(fechaBA(Date.now()), 40)), slot: "9-13" }, "date", "30 días"],
-    ];
-    for (const [datos, campo, texto] of casos) {
-      const { response, body } = await pedir(request, items, datos);
-      expect(response.status(), JSON.stringify(datos)).toBe(400);
-      expect(body.error.fields[campo], JSON.stringify(datos)).toContain(texto);
+  // Cada fecha sale de "ahora" (e2e/support/pedidos.ts), no del día de la
+  // corrida: antes, un sábado a la noche "antes de 48 h" caía en una franja
+  // que ya había pasado (docs/errores.md).
+  test("domingo, fuera de horario, antes de 48 h y más de 30 días → 400 en el campo", async ({ request }) => {
+    const producto = await budin({ leadTimeHours: 48 });
+    try {
+      const items = [{ productId: producto.id, sizeId: producto.chico, flavor: "Limón", quantity: 1 }];
+      const ahora = Date.now();
+      const casos: [Record<string, string>, "date" | "slot", string][] = [
+        [{ date: domingo(48, ahora), slot: "10-13" }, "date", "domingos"],
+        [fueraDeHorario(48, ahora), "slot", "horario"],
+        [turnoAntesDe(48, ahora), "date", "Necesitamos al menos 48 h"],
+        [{ date: habil(sumarDias(fechaBA(ahora), 40)), slot: "9-13" }, "date", "30 días"],
+      ];
+      for (const [datos, campo, texto] of casos) {
+        const { response, body } = await pedir(request, items, datos);
+        expect(response.status(), JSON.stringify(datos)).toBe(400);
+        expect(body.error.fields[campo], JSON.stringify(datos)).toContain(texto);
+      }
+    } finally {
+      await borrarProductoDePrueba(producto.id);
     }
   });
 

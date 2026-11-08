@@ -5,7 +5,15 @@
 import { randomBytes } from "node:crypto";
 import type { APIRequestContext } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-import { fechaMinima, franjasDisponibles, sumarDias } from "../../lib/pedidos/reglas";
+import {
+  diaDeSemana,
+  fechaBA,
+  fechaMinima,
+  franjasDelDia,
+  franjasDisponibles,
+  inicioFranja,
+  sumarDias,
+} from "../../lib/pedidos/reglas";
 import { admin } from "./supabase";
 import { avisarPago, cargarPago, nuevoPagoId } from "./pagos";
 import { testEmailDomain, testEmailPrefix, testUser } from "./usuarios";
@@ -13,20 +21,51 @@ import { testEmailDomain, testEmailPrefix, testUser } from "./usuarios";
 /** Email de un pedido de prueba (lo usa el teardown para encontrarlo). */
 export const emailDePedido = () => `${testEmailPrefix}pedido-${randomBytes(4).toString("hex")}${testEmailDomain}`;
 
+// Fechas de prueba: todas se arman a partir de `now` (por defecto, el
+// momento de la corrida), así el resultado no depende del día ni de la hora
+// en que se corren los tests. Los unitarios (pedidos-unit.spec.ts) fijan
+// `now` en sábado a la noche, domingo y lunes temprano.
+
+const horaMs = 60 * 60 * 1000;
+
 /**
  * El primer día y horario que cumple la anticipación, con una hora de margen
  * (para que no venza mientras corre el test).
  */
-export function turnoValido(horas = 48) {
-  const date = fechaMinima(horas + 1);
-  return { date, slot: franjasDisponibles(date, horas + 1)[0] };
+export function turnoValido(horas = 48, now = Date.now()) {
+  const date = fechaMinima(horas + 1, now);
+  return { date, slot: franjasDisponibles(date, horas + 1, now)[0] };
 }
 
-/** El primer domingo después de la fecha mínima. */
-export function domingo(horas = 48) {
-  let fecha = fechaMinima(horas + 1);
-  while (new Date(`${fecha}T12:00:00Z`).getUTCDay() !== 0) fecha = sumarDias(fecha, 1);
+/** El primer domingo después de la fecha mínima: siempre a más de `horas`. */
+export function domingo(horas = 48, now = Date.now()) {
+  let fecha = fechaMinima(horas + 1, now);
+  while (diaDeSemana(fecha) !== 0) fecha = sumarDias(fecha, 1);
   return fecha;
+}
+
+/** Un día hábil a más de `horas`, con una franja que no existe. */
+export function fueraDeHorario(horas = 48, now = Date.now()) {
+  return { date: turnoValido(horas, now).date, slot: "19-22" };
+}
+
+/**
+ * La primera franja que empieza en el futuro (con una hora de margen, para
+ * que no pase mientras corre el test) pero a menos de `horas`. Pasa la
+ * validación del calendario y la rechaza solo la anticipación del producto.
+ * Recorre las franjas en orden; si en la ventana no hay ninguna, falla.
+ */
+export function turnoAntesDe(horas = 48, now = Date.now()) {
+  const desde = now + horaMs;
+  const hasta = now + horas * horaMs;
+  const ultimoDia = fechaBA(hasta);
+  for (let fecha = fechaBA(now); fecha <= ultimoDia; fecha = sumarDias(fecha, 1)) {
+    for (const slot of franjasDelDia(fecha)) {
+      const inicio = inicioFranja(fecha, slot);
+      if (inicio >= desde && inicio < hasta) return { date: fecha, slot };
+    }
+  }
+  throw new Error(`No hay ninguna franja entre 1 h y ${horas} h desde ${new Date(now).toISOString()}.`);
 }
 
 /** Los tamaños de un producto, en orden (con su id, que el carrito manda a la API). */

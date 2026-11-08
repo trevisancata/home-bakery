@@ -126,6 +126,21 @@ En la lista de workshops, si uno todavía no llegó al mínimo de personas con e
 
 Para que un workshop no se vea más, apagá **Mostrar en la web** en vez de borrarlo. Si ya tiene inscriptas, no se puede borrar.
 
+## Después de un workshop: subir la foto
+
+En la página de Workshops, la sección **Así fueron los workshops** muestra los workshops que ya se hicieron, cada uno con una foto. Un workshop aparece ahí cuando le subís la **foto de cómo fue**:
+
+1. Entrá a **Workshops** y, en **Pasados**, tocá el workshop. Cada tarjeta dice **En el sitio** o **Sin foto**.
+2. Arriba de todo está **Foto de cómo fue**. Tocá **Subir foto de cómo fue** y elegí la foto (en el celu también podés sacarla en el momento).
+3. Escribí una **descripción de la foto**, por ejemplo: "Las alumnas con sus postres en shot, en la mesada". Es obligatoria.
+4. Tocá **Subir la foto**. Cuando dice **Aparece en el sitio**, ya está en la web.
+
+- Para usar otra foto, tocá **Cambiar foto**. La anterior se borra.
+- Para que no aparezca más, tocá **Quitar foto** (te pregunta antes).
+- En la web se ven los **últimos 9**, del más nuevo al más viejo. Si un workshop viejo tiene foto pero ya no entra, el panel te lo avisa.
+- Los workshops **de ejemplo** y los que todavía no pasaron no llevan foto de cómo fue.
+- Si todavía ningún workshop tiene foto, la sección no aparece en la web.
+
 ## Ver las inscriptas
 
 - En **Workshops**, tocá el workshop: la pestaña **Inscriptas** muestra quién se anotó, cuántos lugares reservó, si pagó, su experiencia y sus alergias.

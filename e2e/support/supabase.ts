@@ -8,6 +8,7 @@
 
 import { type APIRequestContext, expect, type Locator, type Page, test as base } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
+import sharp from "sharp";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const secret = process.env.SUPABASE_SECRET_KEY;
@@ -77,6 +78,50 @@ export async function borrarWorkshopsDePrueba(ids?: string[]) {
   if (inscripciones.error) throw new Error(`No se pudieron borrar las inscripciones: ${inscripciones.error.message}`);
   const workshops = await client.from("workshops").delete().in("id", targets).like("slug", `${testSlugPrefix}%`);
   if (workshops.error) throw new Error(`No se pudieron borrar los workshops de prueba: ${workshops.error.message}`);
+  if (!ids) await borrarFotosDeWorkshopsDePrueba();
+}
+
+/** Archivos del bucket "workshops" en carpetas "e2e-…" (fotos de promoción y de cómo fue). */
+async function borrarFotosDeWorkshopsDePrueba() {
+  const bucket = admin().storage.from("workshops");
+  const { data: carpetas, error } = await bucket.list("", { search: testSlugPrefix, limit: 1000 });
+  if (error) throw new Error(`No se pudieron listar las fotos de workshops de prueba: ${error.message}`);
+  for (const carpeta of carpetas.filter((item) => item.name.startsWith(testSlugPrefix))) {
+    const { data: archivos } = await bucket.list(carpeta.name, { limit: 1000 });
+    const rutas = (archivos ?? []).map((archivo) => `${carpeta.name}/${archivo.name}`);
+    if (rutas.length > 0) await bucket.remove(rutas);
+  }
+}
+
+/**
+ * Workshop de prueba que ya pasó (o futuro, con `diasAtras` negativo),
+ * inactivo y sin precio, como los cargados por la 0010. Con `conFoto`, le
+ * sube una foto de cómo fue directo en la base (sin revalidar el sitio).
+ */
+export async function crearWorkshopPasadoDePrueba({
+  diasAtras = 1,
+  esEjemplo = false,
+  conFoto = false,
+  name = `E2E Pasado ${Math.random().toString(36).slice(2, 7)}`,
+}: { diasAtras?: number; esEjemplo?: boolean; conFoto?: boolean; name?: string } = {}) {
+  const client = admin();
+  const slug = `${testSlugPrefix}pasado-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const startsAt = new Date(Date.now() - diasAtras * 24 * 60 * 60 * 1000).toISOString();
+  let foto: { foto_recuerdo_ruta: string; foto_recuerdo_alt: string } | Record<string, never> = {};
+  if (conFoto) {
+    const ruta = `${slug}/recuerdo-e2e.webp`;
+    const buffer = await sharp({ create: { width: 40, height: 30, channels: 3, background: "#a88b6c" } }).webp().toBuffer();
+    const { error } = await client.storage.from("workshops").upload(ruta, buffer, { contentType: "image/webp" });
+    if (error) throw new Error(`No se pudo subir la foto de prueba: ${error.message}`);
+    foto = { foto_recuerdo_ruta: ruta, foto_recuerdo_alt: `Foto de ${name}` };
+  }
+  const { data, error } = await client
+    .from("workshops")
+    .insert({ slug, nombre: name, fecha_inicio: startsAt, precio: null, activo: false, es_ejemplo: esEjemplo, ...foto })
+    .select("id")
+    .single();
+  if (error) throw new Error(`No se pudo crear el workshop pasado de prueba: ${error.message}`);
+  return { id: data.id as string, slug, name, startsAt };
 }
 
 /**

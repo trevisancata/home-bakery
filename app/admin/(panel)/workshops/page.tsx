@@ -5,7 +5,7 @@ import { EstadoVacio } from "@/components/admin/ui/EstadoVacio";
 import { Icono } from "@/components/admin/ui/Icono";
 import { admin } from "@/data/admin";
 import type { AdminWorkshop } from "@/lib/admin/workshops";
-import { listarWorkshops } from "@/lib/admin/workshops";
+import { idsEnElSitio, listarWorkshops } from "@/lib/admin/workshops";
 import { requireAdminPage } from "@/lib/auth";
 import { formatDay, formatTime } from "@/lib/format";
 
@@ -13,7 +13,7 @@ const content = admin.workshops;
 
 export const metadata: Metadata = content.metadata;
 
-function Tarjeta({ w, proximo }: { w: AdminWorkshop; proximo: boolean }) {
+function Tarjeta({ w, proximo, enElSitio = false }: { w: AdminWorkshop; proximo: boolean; enElSitio?: boolean }) {
   const estado = w.isExample ? content.status.example : w.active ? content.status.active : content.status.hidden;
   return (
     <li>
@@ -25,6 +25,11 @@ function Tarjeta({ w, proximo }: { w: AdminWorkshop; proximo: boolean }) {
           {estado}
         </span>
         <strong className="text-20">{w.name}</strong>
+        {!proximo && !w.isExample && (
+          <span className={`self-start text-13 font-semibold ${enElSitio ? "text-exito" : "text-secundario"}`}>
+            {enElSitio ? content.recuerdo.badge.onSite : w.memoryPhoto ? content.recuerdo.badge.notInTop : content.recuerdo.badge.noPhoto}
+          </span>
+        )}
         <span className="text-14 text-secundario">
           {formatDay(w.startsAt)} · {formatTime(w.startsAt)}
         </span>
@@ -40,7 +45,7 @@ function Tarjeta({ w, proximo }: { w: AdminWorkshop; proximo: boolean }) {
 
 export default async function WorkshopsPage() {
   const session = await requireAdminPage("/admin/workshops");
-  const workshops = await listarWorkshops(session.supabase);
+  const [workshops, enElSitio] = await Promise.all([listarWorkshops(session.supabase), idsEnElSitio(session.supabase)]);
   const ahora = new Date().toISOString();
   const proximos = workshops.filter((w) => w.startsAt > ahora).sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   const pasados = workshops.filter((w) => w.startsAt <= ahora);
@@ -72,7 +77,7 @@ export default async function WorkshopsPage() {
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {pasados.map((w) => (
-              <Tarjeta key={w.id} w={w} proximo={false} />
+              <Tarjeta key={w.id} w={w} proximo={false} enElSitio={enElSitio.has(w.id)} />
             ))}
           </ul>
         )}

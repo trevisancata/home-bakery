@@ -772,3 +772,38 @@ Después se sumó cancelar un pedido aceptado.
 - Lint, `tsc` y build en verde.
 - Suite completa: 212 de 212, incluido rate limit. Con los puntos, 213 de 213.
 - Capturas antes y después en `docs/capturas/ajustes-*`: header desktop y menú mobile (más la variante con círculo y el foco), portada mobile y desktop, y `/workshops` con el video andando. Las del "antes" salen de `main` en un worktree, sin el indicador de Next.
+
+## 07/11/2026
+
+### "Así fueron los workshops" desde la base (`feat/workshops-pasados`)
+
+**Pedido:** que la sección salga de la tabla `workshops` y no de la lista fija `pastWorkshops` de `data/site.ts`. Después de cada workshop, Maggie sube una "foto de cómo fue" desde el panel y el workshop aparece solo. Con la migración 0010, tests, docs y capturas.
+
+**Qué se hizo:**
+
+- **Migración `0010_workshops_pasados.sql`:**
+  - `foto_recuerdo_ruta` y `foto_recuerdo_alt` en `workshops`, con un check (las dos o ninguna; alt de 1 a 200);
+  - `poner_foto_recuerdo` y `quitar_foto_recuerdo` (`security definer`, `es_admin()` → 42501, `HB404`, `HB409` si el workshop no pasó o es de ejemplo), que devuelven la ruta anterior para borrar el archivo;
+  - `workshops_pasados(limite)`, la lectura pública: solo nombre, fecha y foto, con tope de 50;
+  - los 9 workshops de `data/site.ts`, idempotente por slug.
+- **Sitio:** `getPastWorkshops()` en `lib/data.ts` (los últimos `pages.workshops.past.max` = 9), `formatMonthYear` ("Octubre 2026") y `PastWorkshops` con datos por props. Sin workshops, quedan solo el link a Instagram y el recuadro de workshop personalizado (que ahí pasa a ser h2). El diseño no cambia. Se borró `pastWorkshops` de `data/site.ts`.
+- **Panel:** `FotoRecuerdo` arriba de las pestañas de un workshop pasado: subir (con vista previa y alt obligatorio), "Cambiar foto" (con el alt anterior cargado) y "Quitar foto" con confirmación. Dice si aparece en el sitio o si tiene foto pero no entra en los últimos 9. Las tarjetas de Pasados dicen "En el sitio", "Con foto, fuera del sitio" o "Sin foto". `achicar()` pasó a `components/admin/fotos/achicar.ts`, compartido con `Fotos`. La acción revalida `/` y `/workshops` (`revalidarWorkshops`). Borrar un workshop borra también su foto de cómo fue.
+- **Tests:** `workshops-pasados.spec.ts`, en serie. El teardown ahora limpia también las carpetas `e2e-…` del bucket `workshops` (antes solo limpiaba `productos`).
+- **Docs:** guía del panel, modelo de datos, seguridad, README, contenido de Maggie (fechas aproximadas con `TODO(Maggie)`) y testing (tabla y MP-36 a MP-39).
+
+**Decisiones mías (se pueden cambiar):**
+
+- **Columnas y no un tipo en `workshop_imagenes`:** una sola foto por workshop sale de la estructura, y no hubo que tocar la portada, el orden, la política pública ni la API de las fotos de promoción.
+- **Una función y no una vista** para la lectura pública: la vista tendría que ser `security definer` (el linter de Supabase la marca), y así el tope llega como parámetro.
+- **Slugs con el mes** (`postres-en-shot-2026-10`), para que no choquen si Maggie repite un workshop.
+- **Mismo día (15/07) para los dos de julio:** se ordenan por nombre y queda "Diseñá tu propia number cake" antes, como en la lista de Maggie.
+- **El test "sin fotos" se saltea** si la base ya tiene fotos reales, porque la base de los e2e es compartida.
+
+**Resultado:**
+
+- Migración 0010 corrida por Catalina en el SQL Editor (Success, con los 9 workshops pasados). Antes de pasarla, se validó la sintaxis con `pglast`.
+- Lint, `tsc` y build en verde. `/workshops` sigue estático con ISR (5 min).
+- `workshops-pasados.spec.ts`: 5 de 5, sin saltear el de la sección vacía.
+- Suite completa: 216 pasaron, 1 falló y 1 no corrió (rate limit, que depende de que pase todo `chromium`). El que falló es `pedidos.spec.ts` › "domingo, fuera de horario, antes de 48 h…", y no tiene que ver con este cambio. La corrida fue un sábado a las 22:30: como mañana es domingo, `antesDe48h()` elige hoy con una franja que ya pasó, y la API responde con la anticipación del producto ("0 h") en lugar de "48 h". Queda para un fix aparte del test.
+- Capturas en mobile (390 px) en `docs/capturas/workshops-pasados-*`: el panel sin foto, subiendo (vista previa y descripción) y con la foto ("Aparece en el sitio"), y la sección en `/workshops`. Se hicieron con workshops `e2e-…` temporales, que se borraron después.
+

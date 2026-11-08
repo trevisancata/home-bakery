@@ -1,6 +1,6 @@
 # Modelo de datos
 
-El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven en Supabase (Postgres). El esquema está en siete migraciones, que se corren una vez y en orden en el SQL Editor:
+El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven en Supabase (Postgres). El esquema está en diez migraciones, que se corren una vez y en orden en el SQL Editor:
 
 - [`0001_catalogo.sql`](../supabase/migrations/0001_catalogo.sql) (E4): las tablas, la lectura pública y las inscripciones.
 - [`0002_auth_admin.sql`](../supabase/migrations/0002_auth_admin.sql) (E5): los perfiles con rol y los permisos de escritura de la admin. Cómo se protege el panel está en [`docs/seguridad.md`](seguridad.md).
@@ -27,6 +27,12 @@ El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven 
   - `avanzar_pedido` y `cancelar_pedido` (solo admin).
 
   Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
+- [`0010_workshops_pasados.sql`](../supabase/migrations/0010_workshops_pasados.sql): "Así fueron los workshops" desde la base.
+  - `foto_recuerdo_ruta` y `foto_recuerdo_alt` en `workshops` (la foto de cómo fue).
+  - `poner_foto_recuerdo` y `quitar_foto_recuerdo` (solo admin) y `workshops_pasados(limite)` (lectura pública).
+  - Carga los 9 workshops que ya se hicieron (antes en `data/site.ts`).
+
+  Ver [Foto de cómo fue](#foto-de-cómo-fue).
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -105,6 +111,8 @@ erDiagram
     bool activo
     bool destacado
     bool es_ejemplo
+    text foto_recuerdo_ruta "bucket workshops"
+    text foto_recuerdo_alt
   }
   workshop_imagenes {
     uuid id PK
@@ -284,6 +292,15 @@ Todas las tablas tienen `created_at` y `updated_at`; un trigger (`set_updated_at
 - **Una sola portada por producto o workshop:** lo garantiza un índice único parcial (`where portada`).
 - **`es_ejemplo`:** los workshops de `data/workshops.ts` se cargan con `es_ejemplo = true` hasta que Maggie pase los reales. La web los muestra con el aviso "Fecha de ejemplo: todavía no hay inscripción abierta", sin botón Reservar, y `crear_inscripcion` los rechaza. Los workshops que crean los tests (slug `e2e-…`) usan `es_ejemplo = false`.
 
+### Foto de cómo fue
+
+"Así fueron los workshops" (en `/workshops`) muestra los workshops que ya se hicieron. Sale de la tabla `workshops`: después de cada workshop, Maggie sube desde el panel una **foto de cómo fue** y el workshop aparece solo en la sección.
+
+- **Dos columnas en `workshops`** (`foto_recuerdo_ruta`, `foto_recuerdo_alt`) y no un tipo nuevo en `workshop_imagenes`. Es una sola foto por workshop y la estructura ya lo asegura. Además, las fotos de promoción quedan como estaban: portada, orden, la política pública (solo workshops activos, y los pasados suelen estar inactivos) y la API de fotos. Un check obliga a cargar la ruta y el alt juntos, con un alt de 1 a 200 caracteres. El archivo va al bucket `workshops`, en la carpeta del slug (`<slug>/recuerdo-<uuid>.webp`).
+- **`poner_foto_recuerdo(workshop_id, ruta, alt)` / `quitar_foto_recuerdo(workshop_id)`:** `security definer` con `es_admin()` adentro (`42501`). Si el workshop no existe, `HB404`. `poner_foto_recuerdo` solo acepta un workshop que **ya pasó y no es de ejemplo** (si no, `HB409`). Las dos devuelven la ruta anterior, así el servidor borra ese archivo.
+- **`workshops_pasados(limite)`:** la lectura pública. Es `security definer` porque anon no ve los workshops inactivos, y devuelve **solo** `nombre`, `fecha_inicio`, `foto_ruta` y `foto_alt`: nada de inscripciones, precios ni cupo. Filtra `fecha_inicio < now()`, `not es_ejemplo` y con foto, del más reciente al más viejo (y por nombre, si dos tienen la misma fecha), con un tope de 50. El sitio pide los últimos 9 (`pages.workshops.past.max` en `data/site.ts`). Es una función y no una vista `security definer`, que el linter de Supabase marca como riesgo.
+- **Los 9 de `data/site.ts`** se cargaron en la 0010 como pasados: `activo = false`, `es_ejemplo = false`, sin precio, el día 15 del mes (fechas aproximadas: [contenido-maggie.md](contenido-maggie.md)). Los slugs llevan el mes (`postres-en-shot-2026-10`), así no chocan si Maggie repite un workshop. El insert es idempotente (`on conflict (slug) do nothing`). `cupo` y `cupo_minimo` quedan en el default, porque la tabla no los deja en null; igual no se venden, porque `crear_inscripcion` rechaza los inactivos y los que ya empezaron.
+
 ## Permisos y RLS
 
 RLS está activado en las once tablas. Además, las migraciones revocan todos los privilegios de `anon` y `authenticated` y otorgan solo los que hacen falta: los permisos de la tabla deciden qué operaciones existen y las políticas, qué filas se ven o se tocan. Para la admin, las políticas exigen `(select public.es_admin())`.
@@ -294,7 +311,7 @@ RLS está activado en las once tablas. Además, las migraciones revocan todos lo
 | `productos` | Activos y de una categoría activa | Lee todos (también inactivos); crea, edita y borra |
 | `producto_tamanos` | Los de productos activos | Lee todos; crea, edita y borra |
 | `producto_imagenes` | Los de productos activos | Lee todas; crea, edita y borra |
-| `workshops` | Solo los activos | Lee todos; crea, edita y borra |
+| `workshops` | Solo los activos. Los pasados con foto, solo por `workshops_pasados` (nombre, fecha y foto) | Lee todos; crea, edita y borra. La foto de cómo fue, con `poner_foto_recuerdo` / `quitar_foto_recuerdo` |
 | `workshop_imagenes` | Las de workshops activos | Lee todas; crea, edita y borra |
 | `inscripciones` | **Ninguna:** sin permisos ni políticas | Lee todas y cambia **solo la columna `estado`**. No borra |
 | `perfiles` | Cada usuaria lee **solo su** perfil | Igual: nadie escribe con la clave publishable |
@@ -308,6 +325,8 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 | Puede… | Visitante (anon) | Con sesión, sin rol | `editor` | `admin` | `service_role` (secret key) |
 |---|---|---|---|---|---|
 | Ver el catálogo y los workshops activos | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Ver los workshops pasados con foto (`workshops_pasados`) | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Subir o quitar la foto de cómo fue (`poner_foto_recuerdo`, `quitar_foto_recuerdo`) | ✗ | ✗ | ✗ | ✓ | — |
 | Inscribirse (por `POST /api/v1/inscripciones`) | ✓ | ✓ | ✓ | ✓ | — |
 | Hacer un pedido (por `POST /api/v1/pedidos`) | ✓ | ✓ | ✓ | ✓ | — |
 | Llamar directo a `crear_pedido` | ✗ | ✗ | ✗ | ✗ | ✓ (solo la API) |
@@ -340,6 +359,7 @@ Las políticas permisivas se combinan con OR: la admin ve lo activo por la polí
 - **`aceptar_pedido(id)` / `rechazar_pedido(id, motivo)`** (0007, ajustadas en la 0008 según el medio de pago) son `security definer` y chequean `es_admin()` adentro, como `marcar_devuelto`. Bloquean el pedido (`for update`), así un webhook que llega a la vez ve el estado nuevo.
 - **`marcar_pedido_pagado(id)` / `marcar_pedido_devuelto(id)`** (0008): igual, `security definer` con `es_admin()` adentro. Guardan quién y cuándo (`pagado_por`, `devuelto_por`).
 - **`avanzar_pedido(id, estado, cobrado)` / `cancelar_pedido(id, motivo)`** (0009): igual. Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
+- **`workshops_pasados(limite)`** (0010) es `security definer` y la ejecutan anon y authenticated: devuelve solo nombre, fecha y foto de los pasados con foto. **`poner_foto_recuerdo` / `quitar_foto_recuerdo`** (0010): `security definer` con `es_admin()` adentro. Ver [Foto de cómo fue](#foto-de-cómo-fue).
 - **`es_admin()`** (0002) es `security definer`, `stable`, con `search_path = ''`. Lee `perfiles` y devuelve si la usuaria actual (`auth.uid()`) es admin. Solo la puede ejecutar `authenticated`.
 - **`cambiar_estado_inscripcion(id, estado)`** (0002) es `security invoker`: corre con el RLS de la admin. Bloquea la inscripción y el workshop (como `crear_inscripcion`) y, si una cancelada vuelve a estar activa y ya no hay lugar, falla con `HB409`. Así el panel no puede sobrevender.
 - **`reemplazar_tamanos(producto_id, tamanos)`** (0002) es `security invoker`. Borra los tamaños de un producto e inserta los nuevos en una sola transacción: si algo falla, quedan los de antes.
@@ -408,7 +428,7 @@ Las páginas públicas (`/`, `/tienda`, `/tienda/[slug]` y `/workshops`) son est
 
 - **On-demand:** cada cambio desde el panel llama a `revalidatePath` (`lib/admin/revalidar.ts`):
   - un producto revalida `/`, `/tienda` y `/tienda/<slug>`;
-  - un workshop o el estado de una inscripción revalida `/` y `/workshops`;
+  - un workshop, su foto de cómo fue o el estado de una inscripción revalida `/` y `/workshops`;
   - una inscripción nueva desde el sitio también revalida `/` y `/workshops`, porque cambian los lugares libres.
 - **Cada 5 minutos** (`export const revalidate = 300`): queda como red de seguridad para lo que cambia solo, como la temporada (depende del mes) o los workshops que ya empezaron.
 

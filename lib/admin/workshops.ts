@@ -1,10 +1,12 @@
 import "server-only";
+import { pages } from "@/data/site";
 import { ConflictError, fromDbError, NotFoundError } from "@/lib/admin/errors";
 import { type AdminImage, toAdminImage } from "@/lib/admin/imagenes";
 import { revalidarWorkshops } from "@/lib/admin/revalidar";
 import type { WorkshopCreate, WorkshopUpdate } from "@/lib/admin/schemas";
 import { uniqueSlug } from "@/lib/admin/slug";
 import type { AuthClient } from "@/lib/auth";
+import { publicUrl } from "@/lib/supabase/storage";
 
 // Workshops desde el panel, con el cliente de la sesión de la admin (RLS).
 
@@ -32,6 +34,8 @@ export type AdminWorkshop = {
   /** Cuántas inscripciones tiene (también las canceladas). */
   inscripciones: number;
   images: AdminImage[];
+  /** Foto de cómo fue, para "Así fueron los workshops" (solo los que ya pasaron). */
+  memoryPhoto: { path: string; src: string; alt: string } | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -53,6 +57,8 @@ type WorkshopRow = {
   activo: boolean;
   destacado: boolean;
   es_ejemplo: boolean;
+  foto_recuerdo_ruta: string | null;
+  foto_recuerdo_alt: string | null;
   created_at: string;
   updated_at: string;
   inscripciones: { cantidad: number; estado: string; vence_at: string }[];
@@ -62,7 +68,7 @@ type WorkshopRow = {
 const workshopSelect = `
   id, slug, nombre, resumen, descripcion, nivel, incluye, fecha_inicio, duracion_min,
   precio, sena_porcentaje, cupo, cupo_minimo, activo, destacado, es_ejemplo,
-  created_at, updated_at,
+  foto_recuerdo_ruta, foto_recuerdo_alt, created_at, updated_at,
   inscripciones (cantidad, estado, vence_at),
   workshop_imagenes (id, ruta, alt, ancho, alto, portada, orden)
 `;
@@ -97,6 +103,10 @@ function toAdminWorkshop(row: WorkshopRow, ahora = Date.now()): AdminWorkshop {
     spotsReserved: suma(row.inscripciones.filter((i) => i.estado === "reservada")),
     inscripciones: row.inscripciones.length,
     images: [...row.workshop_imagenes].sort((a, b) => a.orden - b.orden).map((img) => toAdminImage("workshops", img)),
+    memoryPhoto:
+      row.foto_recuerdo_ruta && row.foto_recuerdo_alt
+        ? { path: row.foto_recuerdo_ruta, src: publicUrl("workshops", row.foto_recuerdo_ruta), alt: row.foto_recuerdo_alt }
+        : null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -129,6 +139,24 @@ export async function listarWorkshops(supabase: AuthClient) {
     .order("fecha_inicio", { ascending: false });
   if (error) throw fromDbError(error);
   return (data as unknown as WorkshopRow[]).map((row) => toAdminWorkshop(row));
+}
+
+/**
+ * Ids de los workshops que se ven en "Así fueron los workshops": los mismos
+ * filtros y el mismo orden que la función workshops_pasados de la base.
+ */
+export async function idsEnElSitio(supabase: AuthClient) {
+  const { data, error } = await supabase
+    .from("workshops")
+    .select("id")
+    .lt("fecha_inicio", new Date().toISOString())
+    .eq("es_ejemplo", false)
+    .not("foto_recuerdo_ruta", "is", null)
+    .order("fecha_inicio", { ascending: false })
+    .order("nombre")
+    .limit(pages.workshops.past.max);
+  if (error) throw fromDbError(error);
+  return new Set(data.map((row) => row.id as string));
 }
 
 async function obtenerRow(supabase: AuthClient, id: string) {
@@ -186,10 +214,10 @@ export async function borrarWorkshop(supabase: AuthClient, id: string) {
   if (error?.code === "23503") throw new ConflictError("Tiene inscripciones: desactivalo en lugar de borrarlo.");
   if (error) throw fromDbError(error, notFound);
 
-  if (actual.workshop_imagenes.length > 0) {
-    const { error: storageError } = await supabase.storage
-      .from("workshops")
-      .remove(actual.workshop_imagenes.map((image) => image.ruta));
+  const rutas = actual.workshop_imagenes.map((image) => image.ruta);
+  if (actual.foto_recuerdo_ruta) rutas.push(actual.foto_recuerdo_ruta);
+  if (rutas.length > 0) {
+    const { error: storageError } = await supabase.storage.from("workshops").remove(rutas);
     if (storageError) console.error(`No se pudieron borrar las fotos del workshop (${storageError.name})`);
   }
 

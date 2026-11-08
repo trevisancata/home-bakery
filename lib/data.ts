@@ -4,6 +4,8 @@
 // ejemplo, generateMetadata y la página).
 
 import { cache } from "react";
+import { pages } from "@/data/site";
+import { formatMonthYear } from "@/lib/format";
 import { createPublicClient } from "@/lib/supabase/server";
 import { publicUrl } from "@/lib/supabase/storage";
 import { isInSeason, type Season } from "@/lib/temporada";
@@ -59,6 +61,9 @@ export type Workshop = {
   isExample: boolean;
   images: WorkshopImage[];
 };
+
+/** Workshop que ya se hizo, para "Así fueron los workshops" en /workshops. */
+export type PastWorkshop = { name: string; date: string; image: { src: string; alt: string } };
 
 /* -------------------------------------------------------------------------- */
 /* Filas de Supabase                                                          */
@@ -295,6 +300,23 @@ export async function getFeaturedWorkshop() {
   const upcoming = await getWorkshops();
   return upcoming.find((workshop) => workshop.featured) ?? upcoming[0];
 }
+
+type PasadoRow = { nombre: string; fecha_inicio: string; foto_ruta: string; foto_alt: string };
+
+/**
+ * Los últimos workshops que ya pasaron y tienen foto de cómo fue (la sube
+ * Maggie desde el panel), del más reciente al más viejo. Sin inscripciones ni
+ * precios: la función workshops_pasados devuelve solo nombre, fecha y foto.
+ */
+export const getPastWorkshops = cache(async (): Promise<PastWorkshop[]> => {
+  const { data, error } = await createPublicClient().rpc("workshops_pasados", { p_limite: pages.workshops.past.max });
+  if (error) failed("los workshops pasados", error);
+  return (data as PasadoRow[]).map((row) => ({
+    name: row.nombre,
+    date: formatMonthYear(row.fecha_inicio),
+    image: { src: publicUrl("workshops", row.foto_ruta), alt: row.foto_alt },
+  }));
+});
 
 /** Página de inscripción de un workshop. */
 export function workshopEnrollHref(slug: string) {

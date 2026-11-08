@@ -6,13 +6,15 @@ import { TablaInscripciones } from "@/components/admin/inscripciones/TablaInscri
 import { PanelMain } from "@/components/admin/panel/Encabezado";
 import { EstadoVacio } from "@/components/admin/ui/EstadoVacio";
 import { Icono } from "@/components/admin/ui/Icono";
+import { FotoRecuerdo } from "@/components/admin/workshops/FotoRecuerdo";
 import { Pestanas } from "@/components/admin/workshops/Pestanas";
 import { WorkshopForm } from "@/components/admin/workshops/WorkshopForm";
 import { admin } from "@/data/admin";
+import { pages } from "@/data/site";
 import { NotFoundError } from "@/lib/admin/errors";
 import { listarInscripcionesConPagos } from "@/lib/admin/pagos";
 import { parseId } from "@/lib/admin/schemas";
-import { obtenerWorkshop } from "@/lib/admin/workshops";
+import { idsEnElSitio, obtenerWorkshop } from "@/lib/admin/workshops";
 import { requireAdminPage } from "@/lib/auth";
 import { formatDay, formatTime } from "@/lib/format";
 
@@ -38,7 +40,11 @@ export default async function WorkshopPage({ params, searchParams }: PageProps<"
   const { id } = await params;
   const { tab, creado } = await searchParams;
   const { session, workshop } = await cargar(id);
-  const inscripciones = await listarInscripcionesConPagos(session.supabase, { workshopId: workshop.id });
+  const yaPaso = workshop.startsAt <= new Date().toISOString();
+  const [inscripciones, enElSitio] = await Promise.all([
+    listarInscripcionesConPagos(session.supabase, { workshopId: workshop.id }),
+    yaPaso ? idsEnElSitio(session.supabase) : new Set<string>(),
+  ]);
 
   return (
     <PanelMain>
@@ -55,6 +61,16 @@ export default async function WorkshopPage({ params, searchParams }: PageProps<"
           <p className="text-15 font-medium text-error">{content.belowMinimum(workshop.minimum)}</p>
         )}
       </div>
+      {/* Después del workshop, lo primero que hace falta es la foto de cómo fue. */}
+      {yaPaso && (
+        <FotoRecuerdo
+          workshopId={workshop.id}
+          inicial={workshop.memoryPhoto}
+          enElSitio={enElSitio.has(workshop.id)}
+          esEjemplo={workshop.isExample}
+          max={pages.workshops.past.max}
+        />
+      )}
       <Suspense>
         <Pestanas
           label={content.tabsLabel}
