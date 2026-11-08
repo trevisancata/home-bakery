@@ -7,12 +7,17 @@ import {
   type AdminImage,
   borrarImagen,
   type Destino,
+  type MemoryPhoto,
+  quitarFotoRecuerdo as quitarRecuerdo,
   reordenarImagenes,
+  subirFotoRecuerdo as subirRecuerdo,
   subirImagen,
 } from "@/lib/admin/imagenes";
 import { imagenCreateSchema, imagenUpdateSchema, parseId } from "@/lib/admin/schemas";
+import { idsEnElSitio } from "@/lib/admin/workshops";
 
-// Fotos de productos y workshops desde el panel (componente Fotos).
+// Fotos de productos y workshops desde el panel (componente Fotos) y la foto
+// de cómo fue de los workshops pasados (componente FotoRecuerdo).
 
 const destinos = new Set<Destino>(["productos", "workshops"]);
 
@@ -50,6 +55,25 @@ export async function ordenarFotos(destino: string, ownerId: string, ids: string
 export async function borrarFoto(destino: string, ownerId: string, imagenId: string) {
   return accion("Error al borrar la foto", async (supabase) => {
     await borrarImagen(supabase, destinoValido(destino), parseId(ownerId), parseId(imagenId, "La foto no existe."));
+    return null;
+  });
+}
+
+/** Foto de cómo fue de un workshop pasado. FormData: file, alt. `onSite`: si entra en los últimos N del sitio. */
+export async function subirFotoRecuerdo(workshopId: string, formData: FormData) {
+  return accion<MemoryPhoto & { onSite: boolean }>("Error al subir la foto de cómo fue", async (supabase) => {
+    const file = formData.get("file");
+    if (!(file instanceof File)) throw new BadRequestError("Elegí una foto.", { file: "Elegí una foto." });
+    const { alt } = imagenCreateSchema.parse({ alt: formData.get("alt") ?? undefined });
+    const id = parseId(workshopId);
+    const photo = await subirRecuerdo(supabase, id, file, alt);
+    return { ...photo, onSite: (await idsEnElSitio(supabase)).has(id) };
+  });
+}
+
+export async function quitarFotoRecuerdo(workshopId: string) {
+  return accion("Error al quitar la foto de cómo fue", async (supabase) => {
+    await quitarRecuerdo(supabase, parseId(workshopId));
     return null;
   });
 }

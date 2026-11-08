@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
-import { BadRequestError, fromDbError, NotFoundError } from "@/lib/admin/errors";
+import { BadRequestError, ConflictError, type DbError, fromDbError, NotFoundError } from "@/lib/admin/errors";
 import { revalidarProducto, revalidarWorkshops } from "@/lib/admin/revalidar";
 import type { ImagenUpdate } from "@/lib/admin/schemas";
 import type { AuthClient } from "@/lib/auth";
@@ -243,4 +243,65 @@ export async function borrarImagen(supabase: AuthClient, destino: Destino, owner
   }
 
   revalidar(destino, actual.owner.slug);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Foto de cómo fue                                                           */
+/* -------------------------------------------------------------------------- */
+
+// Una por workshop pasado, para "Así fueron los workshops" (columnas
+// foto_recuerdo_* de workshops, no workshop_imagenes). Se guarda con las
+// funciones poner_foto_recuerdo y quitar_foto_recuerdo, que chequean el rol
+// y que el workshop ya haya pasado.
+
+export type MemoryPhoto = { path: string; src: string; alt: string };
+
+function recuerdoError(error: DbError) {
+  if (error.code === "HB409") {
+    return new ConflictError("Solo los workshops que ya pasaron (y no son de ejemplo) llevan foto de cómo fue.");
+  }
+  return fromDbError(error, "El workshop no existe.");
+}
+
+async function borrarArchivo(supabase: AuthClient, ruta: string | null) {
+  if (!ruta) return;
+  const { error } = await supabase.storage.from("workshops").remove([ruta]);
+  if (error) console.error(`No se pudo borrar el archivo de la foto (${error.name})`);
+}
+
+/** Sube (o cambia) la foto de cómo fue de un workshop pasado. La anterior se borra. */
+export async function subirFotoRecuerdo(supabase: AuthClient, workshopId: string, file: File, alt: string): Promise<MemoryPhoto> {
+  const owner = await dueño(supabase, "workshops", workshopId);
+  const image = await convertirImagen(file);
+  const path = `${owner.slug}/recuerdo-${randomUUID()}.webp`;
+
+  const { error: uploadError } = await supabase.storage.from("workshops").upload(path, image.buffer, {
+    contentType: "image/webp",
+    cacheControl: "31536000",
+    upsert: false,
+  });
+  if (uploadError) throw Object.assign(new Error("No se pudo subir la foto"), { code: uploadError.name });
+
+  const { data: anterior, error } = await supabase.rpc("poner_foto_recuerdo", {
+    p_workshop_id: workshopId,
+    p_ruta: path,
+    p_alt: alt,
+  });
+  if (error) {
+    // Sin la columna, el archivo quedaría huérfano en Storage.
+    await borrarArchivo(supabase, path);
+    throw recuerdoError(error);
+  }
+  await borrarArchivo(supabase, anterior as string | null);
+
+  revalidarWorkshops();
+  return { path, src: publicUrl("workshops", path), alt: alt.trim() };
+}
+
+/** Quita la foto de cómo fue: el workshop deja de verse en "Así fueron los workshops". */
+export async function quitarFotoRecuerdo(supabase: AuthClient, workshopId: string) {
+  const { data: ruta, error } = await supabase.rpc("quitar_foto_recuerdo", { p_workshop_id: workshopId });
+  if (error) throw recuerdoError(error);
+  await borrarArchivo(supabase, ruta as string | null);
+  revalidarWorkshops();
 }
