@@ -20,6 +20,7 @@ import {
   validarFechaFranja,
 } from "../lib/pedidos/reglas";
 import { pedidoSchema } from "../lib/validation/pedido";
+import { domingo, fueraDeHorario, turnoAntesDe, turnoValido } from "./support/pedidos";
 
 // Unitarios de los pedidos: no levantan navegador ni tocan la base ni Mercado Pago.
 
@@ -380,3 +381,48 @@ test.describe("Tamaño único", () => {
     expect(tamanoUnico([{ price: 9000 }, { price: 12000 }])).toBe(false);
   });
 });
+
+// Las fechas de pedidos.spec.ts ("domingo, fuera de horario, antes de 48 h…")
+// salen de "ahora". Con "ahora" fijo se prueba que no dependen del día de la
+// corrida: el caso del sábado a la noche es el que fallaba (docs/errores.md).
+test.describe("Fechas de prueba de los pedidos", () => {
+  const casos = [
+    { nombre: "sábado 22:30", ahora: "2026-11-07T22:30:00-03:00", antes: { date: "2026-11-09", slot: "10-13" }, fuera: "2026-11-10" },
+    { nombre: "domingo 10:00", ahora: "2026-11-08T10:00:00-03:00", antes: { date: "2026-11-09", slot: "10-13" }, fuera: "2026-11-10" },
+    { nombre: "lunes 07:00", ahora: "2026-11-09T07:00:00-03:00", antes: { date: "2026-11-09", slot: "10-13" }, fuera: "2026-11-11" },
+    // A menos de una hora de la primera franja: va a la siguiente.
+    { nombre: "lunes 09:30", ahora: "2026-11-09T09:30:00-03:00", antes: { date: "2026-11-09", slot: "13-16" }, fuera: "2026-11-11" },
+  ];
+
+  for (const caso of casos) {
+    test(caso.nombre, () => {
+      const now = Date.parse(caso.ahora);
+
+      const antes = turnoAntesDe(48, now);
+      expect(antes).toEqual(caso.antes);
+      // Pasa el calendario (zod valida con 0 h) y la frena solo la anticipación de 48 h.
+      expect(validarFechaFranja(antes.date, antes.slot, 0, now)).toBeNull();
+      expect(validarFechaFranja(antes.date, antes.slot, 48, now)?.message).toContain("Necesitamos al menos 48 h");
+      expect(inicioFranja(antes.date, antes.slot)).toBeGreaterThanOrEqual(now + 60 * 60 * 1000);
+
+      const sinFranja = fueraDeHorario(48, now);
+      expect(sinFranja).toEqual({ date: caso.fuera, slot: "19-22" });
+      expect(validarFechaFranja(sinFranja.date, sinFranja.slot, 0, now)).toEqual({ field: "slot", message: "Ese horario no está disponible ese día." });
+
+      const dom = domingo(48, now);
+      expect(dom).toBe("2026-11-15");
+      expect(Date.parse(`${dom}T00:00:00-03:00`)).toBeGreaterThan(now + 48 * 60 * 60 * 1000);
+      expect(validarFechaFranja(dom, "10-13", 0, now)?.message).toContain("domingos");
+
+      // Y el turno válido de los demás tests cumple las 48 h.
+      const valido = turnoValido(48, now);
+      expect(validarFechaFranja(valido.date, valido.slot, 48, now)).toBeNull();
+    });
+  }
+
+  test("sin ninguna franja en la ventana, falla en vez de devolver una fecha que no sirve", () => {
+    // Sábado 13:00: con 20 h, la ventana termina el domingo, que no tiene franjas.
+    expect(() => turnoAntesDe(20, Date.parse("2026-11-07T13:00:00-03:00"))).toThrow("No hay ninguna franja");
+  });
+});
+

@@ -318,3 +318,24 @@ Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-ch
 
 **Aparte:** con `--no-deps` los tests que usan las usuarias de prueba fallan al instante: el teardown de la corrida anterior las borra y el setup, que las crea, no corre. Para repetir un archivo, correrlo con el setup (sin `--no-deps`).
 
+
+## 07/11/2026
+
+### El test "antes de 48 h" fallaba los sábados a la noche
+
+**PR:** workshops pasados (`feat/workshops-pasados`)
+
+**Qué pasó:** en la suite completa del sábado 07/11 a las 22:30 falló `pedidos.spec.ts` › "domingo, fuera de horario, antes de 48 h y más de 30 días → 400 en el campo". Se esperaba "48 h" y la API respondió "Necesitamos al menos 0 h de anticipación…". El cambio de esa rama no tocaba pedidos.
+
+**Causa:** `antesDe48h()` elegía "mañana, la última franja" o, si mañana era domingo, "hoy, la última franja". Un sábado después de las 9 (la franja del sábado es 9-13), esa franja ya había empezado. Entonces el pedido no llegaba a la regla de anticipación del producto (48 h): lo frenaba antes el esquema, que valida con 0 h que la franja no haya pasado. El 400 era correcto, pero el mensaje no era el que el caso quería probar. Además, el caso dependía de que el producto de prueba tuviera 48 h por el default de la tabla.
+
+**Solución:**
+
+- Los cuatro casos arman su fecha a partir de "ahora" con helpers de `e2e/support/pedidos.ts`, que reciben `now`:
+  - `domingo()`: el primer domingo después de la fecha mínima, siempre a más de 48 h;
+  - `fueraDeHorario()`: un día hábil a más de 48 h con la franja "19-22";
+  - `turnoAntesDe()`: la primera franja que empieza en el futuro, con una hora de margen, pero a menos de 48 h. Si en la ventana no hay ninguna, falla con un mensaje en lugar de devolver una fecha que no sirve.
+- El test crea su propio producto con `leadTimeHours: 48` y espera "Necesitamos al menos 48 h".
+- Unitarios en `pedidos-unit.spec.ts` con "ahora" fijo: sábado 22:30, domingo 10:00, lunes 07:00 y lunes 09:30 (a menos de una hora de la primera franja). Cada fecha se valida con las mismas reglas que la API.
+
+**Para que no se repita:** una fecha de prueba se calcula a partir de un `now` que se pueda fijar, y se prueba con unitarios en los bordes (fin de semana, de noche, antes de la primera franja). Si un caso espera un error, el test chequea el mensaje, no solo el 400, y fija los datos que lo producen (como la anticipación del producto) en lugar de depender de los defaults.
