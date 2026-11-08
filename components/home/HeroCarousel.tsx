@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, type MouseEvent, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
@@ -38,10 +38,24 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
   // Vacío al cargar, para no anunciar nada hasta que la persona cambie de foto.
   const [announcement, setAnnouncement] = useState("");
+  // Las demás fotos se piden después del evento load (o al cambiar de foto):
+  // están en la pantalla, apiladas y transparentes, así que el lazy loading
+  // no las frena y le sacaban ancho de banda a la primera, que es el LCP.
+  const [restoCargado, setRestoCargado] = useState(false);
   const drag = useRef<{ x: number; y: number } | null>(null);
   const dragged = useRef(false);
 
   const hasControls = total > 1;
+
+  useEffect(() => {
+    const cargar = () => setRestoCargado(true);
+    if (document.readyState === "complete") {
+      cargar();
+      return;
+    }
+    window.addEventListener("load", cargar, { once: true });
+    return () => window.removeEventListener("load", cargar);
+  }, []);
 
   const go = (next: number) => {
     const target = (next + total) % total;
@@ -101,12 +115,14 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               inert={!active}
               className={`absolute inset-0 transition-opacity motion-safe:duration-700 ${active ? "opacity-100" : "opacity-0"}`}
             >
-              <SlideMedia
-                slide={slide}
-                first={i === 0}
-                active={active}
-                tone={placeholderTones[i % placeholderTones.length]}
-              />
+              {(i === 0 || active || restoCargado) && (
+                <SlideMedia
+                  slide={slide}
+                  first={i === 0}
+                  active={active}
+                  tone={placeholderTones[i % placeholderTones.length]}
+                />
+              )}
             </div>
           );
         })}
@@ -216,5 +232,16 @@ function SlideMedia({ slide, first, active, tone }: SlideMediaProps) {
     );
   }
 
-  return <Image src={slide.src} alt={slide.alt} fill sizes="100vw" preload={first} draggable={false} className="object-cover" />;
+  return (
+    <Image
+      src={slide.src}
+      alt={slide.alt}
+      fill
+      sizes="100vw"
+      // La primera foto es la imagen principal de la página (LCP).
+      preload={first}
+      draggable={false}
+      className={`object-cover ${slide.objectPosition ?? ""}`}
+    />
+  );
 }

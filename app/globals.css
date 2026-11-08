@@ -13,9 +13,11 @@
  *   blanco      sobre taupe-header 4.55:1  (menú, íconos y contador del header)
  *   hueso       sobre taupe-header 4.13:1  (foco visible del header)
  *   taupe-header sobre blanco 4.55:1  (número del contador del carrito)
- *   blanco      sobre chocolate 8.39:1  (logo del footer)
+ *   blanco      sobre taupe-header 4.55:1  (también todo el texto del footer, desde la
+ *               barra de 13 px del copyright)
+ *   carbon      sobre blanco 13.39:1  (barra de avisos)
  *   whatsapp-oscuro sobre whatsapp 6.38:1  (botón flotante)
- *   hueso-suave sobre chocolate 5.17:1  (texto secundario del footer)
+ *   hueso-suave sobre chocolate 5.17:1
  *   chocolate   sobre placeholder 5.57:1  (etiqueta de foto pendiente)
  *   crema       sobre chocolate 6.37:1  (textos de la banda de workshop)
  *   crema-suave sobre chocolate 6.25:1  (textos de la banda de workshop)
@@ -150,8 +152,6 @@
 
   /* Filas de la agenda (fecha · workshop · estado · acción) y FAQ de /workshops. */
   --grid-template-columns-fechas: 7.5rem minmax(0, 1fr) 13.75rem 13.75rem;
-  /* "Cómo enseño" de /workshops: texto y foto. */
-  --grid-template-columns-ensenanza: minmax(0, 1.2fr) minmax(0, 1fr);
   --grid-template-columns-faq: minmax(0, 1fr) minmax(0, 2fr);
 
   --shadow-tarjeta: 0 12px 32px rgb(59 42 34 / 0.12);
@@ -228,7 +228,7 @@
     @apply rounded-sm outline-3 outline-offset-3 outline-chocolate;
   }
 
-  /* Sobre superficies oscuras (barra de avisos, footer) el foco va en hueso. */
+  /* Sobre superficies oscuras (header, footer, portadas) el foco va en hueso. */
   [data-surface="dark"] :focus-visible {
     @apply outline-hueso;
   }

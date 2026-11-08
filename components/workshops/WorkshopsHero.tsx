@@ -1,4 +1,4 @@
-import { BackgroundVideo } from "@/components/BackgroundVideo";
+import Image from "next/image";
 import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
 import { SectionTitle } from "@/components/SectionTitle";
@@ -7,12 +7,12 @@ import { pages } from "@/data/site";
 const { hero } = pages.workshops;
 
 /**
- * Portada de /workshops con el reel de los workshops. Es un solo <video>
- * para los dos tamaños, así no se descarga dos veces:
+ * Portada de /workshops con una foto de un workshop. Es una sola imagen para
+ * los dos tamaños, así no se descarga dos veces, con preload porque es el LCP:
  * - Mobile: de fondo a todo el ancho, con la misma capa y degradé que el
- *   carrusel del inicio para que el texto llegue a AA sobre cualquier cuadro.
- * - Desktop: el reel es vertical y de baja resolución, así que no se estira:
- *   va enmarcado al lado del texto, sobre el fondo chocolate.
+ *   carrusel del inicio para que el texto llegue a AA sobre cualquier foto.
+ * - Desktop: la foto es vertical (3:4), así que no se estira: va enmarcada al
+ *   lado del texto, sobre el fondo chocolate-claro.
  */
 export function WorkshopsHero() {
   return (
@@ -22,16 +22,16 @@ export function WorkshopsHero() {
       className="relative h-160 overflow-hidden bg-chocolate-claro lg:h-auto"
     >
       <div className="contenedor flex h-full flex-col justify-end pb-10 lg:grid lg:grid-cols-[1fr_auto] lg:items-center lg:gap-16 lg:py-16">
-        <BackgroundVideo
-          src={hero.video.src}
-          poster={hero.video.poster}
-          posterPreload
-          posterSizes="(min-width: 1024px) 315px, 100vw"
-          className="absolute inset-0 lg:relative lg:inset-auto lg:order-last lg:aspect-9/16 lg:h-140 lg:overflow-hidden lg:rounded-3xl"
-          placeholderClassName="items-start justify-end p-4 lg:p-6"
-          // Arriba en mobile, lejos del botón flotante de WhatsApp.
-          buttonClassName="right-4 top-4 lg:top-auto lg:right-5 lg:bottom-5"
-        />
+        <div className="absolute inset-0 lg:relative lg:inset-auto lg:order-last lg:aspect-3/4 lg:h-140 lg:overflow-hidden lg:rounded-3xl">
+          <Image
+            src={hero.image.src}
+            alt={hero.image.alt}
+            fill
+            preload
+            sizes="(min-width: 1024px) 420px, 100vw"
+            className={`object-cover ${hero.image.objectPosition}`}
+          />
+        </div>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-capa/45 lg:hidden" />
         <div
           aria-hidden="true"

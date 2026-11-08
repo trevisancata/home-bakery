@@ -2,20 +2,26 @@ import Link from "next/link";
 import { site, ui } from "@/data/site";
 import { Logo } from "./Logo";
 
-const titleClasses = "font-sans text-15 font-bold text-hueso";
-const linkClasses = "text-hueso underline md:no-underline hover:text-white hover:underline";
+const titleClasses = "font-sans text-15 font-bold text-white";
+// El texto ya es blanco: el hover se nota por el subrayado (desde md, que
+// sin hover no lo lleva) y el foco, por el contorno hueso de data-surface="dark".
+const linkClasses = "text-white underline decoration-1 underline-offset-3 md:no-underline hover:underline hover:decoration-2";
 
 /**
- * Footer en chocolate, el mismo en todas las páginas. En mobile, como en el
- * mockup, muestra solo el logo, los contactos y el copyright; desde md suma
- * los links y los horarios, en cuatro columnas desde lg y sin copyright.
+ * Footer en taupe-header, como el header, el mismo en todas las páginas.
+ * Todo el texto va en blanco (4.55:1, también el copyright de 13 px) y el
+ * foco en hueso (4.13:1, contorno). Contrastes en app/globals.css.
+ *
+ * En mobile, como en el mockup, muestra solo el logo, los contactos y el
+ * copyright; desde md suma los links y los horarios, en cuatro columnas
+ * desde lg y sin copyright.
  */
 export function Footer() {
   const { instagram, whatsapp } = site.contact;
   const hours = [...site.hours, site.closed];
 
   return (
-    <footer data-surface="dark" className="bg-chocolate text-hueso">
+    <footer data-surface="dark" className="bg-taupe-header text-white">
       <div className="contenedor flex flex-col gap-5 pt-10 pb-7 md:pb-9 lg:pt-18">
         <div className="flex flex-col gap-5 text-15 md:grid md:grid-cols-2 md:gap-12 lg:grid-cols-4">
           <Logo alt={site.name} circle={false} className="w-19.5 lg:w-22.5" />
@@ -55,7 +61,7 @@ export function Footer() {
           </div>
         </div>
 
-        <p className="border-t border-chocolate-claro pt-4 text-13 text-hueso-suave md:hidden">
+        <p className="border-t border-white/30 pt-4 text-13 text-white md:hidden">
           {ui.footer.copyright(new Date().getFullYear())}
         </p>
       </div>

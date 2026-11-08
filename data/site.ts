@@ -210,16 +210,38 @@ export type RichText = (string | { strong: string } | { text: string; href: stri
 /**
  * Diapositiva de la portada del inicio: foto o video. Sin `src` se muestra un
  * placeholder de color. Los videos van sin audio y con póster.
+ * `objectPosition` (clase de Tailwind) encuadra la foto donde se recorta.
  */
-export type HeroSlide = { type: "image" | "video"; src?: string; poster?: string; alt: string };
+export type HeroSlide = {
+  type: "image" | "video";
+  src?: string;
+  poster?: string;
+  alt: string;
+  objectPosition?: string;
+};
 
-// TODO(Maggie): 3 o 4 fotos o videos horizontales para la portada. Mientras
-// tanto, placeholders: las fotos del catálogo son todas verticales.
-// Los placeholders son decorativos (alt vacío): no describen fotos que no existen.
+// Fotos de Maggie (07/11), verticales 3:4. En mobile se ven casi enteras; en
+// desktop la portada es apaisada (1440 × 720) y queda a la vista ~37% del
+// alto: el encuadre deja lo principal de cada una. La primera es el LCP.
 export const heroSlides: HeroSlide[] = [
-  { type: "image", alt: "" },
-  { type: "video", alt: "" },
-  { type: "image", alt: "" },
+  {
+    type: "image",
+    src: "/fotos/inicio-1-minis.jpg",
+    alt: "Bandeja de mini postres: alfajores, pavlovas con frutillas, tartitas de chocolate con almendras y tartitas de limón con merengue",
+    objectPosition: "object-[50%_55%]",
+  },
+  {
+    type: "image",
+    src: "/fotos/inicio-2-torta-frutos-rojos.jpg",
+    alt: "Torta de capas con dulce de leche, crema y frutos rojos",
+    objectPosition: "object-[50%_40%]",
+  },
+  {
+    type: "image",
+    src: "/fotos/inicio-3-tortas.jpg",
+    alt: "Pavlova con frutos rojos, key lime pie, torta de chocolate y tarta de frutillas",
+    objectPosition: "object-[50%_55%]",
+  },
 ];
 
 /** Envío a domicilio: solo en pedidos grandes y cerca. */
@@ -399,7 +421,7 @@ export const pages = {
       { term: "Retiro", value: `Lun a Sáb, ${site.city}` },
       { term: "Envío", value: `Desde ${delivery.minimum} · ${delivery.radius}` },
     ],
-    filter: { label: "Filtrar por categoría", all: "Todo" },
+    filter: { label: "Categoría", all: "Todo" },
     allTitle: "Todos los productos",
     empty: { text: "No hay productos en esta categoría.", cta: "Ver todo" },
     sort: {
@@ -472,16 +494,17 @@ export const pages = {
       script: "cocina",
       text: workshopsStory.meeting,
       cta: { label: "Ver próximas fechas", href: "#agenda" },
-      // Reel de Maggie: vertical 9:16 (478x850), sin audio. Es de baja
-      // resolución: en desktop va enmarcado, no a pantalla completa.
-      video: { src: "/videos/workshops-reel.mp4", poster: "/videos/workshops-reel-poster.jpg" },
+      // Foto de Maggie (07/11), vertical 3:4. En mobile va de fondo y se
+      // recorta a los costados: el encuadre deja a la alumna y la torta.
+      image: {
+        src: "/fotos/workshops-portada.jpg",
+        alt: "Una alumna decora una number cake con merenguitos en el workshop",
+        objectPosition: "object-[60%_50%]",
+      },
     },
     teaching: {
       eyebrow: "Cómo enseño",
       text: workshopsStory.teaching,
-      signature: site.owner.name,
-      // TODO(Maggie): foto de Maggie enseñando.
-      image: { alt: "" } satisfies SiteImage,
     },
     steps: {
       eyebrow: "Paso a paso",
