@@ -5,7 +5,7 @@ import { pages } from "@/data/site";
 
 const { howToOrder } = pages.home;
 
-/** Los cuatro pasos para pedir: tarjetas horizontales en mobile, columnas en desktop. */
+/** Los tres pasos para pedir: tarjetas horizontales en mobile, columnas en desktop. */
 export function HowToOrder() {
   return (
     <section id="como-pedir" aria-labelledby="como-pedir-titulo" className="bg-arena">
@@ -18,7 +18,7 @@ export function HowToOrder() {
           <p className="hidden max-w-95 text-16 leading-parrafo text-secundario lg:block">{howToOrder.intro}</p>
         </div>
 
-        <ol className="grid gap-5 md:grid-cols-2 lg:gap-6 xl:grid-cols-4">
+        <ol className="grid gap-5 lg:grid-cols-3 lg:gap-6">
           {howToOrder.steps.map((step, index) => (
             <li
               key={step.title.full}

@@ -34,18 +34,19 @@ export default async function TiendaPage() {
             </ol>
           </nav>
           <h1 className="text-44 lg:text-64">{content.title}</h1>
-          <p className="max-w-140 text-17 leading-parrafo text-secundario">
-            <Rich text={content.intro} />
+        </div>
+        <div className="flex shrink-0 flex-col gap-3">
+          <dl className="flex flex-col gap-1.5 rounded-card bg-arena px-5 py-4 text-14 leading-normal lg:px-7 lg:py-5 lg:text-15">
+            {content.facts.map((fact) => (
+              <div key={fact.term}>
+                <dt className="inline font-bold">{fact.term}:</dt> <dd className="inline">{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="text-14 text-secundario lg:text-15">
+            <Rich text={content.event} />
           </p>
         </div>
-        <dl className="flex shrink-0 flex-wrap gap-x-6 gap-y-3 rounded-card bg-arena px-5 py-4 text-14 leading-normal lg:px-7 lg:py-5">
-          {content.facts.map((fact) => (
-            <div key={fact.term} className="flex flex-col">
-              <dt className="font-bold">{fact.term}</dt>
-              <dd>{fact.value}</dd>
-            </div>
-          ))}
-        </dl>
       </div>
 
       {/* El filtro lee ?categoria= en el cliente: el fallback (todo el catálogo)

@@ -3,7 +3,7 @@ import { pages } from "@/data/site";
 
 const { steps } = pages.workshops;
 
-/** "Cómo es un workshop": datos clave y los 4 pasos, con palabras de Maggie. */
+/** "Cómo es un workshop": datos clave en una línea y los 4 pasos, con palabras de Maggie. */
 export function WorkshopSteps() {
   return (
     <section aria-labelledby="como-es-titulo" className="bg-arena">
@@ -15,13 +15,7 @@ export function WorkshopSteps() {
               {steps.title}
             </h2>
           </div>
-          <ul className="flex max-w-160 flex-wrap gap-2.5 lg:justify-end">
-            {steps.facts.map((fact) => (
-              <li key={fact} className="rounded-full bg-hueso px-4.5 py-2.5 text-14 font-medium lg:text-15">
-                {fact}
-              </li>
-            ))}
-          </ul>
+          <p className="text-15 font-medium text-chocolate lg:text-17">{steps.facts}</p>
         </div>
         <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {steps.items.map((step, index) => (

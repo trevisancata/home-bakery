@@ -93,6 +93,10 @@ export const pedidos = {
       costo: null as number | null,
     },
   },
+  /** Anticipación general que se anuncia. Cada producto tiene la suya en la base. */
+  anticipacionHoras: 48,
+  /** Días de retiro o entrega, en palabras (los de `franjas`). */
+  diasRetiro: "lunes a sábado",
   /** Franjas de retiro o entrega por día. Domingo: cerrado. */
   franjas: {
     semana: ["10-13", "13-16", "16-19"],
@@ -292,11 +296,6 @@ const workshopFacts = {
   capacity: "Hasta 8 personas",
 };
 
-
-const kitchenImage: SiteImage = {
-  alt: "Cocina luminosa con una mesada de madera, frascos de harina y azúcar y un horno encendido",
-};
-
 export const pages = {
   layout: {
     title: `${site.name} · Pastelería artesanal en ${site.city}`,
@@ -339,14 +338,7 @@ export const pages = {
           },
         },
         {
-          title: { full: "Pagá con Mercado Pago", short: "Pagá online" },
-          text: {
-            full: ["Con el pedido confirmado te llega el link de pago. Antes no se cobra nada."],
-            short: "Te llega el link de Mercado Pago.",
-          },
-        },
-        {
-          title: { full: "Retirá", short: "Retirá o recibí" },
+          title: { full: "Retirá o recibí", short: "Retirá o recibí" },
           text: {
             full: [`Take away en ${site.city}.`, `Envíos a domicilio únicamente desde ${delivery.minimum}, hasta ${delivery.radius}.`],
             short: `Take away en ${site.city}. Envío desde ${delivery.minimum}, hasta ${delivery.radius}.`,
@@ -377,8 +369,13 @@ export const pages = {
       facts: [workshopFacts.capacity, workshopFacts.duration, site.city],
       next: "Próxima fecha:",
       cta: { label: "Conocé los workshops", href: "/workshops" },
-      // TODO(Maggie): reels de los workshops para el video de fondo.
-      video: { src: undefined as string | undefined, poster: undefined as string | undefined },
+      // TODO(Maggie): si llega un reel de los workshops, puede volver el video de fondo.
+      // Foto vertical: el encuadre deja las caras a la vista en la banda ancha.
+      image: {
+        src: "/fotos/inicio-workshops-grupo.jpg",
+        alt: `Alumnas cocinando y riéndose alrededor de la mesada en un workshop de ${site.owner.name}`,
+        objectPosition: "object-[50%_47%]",
+      },
     },
     pickup: {
       eyebrow: { full: "Retiros", short: `Take away en ${site.city}` },
@@ -411,16 +408,15 @@ export const pages = {
     },
     breadcrumb: { label: "Migas de pan", home: "Inicio" },
     title: "Tienda",
-    intro: [
-      "Todo se hornea por encargo, no hay stock. Al finalizar elegís el día y horario de retiro. ¿Es para un evento? ",
-      { text: "Pedí presupuesto por WhatsApp", href: whatsappLink(whatsappMessages.event) },
-      ".",
-    ] satisfies RichText,
     facts: [
-      { term: "Anticipación", value: "48 h" },
-      { term: "Retiro", value: `Lun a Sáb, ${site.city}` },
-      { term: "Envío", value: `Desde ${delivery.minimum} · ${delivery.radius}` },
+      { term: "Anticipación", value: `${pedidos.anticipacionHoras} h` },
+      { term: "Retiro", value: `${pedidos.diasRetiro}, ${site.city}` },
+      { term: "Envío", value: `pedidos desde ${delivery.minimum}, hasta ${delivery.radius}` },
     ],
+    event: [
+      "¿Es para un evento? ",
+      { text: "Pedí presupuesto por WhatsApp", href: whatsappLink(whatsappMessages.event) },
+    ] satisfies RichText,
     filter: { label: "Categoría", all: "Todo" },
     allTitle: "Todos los productos",
     empty: { text: "No hay productos en esta categoría.", cta: "Ver todo" },
@@ -509,7 +505,8 @@ export const pages = {
     steps: {
       eyebrow: "Paso a paso",
       title: "Cómo es un workshop",
-      facts: [workshopFacts.duration, workshopFacts.capacity, `En mi cocina de ${site.city}`, "Pagás el total al inscribirte"],
+      // Una línea de texto, sin el punto de "aprox.".
+      facts: ["2 h aprox", workshopFacts.capacity, `En mi cocina de ${site.city}`].join(" · "),
       items: [
         { title: "Te recibo", text: workshopsStory.welcome },
         { title: "Demo", text: workshopsStory.demo },
@@ -881,11 +878,18 @@ export const pages = {
       ],
       closing: ownerStory[6],
     },
-    gallery: [
-      kitchenImage,
-      { alt: `${site.owner.name} decorando una torta con manga` },
-      { alt: "Mesa servida con tortas, budines y cookies" },
-    ] satisfies SiteImage[],
+    // Fotos de Maggie (09/11), verticales. Van debajo de la historia.
+    gallery: {
+      label: `Fotos de ${site.owner.name}`,
+      images: [
+        { src: "/fotos/maggie-1-sonrisa.jpg", alt: `${site.owner.name} sonríe en su cocina durante un workshop` },
+        { src: "/fotos/maggie-2-workshop.jpg", alt: `${site.owner.name} explica una receta a sus alumnas` },
+        {
+          src: "/fotos/maggie-3-cocina.jpg",
+          alt: `${site.owner.name} corta una tarta en su cocina, con bandejas de masas y cuadrados`,
+        },
+      ] satisfies SiteImage[],
+    },
     cta: {
       title: `¿Te recomendaron ${site.name}?`,
       text: "Ahora podés encargar directo desde acá.",

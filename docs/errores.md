@@ -339,3 +339,24 @@ Quedó en ~72, con 191 KB (ver [lighthouse.md](lighthouse.md#tienda-carrito-y-ch
 - Unitarios en `pedidos-unit.spec.ts` con "ahora" fijo: sábado 22:30, domingo 10:00, lunes 07:00 y lunes 09:30 (a menos de una hora de la primera franja). Cada fecha se valida con las mismas reglas que la API.
 
 **Para que no se repita:** una fecha de prueba se calcula a partir de un `now` que se pueda fijar, y se prueba con unitarios en los bordes (fin de semana, de noche, antes de la primera franja). Si un caso espera un error, el test chequea el mensaje, no solo el 400, y fija los datos que lo producen (como la anticipación del producto) en lugar de depender de los defaults.
+
+## 09/11/2026
+
+### El CI del PR falló sin correr ningún job
+
+**PR:** #28 (`fix/ajustes-visuales-3`)
+
+**Qué pasó:** el CI #76 del PR (run `42672876815`) terminó en *failure* a los 54 s, aunque en local pasaban lint y build. GitHub mostraba "This run likely failed because of a workflow file issue" y `gh run view --log-failed` no devolvía nada.
+
+**Causa:** fue del lado de GitHub Actions, no del código ni de un archivo sin commitear. Lo que se revisó:
+
+- el run no tenía ningún job (`actions/runs/<id>/jobs` vacío): no llegó a instalar dependencias, así que no hay log;
+- `.github/workflows/ci.yml` era igual al de `main`, que había pasado el 08/11 (#27), y el PR no tocaba `.github/`;
+- el repo es público y Actions está habilitado, con todas las acciones permitidas: no era un tema de minutos ni de permisos;
+- el working tree estaba limpio: todo lo del PR estaba en el commit `813984f`.
+
+Re-ejecutado sin cambios (`gh run rerun 42672876815`), el mismo commit pasó: job `build` en verde en 1m37s. GitHub no informó un motivo concreto de la primera falla.
+
+**Para que no se repita:** si un run falla sin jobs y sin log, antes de buscar en el código hay que mirar si el run tiene jobs (`gh api repos/<owner>/<repo>/actions/runs/<id>/jobs`) y comparar el workflow contra `main`. Si no tiene jobs y el workflow no cambió, se re-ejecuta una vez. Si vuelve a fallar igual, recién ahí revisar la configuración de Actions del repo y el estado de GitHub (githubstatus.com).
+
+**Aparte (no causó la falla):** la corrida que pasó avisa que `actions/checkout@v4` y `actions/setup-node@v4` usan Node 20, que está deprecado, y que `ubuntu-latest` pasa a Ubuntu 26. Queda para un PR aparte.

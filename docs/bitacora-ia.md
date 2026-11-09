@@ -844,3 +844,36 @@ Después se sumó cancelar un pedido aceptado.
   - Accessibility, Best Practices y SEO: 100 en las dos rutas.
 - Capturas antes y después en `docs/capturas/ajustes2-*`, en mobile (390 px) y desktop (1440 px): portada del inicio y sus otras dos fotos, footer, tienda, portada de `/workshops` y "Cómo enseño".
 
+
+## 09/11/2026
+
+### Ajustes visuales 3 (`fix/ajustes-visuales-3`)
+
+**Pedido:** "Cómo pedir" sin el paso "Pagá online"; foto en la banda de workshops del inicio; tienda sin párrafo inicial, con el recuadro de un dato por línea y el presupuesto para eventos debajo; los datos de "Cómo es un workshop" en una línea sin cajas; tres fotos de Maggie en `/maggie`. Con tests, docs, capturas antes y después y Lighthouse de `/` y `/maggie`.
+
+**Qué se hizo:**
+
+- **Cómo pedir:** quedan 3 pasos (Elegí y encargá, Maggie lo confirma, Retirá o recibí). El título largo del tercero pasó de "Retirá" a "Retirá o recibí", porque el texto ya habla del envío. El texto de los pasos 1 y 2 sigue teniendo sentido sin el pago. La grilla pasó a 3 columnas desde `lg` (antes 2 en `md` y 4 en `xl`; con 3 pasos, 2 columnas dejaban uno solo abajo).
+- **Banda de workshops:** `inicio-workshops-grupo.jpg` en lugar del video vacío, con `object-[50%_47%]` (las caras quedan a la vista en 390 y 1440 px). `TODO(Maggie)` por si llega un reel. `BackgroundVideo` queda: lo usa el carrusel.
+- **Tienda:** sin el párrafo. El recuadro dice "Anticipación: 48 h", "Retiro: lunes a sábado, San Isidro" y "Envío: pedidos desde $ 400.000, hasta 10 km", uno por línea, armados desde `pedidos` (`anticipacionHoras` y `diasRetiro` son nuevos; mínimo y radio ya estaban). Debajo, "¿Es para un evento? Pedí presupuesto por WhatsApp" con el link que ya existía.
+- **Cómo es un workshop:** "2 h aprox · Hasta 8 personas · En mi cocina de San Isidro" en texto chocolate sobre el arena (≈ 6,9:1), sin cajas. Se cayó "Pagás el total al inscribirte", que no estaba en el pedido (sigue en la FAQ y en la agenda).
+- **Maggie:** las 3 fotos reemplazan a los 3 placeholders de la galería, debajo de la historia. Tres columnas desde `md`; en mobile, scroll horizontal con snap, enfocable con el teclado (como "Así fueron los workshops"). El retrato de la portada es otra foto, no se repite.
+- **Fotos después del `load`:** `DeferredImageFrame` (nuevo) y el hook `useDespuesDelLoad` (`lib/use-despues-del-load.ts`), que sale del efecto que ya tenía el carrusel. Lo usan la banda, la galería y el carrusel.
+- **Tests:** `ajustes-visuales-3.spec.ts` (12): no había tests de estas secciones.
+- **Docs:** `testing.md` (tabla, conteo y MP-43 y MP-44), `lighthouse.md` y `contenido-maggie.md`.
+
+**Decisiones mías (se pueden cambiar):**
+
+- **Fondo arena en "Cómo es un workshop":** el pedido decía "sobre el fondo oscuro", pero la sección es arena. Lo consulté y Catalina eligió dejar el arena.
+- **Las fotos nuevas se piden después del `load`:** el pedido decía lazy loading, y lo tienen, pero la primera medición mostró que igual competían con el LCP. En mobile la galería está a ~2300 px y Chrome, en redes lentas, ya pide las lazy a menos de ~2500 px: el LCP de `/maggie` subía de 3,19 a 3,41 s. Con el cambio vuelve a 3,25 s, dentro del rango. Mientras cargan se ve el color del marco, del mismo tamaño (CLS 0).
+- **Galería en vez de fotos intercaladas** con los párrafos: es el lugar que ya tenía reservado, y la historia se lee de corrido.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde.
+- Suite completa: 238 pasaron y 1 se salteó, incluido rate limit. El salteado es el mismo de ajustes 2: "sin fotos, la sección no aparece" (`workshops-pasados.spec.ts`), porque la base tiene una foto real. Durante `panel-pedidos.spec.ts` el servidor registró varios "The destination stream closed early" (navegaciones que el test corta antes de que termine el streaming); esos tests pasaron y no tocan nada de este cambio.
+- Lighthouse mobile (medianas, ver `lighthouse.md`):
+  - `/`: LCP 3,79 → 3,80 s, CLS 0 → 0, Performance 83 → 82;
+  - `/maggie`: LCP 3,19 → 3,25 s, CLS 0 → 0, Performance 87 → 89;
+  - Accessibility, Best Practices y SEO: 100 en las dos.
+- Capturas antes y después en `docs/capturas/ajustes3-*`, en mobile (390 px) y desktop (1440 px): "Cómo pedir", banda de workshops, tienda, "Cómo es un workshop" y galería de `/maggie`.
