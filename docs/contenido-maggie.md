@@ -15,10 +15,11 @@ Archivos: `public/brand/homebakery_logo_sin_tagline.png` y `public/brand/homebak
 - Foto: bien horizontal, a todo el ancho (como la web de Violeta Massey). No a la derecha con bordes redondeados. Si puede ser video, suma. Idealmente un carrusel de 3 o 4 imágenes o videos.
 - Fotos del carrusel (07/11), en este orden: `inicio-1-minis.jpg`, `inicio-2-torta-frutos-rojos.jpg` e `inicio-3-tortas.jpg`, en `public/fotos/`. Son verticales: en desktop se recortan con un encuadre para cada una.
 - Portada de `/workshops` (07/11): `public/fotos/workshops-portada.jpg`, en lugar del reel.
+- Banda de workshops del inicio (09/11): `public/fotos/inicio-workshops-grupo.jpg`, mientras no haya reels.
 
 ## Presentación (Maggie)
 
-Foto: `public/fotos/maggie-presentacion.jpg`.
+Foto: `public/fotos/maggie-presentacion.jpg`. Debajo de la historia (09/11): `maggie-1-sonrisa.jpg`, `maggie-2-workshop.jpg` y `maggie-3-cocina.jpg`.
 
 > Home Bakery nació en mi cocina, horneando siempre para mi familia y amigos.
 >
@@ -104,7 +105,7 @@ En el sitio se ve solo el mes y el año ("Octubre 2026"). Aparecen cuando tienen
 
 ## Pendiente de Maggie
 
-- Reels de los workshops para el video de la banda del inicio. La portada de `/workshops` ya tiene su foto (07/11).
+- Reels de los workshops, si quiere video en la banda del inicio (hoy tiene una foto, 09/11). La portada de `/workshops` ya tiene su foto (07/11).
 - Una foto de cómo fue de cada workshop pasado: la sube Maggie desde el panel (ver [guia-panel.md](guia-panel.md#después-de-un-workshop-subir-la-foto)). Sin fotos, la sección "Así fueron los workshops" no aparece.
 - Saldo de la seña: cuándo y cómo se paga.
 - Costo del envío. Hoy no se cobra y el checkout lo aclara (`TODO(Maggie)` en `data/site.ts`).

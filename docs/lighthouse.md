@@ -2,6 +2,23 @@
 
 Puntajes de Accessibility, Best Practices y SEO en mobile. El mínimo aceptado es 95 en Accessibility y SEO, y 90 en Best Practices.
 
+## Fotos en la banda de workshops y en /maggie (ajustes visuales 3)
+
+- **Fecha:** 09/11/2026
+- **Rama:** `fix/ajustes-visuales-3`
+- **Lighthouse:** 12.8.2, emulación mobile, Chromium de Playwright (headless), build de producción leyendo Supabase
+- **Comparación:** `main` (antes) contra la rama (después), sin caché. Mediana de 3 corridas; de `/` después, 5
+
+| Ruta | | Performance | LCP (simulado) | Elemento LCP | TBT | CLS | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|---|---|---|---|---|
+| `/` | antes | 83 | 3,79 s (3,78–3,82) | primera foto del carrusel | 270 ms | 0 | 100 | 100 | 100 |
+| `/` | después | 82 | 3,80 s (3,79–4,10) | primera foto del carrusel | 308 ms | 0 | 100 | 100 | 100 |
+| `/maggie` | antes | 87 | 3,19 s (3,18–3,19) | retrato de la portada | 290 ms | 0 | 100 | 100 | 100 |
+| `/maggie` | después | 89 | 3,25 s (3,18–3,25) | retrato de la portada | 234 ms | 0 | 100 | 100 | 100 |
+
+- **CLS 0 en las dos rutas:** las fotos nuevas van en marcos de alto fijo.
+- **Corrección a partir de la medición:** en la primera versión, las fotos de la galería de `/maggie` tenían `loading="lazy"` pero se pedían junto con el retrato: en mobile están a ~2300 px del borde, y Chrome, en redes lentas, carga las lazy que estén a menos de ~2500 px. El LCP de `/maggie` subía a 3,41 s (3,40–3,41) en las tres corridas, con más *load delay*. Lo mismo pasaba en `/` con la foto de la banda (60 KB, pedida a la par de la portada). Ahora las dos se piden después del evento `load` (`DeferredImageFrame`, con el mismo hook que las fotos 2 y 3 del carrusel) y los LCP vuelven a los de `main`.
+
 ## Portadas con fotos, footer y barra de avisos (ajustes visuales 2)
 
 - **Fecha:** 08/11/2026

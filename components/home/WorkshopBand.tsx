@@ -1,6 +1,6 @@
 import { Fragment } from "react";
-import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { Button } from "@/components/Button";
+import { DeferredImageFrame } from "@/components/DeferredImageFrame";
 import { Eyebrow } from "@/components/Eyebrow";
 import { SectionTitle } from "@/components/SectionTitle";
 import { pages, ui } from "@/data/site";
@@ -11,8 +11,8 @@ const { workshop: content } = pages.home;
 
 /**
  * Banda chocolate que presenta los workshops ("Grupos reducidos en mi
- * cocina"), con video de la dinámica de cocina y la próxima fecha en una
- * línea chica. El video va arriba en mobile y a la derecha en desktop.
+ * cocina"), con una foto de un workshop y la próxima fecha en una línea
+ * chica. La foto va arriba en mobile y a la derecha en desktop.
  */
 export function WorkshopBand({ nextWorkshop }: { nextWorkshop?: Workshop }) {
   return (
@@ -21,10 +21,15 @@ export function WorkshopBand({ nextWorkshop }: { nextWorkshop?: Workshop }) {
         data-surface="dark"
         className="flex flex-col overflow-hidden rounded-3xl bg-chocolate text-hueso lg:grid lg:grid-cols-2 lg:rounded-4xl"
       >
-        <BackgroundVideo
-          src={content.video.src}
-          poster={content.video.poster}
-          className="relative h-55 lg:order-last lg:h-auto lg:min-h-130"
+        {/* Después del load: no compite con la portada (LCP). */}
+        <DeferredImageFrame
+          src={content.image.src}
+          alt={content.image.alt}
+          tone="oscuro"
+          rounded=""
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          objectPosition={content.image.objectPosition}
+          className="h-55 lg:order-last lg:h-auto lg:min-h-130"
         />
 
         <div className="flex flex-col gap-3.5 p-6 lg:gap-5.5 lg:p-18">

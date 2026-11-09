@@ -1,11 +1,11 @@
-import { ImageFrame } from "@/components/ImageFrame";
+import { DeferredImageFrame } from "@/components/DeferredImageFrame";
 import { Eyebrow } from "@/components/Eyebrow";
 import { SectionTitle } from "@/components/SectionTitle";
-import { pages, ui } from "@/data/site";
+import { pages } from "@/data/site";
 
 const { story, gallery } = pages.maggie;
 
-/** "Mi historia" con el texto completo de Maggie en tres partes, y galería de fotos. */
+/** "Mi historia" con el texto completo de Maggie en tres partes, y tres fotos de Maggie. */
 export function MaggieStory() {
   return (
     <>
@@ -36,20 +36,30 @@ export function MaggieStory() {
         </div>
       </section>
 
-      <ul className="contenedor grid gap-3 py-16 md:grid-cols-3 lg:gap-6 lg:py-26">
-        {gallery.map((image) => (
-          <li key={image.alt}>
-            <ImageFrame
-              src={image.src}
-              alt={image.alt}
-              placeholderLabel={ui.imagePending}
-              rounded="rounded-card-sm lg:rounded-3xl"
-              sizes="(min-width: 768px) 33vw, 100vw"
-              className="h-60 lg:h-105"
-            />
-          </li>
-        ))}
-      </ul>
+      <div className="contenedor py-16 lg:py-26">
+        {/* Mobile: scroll horizontal; se puede enfocar para moverlo con el teclado. Desde md: tres columnas. */}
+        <div
+          role="region"
+          aria-label={gallery.label}
+          tabIndex={0}
+          className="-mx-4 snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 md:mx-0 md:snap-none md:overflow-visible md:px-0"
+        >
+          <ul className="flex gap-3 md:grid md:grid-cols-3 lg:gap-6">
+            {gallery.images.map((image) => (
+              <li key={image.src} className="w-4/5 shrink-0 snap-start md:w-auto">
+                {/* Después del load: no compiten con el retrato de la portada (LCP). */}
+                <DeferredImageFrame
+                  src={image.src}
+                  alt={image.alt}
+                  rounded="rounded-card-sm lg:rounded-3xl"
+                  sizes="(min-width: 768px) 33vw, 80vw"
+                  className="h-100 lg:h-125"
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </>
   );
 }
