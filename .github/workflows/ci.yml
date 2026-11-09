@@ -38,7 +38,7 @@ jobs:
       # Los e2e se corren en local antes de mergear (ver docs/deploy.md).
       - run: npm run test:unit
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
