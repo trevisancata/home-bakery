@@ -22,7 +22,7 @@ Cómo se asegura la calidad de Home Bakery: qué se hace para que los errores no
 | Práctica | Qué evita | Dónde |
 |---|---|---|
 | Revisión de PRs | Que entre a `main` un cambio sin que nadie lo lea. Cada cambio va en su rama y su PR, y queda registrado en la bitácora | [bitacora-ia.md](bitacora-ia.md) |
-| CI | Que se mergee algo que no compila o no pasa el lint. Corre `npm run lint` y `npm run build` en cada PR y en cada push a `main`. **No corre los e2e**: necesitan las claves de Supabase y escriben en la base, así que se corren en local antes de abrir el PR | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
+| CI | Que se mergee algo que no compila, no pasa el lint, tiene errores de tipos o rompe un unitario. Corre `npm run lint`, `npm run typecheck`, `npm run build` y `npm run test:unit` en cada PR y en cada push a `main`. **No corre los e2e** (comparten la base de producción, el rate limit bloquea los logins y necesitan la secret key): se corren en local antes de mergear. Detalle en [deploy.md](deploy.md#ci) | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
 | TypeScript | Errores de tipos entre la base, la API y los componentes. El build falla si los tipos no cierran | `tsconfig.json` |
 | Validación con zod | Que llegue a la base un pedido mal armado. Las APIs validan el cuerpo y responden 400 con los errores por campo; el formulario usa el mismo esquema | `lib/validation/` |
 | RLS en Supabase | Que alguien escriba sin permiso aunque fallen las capas de arriba. Las políticas exigen `es_admin()` para escribir | [seguridad.md](seguridad.md) |
@@ -42,6 +42,8 @@ Cómo se asegura la calidad de Home Bakery: qué se hace para que los errores no
 | Comando | Qué hace |
 |---|---|
 | `npm run test:e2e` | Corre toda la suite. Hace un build de producción y lo sirve en el puerto 3100, con Mercado Pago apuntando al mock |
+| `npm run test:unit` | Solo los unitarios (proyecto `unit`, `playwright.unit.config.ts`): sin servidor, sin navegador y sin base. Es lo que corre el CI |
+| `npm run typecheck` | `next typegen` y `tsc --noEmit` |
 | `npm run test:e2e -- e2e/tienda.spec.ts` | Corre un solo archivo |
 | `npm run test:e2e:ui` | Abre el [modo UI](#modo-ui) de Playwright |
 | `npm run test:e2e:report` | Abre el reporte html de la última corrida, con las capturas y los traces de las fallas |
@@ -55,11 +57,11 @@ Cómo se asegura la calidad de Home Bakery: qué se hace para que los errores no
 - en `playwright-report/`, el reporte html. No se abre solo: se abre con `npm run test:e2e:report`;
 - en `test-results/`, por cada test que falló, una captura de pantalla (`screenshot: "only-on-failure"`) y el trace (`trace: "retain-on-failure"`).
 
-En CI el reporter es `github`, que marca las fallas como anotaciones en el PR.
+En CI (solo los unitarios) el reporter es `github`, que marca las fallas como anotaciones en el PR, más el html, que el workflow sube como artifact cuando algo falla.
 
 ## Estrategia de los tests automáticos
 
-Playwright corre todo: los e2e con el navegador, los de la API con `request` y los unitarios, que importan funciones de `lib/` sin abrir ninguna página. Son 239 tests en 22 archivos (`npx playwright test --list`).
+Playwright corre todo: los e2e con el navegador, los de la API con `request` y los unitarios, que importan funciones de `lib/` sin abrir ninguna página. Son 240 tests en 22 archivos (`npx playwright test --list`).
 
 ### Qué cubre cada archivo
 
@@ -76,7 +78,7 @@ Playwright corre todo: los e2e con el navegador, los de la API con `request` y l
 | `ajustes-visuales-3.spec.ts` | 12 | "Cómo pedir" en tres pasos (sin "Pagá online"), en una fila en desktop y con los títulos cortos en mobile; banda de workshops del inicio con la foto del grupo (alt, encuadre, sin `<video>` ni preload). Tienda sin párrafo inicial: el recuadro con un dato por línea (anticipación, retiro y envío, desde `pedidos` en `data/site.ts`) y debajo "Pedí presupuesto por WhatsApp" con el mensaje de evento. "Cómo es un workshop": los datos en una línea de texto, sin cajas, con contraste ≥ 4,5:1 en 390 y 1440 px. `/maggie`: las tres fotos con su alt y lazy, sin repetir la de la portada; scroll horizontal enfocable en mobile (sin desbordar la página) y tres columnas en desktop |
 | `workshops-portada.spec.ts` | 4 | Portada de `/workshops` con foto (alt y preload), sin `<video>` ni ícono de pausa; de fondo a todo el ancho en mobile y enmarcada a la derecha en desktop. "Cómo enseño" solo con el texto: sin firma ni foto |
 | `inscripcion.spec.ts` | 3 | Formulario: errores por campo con foco en el primero, envío y paso del pago, workshops de ejemplo sin inscripción |
-| `api.spec.ts` | 24 | API pública `/api/v1`: categorías, productos (filtros y 400), detalle (404), workshops, inscripciones (400, 404, 409, sin sobreventa con pedidos simultáneos), redirecciones 308 de las rutas viejas |
+| `api.spec.ts` | 25 | API pública `/api/v1`: health (200, versión y `no-store`, sin base), categorías, productos (filtros y 400), detalle (404), workshops, inscripciones (400, 404, 409, sin sobreventa con pedidos simultáneos), redirecciones 308 de las rutas viejas |
 | `pagos.spec.ts` | 21 | Preferencia con el total de la base (`external_reference` `inscripcion:<id>`), 422 sin precio, 502 si MP falla; webhook (aprobado, referencia vieja sin prefijo, rechazado, monto distinto, duplicados, firma inválida, pagos ajenos); vencimiento y último lugar; página de resultado; inscripción y devoluciones en el panel |
 | `admin.spec.ts` | 11 | Permisos (sin sesión, sin rol, admin), login incorrecto, validación y saneo de la API de admin, origen cruzado (403), productos, fotos en Storage, inscripciones y workshops |
 | `panel-pedidos.spec.ts` | 8 | Panel de pedidos: cada pedido en su pestaña (y la transferencia vencida marcada), tarjetas del Inicio con link a la pestaña; detalle: aceptar y avisar por WhatsApp, rechazar con motivo obligatorio (foco en Volver y en el error) y el pago de MP en Para devolver, registrar una transferencia vencida (con el aviso de la fecha), efectivo aceptado sin cobrar, avanzar hasta entregado y cobrado, cancelar con devolución de transferencia; a 390 px, sin scroll horizontal y con botones de al menos 44 px |

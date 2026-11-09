@@ -877,3 +877,28 @@ Después se sumó cancelar un pedido aceptado.
   - `/maggie`: LCP 3,19 → 3,25 s, CLS 0 → 0, Performance 87 → 89;
   - Accessibility, Best Practices y SEO: 100 en las dos.
 - Capturas antes y después en `docs/capturas/ajustes3-*`, en mobile (390 px) y desktop (1440 px): "Cómo pedir", banda de workshops, tienda, "Cómo es un workshop" y galería de `/maggie`.
+
+### DevOps (`chore/devops`)
+
+**Pedido (clase 13):** CI con `tsc` y tests unitarios en un proyecto de Playwright sin servidor, caches y reporte como artifact; Dependabot; Vercel Analytics y Speed Insights solo en el sitio público; `GET /api/v1/health`; `docs/deploy.md` (entornos, variables, flujo, migraciones, dominio, logs, rollback y checklist a producción); README y bitácora.
+
+**Qué se hizo:**
+
+- **CI:** el mismo job `build` (es el check obligatorio de la protección de `main`, verificado con la API de GitHub) suma `npm run typecheck` (`next typegen` + `tsc --noEmit`) y `npm run test:unit`, cachea npm y `.next/cache`, y si algo falla sube `playwright-report/` como artifact.
+- **Proyecto `unit`:** `playwright.unit.config.ts`, con los `*-unit.spec.ts` y `temporada.spec.ts`, sin `webServer`, `globalSetup` ni `.env.local`. `playwright.config.ts` reusa el mismo proyecto y saca esos archivos de `chromium`, así la suite completa los corre una sola vez.
+- **Dependabot:** npm y GitHub Actions, los lunes, minors y patches agrupados, hasta 5 y 3 PRs abiertos.
+- **Observabilidad:** `<Analytics />` y `<SpeedInsights />` en `SitioChrome` (sitio público y 404; el panel tiene su propio layout). `GET /api/v1/health` → `{ status, version, commit }` con `no-store`, sin base.
+- **Docs:** `deploy.md` nuevo; `seguridad.md` (Analytics sin cookies), `testing.md` y README (sección "Deploy y CI", scripts y la ruta en la tabla de la API).
+
+**Decisiones mías (se pueden cambiar):**
+
+- **Sin navegadores en CI:** los unitarios no abren Chromium, así que no se instala ni se cachea. Lo consulté y Catalina eligió esta opción; `deploy.md` dice qué sumar si algún día los e2e corren en CI.
+- **`typegen` antes de `tsc`:** `next-env.d.ts` y `.next/types` están en `.gitignore`; sin `typegen`, en un checkout limpio `LayoutProps` no existe.
+- **Health sin base:** si consultara Supabase, una caída de la base se vería como el sitio caído.
+- **TODOs en `deploy.md`:** qué credenciales de MP tiene Preview en Vercel, el dominio y qué datos de prueba borrar no los sé, así que quedaron como TODO.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde. `npm run test:unit`: 65 pasaron, sin `.env.local`.
+- Suite completa: 239 pasaron y 1 se salteó (el mismo de ajustes 2 y 3), incluido rate limit. Suma el test del health.
+- Con el build local: `/` y `/tienda` piden `/_vercel/insights/script.js` y `/_vercel/speed-insights/script.js` (404 fuera de Vercel) sin dejar cookies; `/admin/ingresar` no pide ninguno.

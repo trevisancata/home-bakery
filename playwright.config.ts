@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+import { unitProject, unitTests } from "./playwright.unit.config";
 
 // Los tests leen y escriben Supabase: las claves salen de .env.local (Next
 // las carga solo para el servidor; acá hacen falta también para los tests).
@@ -41,9 +42,11 @@ export default defineConfig({
   projects: [
     // Ingresa con cada usuaria de prueba y guarda la sesión (e2e/.auth/).
     { name: "setup", testMatch: /auth\.setup\.ts/, use: { ...devices["Desktop Chrome"] } },
+    // Los unitarios, sin navegador (los mismos que corren en CI).
+    unitProject,
     {
       name: "chromium",
-      testIgnore: /rate-limit\.spec\.ts/,
+      testIgnore: [/rate-limit\.spec\.ts/, ...unitTests],
       dependencies: ["setup"],
       use: { ...devices["Desktop Chrome"] },
     },
