@@ -18,6 +18,14 @@ export const skipReason = "Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SECRET_KEY
 
 export const testSlugPrefix = "e2e-";
 
+/**
+ * Margen, en minutos, para comparar una fecha que calcula la base (now() de
+ * Postgres) con Date.now() de la máquina que corre los tests: los dos relojes
+ * no coinciden exacto (con la Mac 0,34 s atrasada, un vencimiento a 30
+ * minutos daba 30,004).
+ */
+export const toleranciaRelojMin = 5 / 60;
+
 /** Cliente con la secret key (se saltea RLS). Solo para preparar y limpiar datos. */
 export function admin() {
   if (!url || !secret) throw new Error(skipReason);

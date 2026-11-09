@@ -333,8 +333,8 @@ export const pages = {
         {
           title: { full: "Confirmamos tu pedido", short: `${site.owner.name} lo confirma` },
           text: {
-            full: [`${site.owner.name} revisa que pueda hacerlo para esa fecha y te avisa por WhatsApp y email.`],
-            short: "Te avisa por WhatsApp y email.",
+            full: [`${site.owner.name} revisa que pueda hacerlo para esa fecha y te avisa por WhatsApp.`],
+            short: "Te avisa por WhatsApp.",
           },
         },
         {

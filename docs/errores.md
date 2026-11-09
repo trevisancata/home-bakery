@@ -137,7 +137,7 @@ Problemas que aparecieron mientras se trabajaba con Claude Code, cómo se resolv
 **Solución:**
 - La preferencia **ya no manda `notification_url`**, así MP usa el webhook configurado en el panel, que firma con su clave.
 - `MP_WEBHOOK_SECRET` se usa con `trim()`, por si se pegó con un salto de línea.
-- Cuando la firma falla, el log suma un diagnóstico sin la clave, sin la firma y sin datos personales: `ts`, `x-request-id`, `data.id`, si vino `source_news` y el largo de la clave. Se sacó después, cuando el webhook quedó andando (ver [401 del webhook con las credenciales TEST-](#401-del-webhook-con-las-credenciales-test)).
+- Cuando la firma falla, el log suma un diagnóstico sin la clave, sin la firma y sin datos personales: `ts`, `x-request-id`, `data.id`, si vino `source_news` y el largo de la clave. Se sacó después, cuando el webhook quedó andando (ver [401 del webhook con las credenciales TEST-](#401-del-webhook-con-las-credenciales-test-)).
 - Los tests unitarios cubren las tres cosas.
 
 **Para que no se repita:**
@@ -360,3 +360,15 @@ Re-ejecutado sin cambios (`gh run rerun 42672876815`), el mismo commit pasó: jo
 **Para que no se repita:** si un run falla sin jobs y sin log, antes de buscar en el código hay que mirar si el run tiene jobs (`gh api repos/<owner>/<repo>/actions/runs/<id>/jobs`) y comparar el workflow contra `main`. Si no tiene jobs y el workflow no cambió, se re-ejecuta una vez. Si vuelve a fallar igual, recién ahí revisar la configuración de Actions del repo y el estado de GitHub (githubstatus.com).
 
 **Aparte (no causó la falla):** la corrida que pasó avisa que `actions/checkout@v4` y `actions/setup-node@v4` usan Node 20, que está deprecado, y que `ubuntu-latest` pasa a Ubuntu 26. Queda para un PR aparte.
+
+### El vencimiento a 30 minutos daba 30,004
+
+**PR:** #39 (`docs/evaluacion`)
+
+**Qué pasó:** en la suite completa falló dos veces seguidas `pagos.spec.ts` "crea la preferencia con el total que calcula la base": `expect(minutos).toBeLessThanOrEqual(30)` recibió 30,0038. Como el proyecto `chromium` falló, el rate limit no llegó a correr.
+
+**Causa:** el test compara `vence_at`, que calcula la base con su reloj (`now() + 30 minutos`), con `Date.now()` de la Mac. El reloj de la Mac estaba 0,34 s atrasado (`sntp time.apple.com`): con la inscripción respondida en menos de 0,34 s, el vencimiento quedaba "más de 30 minutos" en el futuro. `pedidos.spec.ts` tenía la misma comparación y pasaba solo porque ese pedido tarda más.
+
+**Solución:** `toleranciaRelojMin` (5 segundos) en `e2e/support/supabase.ts`, sumada al tope de 30 minutos en los dos tests. El piso de 28 minutos ya tenía margen de sobra.
+
+**Para que no se repita:** cuando un test compara una fecha de la base con `Date.now()`, la cota tiene que tener margen para la diferencia de reloj entre la máquina y la base, en los dos sentidos.

@@ -225,6 +225,28 @@ export const getProduct = cache(async (slug: string) => {
   return data ? toProduct(data as unknown as ProductoRow) : undefined;
 });
 
+type SitemapRow = {
+  slug: string;
+  updated_at: string;
+  producto_tamanos: { updated_at: string }[];
+  producto_imagenes: { updated_at: string }[];
+};
+
+/**
+ * Para el sitemap: el slug de cada producto activo y la última vez que
+ * cambió él, alguno de sus tamaños o alguna de sus fotos.
+ */
+export async function getSitemapProducts() {
+  const { data, error } = await createPublicClient()
+    .from("productos")
+    .select("slug, updated_at, categoria:categorias!inner (slug), producto_tamanos (updated_at), producto_imagenes (updated_at)");
+  if (error) failed("los productos del sitemap", error);
+  return (data as unknown as SitemapRow[]).map((row) => {
+    const fechas = [row, ...row.producto_tamanos, ...row.producto_imagenes].map((r) => Date.parse(r.updated_at));
+    return { slug: row.slug, updatedAt: new Date(Math.max(...fechas)) };
+  });
+}
+
 /** Todas las categorías activas, en orden. */
 export const getCategories = cache(async () => {
   const { data, error } = await createPublicClient()

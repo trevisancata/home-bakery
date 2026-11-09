@@ -944,3 +944,34 @@ Después se sumó cancelar un pedido aceptado.
 - Lint, `tsc` y build en verde. `npm run test:unit`: 67 pasaron.
 - Suite completa (con la 0011 corrida): 245 pasaron y 1 se salteó (el mismo de ajustes 2 y 3), incluido rate limit. Siguen los "The destination stream closed early" del servidor, sin tests que fallen.
 - Capturas mobile (390 px) en `docs/capturas/pedidos-simples-*`: pestañas con En curso, Entregados y cancelados, detalle en curso y un producto de 48 h sin "Anticipación". En las listas se sacaron del DOM los pedidos reales antes de capturar (quedan solo los de prueba; los contadores de las pestañas cuentan todos).
+
+### Preparación para la evaluación final (`docs/evaluacion`)
+
+**Pedido:** corregir la promesa de mails (no hay SMTP), sitemap y robots.txt con tests, poner al día el README, escribir `docs/entregables.md` con la evidencia por ítem de la rúbrica (E1 a E6 y los cinco transversales) y revisar qué PRs mergeados desde el #11 tienen el checklist de la plantilla, sin editarlos.
+
+**Qué se hizo:**
+
+- **Mails:** "Cómo pedir" del inicio decía que Maggie avisa "por WhatsApp y email"; ahora, "por WhatsApp" (`data/site.ts`). No había otra promesa de mail en el sitio: el único mail es el de recuperar la contraseña del panel. Los mockups de `docs/mockup/` lo siguen diciendo, pero son la referencia de diseño y no se tocaron.
+- **SEO:** `app/sitemap.ts` (inicio, tienda, cada producto activo, workshops y Maggie, con `lastModified`) y `app/robots.ts` (todo permitido salvo `/admin`, `/carrito`, `/pedido` y `/api`, con el link al sitemap), los dos con `NEXT_PUBLIC_SITE_URL` vía `siteUrl()`. La lógica está en `lib/seo.ts`, pura, para testearla sin servidor; los productos salen de `getSitemapProducts()` en `lib/data.ts`. Tests: `seo-unit.spec.ts` (5, corren en CI) y `seo.spec.ts` (2).
+- **README:** el párrafo de la rúbrica con link a `docs/entregables.md` en lugar de la lista vieja; Mercado Pago para workshops y pedidos, más transferencia y efectivo; carrito y `/admin/pedidos`; las once migraciones; sitemap y robots; que el sitio no manda mails a las clientas; conteo de tests. Links locales (archivos y anclas) y externos revisados.
+- **`docs/entregables.md`:** una sección por ítem con qué hace el proyecto y la evidencia (PRs, archivos, tests, capturas, URLs del sitio y de la API, Lighthouse), el resultado de la revisión de checklists y las decisiones (categorías fijas, e2e fuera del CI, credenciales de prueba, sin mails).
+
+**Decisiones mías (se pueden cambiar):**
+
+- **El texto de la rúbrica no estaba en el repo** (ni en Drive): la primera versión tenía un `TODO(rúbrica)` por sección y temas deducidos de los PRs. Se completó en la segunda tanda (abajo).
+- **`lastModified`:** cada producto lleva la fecha más nueva entre él, sus tamaños y sus fotos; inicio y tienda, la del último producto que cambió; workshops y Maggie no tienen fecha propia en la base y llevan la de generación. El sitemap tiene ISR de 5 minutos y `revalidarProducto` lo regenera al instante.
+- **Checklist en los PRs:** lo tenían #11 a #15, #25, #29 y #37; no lo tenían #16 a #24, #26 a #28 y #38. En la primera tanda no se editaron.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde (`/sitemap.xml` con ISR de 5 minutos y `/robots.txt` estático). `npm run test:unit`: 72 pasaron.
+- Suite completa: 250 pasaron, 1 se salteó (el mismo de ajustes 2 y 3) y 1 falló dos veces seguidas: `pagos.spec.ts` "crea la preferencia con el total que calcula la base", con 30,004 minutos de vencimiento contra un tope de 30. El reloj de la Mac estaba 0,34 s atrasado (`sntp time.apple.com`) y el test compara `vence_at` de la base con `Date.now()` local; la rama no toca pagos ni inscripciones. Por esa falla el rate limit no corrió con la suite: corrido aparte, pasó. Se arregló en la segunda tanda.
+
+**Segunda tanda (mismo PR):**
+
+- **Rúbrica oficial:** Catalina pasó la rúbrica (nivel Excelente y ponderación de cada ítem). `docs/entregables.md` se reorganizó con los nombres reales: E1 repo + pipeline + preview, E2 landing y vistas responsivas (absorbe lo de HTML semántico, responsive y consistencia visual que había quedado como transversal), E3 formularios con fetch y validación, E4 catálogo y API con el checklist en los PRs, E5 CRUD en Supabase y admin, E6 checkout y webhook; y los transversales Funcionalidad, Código / Estructura, Interfaz / Accesibilidad, Despliegue y Documentación. Arriba, la condición de la cátedra: Excelente en los cinco transversales y demo pública en vivo con Q&A técnico.
+- **Checklist agregado a los PRs viejos** (#16 a #24, #26 a #28 y #38): al final de la descripción, "## Checklist (agregado el 09/11/2026 en la revisión final)", con cada punto marcado solo si había evidencia en ese PR y la evidencia al lado (CI en verde, capturas mobile, tests o Lighthouse de accesibilidad, README tocado o que no hacía falta). Sin marcar quedaron: mobile y accesibilidad en #16 y #18, accesibilidad en #19, #22, #24 y #38, y mobile en #20. El resto de cada descripción no cambió (se verificó comparando antes y después). La tabla de E4 lo refleja.
+- **Test del vencimiento:** `toleranciaRelojMin` (5 s) en `e2e/support/supabase.ts`, en `pagos.spec.ts` y en la misma comparación de `pedidos.spec.ts`, que tenía el mismo problema. Registrado en `errores.md`.
+- **Ancla rota:** `#401-del-webhook-con-las-credenciales-test` no existía (el título termina en "TEST-", así que el ancla lleva un guion al final). Corregida en `errores.md`, `pagos.md`, `pruebas-mercadopago.md` y `testing.md`. Ahora todos los links locales de `README.md` y `docs/*.md` resuelven.
+
+**Resultado de la segunda tanda:** lint y `tsc` en verde. Suite completa: 252 pasaron y 1 se salteó (el de siempre en `workshops-pasados.spec.ts`), incluido rate limit; el test del vencimiento pasa con el reloj de la Mac igual de atrasado.

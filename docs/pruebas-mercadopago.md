@@ -6,7 +6,7 @@ Datos de prueba según la [documentación de compras de prueba de Checkout Pro](
 
 ## Configuración que funciona
 
-> **Con credenciales `TEST-…` el webhook da 401.** La firma `x-signature` de los avisos de pagos reales del sandbox no valida con esas credenciales (SignatureMismatch), aunque la clave secreta esté bien. Ver [errores.md](errores.md#401-del-webhook-con-las-credenciales-test).
+> **Con credenciales `TEST-…` el webhook da 401.** La firma `x-signature` de los avisos de pagos reales del sandbox no valida con esas credenciales (SignatureMismatch), aunque la clave secreta esté bien. Ver [errores.md](errores.md#401-del-webhook-con-las-credenciales-test-).
 
 La que se verificó el 22/10/2026 (aviso `payment.created` entregado con 200 y pago conciliado):
 

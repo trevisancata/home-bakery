@@ -41,7 +41,7 @@ La referencia es [`.env.example`](../.env.example): tiene todas las variables co
 | `SUPABASE_SECRET_KEY` | El servidor crea inscripciones y pedidos y confirma pagos; el seed y los tests preparan datos. Se saltea RLS | **Secreta** | ✓ | ✓ | ✓ | — |
 | `MP_ACCESS_TOKEN` | Crear las preferencias de pago y consultar pagos | **Secreta** | ✓ | ✓ | ✓ | — |
 | `MP_WEBHOOK_SECRET` | Validar la firma de los avisos de Mercado Pago | **Secreta** | ✓ | ✓ | ✓ | — |
-| `NEXT_PUBLIC_SITE_URL` | La URL pública, para las vueltas de Mercado Pago. Vacía: `https://$VERCEL_URL` o `http://localhost:3000` | Pública | ✓ | — | opcional | — |
+| `NEXT_PUBLIC_SITE_URL` | La URL pública, para las vueltas de Mercado Pago, el sitemap y el robots.txt. Vacía: `https://$VERCEL_URL` o `http://localhost:3000` | Pública | ✓ | — | opcional | — |
 | `CATALOGO_FOTOS_DIR` | La carpeta con las fotos del catálogo para `npm run seed` | Local (no es secreta, es una ruta) | — | — | ✓ | — |
 | `INSCRIPCIONES_RATE_LIMIT_MAX`, `PEDIDOS_RATE_LIMIT_MAX` | Subir el rate limit (los e2e lo suben a 1000). Sin valor: 5 | — | — | — | solo tests | — |
 | `VERCEL_URL`, `VERCEL_GIT_COMMIT_SHA` | Las pone Vercel solo: la URL del deploy y el commit (lo muestra `/api/v1/health`) | — | auto | auto | — | — |
