@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import { pedidos } from "../data/site";
 import { currentMonth, seasonRange } from "../lib/temporada";
 import {
   borrarProductoDePrueba,
@@ -130,6 +131,25 @@ test.describe("Tienda", () => {
       await expect(page.getByText("24 cm de diámetro")).toBeVisible();
     } finally {
       await borrarProductoDePrueba(producto.id);
+    }
+  });
+
+  test("la anticipación se muestra solo si el producto pide más que la general; sin detalles, no hay recuadro", async ({ page }) => {
+    const general = await crearProductoDePrueba({ leadTimeHours: pedidos.anticipacionHoras });
+    const mayor = await crearProductoDePrueba({ leadTimeHours: 72, medida: "20 cm" });
+    try {
+      await page.goto(`/tienda/${general.slug}`);
+      await expect(page.getByRole("heading", { level: 1, name: general.name })).toBeVisible();
+      await expect(page.getByRole("term")).toHaveCount(0);
+      await expect(page.getByRole("main").locator("dl")).toHaveCount(0);
+
+      await page.goto(`/tienda/${mayor.slug}`);
+      await expect(page.getByRole("heading", { level: 1, name: mayor.name })).toBeVisible();
+      await expect(page.getByRole("term")).toHaveText(["Medida", "Anticipación"]);
+      await expect(page.getByRole("definition").last()).toHaveText("72 h");
+    } finally {
+      await borrarProductoDePrueba(general.id);
+      await borrarProductoDePrueba(mayor.id);
     }
   });
 

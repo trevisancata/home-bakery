@@ -193,7 +193,7 @@ export function sesionDe(kind: "admin" | "sinRol") {
   return sesion;
 }
 
-/** Hasta dónde llevar un pedido de prueba, como lo haría el sitio y la admin. */
+/** Hasta dónde llevar un pedido de prueba, como lo haría el sitio y la admin (en_preparacion y listo, como datos viejos). */
 export type Etapa = "pendiente" | "pagado" | "aceptado" | "en_preparacion" | "listo" | "entregado";
 
 /**
@@ -231,10 +231,13 @@ export async function pedidoEn(
     // Efectivo: "pagado" es "por confirmar" sin cobrar (se acepta sin pago).
   }
   if (hasta >= 2 && client) await ok(client.rpc("aceptar_pedido", { p_id: id }));
-  for (const estado of ["en_preparacion", "listo", "entregado"] as const) {
-    if (hasta >= orden.indexOf(estado) && client) {
-      await ok(client.rpc("avanzar_pedido", { p_id: id, p_estado: estado, p_cobrado: estado === "entregado" }));
-    }
+  if (etapa === "entregado" && client) await ok(client.rpc("avanzar_pedido", { p_id: id, p_estado: "entregado", p_cobrado: true }));
+  // en_preparacion y listo: pedidos de antes de 0011, que el panel ya no ofrece. Se fuerzan con la clave de servicio.
+  if (etapa === "en_preparacion" || etapa === "listo") {
+    const ahora = new Date().toISOString();
+    const columnas = etapa === "listo" ? { en_preparacion_at: ahora, listo_at: ahora } : { en_preparacion_at: ahora };
+    const { error } = await admin().from("pedidos").update({ estado: etapa, ...columnas }).eq("id", id);
+    if (error) throw new Error(`No se pudo dejar el pedido en ${etapa}: ${error.message}`);
   }
   return { id, numero, pagoId };
 }

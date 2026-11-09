@@ -14,12 +14,6 @@ const a = content.actions;
 
 type Dialogo = "rechazar" | "cancelar" | "pagar" | "entregar" | null;
 
-const siguiente: Record<string, "en_preparacion" | "listo" | "entregado"> = {
-  aceptado: "en_preparacion",
-  en_preparacion: "listo",
-  listo: "entregado",
-};
-
 const primario = "min-h-12 rounded-full bg-chocolate px-5 font-semibold text-hueso hover:bg-carbon disabled:opacity-60";
 const secundario = "min-h-12 rounded-full border-trazo border-carbon px-5 font-semibold text-carbon hover:bg-arena disabled:opacity-60";
 const peligro = "min-h-12 rounded-full border-trazo border-error px-5 font-semibold text-error hover:bg-error-fondo disabled:opacity-60";
@@ -35,11 +29,14 @@ export function AccionesPedido({
   pedido,
   vencida,
   avisoWhatsApp,
+  avisoListo,
 }: {
   pedido: PedidoPanel;
   /** Pendiente de pago con el plazo vencido (calculado en el servidor). */
   vencida: boolean;
   avisoWhatsApp: string | null;
+  /** En curso: el aviso de que está listo (solo abre WhatsApp, no cambia el estado). */
+  avisoListo: string | null;
 }) {
   const router = useRouter();
   const [dialogo, setDialogo] = useState<Dialogo>(null);
@@ -57,7 +54,8 @@ export function AccionesPedido({
     medioPago !== "mercadopago" &&
     !pedido.pagadoAt &&
     (medioPago === "transferencia" ? estado === "pendiente_pago" : !["rechazado", "cancelado", "entregado"].includes(estado));
-  const proximo = siguiente[estado];
+  // En curso (aceptado, o en_preparacion/listo de antes de 0011): se entrega o se cancela.
+  const puedeEntregar = enCurso.has(estado);
   const puedeCancelar = enCurso.has(estado);
   const transferenciaVencida = medioPago === "transferencia" && vencida;
 
@@ -100,23 +98,16 @@ export function AccionesPedido({
     );
   }
 
-  function avanzarA(estadoNuevo: "en_preparacion" | "listo" | "entregado", cobrado = false) {
+  function entregar() {
     ejecutar(
-      () => avanzar(pedido.id, estadoNuevo, cobrado),
-      () => a.advanced(pedido.numero, content.status[estadoNuevo]),
+      () => avanzar(pedido.id, "entregado", sinCobrar),
+      () => a.advanced(pedido.numero, content.status.entregado),
     );
   }
 
-  const etiquetaAvance =
-    proximo === "en_preparacion"
-      ? a.advance.en_preparacion
-      : proximo === "listo"
-        ? a.advance.listo[pedido.entrega]
-        : sinCobrar
-          ? a.advance.entregadoCobrado
-          : a.advance.entregado;
-
-  const hayAcciones = puedeAceptar || puedeRechazar || puedePagar || proximo || puedeCancelar || pedido.devolucionPendiente || avisoWhatsApp;
+  const hayAcciones =
+    puedeAceptar || puedeRechazar || puedePagar || puedeEntregar || puedeCancelar || pedido.devolucionPendiente || avisoWhatsApp || avisoListo;
+  const enlaceWhatsApp = `${secundario} inline-flex items-center justify-center no-underline`;
 
   return (
     <section aria-labelledby="pedido-acciones" className="flex flex-col gap-3 rounded-3xl border border-borde bg-white p-5 lg:p-6">
@@ -140,14 +131,9 @@ export function AccionesPedido({
             {a.accept}
           </button>
         )}
-        {proximo && (
-          <button
-            type="button"
-            disabled={pendiente}
-            onClick={() => (proximo === "entregado" ? abrir("entregar") : avanzarA(proximo))}
-            className={primario}
-          >
-            {etiquetaAvance}
+        {puedeEntregar && (
+          <button type="button" disabled={pendiente} onClick={() => abrir("entregar")} className={primario}>
+            {sinCobrar ? a.advance.entregadoCobrado : a.advance.entregado}
           </button>
         )}
         {pedido.devolucionPendiente && (
@@ -160,9 +146,15 @@ export function AccionesPedido({
             {a.refund}
           </button>
         )}
+        {avisoListo && (
+          <a href={avisoListo} target="_blank" rel="noopener noreferrer" className={enlaceWhatsApp}>
+            {a.notifyReady}
+            <span className="sr-only">{a.notifyContext(pedido.nombre.split(" ")[0])}</span>
+          </a>
+        )}
         {avisoWhatsApp && (
-          <a href={avisoWhatsApp} target="_blank" rel="noopener noreferrer" className={`${secundario} inline-flex items-center justify-center no-underline`}>
-            {a.notify}
+          <a href={avisoWhatsApp} target="_blank" rel="noopener noreferrer" className={enlaceWhatsApp}>
+            {enCurso.has(estado) ? a.notifyConfirmed : a.notify}
             <span className="sr-only">{a.notifyContext(pedido.nombre.split(" ")[0])}</span>
           </a>
         )}
@@ -243,7 +235,7 @@ export function AccionesPedido({
             <button type="button" data-autofocus onClick={() => setDialogo(null)} className={secundario}>
               {a.deliverDialog.cancel}
             </button>
-            <button type="button" disabled={pendiente} onClick={() => avanzarA("entregado", sinCobrar)} className={primario}>
+            <button type="button" disabled={pendiente} onClick={entregar} className={primario}>
               {sinCobrar ? a.advance.entregadoCobrado : a.deliverDialog.confirm}
             </button>
           </>

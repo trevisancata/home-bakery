@@ -919,3 +919,28 @@ Después se sumó cancelar un pedido aceptado.
 - **MP-18 y MP-19 repetidos** (dos casos con cada número): se dejaron así y se aclara en el resumen. Renumerar cambiaría los IDs que ya se citan en otros lados.
 
 **Resultado:** quedan sin correr MP-43 y MP-44 (ajustes visuales 3), MP-13 sin ejecutar y MP-02 parcial. Lint en verde.
+
+### Pedidos simples (`fix/pedidos-simples`)
+
+**Pedido:** simplificar el camino de un pedido a Esperando transferencia → Por confirmar → En curso → Entregado, sin "Empezar a preparar" ni "Listo"; 4 pestañas en el panel; "Avisar que está listo" por WhatsApp sin cambiar el estado. En el detalle del producto, "Anticipación" solo si el producto pide más que la general (48 h). Migración chica y compatible hacia atrás, con tests, docs y capturas.
+
+**Qué se hizo:**
+
+- **Migración 0011:** `avanzar_pedido` acepta `entregado` desde `aceptado`, `en_preparacion` o `listo`, con la regla del efectivo de siempre (sin cobrar pide `p_cobrado`). `en_preparacion` y `listo` siguen en el check por los pedidos que ya están así. `cancelar_pedido` no cambia.
+- **Panel:** las pestañas son Esperando transferencia, Por confirmar, En curso (aceptado, y los que quedaron en preparación o listos) y Entregados y cancelados (entregados, rechazados, cancelados y MP vencidos, del más reciente al más viejo, con el badge del estado). Los links viejos `?tab=entregados` y `?tab=rechazados` llevan a la nueva. El detalle en curso tiene Entregado (o Entregado y cobrado, con confirmación), Avisar que está listo, Avisar que lo confirmé y Cancelar pedido. `avancePedidoSchema` solo acepta `entregado`.
+- **Producto:** el dato "Anticipación" sale si `leadTimeHours` no supera `pedidos.anticipacionHoras`; si no queda ningún dato, el recuadro no se muestra (ya lo hacía el `details.length > 0`).
+- **Tests:** `pedidos.spec.ts` (aceptado → entregado en un paso, los de en preparación o listo también, los pasos viejos todavía aceptados), `panel-pedidos.spec.ts` (orden de las pestañas, links viejos, detalle en curso, un pedido que quedó en Listo se entrega), `pedidos-unit.spec.ts` (pestaña `cerrados` y su orden, `avisoListo`) y `tienda.spec.ts` (la anticipación). El soporte (`pedidoEn`) deja un pedido en `en_preparacion` o `listo` con la clave de servicio, como dato viejo.
+- **Docs:** `modelo-de-datos.md` (0011, transiciones y diagramas), `guia-panel.md`, `testing.md` (tabla de specs) y README.
+
+**Decisiones mías (se pueden cambiar):**
+
+- **La base sigue aceptando los pasos viejos** (`aceptado → en_preparacion → listo`): así el código deployado no falla entre correr la 0011 y el deploy. El panel ya no los ofrece. Lo consulté y Catalina eligió esta opción.
+- **Dos avisos en curso:** quedó también "Avisar que lo confirmé" (el mensaje de aceptado), además de "Avisar que está listo". Lo consulté y Catalina eligió mantener los dos.
+- **La pestaña por defecto sigue siendo Por confirmar**, aunque ya no es la primera: es la que pide algo de Maggie.
+- **MP-32 y MP-35 de `testing.md`** (pruebas manuales): después de mergear `docs/pruebas-manuales` en `main`, se ajustaron al flujo nuevo ("Avisar que está listo" en un pedido en curso, pestaña "Entregados y cancelados"), con el mismo resultado y estado que tenían.
+
+**Resultado:**
+
+- Lint, `tsc` y build en verde. `npm run test:unit`: 67 pasaron.
+- Suite completa (con la 0011 corrida): 245 pasaron y 1 se salteó (el mismo de ajustes 2 y 3), incluido rate limit. Siguen los "The destination stream closed early" del servidor, sin tests que fallen.
+- Capturas mobile (390 px) en `docs/capturas/pedidos-simples-*`: pestañas con En curso, Entregados y cancelados, detalle en curso y un producto de 48 h sin "Anticipación". En las listas se sacaron del DOM los pedidos reales antes de capturar (quedan solo los de prueba; los contadores de las pestañas cuentan todos).

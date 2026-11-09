@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { type Etapa, leerPedido, pedidoEn, tamanosDe, vencerPedido } from "./support/pedidos";
+import { type Etapa, leerPedido, pedidoEn, sesionDe, tamanosDe, vencerPedido } from "./support/pedidos";
 import { borrarProductoDePrueba, crearProductoDePrueba } from "./support/productos";
 import { expect, hasSupabase, skipReason, test as base } from "./support/supabase";
 import { authFile } from "./support/usuarios";
@@ -41,16 +41,22 @@ test.describe("Lista de pedidos", () => {
     const transferencia = await crear(request, producto, "transferencia");
     const vencida = await crear(request, producto, "transferencia");
     await vencerPedido(vencida.id);
-    const enCurso = await crear(request, producto, "mercadopago", "en_preparacion");
+    const enCurso = await crear(request, producto, "mercadopago", "aceptado");
+    // De antes de 0011: quedó en en_preparacion y sigue en curso.
+    const enPreparacion = await crear(request, producto, "mercadopago", "en_preparacion");
     const entregado = await crear(request, producto, "efectivo", "entregado");
+    const rechazado = await crear(request, producto, "transferencia", "pagado");
+    expect((await (await sesionDe("admin")).rpc("rechazar_pedido", { p_id: rechazado.id, p_motivo: "Prueba" })).error).toBeNull();
 
     const casos: [string, number[], number[]][] = [
-      ["Por confirmar", [porConfirmar.numero, efectivo.numero], [transferencia.numero]],
       ["Esperando transferencia", [transferencia.numero, vencida.numero], [porConfirmar.numero]],
-      ["En curso", [enCurso.numero], [entregado.numero]],
-      ["Entregados", [entregado.numero], [enCurso.numero]],
+      ["Por confirmar", [porConfirmar.numero, efectivo.numero], [transferencia.numero]],
+      ["En curso", [enCurso.numero, enPreparacion.numero], [entregado.numero]],
+      ["Entregados y cancelados", [entregado.numero, rechazado.numero], [enCurso.numero]],
     ];
     await page.goto("/admin/pedidos");
+    const nombres = await page.getByRole("navigation", { name: "Etapas de los pedidos" }).getByRole("link").allTextContents();
+    expect(nombres.map((n) => n.replace(/ \(\d+\)$/, ""))).toEqual(casos.map(([pestana]) => pestana));
     for (const [pestana, estan, noEstan] of casos) {
       await page.getByRole("link", { name: new RegExp(`^${pestana} \\(\\d+\\)$`) }).click();
       await expect(page.getByRole("link", { name: new RegExp(`^${pestana} `) })).toHaveAttribute("aria-current", "page");
@@ -91,7 +97,7 @@ test.describe("Detalle y acciones", () => {
     await expect(page.locator("#pedido-estado")).toContainText("Aceptado");
     expect((await leerPedido(pedido.id)).estado).toBe("aceptado");
 
-    const href = await page.getByRole("link", { name: /^Avisar por WhatsApp/ }).getAttribute("href");
+    const href = await page.getByRole("link", { name: /^Avisar que lo confirmé/ }).getAttribute("href");
     const texto = new URL(href!).searchParams.get("text")!;
     expect(texto).toContain(`#${pedido.numero}`);
     expect(texto).toMatch(/\d+ a \d+ h/);
@@ -140,15 +146,23 @@ test.describe("Detalle y acciones", () => {
     await expect(page.locator("#pedido-estado")).toContainText("Efectivo · a cobrar al retirar");
   });
 
-  test("avanzar hasta entregado; en efectivo sin cobrar queda entregado y cobrado", async ({ page, request, producto }) => {
+  test("los links viejos a Entregados y a Rechazados llevan a Entregados y cancelados", async ({ page }) => {
+    for (const tab of ["entregados", "rechazados"]) {
+      await page.goto(`/admin/pedidos?tab=${tab}`);
+      await expect(page.getByRole("heading", { level: 2, name: "Entregados y cancelados" })).toBeVisible();
+    }
+  });
+
+  test("en curso: avisar que está listo no cambia el estado; en efectivo sin cobrar queda entregado y cobrado", async ({ page, request, producto }) => {
     const pedido = await crear(request, producto, "efectivo", "aceptado");
     await abrirDetalle(page, pedido.id);
-    await page.getByRole("button", { name: "Empezar a preparar" }).click();
-    await expect(page.locator("#pedido-estado")).toContainText("En preparación");
-    await page.getByRole("button", { name: "Listo para retirar" }).click();
-    await expect(page.locator("#pedido-estado")).toContainText("Listo");
-    const href = await page.getByRole("link", { name: /^Avisar por WhatsApp/ }).getAttribute("href");
+    const acciones = page.getByRole("region", { name: "Qué sigue" });
+    await expect(acciones.getByRole("button", { name: "Empezar a preparar" })).toHaveCount(0);
+    await expect(acciones.getByRole("button", { name: /^Listo/ })).toHaveCount(0);
+    await expect(acciones.getByRole("button", { name: "Cancelar pedido" })).toBeVisible();
+    const href = await acciones.getByRole("link", { name: /^Avisar que está listo/ }).getAttribute("href");
     expect(new URL(href!).searchParams.get("text")).toContain("listo para retirar");
+    expect((await leerPedido(pedido.id)).estado).toBe("aceptado");
 
     await page.getByRole("button", { name: "Entregado y cobrado" }).click();
     const dialogo = page.getByRole("dialog", { name: "¿Ya lo entregaste?" });
@@ -157,6 +171,17 @@ test.describe("Detalle y acciones", () => {
     await expect(page.locator("#pedido-estado")).toContainText("Entregado");
     expect(await leerPedido(pedido.id)).toMatchObject({ estado: "entregado", pagado_at: expect.any(String) });
     await expect(page.getByText("No hay nada para hacer con este pedido.")).toBeVisible();
+  });
+
+  test("un pedido que quedó en Listo (antes de 0011) se marca entregado", async ({ page, request, producto }) => {
+    const pedido = await crear(request, producto, "mercadopago", "listo");
+    await abrirDetalle(page, pedido.id);
+    await page.getByRole("button", { name: "Entregado" }).click();
+    const dialogo = page.getByRole("dialog", { name: "¿Ya lo entregaste?" });
+    await expect(dialogo).toContainText("El pedido pasa a Entregados y cancelados.");
+    await dialogo.getByRole("button", { name: "Sí, entregado" }).click();
+    await expect(aviso(page, `El pedido #${pedido.numero} pasó a entregado.`)).toBeVisible();
+    expect((await leerPedido(pedido.id)).estado).toBe("entregado");
   });
 
   test("cancelar un pedido aceptado con motivo; la transferencia queda para devolver y se marca devuelta", async ({ page, request, producto }) => {

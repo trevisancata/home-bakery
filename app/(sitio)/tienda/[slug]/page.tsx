@@ -6,7 +6,7 @@ import { Button } from "@/components/Button";
 import { Eyebrow } from "@/components/Eyebrow";
 import { ImageFrame } from "@/components/ImageFrame";
 import { AgregarAlPedido } from "@/components/tienda/AgregarAlPedido";
-import { pages, ui, whatsappLink, whatsappMessages } from "@/data/site";
+import { pages, pedidos, ui, whatsappLink, whatsappMessages } from "@/data/site";
 import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import { etiquetaVisible, tamanoUnico } from "@/lib/tamano";
@@ -55,7 +55,8 @@ export default async function ProductPage({ params }: Props) {
     { term: text.details.weight, value: product.weight },
     { term: text.details.presentation, value: product.presentation },
     { term: text.details.season, value: range && text.season(range) },
-    { term: text.details.leadTime, value: text.leadTime(product.leadTimeHours) },
+    // La anticipación general ya se anuncia en todo el sitio: acá, solo si este producto pide más.
+    { term: text.details.leadTime, value: product.leadTimeHours > pedidos.anticipacionHoras && text.leadTime(product.leadTimeHours) },
   ].filter((detail) => detail.value);
 
   return (

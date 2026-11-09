@@ -82,6 +82,7 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
    - [`0008_medios_de_pago.sql`](supabase/migrations/0008_medios_de_pago.sql): medios de pago de los pedidos (Mercado Pago, transferencia y efectivo), `marcar_pedido_pagado` y `marcar_pedido_devuelto`. **Correrla antes de deployar el código que la usa.**
    - [`0009_avanzar_pedido.sql`](supabase/migrations/0009_avanzar_pedido.sql): panel de pedidos. `avanzar_pedido` (aceptado → en preparación → listo → entregado, de a un paso) y `cancelar_pedido`, solo admin. **Correrla antes de deployar el código que la usa.**
    - [`0010_workshops_pasados.sql`](supabase/migrations/0010_workshops_pasados.sql): "Así fueron los workshops" desde la base. La foto de cómo fue de cada workshop pasado (`poner_foto_recuerdo` / `quitar_foto_recuerdo`, solo admin), la lectura pública `workshops_pasados` y los 9 workshops que ya se hicieron. **Correrla antes de deployar el código que la usa.**
+   - [`0011_pedidos_simples.sql`](supabase/migrations/0011_pedidos_simples.sql): pedidos simples. `avanzar_pedido` entrega en un paso un pedido aceptado (o en preparación o listo, de antes); los pasos viejos se siguen aceptando para el código anterior. **Correrla antes de deployar el código que la usa.**
 3. Copiar `.env.example` a `.env.local` y completarlo con los datos de **Project Settings → API**:
    - `NEXT_PUBLIC_SUPABASE_URL`: la URL del proyecto.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: la clave publishable (`sb_publishable_…`). Es pública y respeta RLS.
@@ -267,6 +268,6 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 
 ### Tests
 
-240 tests con Playwright en 22 archivos (corrida del 09/11/2026): e2e, de la API y unitarios (65, los que corre el CI con `npm run test:unit`). Necesitan las diez migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
+246 tests con Playwright en 22 archivos (corrida del 09/11/2026): e2e, de la API y unitarios (67, los que corre el CI con `npm run test:unit`). Necesitan las once migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
 
 La estrategia, el plan de pruebas manuales, los reportes de bugs y cómo depurar una falla están en [docs/testing.md](docs/testing.md).
