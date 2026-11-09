@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { ReactNode } from "react";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { CarritoProvider } from "@/components/carrito/CarritoProvider";
@@ -22,6 +24,10 @@ export function SitioChrome({ children }: { children: ReactNode }) {
       </main>
       <Footer />
       <WhatsAppButton />
+      {/* Visitas y Core Web Vitals, sin cookies (docs/seguridad.md). Van acá
+          y no en el layout raíz para que el panel quede afuera. */}
+      <Analytics />
+      <SpeedInsights />
     </CarritoProvider>
   );
 }

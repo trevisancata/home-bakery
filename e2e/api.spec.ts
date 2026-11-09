@@ -265,3 +265,13 @@ test.describe("Rutas viejas de la API", () => {
     expect(response.headers().location).toBe("/api/v1/inscripciones");
   });
 });
+
+test.describe("GET /api/v1/health", () => {
+  test("responde 200 con el estado y la versión, sin caché", async ({ request }) => {
+    const response = await request.get("/api/v1/health");
+    expect(response.status()).toBe(200);
+    expect(response.headers()["cache-control"]).toBe("no-store");
+    const body = await response.json();
+    expect(body).toEqual({ status: "ok", version: expect.stringMatching(/^\d+\.\d+\.\d+$/), commit: null });
+  });
+});
