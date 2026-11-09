@@ -1,5 +1,5 @@
 // URL pública del sitio, para armar los links que salen hacia afuera
-// (back_urls y notification_url de Mercado Pago).
+// (back_urls de Mercado Pago, el sitemap y el robots.txt).
 
 type Env = Partial<Record<"NEXT_PUBLIC_SITE_URL" | "VERCEL_URL", string>>;
 

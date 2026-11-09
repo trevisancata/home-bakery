@@ -4,11 +4,12 @@ import { revalidatePath } from "next/cache";
 // públicas afectadas se regeneran en la próxima visita (en lugar de esperar
 // los 5 minutos del ISR).
 
-/** Un producto cambió: el inicio (favoritos), la tienda y su detalle. */
+/** Un producto cambió: el inicio (favoritos), la tienda, su detalle y el sitemap. */
 export function revalidarProducto(...slugs: string[]) {
   revalidatePath("/");
   revalidatePath("/tienda");
   for (const slug of slugs) revalidatePath(`/tienda/${slug}`);
+  revalidatePath("/sitemap.xml");
 }
 
 /**

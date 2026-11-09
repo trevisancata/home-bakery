@@ -2,12 +2,9 @@
 
 Sitio web de **Home Bakery**, un emprendimiento de pastelería casera que vende productos artesanales y ofrece workshops para aprender a hacerlos en casa.
 
-Es un trabajo práctico universitario. Se evalúan especialmente:
+Es un trabajo práctico universitario. Se evalúa con la rúbrica de la materia: seis entregables (E1 a E6) y cinco criterios transversales. Qué pide cada uno, qué hace el proyecto y dónde está la evidencia (PRs, archivos, tests, capturas y puntajes de Lighthouse): [docs/entregables.md](docs/entregables.md).
 
-- HTML semántico
-- Diseño responsive (mobile-first)
-- Accesibilidad (WCAG AA)
-- Consistencia visual
+Además del catálogo y los workshops, el sitio tiene un carrito con pedidos de la tienda que se pagan con Mercado Pago, transferencia o efectivo, y un panel donde Maggie gestiona productos, workshops, inscripciones y pedidos.
 
 ## Deploy y CI
 
@@ -25,10 +22,10 @@ Entornos, variables, migraciones, dominio, logs, rollback y el checklist para pa
 - [React 19](https://react.dev)
 - [TypeScript](https://www.typescriptlang.org)
 - [Tailwind CSS v4](https://tailwindcss.com)
-- [Supabase](https://supabase.com) (Postgres, Storage, Auth) para el catálogo, los workshops, las inscripciones y el login del panel
+- [Supabase](https://supabase.com) (Postgres, Storage, Auth) para el catálogo, los workshops, las inscripciones, los pedidos y el login del panel
 - [`@supabase/ssr`](https://supabase.com/docs/guides/auth/server-side/nextjs) para la sesión en cookies HttpOnly, y [sharp](https://sharp.pixelplumbing.com) para validar las fotos que se suben
 - [Zod](https://zod.dev) para validar formularios y la API
-- [Mercado Pago Checkout Pro](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/overview) con el [SDK oficial](https://github.com/mercadopago/sdk-nodejs) para el pago de los workshops
+- [Mercado Pago Checkout Pro](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/overview) con el [SDK oficial](https://github.com/mercadopago/sdk-nodejs) para el pago de los workshops y de los pedidos (los pedidos también aceptan transferencia y efectivo)
 - [Playwright](https://playwright.dev) para los tests e2e y de la API
 - ESLint
 - GitHub Actions para CI (lint, tipos, build y tests unitarios en cada PR) y Dependabot
@@ -50,6 +47,8 @@ Entornos, variables, migraciones, dominio, logs, rollback y el checklist para pa
 | `/maggie`    | Historia, valores y la cocina                              |
 | `/admin`     | Panel de administración (con login; ver [Panel de administración](#panel-de-administración)) |
 
+`/sitemap.xml` lista las páginas públicas y cada producto activo, con su fecha de modificación; `/robots.txt` deja indexar todo salvo `/admin`, `/carrito`, `/pedido` y `/api`. Los dos usan `NEXT_PUBLIC_SITE_URL`.
+
 Las rutas viejas `/productos`, `/nosotros` y `/contacto` redirigen (308) a `/tienda`, `/maggie` e `/`.
 El contacto vive en el footer y en el botón flotante de WhatsApp.
 
@@ -66,12 +65,12 @@ El contacto vive en el footer y en el botón flotante de WhatsApp.
 
 ## Supabase
 
-El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo de datos, las políticas RLS y por qué la inscripción va por una función están en [docs/modelo-de-datos.md](docs/modelo-de-datos.md).
+El catálogo, los workshops, las inscripciones y los pedidos viven en Supabase. El modelo de datos, las políticas RLS y por qué la inscripción va por una función están en [docs/modelo-de-datos.md](docs/modelo-de-datos.md).
 
 ### Configuración (una sola vez)
 
 1. Crear un proyecto en [supabase.com](https://supabase.com).
-2. En el **SQL Editor**, correr las migraciones en orden:
+2. En el **SQL Editor**, correr las once migraciones en orden:
    - [`0001_catalogo.sql`](supabase/migrations/0001_catalogo.sql): las tablas, RLS, la vista `workshops_publicos`, la función `crear_inscripcion` y los buckets `productos` y `workshops`.
    - [`0002_auth_admin.sql`](supabase/migrations/0002_auth_admin.sql): la tabla `perfiles` (roles), `es_admin()` y los permisos de escritura de la admin (tablas y Storage).
    - [`0003_pagos.sql`](supabase/migrations/0003_pagos.sql): la tabla `pagos`, la seña y el vencimiento de las inscripciones, y `confirmar_pago`.
@@ -103,13 +102,13 @@ El catálogo, los workshops y las inscripciones se leen de Supabase. El modelo d
 
 ### Mercado Pago
 
-Los workshops se pagan completos al inscribirse, con Checkout Pro. El flujo, los estados y las decisiones están en [docs/pagos.md](docs/pagos.md), y la prueba manual en sandbox, en [docs/pruebas-mercadopago.md](docs/pruebas-mercadopago.md).
+Los workshops se pagan completos al inscribirse, con Checkout Pro. Los pedidos de la tienda se pagan con Checkout Pro, por transferencia (24 h para mandar el comprobante por WhatsApp) o en efectivo al retirar; en los tres casos el pedido lo confirma Maggie desde el panel. El flujo, los estados y las decisiones están en [docs/pagos.md](docs/pagos.md), y la prueba manual en sandbox, en [docs/pruebas-mercadopago.md](docs/pruebas-mercadopago.md).
 
 | Variable | Dónde | Qué es |
 |---|---|---|
 | `MP_ACCESS_TOKEN` | Servidor (`.env.local`, Vercel) | Access token **de producción** (`APP_USR-…`) de **Tus integraciones → tu aplicación**. Para probar, el de la aplicación creada dentro de la cuenta vendedora de prueba; al publicar, el de la cuenta de Maggie. **No** el de prueba (`TEST-…`): con ese, el webhook da 401 |
 | `MP_WEBHOOK_SECRET` | Servidor | Clave secreta de **Webhooks → Configurar notificaciones → Modo productivo**, de la misma aplicación que el token. El webhook es `https://<dominio>/api/v1/webhooks/mercadopago` con solo el evento **Pagos** |
-| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública (`https://…`) para las `back_urls`. Vacía: `https://$VERCEL_URL` (previews) o `http://localhost:3000`. La URL del webhook se carga solo en el panel de MP, no en la preferencia |
+| `NEXT_PUBLIC_SITE_URL` | Producción | URL pública (`https://…`) para las `back_urls`, el sitemap y el robots.txt. Vacía: `https://$VERCEL_URL` (previews) o `http://localhost:3000`. La URL del webhook se carga solo en el panel de MP, no en la preferencia |
 
 Qué credenciales van en cada etapa: [docs/pagos.md](docs/pagos.md#qué-credenciales-se-usan-en-cada-etapa).
 
@@ -153,7 +152,8 @@ El login está en [`/admin/ingresar`](http://localhost:3000/admin/ingresar). La 
 
 | Ruta | Qué hay |
 |---|---|
-| `/admin` | Resumen: próximos workshops con lugares, pendientes de pago y pagos para devolver |
+| `/admin` | Resumen: pedidos que esperan algo de Maggie, próximos workshops con lugares, pendientes de pago y pagos para devolver |
+| `/admin/pedidos` y `/[id]` | Pedidos de la tienda en pestañas (Esperando transferencia, Por confirmar, En curso, Entregados y cancelados); detalle con aceptar, rechazar, marcar pagado o entregado, cancelar y avisos por WhatsApp |
 | `/admin/productos` | Lista con buscador y filtros, precio en línea, pausar con Deshacer y destacados (hasta 4) |
 | `/admin/productos/nuevo` y `/[id]` | Editor: datos, tamaños y precios, fotos (webp de hasta 1600 px), visibilidad, temporada, sabores |
 | `/admin/workshops`, `/nuevo` y `/[id]` | Próximos y pasados; detalle con las pestañas Inscriptas y Datos |
@@ -195,6 +195,8 @@ Si el link venció, ya se usó o se abrió en otro navegador, `/admin/recuperar`
 - para las previews de Vercel, `https://home-bakery-*-trevisancata.vercel.app/admin/auth/confirm` (Supabase acepta `*` en las Redirect URLs).
 
 #### TODO(SMTP): mails de producción
+
+El sitio **no les manda mails a las clientas**: los pedidos y las inscripciones se avisan por WhatsApp (Maggie escribe desde el panel). El único mail es el de recuperar la contraseña del panel.
 
 Hoy el proyecto usa el SMTP por defecto de Supabase, que tiene dos límites:
 
@@ -268,6 +270,6 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 
 ### Tests
 
-246 tests con Playwright en 22 archivos (corrida del 09/11/2026): e2e, de la API y unitarios (67, los que corre el CI con `npm run test:unit`). Necesitan las once migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
+253 tests con Playwright en 24 archivos (corrida del 09/11/2026): e2e, de la API y unitarios (72, los que corre el CI con `npm run test:unit`). Necesitan las once migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
 
 La estrategia, el plan de pruebas manuales, los reportes de bugs y cómo depurar una falla están en [docs/testing.md](docs/testing.md).
