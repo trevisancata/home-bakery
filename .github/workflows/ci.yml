@@ -6,6 +6,8 @@ on:
     branches: [main]
 
 jobs:
+  # El id y el nombre "build" son el check obligatorio de la protección de main:
+  # si cambian, hay que actualizar la regla en GitHub.
   build:
     name: build
     runs-on: ubuntu-latest
@@ -17,10 +19,29 @@ jobs:
           node-version: lts/*
           cache: npm
 
+      # Cache del build de Next entre corridas.
+      - uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'data/**') }}
+          restore-keys: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck
       # El build prerenderiza el catálogo leyendo Supabase con la clave publishable.
       - run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      # Solo los unitarios: no abren navegador, así que no se instala Chromium.
+      # Los e2e se corren en local antes de mergear (ver docs/deploy.md).
+      - run: npm run test:unit
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
