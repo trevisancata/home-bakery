@@ -902,3 +902,20 @@ Después se sumó cancelar un pedido aceptado.
 - Lint, `tsc` y build en verde. `npm run test:unit`: 65 pasaron, sin `.env.local`.
 - Suite completa: 239 pasaron y 1 se salteó (el mismo de ajustes 2 y 3), incluido rate limit. Suma el test del health.
 - Con el build local: `/` y `/tienda` piden `/_vercel/insights/script.js` y `/_vercel/speed-insights/script.js` (404 fuera de Vercel) sin dejar cookies; `/admin/ingresar` no pide ninguno.
+
+### Pruebas manuales (`docs/pruebas-manuales`)
+
+**Pedido:** Catalina corrió las pruebas manuales pendientes, de MP-16 a MP-42, entre el 04/11 y el 09/11, y pasaron todas. Completar en `testing.md` el resultado obtenido, el estado y quién y dónde las ejecutó, actualizar el resumen y esta bitácora. Solo docs.
+
+**Qué se hizo:**
+
+- **Tabla del plan de pruebas manuales:** 28 filas de MP-16 a MP-42 pasan de "Sin correr" a "Pasó", con "Entre el 04/11 y el 09/11/2026, Catalina, en su celular / en producción: resultado esperado verificado". MP-19 del video sigue "Retirado".
+- **Resumen** arriba de la tabla: quién corrió la tanda, dónde y el conteo por estado (40 pasaron, 1 con bug, 1 parcial, 1 no ejecutado, 1 retirado y 2 sin correr).
+
+**Decisiones mías (se pueden cambiar):**
+
+- **Entorno de cada caso:** la tabla no lo decía. Lo consulté y Catalina eligió anotarlo según el caso: en su celular los que piden un teléfono real y en producción el resto, también los pagos del sandbox (el webhook llega solo a producción).
+- **Fecha:** el rango 04/11 al 09/11, porque no hay fecha por caso.
+- **MP-18 y MP-19 repetidos** (dos casos con cada número): se dejaron así y se aclara en el resumen. Renumerar cambiaría los IDs que ya se citan en otros lados.
+
+**Resultado:** quedan sin correr MP-43 y MP-44 (ajustes visuales 3), MP-13 sin ejecutar y MP-02 parcial. Lint en verde.
