@@ -903,6 +903,23 @@ Después se sumó cancelar un pedido aceptado.
 - Suite completa: 239 pasaron y 1 se salteó (el mismo de ajustes 2 y 3), incluido rate limit. Suma el test del health.
 - Con el build local: `/` y `/tienda` piden `/_vercel/insights/script.js` y `/_vercel/speed-insights/script.js` (404 fuera de Vercel) sin dejar cookies; `/admin/ingresar` no pide ninguno.
 
+### Pruebas manuales (`docs/pruebas-manuales`)
+
+**Pedido:** Catalina corrió las pruebas manuales pendientes, de MP-16 a MP-42, entre el 04/11 y el 09/11, y pasaron todas. Completar en `testing.md` el resultado obtenido, el estado y quién y dónde las ejecutó, actualizar el resumen y esta bitácora. Solo docs.
+
+**Qué se hizo:**
+
+- **Tabla del plan de pruebas manuales:** 28 filas de MP-16 a MP-42 pasan de "Sin correr" a "Pasó", con "Entre el 04/11 y el 09/11/2026, Catalina, en su celular / en producción: resultado esperado verificado". MP-19 del video sigue "Retirado".
+- **Resumen** arriba de la tabla: quién corrió la tanda, dónde y el conteo por estado (40 pasaron, 1 con bug, 1 parcial, 1 no ejecutado, 1 retirado y 2 sin correr).
+
+**Decisiones mías (se pueden cambiar):**
+
+- **Entorno de cada caso:** la tabla no lo decía. Lo consulté y Catalina eligió anotarlo según el caso: en su celular los que piden un teléfono real y en producción el resto, también los pagos del sandbox (el webhook llega solo a producción).
+- **Fecha:** el rango 04/11 al 09/11, porque no hay fecha por caso.
+- **MP-18 y MP-19 repetidos** (dos casos con cada número): se dejaron así y se aclara en el resumen. Renumerar cambiaría los IDs que ya se citan en otros lados.
+
+**Resultado:** quedan sin correr MP-43 y MP-44 (ajustes visuales 3), MP-13 sin ejecutar y MP-02 parcial. Lint en verde.
+
 ### Pedidos simples (`fix/pedidos-simples`)
 
 **Pedido:** simplificar el camino de un pedido a Esperando transferencia → Por confirmar → En curso → Entregado, sin "Empezar a preparar" ni "Listo"; 4 pestañas en el panel; "Avisar que está listo" por WhatsApp sin cambiar el estado. En el detalle del producto, "Anticipación" solo si el producto pide más que la general (48 h). Migración chica y compatible hacia atrás, con tests, docs y capturas.
@@ -920,7 +937,7 @@ Después se sumó cancelar un pedido aceptado.
 - **La base sigue aceptando los pasos viejos** (`aceptado → en_preparacion → listo`): así el código deployado no falla entre correr la 0011 y el deploy. El panel ya no los ofrece. Lo consulté y Catalina eligió esta opción.
 - **Dos avisos en curso:** quedó también "Avisar que lo confirmé" (el mensaje de aceptado), además de "Avisar que está listo". Lo consulté y Catalina eligió mantener los dos.
 - **La pestaña por defecto sigue siendo Por confirmar**, aunque ya no es la primera: es la que pide algo de Maggie.
-- **MP-32 y MP-35 de `testing.md`** (pruebas manuales) no se tocaron: los cambia `docs/pruebas-manuales`, que todavía no está en `main`, y daría conflicto. Hay que ajustarlos al mergear las dos.
+- **MP-32 y MP-35 de `testing.md`** (pruebas manuales): después de mergear `docs/pruebas-manuales` en `main`, se ajustaron al flujo nuevo ("Avisar que está listo" en un pedido en curso, pestaña "Entregados y cancelados"), con el mismo resultado y estado que tenían.
 
 **Resultado:**
 
