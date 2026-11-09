@@ -21,11 +21,10 @@ El **Inicio** te muestra de un vistazo:
 
 En **Pedidos** están todos los pedidos de la tienda, separados en pestañas. El número entre paréntesis te dice cuántos hay en cada una:
 
-- **Por confirmar:** ya están pagados (o son en efectivo y se pagan al retirar). Te toca aceptarlos o rechazarlos.
 - **Esperando transferencia:** la clienta eligió transferir y tiene 24 h. Los que pasaron el plazo dicen **Vencida**.
+- **Por confirmar:** ya están pagados (o son en efectivo y se pagan al retirar). Te toca aceptarlos o rechazarlos.
 - **En curso:** los que aceptaste, ordenados por día: **Hoy**, **Mañana** y los que siguen.
-- **Entregados.**
-- **Rechazados y cancelados:** también los pagos de Mercado Pago que la clienta no terminó.
+- **Entregados y cancelados:** los entregados, los rechazados, los cancelados y los pagos de Mercado Pago que la clienta no terminó, del más reciente al más viejo. Cada uno dice en qué terminó.
 
 Cada tarjeta dice el número de pedido, el nombre, el día y el horario, si retira o va con envío (con la dirección), cómo paga, el total y cuántos productos son. Tocala para ver el pedido completo: los productos con su tamaño, sabor y decoración, los datos de la clienta (con un botón para escribirle por WhatsApp), sus notas y lo que fue pasando.
 
@@ -53,15 +52,13 @@ Si la transferencia llegó tarde (el pedido dice **Vencida**), igual la podés r
 
 Los pedidos en efectivo son solo para retiro. Los podés aceptar sin que estén pagados. Cuando te pagan, tocá **Ya lo cobré**. Si te olvidás, al marcarlo como entregado el botón dice **Entregado y cobrado** y queda todo anotado de una vez.
 
-### Mientras lo preparás
+### Pedidos en curso
 
-En **En curso**, abrí el pedido y tocá el botón que corresponda, en orden:
+En **En curso**, abrí el pedido. Tenés:
 
-1. **Empezar a preparar.**
-2. **Listo para retirar** (o **Listo para entregar**, si va con envío).
-3. **Entregado.**
-
-No se puede saltear un paso ni volver atrás.
+- **Avisar que está listo:** abre WhatsApp con el mensaje de que lo puede retirar (o de que se lo llevás). No cambia nada en el pedido.
+- **Entregado:** cuando la clienta ya lo tiene. Te pide confirmar y el pedido pasa a **Entregados y cancelados**. Si es en efectivo y todavía no lo cobraste, el botón dice **Entregado y cobrado**.
+- **Cancelar pedido** (ver abajo).
 
 ### Cancelar un pedido aceptado
 
@@ -69,7 +66,10 @@ Si la clienta te avisa que no puede, o a vos se te complica, abrí el pedido y t
 
 ### Avisarle a la clienta
 
-Después de aceptar, rechazar, cancelar o marcar como listo, aparece **Avisar por WhatsApp**. Se abre WhatsApp con un mensaje ya escrito (el día y el horario, o el motivo). Leelo y cambialo si querés antes de mandarlo.
+Cada botón de aviso abre WhatsApp con un mensaje ya escrito. Leelo y cambialo si querés antes de mandarlo.
+
+- En un pedido en curso: **Avisar que lo confirmé** (con el día y el horario) y **Avisar que está listo**.
+- En uno rechazado o cancelado: **Avisar por WhatsApp**, con el motivo.
 <!-- TODO(Maggie): los mensajes son borradores; decinos si querés otras palabras y los cambiamos. -->
 
 ## Cambiar un precio

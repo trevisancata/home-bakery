@@ -6,7 +6,7 @@ import { leerReferencia, referenciaInscripcion, referenciaPedido } from "../lib/
 import { vistaPedido } from "../lib/pagos/vista";
 import { formatShortDateTime } from "../lib/format";
 import { etiquetaVisible, mostrarTamano, tamanoUnico } from "../lib/tamano";
-import { agruparPorDia, avisoWhatsApp, estadoDelPago, historial, type PedidoPanel, pestanaDe, porPestana } from "../lib/admin/pedidos-panel";
+import { agruparPorDia, avisoListo, avisoWhatsApp, estadoDelPago, historial, type PedidoPanel, pestanaDe, porPestana } from "../lib/admin/pedidos-panel";
 import {
   diaDeSemana,
   fechaBA,
@@ -288,17 +288,24 @@ test.describe("Panel de pedidos", () => {
   };
   const pedido = (extra: Partial<PedidoPanel>): PedidoPanel => ({ ...base, ...extra });
 
-  test("cada pedido en su pestaña; un MP pagándose no aparece; vencido, a rechazados", () => {
+  test("cada pedido en su pestaña; un MP pagándose no aparece; vencido, a entregados y cancelados", () => {
     expect(pestanaDe(pedido({ estado: "pagado" }), ahora)).toBe("por_confirmar");
     expect(pestanaDe(pedido({ medioPago: "efectivo", venceAt: null }), ahora)).toBe("por_confirmar");
     expect(pestanaDe(pedido({ medioPago: "transferencia" }), ahora)).toBe("esperando_transferencia");
     expect(pestanaDe(pedido({ medioPago: "transferencia" }), ahora + 60 * 60_000)).toBe("esperando_transferencia");
     for (const estado of ["aceptado", "en_preparacion", "listo"]) expect(pestanaDe(pedido({ estado }), ahora)).toBe("en_curso");
-    expect(pestanaDe(pedido({ estado: "entregado" }), ahora)).toBe("entregados");
-    expect(pestanaDe(pedido({ estado: "rechazado" }), ahora)).toBe("rechazados");
-    expect(pestanaDe(pedido({ estado: "cancelado" }), ahora)).toBe("rechazados");
+    for (const estado of ["entregado", "rechazado", "cancelado"]) expect(pestanaDe(pedido({ estado }), ahora)).toBe("cerrados");
     expect(pestanaDe(pedido({}), ahora)).toBeNull();
-    expect(pestanaDe(pedido({}), ahora + 11 * 60_000)).toBe("rechazados");
+    expect(pestanaDe(pedido({}), ahora + 11 * 60_000)).toBe("cerrados");
+  });
+
+  test("entregados y cancelados, del más reciente al más viejo", () => {
+    const lista = [
+      pedido({ id: "a", numero: 1, estado: "entregado", fecha: "2026-10-20", franja: "10-13" }),
+      pedido({ id: "b", numero: 2, estado: "cancelado", fecha: "2026-10-27", franja: "10-13" }),
+      pedido({ id: "c", numero: 3, estado: "rechazado", fecha: "2026-10-24", franja: "16-19" }),
+    ];
+    expect(porPestana(lista, ahora).cerrados.map((p) => p.numero)).toEqual([2, 3, 1]);
   });
 
   test("ordenados por día y franja; en curso, agrupados en Hoy, Mañana y la fecha", () => {
@@ -340,18 +347,28 @@ test.describe("Panel de pedidos", () => {
     expect(historial(pedido({ pagadoAt: t(1), pagadoPor: "otra" }), "yo")[1].texto).toBe("Pago registrado por otra cuenta del panel");
   });
 
-  test("aviso de WhatsApp: aceptado, listo (retiro o envío), rechazado y cancelado con motivo", () => {
+  test("aviso de WhatsApp: en curso (confirmado), rechazado y cancelado con motivo", () => {
     const texto = (p: PedidoPanel) => {
       const href = avisoWhatsApp(p);
       return href ? new URL(href).searchParams.get("text") : null;
     };
     expect(avisoWhatsApp(pedido({ estado: "aceptado" }))).toMatch(/^https:\/\/wa\.me\/5491155556666\?text=/);
     expect(texto(pedido({ estado: "aceptado" }))).toContain("pedido #7 para el viernes, 30 de octubre, 10 a 13 h");
-    expect(texto(pedido({ estado: "listo" }))).toContain("listo para retirar");
-    expect(texto(pedido({ estado: "listo", entrega: "envio" }))).toContain("te lo llevo");
+    // Los que quedaron en en_preparacion o listo están en curso: el mismo aviso.
+    expect(texto(pedido({ estado: "listo" }))).toContain("Confirmé tu pedido #7");
     expect(texto(pedido({ estado: "rechazado", motivoRechazo: "no llego con la fecha" }))).toContain("no llego con la fecha");
     expect(texto(pedido({ estado: "cancelado", motivoCancelacion: "se me complicó" }))).toContain("se me complicó");
     expect(avisoWhatsApp(pedido({ estado: "pagado" }))).toBeNull();
+  });
+
+  test("aviso de que está listo: solo en curso, para retirar o para llevar", () => {
+    const texto = (p: PedidoPanel) => {
+      const href = avisoListo(p);
+      return href ? new URL(href).searchParams.get("text") : null;
+    };
+    for (const estado of ["aceptado", "en_preparacion", "listo"]) expect(texto(pedido({ estado }))).toContain("listo para retirar");
+    expect(texto(pedido({ estado: "aceptado", entrega: "envio" }))).toContain("te lo llevo");
+    for (const estado of ["pagado", "entregado", "cancelado"]) expect(avisoListo(pedido({ estado }))).toBeNull();
   });
 });
 

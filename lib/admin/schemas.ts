@@ -209,8 +209,9 @@ export const motivoPedidoSchema = z.strictObject({
     .max(500, { error: "Usá menos de 500 caracteres." }),
 });
 
+/** Un pedido en curso solo se entrega (0011): en_preparacion y listo ya no se ofrecen. */
 export const avancePedidoSchema = z.strictObject({
-  status: z.enum(["en_preparacion", "listo", "entregado"], { error: "Estado no válido." }),
+  status: z.enum(["entregado"], { error: "Estado no válido." }),
   collected: z.boolean().default(false),
 });
 

@@ -8,7 +8,7 @@ import { Icono } from "@/components/admin/ui/Icono";
 import { admin } from "@/data/admin";
 import { NotFoundError } from "@/lib/admin/errors";
 import { leerPedido } from "@/lib/admin/pedidos";
-import { avisoWhatsApp, cuando, entregaDe, estadoDelPago, historial, vencido } from "@/lib/admin/pedidos-panel";
+import { avisoListo, avisoWhatsApp, cuando, entregaDe, estadoDelPago, historial, vencido } from "@/lib/admin/pedidos-panel";
 import { requireAdminPage } from "@/lib/auth";
 import { etiquetaVisible } from "@/lib/tamano";
 import { formatDay, formatPrice, formatTime } from "@/lib/format";
@@ -63,7 +63,7 @@ export default async function PedidoPage({ params }: PageProps<"/admin/pedidos/[
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-5">
-          <AccionesPedido pedido={pedido} vencida={vencido(pedido, now)} avisoWhatsApp={avisoWhatsApp(pedido)} />
+          <AccionesPedido pedido={pedido} vencida={vencido(pedido, now)} avisoWhatsApp={avisoWhatsApp(pedido)} avisoListo={avisoListo(pedido)} />
 
           <section aria-labelledby="pedido-items" className={card}>
             <h2 id="pedido-items" className="text-24">

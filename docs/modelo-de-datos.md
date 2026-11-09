@@ -33,6 +33,11 @@ El catálogo, los workshops, las inscripciones y los pedidos de la tienda viven 
   - Carga los 9 workshops que ya se hicieron (antes en `data/site.ts`).
 
   Ver [Foto de cómo fue](#foto-de-cómo-fue).
+- [`0011_pedidos_simples.sql`](../supabase/migrations/0011_pedidos_simples.sql): un pedido en curso se entrega en un paso.
+  - `avanzar_pedido` acepta `entregado` desde `aceptado`, `en_preparacion` o `listo`.
+  - No cambia el check de `pedidos.estado` ni `cancelar_pedido`.
+
+  Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
 
 Los datos se cargan con `npm run seed` (ver el [README](../README.md#supabase)).
 
@@ -205,16 +210,14 @@ stateDiagram-v2
   pendiente_pago --> rechazado: rechazar_pedido (Maggie)
   pagado --> aceptado: aceptar_pedido (Maggie)
   pagado --> rechazado: rechazar_pedido → pagos para devolver
-  aceptado --> en_preparacion
-  en_preparacion --> listo
-  listo --> entregado
+  aceptado --> entregado: avanzar_pedido (Maggie)
   entregado --> [*]
   rechazado --> [*]
   cancelado --> [*]
 ```
 
 - Un `pendiente_pago` vencido (pasaron los 30 minutos) sigue en ese estado: no ocupa nada. Si igual llega un pago aprobado por el total, pasa a `pagado`.
-- `aceptado → en_preparacion → listo → entregado` los mueve el panel con `avanzar_pedido` (0009). Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
+- `aceptado → entregado` lo mueve el panel con `avanzar_pedido` (0011). Ver [Transiciones de un pedido](#transiciones-de-un-pedido).
 - Un pago aprobado de un pedido `rechazado` o `cancelado`, con otro monto, o un segundo pago del mismo pedido, queda **para devolver** ([pagos.md](pagos.md#pedidos-de-la-tienda-migración-0007)).
 
 ### Transiciones de un pedido
@@ -227,17 +230,16 @@ Todas son funciones `security definer` que chequean `es_admin()` adentro (42501)
 | `pagado` | `aceptado` | `aceptar_pedido` | — |
 | `pendiente_pago` (efectivo) | `aceptado` | `aceptar_pedido` | Sin pago: se cobra al retirar |
 | `pendiente_pago` o `pagado` | `rechazado` | `rechazar_pedido` | Con pago → para devolver |
-| `aceptado` | `en_preparacion` | `avanzar_pedido` | — |
-| `en_preparacion` | `listo` | `avanzar_pedido` | — |
-| `listo` | `entregado` | `avanzar_pedido` | Efectivo sin cobrar: `p_cobrado = true`, que guarda el cobro en el mismo paso |
+| `aceptado`, `en_preparacion` o `listo` | `entregado` | `avanzar_pedido` | Efectivo sin cobrar: `p_cobrado = true`, que guarda el cobro en el mismo paso |
+| `aceptado` → `en_preparacion` → `listo` | — | `avanzar_pedido` | Legado (0009): la base los sigue aceptando de a un paso, pero el panel ya no los ofrece |
 | `aceptado`, `en_preparacion` o `listo` | `cancelado` | `cancelar_pedido` | Motivo obligatorio (3 a 500 caracteres, si no 22023). Con pago → para devolver (`pedido_cancelado`) |
 
 ```mermaid
 stateDiagram-v2
   pagado --> aceptado: aceptar_pedido
-  aceptado --> en_preparacion: avanzar_pedido
-  en_preparacion --> listo: avanzar_pedido
-  listo --> entregado: avanzar_pedido (efectivo, con el cobro)
+  aceptado --> entregado: avanzar_pedido (efectivo, con el cobro)
+  en_preparacion --> entregado: avanzar_pedido
+  listo --> entregado: avanzar_pedido
   aceptado --> cancelado: cancelar_pedido
   en_preparacion --> cancelado: cancelar_pedido
   listo --> cancelado: cancelar_pedido
@@ -245,7 +247,8 @@ stateDiagram-v2
   cancelado --> [*]
 ```
 
-- **De a un paso:** `avanzar_pedido` solo acepta el estado siguiente. Saltear o volver atrás → `HB409`; un estado que no es de esta cadena → `22023`.
+- **En curso se entrega en un paso (0011):** el panel muestra "En curso" para `aceptado`, `en_preparacion` y `listo`, y solo ofrece **Entregado** (o **Cancelar pedido**). Desde otro estado → `HB409`; un estado que no es `en_preparacion`, `listo` ni `entregado` → `22023`.
+- **`en_preparacion` y `listo` quedan en el check** de `pedidos.estado` por los pedidos que ya están así (de antes de 0011). `avanzar_pedido` todavía acepta `aceptado → en_preparacion → listo` de a un paso, para que el código deployado antes de correr la 0011 no falle; el panel ya no lo usa. "Avisar que está listo" abre WhatsApp y no cambia el estado.
 - **Cada paso guarda su fecha** (`aceptado_at`, `en_preparacion_at`, `listo_at`, `entregado_at`, `rechazado_at`, `cancelado_at`): el panel arma el historial con eso, los pagos y `pagado_at` / `devuelto_at`.
 
 ### Estados por medio de pago

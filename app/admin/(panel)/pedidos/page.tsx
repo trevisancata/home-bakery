@@ -27,7 +27,9 @@ export const metadata: Metadata = content.metadata;
  */
 export default async function PedidosPage({ searchParams }: PageProps<"/admin/pedidos">) {
   const { tab } = await searchParams;
-  const actual: Pestana = pestanas.includes(tab as Pestana) ? (tab as Pestana) : "por_confirmar";
+  // Los links viejos a "entregados" o "rechazados" llevan a la pestaña que los juntó.
+  const pedida = tab === "entregados" || tab === "rechazados" ? "cerrados" : tab;
+  const actual: Pestana = pestanas.includes(pedida as Pestana) ? (pedida as Pestana) : "por_confirmar";
   const { grupos, now } = await cargar();
   const pedidos = grupos[actual];
 

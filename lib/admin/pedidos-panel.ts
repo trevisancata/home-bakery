@@ -57,9 +57,10 @@ export type PedidoPanel = {
   pagos: PagoMp[];
 };
 
-export const pestanas = ["por_confirmar", "esperando_transferencia", "en_curso", "entregados", "rechazados"] as const;
+export const pestanas = ["esperando_transferencia", "por_confirmar", "en_curso", "cerrados"] as const;
 export type Pestana = (typeof pestanas)[number];
 
+/** En curso: aceptado, y los que quedaron en en_preparacion o listo (pasos que el panel ya no ofrece). */
 export const enCurso = new Set(["aceptado", "en_preparacion", "listo"]);
 
 /** Pendiente de pago con el plazo vencido (efectivo no vence). */
@@ -76,10 +77,9 @@ export function pestanaDe(pedido: PedidoPanel, now = Date.now()): Pestana | null
   if (estado === "pagado" || (medioPago === "efectivo" && estado === "pendiente_pago")) return "por_confirmar";
   if (medioPago === "transferencia" && estado === "pendiente_pago") return "esperando_transferencia";
   if (enCurso.has(estado)) return "en_curso";
-  if (estado === "entregado") return "entregados";
-  if (estado === "rechazado" || estado === "cancelado") return "rechazados";
+  if (estado === "entregado" || estado === "rechazado" || estado === "cancelado") return "cerrados";
   // Mercado Pago sin pagar: vencido ya no se completa; vigente, la clienta está pagando.
-  return vencido(pedido, now) ? "rechazados" : null;
+  return vencido(pedido, now) ? "cerrados" : null;
 }
 
 /** Por fecha y franja de retiro o entrega (el primero, el más próximo). */
@@ -87,7 +87,7 @@ export function porTurno(a: PedidoPanel, b: PedidoPanel) {
   return inicioFranja(a.fecha, a.franja) - inicioFranja(b.fecha, b.franja) || a.numero - b.numero;
 }
 
-/** Los pedidos de cada pestaña, ordenados por turno (entregados y rechazados, del más reciente). */
+/** Los pedidos de cada pestaña, ordenados por turno (los cerrados, del más reciente). */
 export function porPestana(lista: PedidoPanel[], now = Date.now()) {
   const grupos = Object.fromEntries(pestanas.map((p) => [p, [] as PedidoPanel[]])) as Record<Pestana, PedidoPanel[]>;
   for (const pedido of lista) {
@@ -96,7 +96,7 @@ export function porPestana(lista: PedidoPanel[], now = Date.now()) {
   }
   for (const pestana of pestanas) {
     grupos[pestana].sort(porTurno);
-    if (pestana === "entregados" || pestana === "rechazados") grupos[pestana].reverse();
+    if (pestana === "cerrados") grupos[pestana].reverse();
   }
   return grupos;
 }
@@ -173,24 +173,30 @@ export function historial(pedido: PedidoPanel, usuariaId: string): Evento[] {
 }
 
 /**
- * El aviso de WhatsApp a la clienta según el estado (aceptado, listo,
- * rechazado o cancelado), o null si no corresponde. El texto es un borrador
- * de Maggie (data/admin.ts).
+ * El aviso de WhatsApp a la clienta según el estado (en curso: que se
+ * confirmó; rechazado o cancelado: el motivo), o null si no corresponde. El
+ * texto es un borrador de Maggie (data/admin.ts).
  */
 export function avisoWhatsApp(pedido: PedidoPanel) {
   const w = content.whatsapp;
   const nombre = pedido.nombre.split(" ")[0];
-  const turno = cuando(pedido);
   let mensaje: string | null = null;
-  if (pedido.estado === "aceptado") mensaje = w.aceptado(nombre, pedido.numero, turno);
-  if (pedido.estado === "listo") {
-    mensaje = pedido.entrega === "envio" ? w.listoEnvio(nombre, pedido.numero, turno) : w.listoRetiro(nombre, pedido.numero, turno);
-  }
+  if (enCurso.has(pedido.estado)) mensaje = w.aceptado(nombre, pedido.numero, cuando(pedido));
   if (pedido.estado === "rechazado") mensaje = w.rechazado(nombre, pedido.numero, pedido.motivoRechazo ?? "");
   if (pedido.estado === "cancelado" && pedido.motivoCancelacion) {
     mensaje = w.cancelado(nombre, pedido.numero, pedido.motivoCancelacion);
   }
   return mensaje ? waLink(pedido.telefono, mensaje) : null;
+}
+
+/** El aviso de que el pedido está listo (para retirar o para llevar), solo en curso. No cambia el estado. */
+export function avisoListo(pedido: PedidoPanel) {
+  if (!enCurso.has(pedido.estado)) return null;
+  const w = content.whatsapp;
+  const nombre = pedido.nombre.split(" ")[0];
+  const turno = cuando(pedido);
+  const mensaje = pedido.entrega === "envio" ? w.listoEnvio(nombre, pedido.numero, turno) : w.listoRetiro(nombre, pedido.numero, turno);
+  return waLink(pedido.telefono, mensaje);
 }
 
 /** Hay plata para devolver: pagos de MP aprobados sin devolver o un pago registrado a mano. */
