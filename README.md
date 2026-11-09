@@ -267,6 +267,6 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 
 ### Tests
 
-229 tests con Playwright (corrida del 08/11/2026): e2e, de la API y unitarios. Necesitan las diez migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
+240 tests con Playwright en 22 archivos (corrida del 09/11/2026): e2e, de la API y unitarios (65, los que corre el CI con `npm run test:unit`). Necesitan las diez migraciones y `SUPABASE_SECRET_KEY`; cada test crea y borra sus propios datos de prueba (`e2e-…`), y Mercado Pago es un mock local, sin credenciales reales. La corrida completa bloquea los logins desde tu IP durante 15 minutos (el test del rate limit va al final).
 
 La estrategia, el plan de pruebas manuales, los reportes de bugs y cómo depurar una falla están en [docs/testing.md](docs/testing.md).

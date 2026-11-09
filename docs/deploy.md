@@ -26,8 +26,9 @@ Cosas a tener en cuenta:
 
 - **Hay una sola base.** Production, Preview y local leen y escriben el mismo proyecto de Supabase. Por eso los tests marcan todo lo que crean con `e2e-…` y lo borran al terminar, y por eso no corren en CI (ver [CI](#ci)).
 - **Los previews tienen Deployment Protection:** solo los ve quien tiene sesión en Vercel con acceso al proyecto. Por eso el webhook de Mercado Pago no les llega; ahí el pago se confirma con la conciliación de la página de resultado ([pagos.md](pagos.md)).
-- **Mercado Pago:** hoy se usan las credenciales de la cuenta vendedora de prueba (no cobran plata real). Qué credenciales van en cada etapa: [pagos.md](pagos.md#qué-credenciales-se-usan-en-cada-etapa). Los e2e nunca usan las reales: apuntan a un mock local.
-- TODO: confirmar en Vercel (**Settings → Environment Variables**) si Preview tiene las mismas credenciales de Mercado Pago que Production y anotarlo acá.
+- **Mercado Pago: Production, Preview y local usan las mismas credenciales.** Son las de producción (`APP_USR-…`) de la aplicación "Home-Bakery2", creada dentro de la **cuenta vendedora de prueba** de Mercado Pago: no cobran plata real. En Vercel están cargadas en Production y en Preview, y en local van en `.env.local`. Los e2e no las usan: apuntan a un mock local.
+- **El webhook de esa aplicación** está en modo productivo y apunta a `https://home-bakery-brown.vercel.app/api/v1/webhooks/mercadopago`. Por eso el aviso de un pago hecho desde un preview (o desde local) llega a **producción**, que lo registra en la misma base. El preview no lo recibe y concilia el pago desde la página de resultado ([pruebas-mercadopago.md](pruebas-mercadopago.md#preview-de-vercel-sin-webhook)).
+- **Para producción real** se reemplazan por las credenciales de producción de la **cuenta de Maggie**, con su propio webhook y su propia clave secreta ([pruebas-mercadopago.md](pruebas-mercadopago.md#configuración-que-funciona) y [pagos.md](pagos.md#qué-credenciales-se-usan-en-cada-etapa)). Ver el [checklist](#checklist-para-pasar-a-producción-real).
 
 ## Variables de entorno
 
@@ -100,9 +101,9 @@ Las migraciones (`supabase/migrations/`) se corren a mano en el **SQL Editor** d
 
 ## Dominio, DNS y SSL
 
-**Hoy:** el sitio usa el dominio que da Vercel, `home-bakery-brown.vercel.app`. El certificado HTTPS lo emite y lo renueva Vercel solo.
+**Hoy:** no hay dominio propio. El sitio queda en el dominio que da Vercel, `home-bakery-brown.vercel.app`, y el certificado HTTPS lo emite y lo renueva Vercel solo.
 
-**Para un dominio propio** (TODO: Maggie todavía no tiene dominio):
+**Para cuando Maggie compre un dominio** (pasos genéricos, como guía):
 
 1. Comprarlo en un registrador (por ejemplo, NIC Argentina para `.com.ar`).
 2. En Vercel, **Settings → Domains → Add**, cargar el dominio (`ejemplo.com.ar`) y también `www.ejemplo.com.ar`.
@@ -157,6 +158,54 @@ Hoy el sitio está publicado pero con datos y credenciales de prueba. Antes de a
 - [ ] **Datos bancarios reales** para la transferencia en `data/site.ts` (`TODO(Maggie)`), y sacar el aviso "datos de ejemplo" (`deEjemplo: false`).
 - [ ] **SMTP propio** en Supabase y la plantilla de recuperar contraseña (README, `TODO(SMTP)`).
 - [ ] **Dominio propio** ([arriba](#dominio-dns-y-ssl)) y `NEXT_PUBLIC_SITE_URL`.
-- [ ] **Limpiar datos de prueba:** workshops de ejemplo, pedidos, inscripciones y pagos de prueba, y usuarias `e2e-…` que hayan quedado. TODO: definir con Catalina qué se borra y hacerlo con un script revisado, no a mano.
+- [ ] **Limpiar los datos de prueba** y **volver a cargar los precios reales** ([abajo](#datos-de-prueba-a-borrar)).
 - [ ] **Contenido pendiente de Maggie** ([contenido-maggie.md](contenido-maggie.md)).
 - [ ] Una compra real de punta a punta con un monto chico, y devolverla.
+
+### Datos de prueba a borrar
+
+Hasta ahora no hubo clientas reales: todo lo que hay en estas tablas salió de las pruebas.
+
+- [ ] **Pedidos, pagos e inscripciones** de las pruebas manuales en el sandbox de Mercado Pago. Primero los pagos (tienen `on delete restrict` hacia pedidos e inscripciones), después los pedidos (los ítems se van en cascada) y las inscripciones.
+- [ ] **El workshop `prueba-pago-sandbox`**, después de sus inscripciones y pagos.
+- [ ] **Productos y workshops con slug `e2e-…`** que hayan quedado de un teardown cortado, con sus fotos en Storage, y las usuarias `e2e-…@example.com`. El teardown de los tests (`e2e/support/teardown.ts`) ya sabe borrarlos: alcanza con correr la suite completa una vez más y revisar que termine.
+- [ ] **Precios reales:** hoy todos los productos están en $ 10, a pedido de Maggie. Hay que volver a cargar los de verdad desde el panel. TODO(Maggie): la lista de precios.
+- [ ] **Fotos de recuerdo de los workshops pasados:** revisar que las que quedaron sean las reales y no fotos de prueba (se cambian desde el panel, en el workshop).
+
+Para borrar, mejor un script revisado en un PR que borrados sueltos a mano. Después, estas consultas **de control** (solo `SELECT`, en el SQL Editor) tienen que dar lo que dice cada comentario:
+
+```sql
+-- 1. Pagos, pedidos e inscripciones: 0 en las tres (antes de abrir no hay clientas reales).
+select
+  (select count(*) from public.pagos)         as pagos,
+  (select count(*) from public.pedidos)       as pedidos,
+  (select count(*) from public.pedido_items)  as pedido_items,
+  (select count(*) from public.inscripciones) as inscripciones;
+
+-- 2. El workshop de la prueba del sandbox: 0 filas.
+select id, slug, nombre from public.workshops where slug = 'prueba-pago-sandbox';
+
+-- 3. Productos y workshops de los e2e: 0 filas.
+select 'producto' as tipo, slug from public.productos where slug like 'e2e-%'
+union all
+select 'workshop', slug from public.workshops where slug like 'e2e-%';
+
+-- 4. Fotos de los e2e en Storage: 0 filas.
+select bucket_id, name from storage.objects
+where bucket_id in ('productos', 'workshops') and name like 'e2e-%';
+
+-- 5. Usuarias de prueba: 0 filas.
+select id, email from auth.users where email like 'e2e-%@example.com';
+
+-- 6. Precios de prueba: 0 filas (ningún tamaño en $ 10).
+select p.slug, t.etiqueta, t.precio
+from public.producto_tamanos t join public.productos p on p.id = t.producto_id
+where t.precio = 10
+order by p.slug;
+
+-- 7. Fotos de recuerdo: revisar una por una que sean las reales.
+select slug, nombre, fecha_inicio, foto_recuerdo_ruta, foto_recuerdo_alt
+from public.workshops
+where foto_recuerdo_ruta is not null
+order by fecha_inicio desc;
+```
