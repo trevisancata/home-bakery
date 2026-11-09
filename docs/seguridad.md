@@ -158,3 +158,11 @@ Leer cookies vuelve dinámica una página: se renderiza en cada visita y pierde 
 - Solo el panel usa `createAuthClient()` (`lib/supabase/server-auth.ts`).
 
 El `npm run build` lo confirma: `/`, `/tienda`, `/tienda/[slug]` y `/workshops` salen como estáticas (○/●) con revalidación de 5 minutos, y todo `/admin` como dinámico (ƒ).
+
+## Analytics sin cookies
+
+El sitio público mide visitas con [Vercel Analytics](https://vercel.com/docs/analytics) y el rendimiento real con [Speed Insights](https://vercel.com/docs/speed-insights) (`components/SitioChrome.tsx`):
+
+- **No usan cookies** ni guardan nada en el navegador. Según [la documentación de Vercel](https://vercel.com/docs/analytics/privacy-policy), cada visita se identifica con un hash que se arma con datos del pedido y cambia todos los días: no se puede seguir a una persona entre días ni entre sitios, y no se guardan IPs. Por eso no hace falta un banner de cookies.
+- **Solo en el sitio público:** van en `SitioChrome`, que usan el layout de `(sitio)` y el 404. El panel (`/admin`) tiene su propio layout y no los carga, así que no se mide lo que hace la admin.
+- Los scripts se sirven desde el mismo dominio (`/_vercel/insights/…` y `/_vercel/speed-insights/…`). Fuera de Vercel (local y e2e) esas rutas dan 404 y no se mide nada; el sitio no cambia.

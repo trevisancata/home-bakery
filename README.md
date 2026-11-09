@@ -9,9 +9,15 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 - Accesibilidad (WCAG AA)
 - Consistencia visual
 
-## Deploy
+## Deploy y CI
 
 🔗 **Sitio publicado:** [home-bakery-brown.vercel.app](https://home-bakery-brown.vercel.app)
+
+- Cada PR corre el CI (lint, `tsc`, build y tests unitarios) y arma un preview en Vercel; cada merge a `main` se deploya solo a producción.
+- Los e2e no corren en CI: se corren en local con `npm run test:e2e` antes de mergear.
+- `GET /api/v1/health` responde `{ status, version, commit }` sin tocar la base, para el monitoreo.
+
+Entornos, variables, migraciones, dominio, logs, rollback y el checklist para pasar a producción real: [docs/deploy.md](docs/deploy.md).
 
 ## Stack
 
@@ -25,7 +31,8 @@ Es un trabajo práctico universitario. Se evalúan especialmente:
 - [Mercado Pago Checkout Pro](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/overview) con el [SDK oficial](https://github.com/mercadopago/sdk-nodejs) para el pago de los workshops
 - [Playwright](https://playwright.dev) para los tests e2e y de la API
 - ESLint
-- GitHub Actions para CI (lint y build en cada PR)
+- GitHub Actions para CI (lint, tipos, build y tests unitarios en cada PR) y Dependabot
+- [Vercel Analytics](https://vercel.com/docs/analytics) y [Speed Insights](https://vercel.com/docs/speed-insights) en el sitio público, sin cookies
 
 ## Páginas
 
@@ -113,6 +120,7 @@ API REST versionada en `/api/v1`. Todas las respuestas son `{ data }` si saliero
 
 | Método y ruta | Qué devuelve |
 |---|---|
+| `GET /api/v1/health` | `{ status: "ok", version, commit }`, sin tocar la base y sin caché. Para el monitoreo ([docs/deploy.md](docs/deploy.md#apiv1health)) |
 | `GET /api/v1/categorias` | Categorías activas, en orden |
 | `GET /api/v1/productos?categoria=&destacados=` | Productos activos. 400 si la categoría no existe o los parámetros no son válidos |
 | `GET /api/v1/productos/[slug]` | Un producto. 404 si no existe o está oculto |
@@ -248,8 +256,10 @@ Después abrí [http://localhost:3000](http://localhost:3000) en el navegador.
 | `npm run build` | Build de producción                        |
 | `npm start`     | Sirve el build de producción               |
 | `npm run lint`  | Revisa el código con ESLint                |
+| `npm run typecheck` | Chequea los tipos (`next typegen` y `tsc --noEmit`) |
 | `npm run seed`  | Carga el catálogo y los workshops en Supabase |
 | `npm run test:e2e` | Tests e2e, de la API y unitarios con Playwright (build de producción) |
+| `npm run test:unit` | Solo los tests unitarios, sin servidor ni base (lo que corre el CI) |
 | `npm run test:e2e:ui` | Los mismos tests en el modo UI de Playwright |
 | `npm run test:e2e:report` | Abre el reporte html de la última corrida |
 | `npm run test:codegen` | Graba un test nuevo con Codegen sobre `localhost:3000` |
