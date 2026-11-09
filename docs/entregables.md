@@ -1,8 +1,8 @@
 # Entregables y evidencia
 
-Una sección por cada ítem de la rúbrica: los seis entregables (E1 a E6) y los cinco criterios transversales. Cada una dice qué pide el nivel Excelente, qué hace el proyecto y dónde verlo.
+Una sección por cada ítem de la rúbrica: los seis entregables (E1 a E6) y los cinco criterios transversales, con su ponderación, lo que pide el nivel Excelente, qué hace el proyecto y dónde verlo.
 
-> **TODO(rúbrica):** el texto de la rúbrica no está en el repo. Falta copiar, en cada sección, el nombre oficial del ítem y lo que pide el nivel Excelente. El tema de E1, E2 y E3 y los nombres de los cinco transversales que figuran acá se armaron a partir de los PRs y del README anterior: **hay que confirmarlos con la rúbrica** y mover la evidencia si algún ítem no coincide.
+**Condiciones de la cátedra:** hay que obtener Excelente en los cinco transversales; si no, el trabajo queda desaprobado. La demo es pública, en vivo y con preguntas técnicas.
 
 **Links rápidos**
 
@@ -15,169 +15,231 @@ Una sección por cada ítem de la rúbrica: los seis entregables (E1 a E6) y los
 
 ## Índice
 
-- [E1](#e1) · [E2](#e2) · [E3](#e3) · [E4: base de datos con Supabase](#e4-base-de-datos-con-supabase) · [E5: auth, roles y panel de administración](#e5-auth-roles-y-panel-de-administración) · [E6: pagos con Mercado Pago](#e6-pagos-con-mercado-pago)
-- Transversales: [T1](#t1-html-semántico) · [T2](#t2-diseño-responsive-mobile-first) · [T3](#t3-accesibilidad-wcag-aa) · [T4](#t4-consistencia-visual) · [T5](#t5-proceso-git-prs-ci-y-documentación)
-- [Decisiones](#decisiones)
+| Ítem | Peso | |
+|---|---|---|
+| [E1 Repo + pipeline + preview](#e1-repo--pipeline--preview-10) | 10% | Entregable |
+| [E2 Landing + vistas clave responsivas](#e2-landing--vistas-clave-responsivas-15) | 15% | Entregable |
+| [E3 Formularios dinámicos con fetch + validación](#e3-formularios-dinámicos-con-fetch--validación-15) | 15% | Entregable |
+| [E4 Catálogo navegable + API básica](#e4-catálogo-navegable--api-básica-20) | 20% | Entregable |
+| [E5 CRUD funcional en Supabase + admin](#e5-crud-funcional-en-supabase--admin-20) | 20% | Entregable |
+| [E6 Checkout + webhook funcionales](#e6-checkout--webhook-funcionales-20) | 20% | Entregable |
+| [Funcionalidad](#funcionalidad-40) | 40% | Transversal |
+| [Código / Estructura](#código--estructura-20) | 20% | Transversal |
+| [Interfaz / Accesibilidad](#interfaz--accesibilidad-15) | 15% | Transversal |
+| [Despliegue](#despliegue-15) | 15% | Transversal |
+| [Documentación](#documentación-10) | 10% | Transversal |
+
+Al final: [Decisiones](#decisiones).
 
 ---
 
-## E1
+## E1 Repo + pipeline + preview (10%)
 
-**Nivel Excelente:** TODO(rúbrica).
+**Nivel Excelente:** repo operativo, pipeline CI/CD y preview por PR funcionando correctamente.
 
-**Qué hace el proyecto.** Repositorio con CI y plantilla de PR desde el primer día, README en español y la primera versión del sitio con las vistas principales (inicio, tienda, workshops, Maggie).
-
-**Evidencia**
-
-- PRs: [#1](https://github.com/trevisancata/home-bakery/pull/1) (workflow de CI y [plantilla de PR](../.github/pull_request_template.md)), [#2](https://github.com/trevisancata/home-bakery/pull/2) (README en español), [#3](https://github.com/trevisancata/home-bakery/pull/3) (landing y vistas principales).
-- Archivos: [`app/(sitio)/`](../app/%28sitio%29), [`app/layout.tsx`](../app/layout.tsx), [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
-- Sitio: [inicio](https://home-bakery-brown.vercel.app/), [tienda](https://home-bakery-brown.vercel.app/tienda), [workshops](https://home-bakery-brown.vercel.app/workshops), [Maggie](https://home-bakery-brown.vercel.app/maggie).
-
-## E2
-
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Sistema de diseño propio (tokens de color y tipografías de la marca en `@theme` de Tailwind v4, componentes base) y las páginas fieles al mockup en mobile y desktop, con 404 propio y medición de Lighthouse.
+**Qué hace el proyecto.** Todo entra por PR desde una rama; `main` está protegida y pide el check `build` del CI. El CI corre lint, `tsc`, build y los tests unitarios en cada PR y cada push a `main`, con caché del build y el reporte de Playwright como artifact si algo falla. Vercel arma un preview por PR y deploya solo a producción cada merge a `main`. Dependabot propone las actualizaciones de dependencias y de acciones.
 
 **Evidencia**
 
-- PRs: [#4](https://github.com/trevisancata/home-bakery/pull/4) (diseño de marca), [#5](https://github.com/trevisancata/home-bakery/pull/5) (fidelidad al mockup en inicio, tienda, header, footer y WhatsApp), [#6](https://github.com/trevisancata/home-bakery/pull/6) (workshops, Maggie, 404 y Lighthouse), [#9](https://github.com/trevisancata/home-bakery/pull/9) (menú mobile), [#19](https://github.com/trevisancata/home-bakery/pull/19) (tipografía manuscrita).
-- Archivos: [`app/globals.css`](../app/globals.css) (tokens), [`components/`](../components) (`Button`, `Eyebrow`, `SectionTitle`, `ImageFrame`), [`app/not-found.tsx`](../app/not-found.tsx), [`docs/mockup/`](mockup), [`scripts/compare-mockup.ts`](../scripts/compare-mockup.ts) (`npm run compare`).
-- Capturas: [`tipografia-final-home-mobile.png`](capturas/tipografia-final-home-mobile.png), [`tipografia-final-home-desktop.png`](capturas/tipografia-final-home-desktop.png).
+- PRs: [#1](https://github.com/trevisancata/home-bakery/pull/1) (workflow de CI y plantilla de PR), [#29](https://github.com/trevisancata/home-bakery/pull/29) (CI con `tsc` y unitarios, Dependabot, Analytics, health y `docs/deploy.md`).
+- Archivos: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/dependabot.yml`](../.github/dependabot.yml), [`.github/pull_request_template.md`](../.github/pull_request_template.md).
+- Cada PR mergeado desde el #16 tiene en verde los checks `build` (CI), `Vercel` (deploy del preview) y `Vercel Preview Comments`. Captura del check: [`devops-ci-check.png`](capturas/devops-ci-check.png).
+- Docs: [deploy.md](deploy.md) ([entornos](deploy.md#entornos), [flujo de trabajo](deploy.md#flujo-de-trabajo), [CI](deploy.md#ci), [Dependabot](deploy.md#dependabot)).
+- Un CI que falló sin jobs y cómo se diagnosticó: [errores.md](errores.md#el-ci-del-pr-falló-sin-correr-ningún-job).
 
-## E3
+## E2 Landing + vistas clave responsivas (15%)
 
-**Nivel Excelente:** TODO(rúbrica).
+**Nivel Excelente:** maquetado semántico, responsive, accesible y visualmente consistente.
 
-**Qué hace el proyecto.** Formulario de inscripción a workshops con validación por campo (zod), foco en el primer error, estados de envío, error con reintento y éxito; contenido real del negocio cargado desde `data/site.ts`, sin textos escritos en los componentes ni datos inventados.
+**Qué hace el proyecto.**
 
-**Evidencia**
-
-- PRs: [#7](https://github.com/trevisancata/home-bakery/pull/7) (inscripción a workshops), [#8](https://github.com/trevisancata/home-bakery/pull/8) (bitácora y errores), [#10](https://github.com/trevisancata/home-bakery/pull/10) (contenido de Maggie v6), [#17](https://github.com/trevisancata/home-bakery/pull/17) (contenido de Maggie 2).
-- Archivos: [`components/inscripcion/InscripcionForm.tsx`](../components/inscripcion/InscripcionForm.tsx), [`lib/validation/inscripcion.ts`](../lib/validation/inscripcion.ts), [`data/site.ts`](../data/site.ts), [`docs/contenido-maggie.md`](contenido-maggie.md).
-- Tests: `inscripcion.spec.ts` (errores por campo con foco, envío, workshops de ejemplo sin inscripción).
-- Decisión documentada: [no publicar datos inventados](bitacora-ia.md#decisión-no-publicar-datos-inventados).
-
-## E4: base de datos con Supabase
-
-**Nivel Excelente:** TODO(rúbrica). Pide, entre otras cosas, el checklist de la plantilla en los PRs (ver [Checklist en los PRs](#checklist-en-los-prs)).
-
-**Qué hace el proyecto.** El catálogo, los workshops, las inscripciones y los pedidos viven en Postgres (Supabase), con once migraciones versionadas, RLS en todas las tablas, lectura pública solo de lo activo y la inscripción por una función `security definer` con bloqueo de fila para que no haya sobreventa. Las páginas públicas son estáticas con ISR (5 minutos) y se regeneran al instante cuando Maggie cambia algo. API REST versionada en `/api/v1` con respuestas `{ data }` / `{ error }`.
+- **Semántico:** landmarks (`header`, `nav`, `main`, `footer`), salto al contenido, un `h1` por página, `dl` para los datos del producto, formularios con `label`, `fieldset` y errores ligados con `aria-describedby`. Metadata por página, Open Graph del producto, sitemap y robots.txt.
+- **Responsive:** mobile-first con Tailwind, revisado a 390 y 1440 px; menú mobile, carrusel con swipe, scroll horizontal enfocable en `/maggie`.
+- **Accesible:** ver [Interfaz / Accesibilidad](#interfaz--accesibilidad-15).
+- **Consistente:** un sistema de diseño (tokens de color y cuatro tipografías con roles fijos en `@theme`, componentes base) y todos los textos en `data/site.ts`, comparados contra el mockup.
 
 **Evidencia**
 
-- PRs: [#11](https://github.com/trevisancata/home-bakery/pull/11) (catálogo y workshops en Supabase), [#18](https://github.com/trevisancata/home-bakery/pull/18) (e2e independientes del catálogo real), [#26](https://github.com/trevisancata/home-bakery/pull/26) ("Así fueron los workshops" desde la base).
-- Migraciones: [`supabase/migrations/`](../supabase/migrations) (0001 a 0011).
-- Docs: [modelo-de-datos.md](modelo-de-datos.md) (diagrama, [RLS](modelo-de-datos.md#permisos-y-rls), [por qué la inscripción va por una función](modelo-de-datos.md#por-qué-la-inscripción-va-por-una-función), [caché](modelo-de-datos.md#caché)).
-- Código: [`lib/data.ts`](../lib/data.ts), [`app/api/v1/`](../app/api/v1), [`scripts/seed.ts`](../scripts/seed.ts).
-- Tests: `api.spec.ts` (25: categorías, productos, 400/404, workshops, inscripciones con 409 y sin sobreventa con pedidos simultáneos, redirecciones 308).
-- API en producción: [`/api/v1/productos`](https://home-bakery-brown.vercel.app/api/v1/productos), [`/api/v1/workshops`](https://home-bakery-brown.vercel.app/api/v1/workshops).
+- PRs: [#3](https://github.com/trevisancata/home-bakery/pull/3) (landing y vistas principales), [#4](https://github.com/trevisancata/home-bakery/pull/4) (diseño de marca), [#5](https://github.com/trevisancata/home-bakery/pull/5) (fidelidad al mockup), [#6](https://github.com/trevisancata/home-bakery/pull/6) (workshops, Maggie, 404 y Lighthouse), [#9](https://github.com/trevisancata/home-bakery/pull/9) (menú mobile), [#19](https://github.com/trevisancata/home-bakery/pull/19) (tipografía), [#25](https://github.com/trevisancata/home-bakery/pull/25), [#27](https://github.com/trevisancata/home-bakery/pull/27) y [#28](https://github.com/trevisancata/home-bakery/pull/28) (ajustes visuales con capturas antes y después).
+- Código: [`app/(sitio)/`](../app/%28sitio%29), [`app/globals.css`](../app/globals.css) (tokens), [`components/`](../components) (`Button`, `Eyebrow`, `SectionTitle`, `ImageFrame`, `SkipLink`), [`app/sitemap.ts`](../app/sitemap.ts), [`app/robots.ts`](../app/robots.ts), [`data/site.ts`](../data/site.ts).
+- Mockup y comparación: [`docs/mockup/`](mockup), [`scripts/compare-mockup.ts`](../scripts/compare-mockup.ts) (`npm run compare`); [README: sistema de diseño](../README.md#sistema-de-diseño).
+- Tests: `menu-mobile.spec.ts`, `header.spec.ts`, `carrusel.spec.ts`, `ajustes-visuales-3.spec.ts` (390 y 1440 px), `workshops-portada.spec.ts`, `seo-unit.spec.ts` y `seo.spec.ts`.
+- Capturas: [`docs/capturas/`](capturas), por ejemplo [`ajustes3-inicio-como-pedir-mobile-despues.png`](capturas/ajustes3-inicio-como-pedir-mobile-despues.png) y [`ajustes3-inicio-como-pedir-desktop-despues.png`](capturas/ajustes3-inicio-como-pedir-desktop-despues.png).
+- Lighthouse: Accessibility, Best Practices y SEO en 100 en `/`, `/tienda`, `/tienda/[slug]`, `/workshops` y `/maggie` ([lighthouse.md](lighthouse.md#sitio-público-última-medición)).
 
-## E5: auth, roles y panel de administración
+## E3 Formularios dinámicos con fetch + validación (15%)
 
-**Nivel Excelente:** TODO(rúbrica).
+**Nivel Excelente:** DOM dinámico, validación robusta y fetch integrado correctamente.
 
-**Qué hace el proyecto.** Login de la admin con Supabase Auth (sesión en cookies HttpOnly), roles en `perfiles`, defensa en profundidad (proxy, verificación en cada página, handler y Server Action, y RLS), 401 vs 403, CSRF por `Origin`, rate limiting del login y registro público cerrado. Panel para Maggie con productos (precio en línea, pausar con Deshacer, destacados, fotos en webp), workshops, inscripciones con devoluciones y pedidos de la tienda en pestañas. Guía de uso escrita para Maggie.
+**Qué hace el proyecto.**
 
-**Evidencia**
-
-- PRs: [#12](https://github.com/trevisancata/home-bakery/pull/12) (auth, roles y API de admin), [#15](https://github.com/trevisancata/home-bakery/pull/15) (panel de Maggie), [#23](https://github.com/trevisancata/home-bakery/pull/23) (panel de pedidos), [#38](https://github.com/trevisancata/home-bakery/pull/38) (pedidos simples).
-- Docs: [seguridad.md](seguridad.md), [guia-panel.md](guia-panel.md), [README: panel de administración](../README.md#panel-de-administración).
-- Código: [`proxy.ts`](../proxy.ts), [`lib/auth.ts`](../lib/auth.ts), [`lib/admin/`](../lib/admin), [`app/admin/`](../app/admin), [`app/api/v1/admin/`](../app/api/v1/admin).
-- Tests: `admin.spec.ts` (11), `panel.spec.ts` (7), `panel-pedidos.spec.ts` (10), `cerrar-sesion.spec.ts`, `rate-limit.spec.ts`, `panel-unit.spec.ts`.
-- Capturas: [`panel-pedidos-lista-mobile.png`](capturas/panel-pedidos-lista-mobile.png), [`panel-pedidos-detalle-mobile.png`](capturas/panel-pedidos-detalle-mobile.png), [`pedidos-simples-pestanas-mobile.png`](capturas/pedidos-simples-pestanas-mobile.png), [`workshops-pasados-panel-subir.png`](capturas/workshops-pasados-panel-subir.png).
-- Lighthouse del panel: Accessibility y Best Practices 100 / 100 en todas las pantallas medidas, mobile y desktop ([lighthouse.md](lighthouse.md#panel-de-pedidos)).
-- En producción: [`/admin/ingresar`](https://home-bakery-brown.vercel.app/admin/ingresar) (sin sesión, `/admin` redirige ahí).
-
-## E6: pagos con Mercado Pago
-
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Checkout Pro con el SDK oficial para los workshops (pago completo al inscribirse) y para los pedidos de la tienda, que además aceptan transferencia y efectivo. Los montos los calcula la base, nunca el cliente. Webhook con firma `x-signature`, idempotente y con conciliación en la página de resultado; pagar no confirma el pedido (lo confirma Maggie). Devoluciones marcadas desde el panel. Mock local de MP para los tests, sin credenciales reales.
+- **Formularios:** inscripción a un workshop y checkout del pedido. Los dos validan en el navegador con el **mismo esquema zod que usa la API**, marcan el error en cada campo, llevan el foco al primero y mandan con `fetch` a `POST /api/v1/inscripciones` y `POST /api/v1/pedidos`. Muestran estados de envío, error con reintento, 409 sin lugares (con los que quedan), 429 y éxito, y redirigen a Mercado Pago o al resultado.
+- **DOM dinámico:** el carrito vive en el navegador (contador del header con `aria-live`, cantidades editables y quitar); al abrirlo, revisa con `fetch` a `/api/v1/productos` si cambió algún precio o si un producto ya no está, y avisa. En el checkout, los días y horarios, el envío y los medios de pago cambian según lo que se elige (por ejemplo, sin efectivo con envío).
+- **Validación robusta:** el servidor vuelve a validar todo y la base calcula los precios: un cliente que mande otros precios no cambia el total. Los datos se sanean (`trim`, largos máximos) y la API responde 400 con el error de cada campo.
 
 **Evidencia**
 
-- PRs: [#13](https://github.com/trevisancata/home-bakery/pull/13) (seña con Mercado Pago), [#14](https://github.com/trevisancata/home-bakery/pull/14) y [#16](https://github.com/trevisancata/home-bakery/pull/16) (webhook), [#21](https://github.com/trevisancata/home-bakery/pull/21) (carrito y pedidos), [#22](https://github.com/trevisancata/home-bakery/pull/22) (medios de pago), [#37](https://github.com/trevisancata/home-bakery/pull/37) (pruebas manuales MP-16 a MP-42).
-- Docs: [pagos.md](pagos.md) (flujo, estados, [credenciales por etapa](pagos.md#qué-credenciales-se-usan-en-cada-etapa)), [pruebas-mercadopago.md](pruebas-mercadopago.md), [errores.md: 401 del webhook](errores.md#401-del-webhook-con-los-pagos-reales).
-- Código: [`lib/mercadopago.ts`](../lib/mercadopago.ts), [`lib/pagos/`](../lib/pagos), [`app/api/v1/webhooks/mercadopago/route.ts`](../app/api/v1/webhooks/mercadopago/route.ts), [`app/api/v1/pedidos/route.ts`](../app/api/v1/pedidos/route.ts), [`e2e/support/mp-mock.ts`](../e2e/support/mp-mock.ts).
-- Tests: `pagos.spec.ts` (21), `pedidos.spec.ts` (36), `carrito.spec.ts` (15), `pagos-unit.spec.ts` (21), `pedidos-unit.spec.ts` (35).
-- Capturas: [`checkout-mobile.png`](capturas/checkout-mobile.png), [`medios-de-pago-checkout-mobile.png`](capturas/medios-de-pago-checkout-mobile.png), [`pedido-pagado-mobile.png`](capturas/pedido-pagado-mobile.png), [`pedido-transferencia-mobile.png`](capturas/pedido-transferencia-mobile.png), [`pedido-efectivo-mobile.png`](capturas/pedido-efectivo-mobile.png).
-- Lighthouse: `/carrito` y `/carrito/checkout` con Accessibility y Best Practices 100 ([lighthouse.md](lighthouse.md#tienda-carrito-y-checkout-pedidos)).
+- PRs: [#7](https://github.com/trevisancata/home-bakery/pull/7) (inscripción a workshops), [#21](https://github.com/trevisancata/home-bakery/pull/21) (carrito y checkout), [#22](https://github.com/trevisancata/home-bakery/pull/22) (medios de pago), [#24](https://github.com/trevisancata/home-bakery/pull/24) (tamaño único).
+- Código: [`components/inscripcion/InscripcionForm.tsx`](../components/inscripcion/InscripcionForm.tsx), [`components/carrito/CheckoutForm.tsx`](../components/carrito/CheckoutForm.tsx), [`components/carrito/CarritoProvider.tsx`](../components/carrito/CarritoProvider.tsx), [`components/carrito/useRevision.ts`](../components/carrito/useRevision.ts), [`lib/validation/`](../lib/validation).
+- Tests: `inscripcion.spec.ts` (errores por campo con foco, envío, workshops de ejemplo), `carrito.spec.ts` (15: agregar, editar, recargar, precio cambiado, producto desactivado, checkout con retiro, envío, transferencia y efectivo), `pedidos.spec.ts` (36: precios de la base aunque el cliente mande otros, fechas y horarios inválidos, `Origin` ajeno), `pedidos-unit.spec.ts` (esquema del pedido).
+- Capturas: [`checkout-mobile.png`](capturas/checkout-mobile.png), [`carrito-mobile.png`](capturas/carrito-mobile.png), [`medios-de-pago-checkout-mobile.png`](capturas/medios-de-pago-checkout-mobile.png).
+- Errores resueltos: [el carrito recuperaba una línea recién quitada](errores.md#el-carrito-recuperaba-una-línea-recién-quitada), [zod entró al JS de todas las páginas](errores.md#zod-entró-al-js-de-todas-las-páginas).
 
----
+## E4 Catálogo navegable + API básica (20%)
 
-## T1: HTML semántico
+**Nivel Excelente:** catálogo + API interna, lógica funcional y checklist en PRs.
 
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Landmarks (`header`, `nav`, `main`, `footer`), un `h1` por página y jerarquía de títulos, listas y `dl` para los datos de producto, formularios con `label` asociado, `fieldset` y mensajes de error ligados con `aria-describedby`. Metadata por página, Open Graph del producto, y desde este PR sitemap y robots.txt.
+**Qué hace el proyecto.** La tienda lista los productos activos por categoría con el filtro en la URL (`?categoria=`, funciona con recarga y con el botón atrás), con detalle por producto: tamaños y precios, sabores, temporada (fuera de temporada no se puede pedir), productos a medida que se consultan por WhatsApp y "Precio a confirmar". Las páginas son estáticas con ISR y se regeneran al instante cuando Maggie cambia algo. La API REST interna, versionada en `/api/v1`, responde `{ data }` o `{ error }` con los códigos correctos y caché en la CDN para las lecturas públicas.
 
 **Evidencia**
 
-- Código: [`app/(sitio)/layout.tsx`](../app/%28sitio%29/layout.tsx), [`app/(sitio)/tienda/[slug]/page.tsx`](../app/%28sitio%29/tienda/[slug]/page.tsx) (`dl` de detalles y `generateMetadata`), [`components/carrito/CheckoutForm.tsx`](../components/carrito/CheckoutForm.tsx), [`app/sitemap.ts`](../app/sitemap.ts), [`app/robots.ts`](../app/robots.ts), [`lib/seo.ts`](../lib/seo.ts).
-- Tests: `seo-unit.spec.ts` y `seo.spec.ts` (sitemap y robots), `menu-mobile.spec.ts`.
-- Lighthouse SEO 100 en `/`, `/tienda`, `/tienda/[slug]`, `/workshops` y `/maggie` ([lighthouse.md](lighthouse.md#sitio-público-última-medición)). Las pantallas con `noindex` (panel, carrito, resultado de pago) dan 63 a propósito.
-
-## T2: Diseño responsive (mobile-first)
-
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Estilos mobile-first con Tailwind, revisados a 390 px y 1440 px; menú mobile accesible, carrusel con swipe, scroll horizontal enfocable en `/maggie`, panel usable desde el celular (botones de al menos 44 px, sin scroll horizontal).
-
-**Evidencia**
-
-- PRs: [#25](https://github.com/trevisancata/home-bakery/pull/25), [#27](https://github.com/trevisancata/home-bakery/pull/27) y [#28](https://github.com/trevisancata/home-bakery/pull/28) (ajustes visuales, con capturas antes y después en mobile y desktop).
-- Capturas: [`docs/capturas/`](capturas) (por ejemplo [`ajustes3-inicio-como-pedir-mobile-despues.png`](capturas/ajustes3-inicio-como-pedir-mobile-despues.png) y [`ajustes3-inicio-como-pedir-desktop-despues.png`](capturas/ajustes3-inicio-como-pedir-desktop-despues.png)).
-- Tests: `menu-mobile.spec.ts`, `carrusel.spec.ts` (swipe con toques reales), `ajustes-visuales-3.spec.ts` (390 y 1440 px), `panel-pedidos.spec.ts` (390 px).
-- Pruebas manuales en un celular real: MP-18, MP-21, MP-25, MP-30, MP-36, MP-38, MP-40 y MP-41 ([testing.md](testing.md#plan-de-pruebas-manuales)).
-
-## T3: Accesibilidad (WCAG AA)
-
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Contraste AA medido (los tokens que no llegan a AA como texto se usan solo para fondos y bordes), foco visible, navegación con teclado, salto al contenido, `aria-live` en el carrusel y en el contador del carrito, diálogos que enfocan la opción segura, alt en todas las fotos (obligatorio al subirlas desde el panel) y respeto de `prefers-reduced-motion`.
-
-**Evidencia**
-
-- Lighthouse Accessibility 100 en todas las páginas públicas y del panel medidas ([lighthouse.md](lighthouse.md)); contraste del texto sobre las portadas medido en 390 y 1440 px ([lighthouse.md](lighthouse.md#contraste-del-texto-sobre-las-portadas)).
-- Tests: `header.spec.ts` (contraste ≥ 4,5:1 y foco ≥ 3:1), `carrusel.spec.ts` (teclado y `aria-live`), `menu-mobile.spec.ts` (Escape devuelve el foco), `inscripcion.spec.ts` y `panel.spec.ts` (foco en el primer error).
-- Errores corregidos: [los diálogos enfocaban "Borrar definitivamente"](errores.md#los-diálogos-enfocaban-borrar-definitivamente).
-- Pruebas manuales de teclado, lector de pantalla y zoom en el [plan de pruebas manuales](testing.md#plan-de-pruebas-manuales).
-
-## T4: Consistencia visual
-
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Un solo sistema de diseño (tokens, cuatro tipografías con roles fijos y componentes base) para el sitio y el panel; todos los textos en [`data/site.ts`](../data/site.ts) y [`data/admin.ts`](../data/admin.ts), con el mismo tono; comparación automática con el mockup.
-
-**Evidencia**
-
-- [README: sistema de diseño](../README.md#sistema-de-diseño), [`app/globals.css`](../app/globals.css), [`components/`](../components), [`components/admin/ui/`](../components/admin/ui).
-- PRs: [#4](https://github.com/trevisancata/home-bakery/pull/4), [#5](https://github.com/trevisancata/home-bakery/pull/5), [#19](https://github.com/trevisancata/home-bakery/pull/19), [#25](https://github.com/trevisancata/home-bakery/pull/25), [#27](https://github.com/trevisancata/home-bakery/pull/27), [#28](https://github.com/trevisancata/home-bakery/pull/28).
-- Capturas antes y después: [`docs/capturas/`](capturas).
-
-## T5: Proceso: Git, PRs, CI y documentación
-
-**Nivel Excelente:** TODO(rúbrica).
-
-**Qué hace el proyecto.** Todo entra por PR desde una rama, con `main` protegida por el check `build` del CI (lint, `tsc`, build y unitarios), preview de Vercel por PR, deploy automático a producción, Dependabot, `/api/v1/health` para el monitoreo y rollback documentado. Bitácora del trabajo con IA y registro de errores por PR.
-
-**Evidencia**
-
-- PRs: [#1](https://github.com/trevisancata/home-bakery/pull/1) (CI y plantilla), [#20](https://github.com/trevisancata/home-bakery/pull/20) (testing, depuración y calidad), [#29](https://github.com/trevisancata/home-bakery/pull/29) (DevOps).
-- Docs: [deploy.md](deploy.md), [testing.md](testing.md) (estrategia, plan de pruebas manuales, [reporte de bugs](testing.md#reporte-de-bugs), [depuración](testing.md#depuración)), [bitacora-ia.md](bitacora-ia.md), [errores.md](errores.md).
-- Captura del check del CI: [`devops-ci-check.png`](capturas/devops-ci-check.png).
-- Health en producción: [`/api/v1/health`](https://home-bakery-brown.vercel.app/api/v1/health) (`{ status, version, commit }`).
+- PRs: [#11](https://github.com/trevisancata/home-bakery/pull/11) (catálogo y workshops en Supabase, API `/api/v1`), [#18](https://github.com/trevisancata/home-bakery/pull/18) (e2e independientes del catálogo real), [#27](https://github.com/trevisancata/home-bakery/pull/27) (filtro desplegable).
+- Código: [`app/(sitio)/tienda/`](../app/%28sitio%29/tienda), [`lib/data.ts`](../lib/data.ts), [`lib/api.ts`](../lib/api.ts), [`app/api/v1/`](../app/api/v1), [`lib/temporada.ts`](../lib/temporada.ts).
+- API en producción: [`/api/v1/categorias`](https://home-bakery-brown.vercel.app/api/v1/categorias), [`/api/v1/productos`](https://home-bakery-brown.vercel.app/api/v1/productos), [`/api/v1/productos?categoria=budines`](https://home-bakery-brown.vercel.app/api/v1/productos?categoria=budines), [`/api/v1/workshops`](https://home-bakery-brown.vercel.app/api/v1/workshops). Tabla de rutas y códigos: [README: API interna](../README.md#api-interna).
+- Tests: `tienda.spec.ts` (8: filtro en la URL, detalle, temporada, oculto → 404), `api.spec.ts` (25: categorías, productos con filtros y 400, detalle 404, workshops, inscripciones con 409 y sin sobreventa, redirecciones 308), `temporada.spec.ts`.
+- Capturas: [`ajustes2-tienda-mobile-despues.png`](capturas/ajustes2-tienda-mobile-despues.png), [`ajustes3-tienda-mobile-despues.png`](capturas/ajustes3-tienda-mobile-despues.png).
 
 ### Checklist en los PRs
 
-La [plantilla de PR](../.github/pull_request_template.md) tiene un checklist de cinco puntos. Revisión de los PRs mergeados desde el #11 (09/11/2026). Los PRs viejos no se editaron.
+La [plantilla de PR](../.github/pull_request_template.md) tiene un checklist de cinco puntos. Estado de los PRs mergeados desde el #11:
 
-| Con el checklist de la plantilla | Sin el checklist |
+| PRs | Checklist |
 |---|---|
-| [#11](https://github.com/trevisancata/home-bakery/pull/11), [#12](https://github.com/trevisancata/home-bakery/pull/12), [#13](https://github.com/trevisancata/home-bakery/pull/13), [#14](https://github.com/trevisancata/home-bakery/pull/14), [#15](https://github.com/trevisancata/home-bakery/pull/15), [#25](https://github.com/trevisancata/home-bakery/pull/25), [#29](https://github.com/trevisancata/home-bakery/pull/29), [#37](https://github.com/trevisancata/home-bakery/pull/37) | [#16](https://github.com/trevisancata/home-bakery/pull/16), [#17](https://github.com/trevisancata/home-bakery/pull/17), [#18](https://github.com/trevisancata/home-bakery/pull/18), [#19](https://github.com/trevisancata/home-bakery/pull/19), [#20](https://github.com/trevisancata/home-bakery/pull/20), [#21](https://github.com/trevisancata/home-bakery/pull/21), [#22](https://github.com/trevisancata/home-bakery/pull/22), [#23](https://github.com/trevisancata/home-bakery/pull/23), [#24](https://github.com/trevisancata/home-bakery/pull/24), [#26](https://github.com/trevisancata/home-bakery/pull/26), [#27](https://github.com/trevisancata/home-bakery/pull/27), [#28](https://github.com/trevisancata/home-bakery/pull/28), [#38](https://github.com/trevisancata/home-bakery/pull/38) |
+| [#11](https://github.com/trevisancata/home-bakery/pull/11), [#12](https://github.com/trevisancata/home-bakery/pull/12), [#13](https://github.com/trevisancata/home-bakery/pull/13), [#14](https://github.com/trevisancata/home-bakery/pull/14), [#15](https://github.com/trevisancata/home-bakery/pull/15), [#25](https://github.com/trevisancata/home-bakery/pull/25), [#29](https://github.com/trevisancata/home-bakery/pull/29), [#37](https://github.com/trevisancata/home-bakery/pull/37), [#39](https://github.com/trevisancata/home-bakery/pull/39) | Desde que se abrió el PR |
+| [#16](https://github.com/trevisancata/home-bakery/pull/16), [#17](https://github.com/trevisancata/home-bakery/pull/17), [#18](https://github.com/trevisancata/home-bakery/pull/18), [#19](https://github.com/trevisancata/home-bakery/pull/19), [#20](https://github.com/trevisancata/home-bakery/pull/20), [#21](https://github.com/trevisancata/home-bakery/pull/21), [#22](https://github.com/trevisancata/home-bakery/pull/22), [#23](https://github.com/trevisancata/home-bakery/pull/23), [#24](https://github.com/trevisancata/home-bakery/pull/24), [#26](https://github.com/trevisancata/home-bakery/pull/26), [#27](https://github.com/trevisancata/home-bakery/pull/27), [#28](https://github.com/trevisancata/home-bakery/pull/28), [#38](https://github.com/trevisancata/home-bakery/pull/38) | Agregado el 09/11/2026 en la revisión final, al final de la descripción ("Checklist (agregado el 09/11/2026 en la revisión final)"), sin cambiar el resto |
 
-En los que lo tienen, los puntos sin marcar dicen por qué no aplican (por ejemplo, "Revisado en mobile (no aplica: sin cambios de interfaz)"). Este PR usa la plantilla con el checklist completo.
+En los agregados después, cada punto se marcó solo si el PR tenía evidencia, y la evidencia está al lado: el CI en verde para lint y build, capturas mobile para "Revisado en mobile", tests o Lighthouse de accesibilidad para "Accesibilidad básica", y el README tocado (o que no hacía falta) para "README actualizado". Lo que no tenía evidencia quedó sin marcar:
+
+| PR | Sin marcar |
+|---|---|
+| #16 | Revisado en mobile y Accesibilidad básica (sin cambios de interfaz) |
+| #18 | Revisado en mobile y Accesibilidad básica (solo tests) |
+| #19 | Accesibilidad básica |
+| #20 | Revisado en mobile (sin capturas) |
+| #22, #24, #38 | Accesibilidad básica |
+
+En los que lo tenían desde el principio, los puntos sin marcar dicen por qué no aplican (por ejemplo, "Revisado en mobile (no aplica: sin cambios de interfaz)").
+
+## E5 CRUD funcional en Supabase + admin (20%)
+
+**Nivel Excelente:** BD modelada, CRUD completo, persistencia y admin funcional.
+
+**Qué hace el proyecto.**
+
+- **Base modelada:** Postgres en Supabase con once migraciones versionadas: claves `uuid`, claves foráneas con `cascade` o `restrict`, `check`, `updated_at` con trigger, índices, RLS en todas las tablas y la lógica sensible (inscribir sin sobreventa, crear pedidos con los precios de la base, confirmar pagos, avanzar pedidos) en funciones `security definer` con permisos explícitos.
+- **CRUD completo y persistencia:** productos (con tamaños, precios y fotos en Storage, convertidas a webp), workshops (con fotos y la foto de cómo fue), inscripciones (estado editable y devoluciones) y pedidos (aceptar, rechazar, marcar pagado, entregar, cancelar). Cada cambio regenera las páginas públicas.
+- **Admin funcional:** login con Supabase Auth (cookies HttpOnly), rol admin en `perfiles`, verificación en el proxy, en cada página, handler y Server Action, y en RLS; 401 vs 403, CSRF por `Origin`, rate limiting del login y registro público cerrado. Panel pensado para Maggie, usable desde el celular, con una guía escrita para ella.
+
+**Evidencia**
+
+- PRs: [#11](https://github.com/trevisancata/home-bakery/pull/11) (modelo y migración inicial), [#12](https://github.com/trevisancata/home-bakery/pull/12) (auth, roles y API de admin), [#15](https://github.com/trevisancata/home-bakery/pull/15) (panel de Maggie), [#23](https://github.com/trevisancata/home-bakery/pull/23) (panel de pedidos), [#26](https://github.com/trevisancata/home-bakery/pull/26) (workshops pasados), [#38](https://github.com/trevisancata/home-bakery/pull/38) (pedidos simples).
+- Migraciones: [`supabase/migrations/`](../supabase/migrations) (0001 a 0011). Docs: [modelo-de-datos.md](modelo-de-datos.md) ([diagrama](modelo-de-datos.md#diagrama), [RLS](modelo-de-datos.md#permisos-y-rls), [permisos por rol](modelo-de-datos.md#permisos-por-rol), [por qué la inscripción va por una función](modelo-de-datos.md#por-qué-la-inscripción-va-por-una-función)), [seguridad.md](seguridad.md), [guia-panel.md](guia-panel.md).
+- Código: [`lib/admin/`](../lib/admin) (capa de servicio), [`app/admin/`](../app/admin), [`app/api/v1/admin/`](../app/api/v1/admin) (CRUD por API), [`proxy.ts`](../proxy.ts), [`lib/auth.ts`](../lib/auth.ts), [`lib/admin/revalidar.ts`](../lib/admin/revalidar.ts).
+- Tests: `admin.spec.ts` (11: permisos, validación, `Origin`, productos, fotos, inscripciones y workshops), `panel.spec.ts` (7), `panel-pedidos.spec.ts` (10), `workshops-pasados.spec.ts` (5), `cerrar-sesion.spec.ts`, `rate-limit.spec.ts`, `panel-unit.spec.ts`; en `api.spec.ts`, sin sobreventa con pedidos simultáneos.
+- Capturas: [`panel-pedidos-lista-mobile.png`](capturas/panel-pedidos-lista-mobile.png), [`panel-pedidos-detalle-mobile.png`](capturas/panel-pedidos-detalle-mobile.png), [`pedidos-simples-pestanas-mobile.png`](capturas/pedidos-simples-pestanas-mobile.png), [`workshops-pasados-panel-subir.png`](capturas/workshops-pasados-panel-subir.png).
+- En producción: [`/admin/ingresar`](https://home-bakery-brown.vercel.app/admin/ingresar) (sin sesión, `/admin` redirige ahí).
+
+## E6 Checkout + webhook funcionales (20%)
+
+**Nivel Excelente:** pagos + webhooks, demo operativa y pruebas exhaustivas.
+
+**Qué hace el proyecto.**
+
+- **Pagos:** Checkout Pro con el SDK oficial para los workshops (pago completo al inscribirse) y para los pedidos de la tienda, que también aceptan transferencia y efectivo. Los montos los calcula la base.
+- **Webhook:** valida la firma `x-signature`, es idempotente (un aviso repetido no duplica nada), detecta monto distinto, pago duplicado y pago que llega vencido, y atiende inscripciones y pedidos según el `external_reference`. La página de resultado concilia contra Mercado Pago por si el aviso todavía no llegó. Pagar no confirma el pedido: lo confirma Maggie. Los pagos que hay que devolver aparecen en el panel.
+- **Demo operativa:** en producción con credenciales de una cuenta vendedora de prueba (ver [Decisiones](#decisiones)): se puede pagar de punta a punta con las tarjetas de prueba y el webhook llega.
+- **Pruebas exhaustivas:** mock local de Mercado Pago para los e2e (sin credenciales reales) y pruebas manuales en el sandbox.
+
+**Evidencia**
+
+- PRs: [#13](https://github.com/trevisancata/home-bakery/pull/13) (pago con Mercado Pago), [#14](https://github.com/trevisancata/home-bakery/pull/14) y [#16](https://github.com/trevisancata/home-bakery/pull/16) (webhook), [#21](https://github.com/trevisancata/home-bakery/pull/21) (carrito y pedidos), [#22](https://github.com/trevisancata/home-bakery/pull/22) (medios de pago), [#37](https://github.com/trevisancata/home-bakery/pull/37) (pruebas manuales MP-16 a MP-42).
+- Docs: [pagos.md](pagos.md) ([flujo](pagos.md#el-flujo), [estados](pagos.md#estados), [idempotencia y concurrencia](pagos.md#idempotencia-y-concurrencia), [credenciales por etapa](pagos.md#qué-credenciales-se-usan-en-cada-etapa)), [pruebas-mercadopago.md](pruebas-mercadopago.md) (configuración y tarjetas para la demo), [errores.md: 401 del webhook](errores.md#401-del-webhook-con-los-pagos-reales).
+- Código: [`lib/mercadopago.ts`](../lib/mercadopago.ts), [`lib/pagos/`](../lib/pagos), [`app/api/v1/webhooks/mercadopago/route.ts`](../app/api/v1/webhooks/mercadopago/route.ts), [`app/api/v1/pedidos/route.ts`](../app/api/v1/pedidos/route.ts), [`app/api/v1/inscripciones/route.ts`](../app/api/v1/inscripciones/route.ts), [`e2e/support/mp-mock.ts`](../e2e/support/mp-mock.ts).
+- Tests automáticos: `pagos.spec.ts` (21), `pedidos.spec.ts` (36), `carrito.spec.ts` (15), `pagos-unit.spec.ts` (21: firma, montos, preferencia, estados), `pedidos-unit.spec.ts` (35).
+- Pruebas manuales en el sandbox: [plan de pruebas manuales](testing.md#plan-de-pruebas-manuales), con los pagos de MP-23 y MP-34 en producción.
+- Capturas: [`checkout-mobile.png`](capturas/checkout-mobile.png), [`pedido-pagado-mobile.png`](capturas/pedido-pagado-mobile.png), [`pedido-transferencia-mobile.png`](capturas/pedido-transferencia-mobile.png), [`pedido-efectivo-mobile.png`](capturas/pedido-efectivo-mobile.png).
+
+---
+
+## Funcionalidad (40%)
+
+**Nivel Excelente:** funcionalidad completa, robusta y alineada a los objetivos.
+
+**Qué hace el proyecto.**
+
+- **Completa:** el sitio cubre lo que necesita el negocio de Maggie: mostrar y vender sus productos (tienda, carrito, checkout con tres medios de pago, día y horario de retiro o envío), vender cupos de sus workshops (inscripción con pago y `.ics` para el calendario) y gestionarlo todo desde un panel (productos, precios, fotos, workshops, inscripciones, pedidos, devoluciones).
+- **Robusta:** sin sobreventa de cupos con pedidos simultáneos, precios calculados por la base, webhook idempotente y con firma, rate limiting en el login, en las inscripciones y en los pedidos, reglas de negocio en la base (48 h de anticipación, franjas, efectivo solo con retiro) y errores sin filtrar información. 253 tests automáticos.
+- **Alineada a los objetivos:** los pedidos los confirma Maggie (no hay stock: cada pedido se hornea), los avisos van por WhatsApp, que es como ella trabaja, y el panel se usa desde el celular. Los textos del negocio son los de Maggie y no hay datos inventados ([decisión](bitacora-ia.md#decisión-no-publicar-datos-inventados)).
+
+**Evidencia**
+
+- Flujos de punta a punta en e2e: compra con retiro → Mercado Pago → "¡Recibimos tu pago!" (`carrito.spec.ts`); inscripción → pago → webhook → reservada (`pagos.spec.ts`); pedido → aceptar → entregar desde el panel (`panel-pedidos.spec.ts`).
+- Concurrencia: [por qué la inscripción va por una función](modelo-de-datos.md#por-qué-la-inscripción-va-por-una-función) y el test sin sobreventa de `api.spec.ts`; [idempotencia del webhook](pagos.md#idempotencia-y-concurrencia).
+- Plan de pruebas manuales con resultados: [testing.md](testing.md#plan-de-pruebas-manuales).
+- Bugs encontrados y resueltos: [testing.md: reporte de bugs](testing.md#reporte-de-bugs), [errores.md](errores.md).
+
+## Código / Estructura (20%)
+
+**Nivel Excelente:** código limpio, modular, estructurado y siguiendo buenas prácticas.
+
+**Qué hace el proyecto.**
+
+- **Estructura:** `app/` (rutas: sitio público, panel y API), `components/` (por sección, con componentes base), `lib/` (acceso a datos, servicio del panel, pagos, pedidos, validación, Supabase) y `data/` (todos los textos y datos del negocio; los componentes no tienen textos escritos adentro).
+- **Buenas prácticas:** TypeScript estricto, los mismos esquemas zod en el formulario, la API y las Server Actions, código del servidor marcado con `server-only`, secretos solo del lado del servidor, funciones puras para la lógica testeable (fechas, precios, firma, sitemap) y migraciones compatibles hacia atrás para deployar sin cortes.
+- **Calidad automática:** ESLint y `tsc` en el CI, commits chicos y PRs con plan, revisión y bitácora.
+
+**Evidencia**
+
+- Código: [`lib/`](../lib), [`lib/admin/`](../lib/admin), [`lib/pagos/`](../lib/pagos), [`lib/validation/`](../lib/validation), [`data/site.ts`](../data/site.ts), [`tsconfig.json`](../tsconfig.json) (`strict`), [`eslint.config.mjs`](../eslint.config.mjs).
+- Ejemplos de lógica pura con unitarios: [`lib/pedidos/reglas.ts`](../lib/pedidos/reglas.ts) (`pedidos-unit.spec.ts`), [`lib/pagos/firma.ts`](../lib/pagos/firma.ts) (`pagos-unit.spec.ts`), [`lib/seo.ts`](../lib/seo.ts) (`seo-unit.spec.ts`).
+- Migraciones compatibles hacia atrás: 0007, 0008 y 0011 ([README: Supabase](../README.md#supabase)).
+- CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
+
+## Interfaz / Accesibilidad (15%)
+
+**Nivel Excelente:** interfaz intuitiva, accesible y visualmente atractiva.
+
+**Qué hace el proyecto.**
+
+- **Accesible:** contraste AA medido (los tokens que no llegan a AA como texto se usan solo para fondos y bordes), foco visible, navegación con teclado, salto al contenido, `aria-live` en el carrusel, en el contador del carrito y en los avisos del panel, diálogos que enfocan la opción segura, alt en todas las fotos (obligatorio al subirlas desde el panel), áreas táctiles de al menos 44 px y respeto de `prefers-reduced-motion`.
+- **Intuitiva:** "Cómo pedir" en tres pasos, avisos claros de anticipación, envío y temporada, carrito que avisa si cambió un precio; en el panel, pestañas según lo que le toca hacer a Maggie, Deshacer al pausar y botones de WhatsApp con el mensaje armado.
+- **Atractiva:** identidad visual propia (paleta, tipografías y fotos de Maggie), fiel al mockup.
+
+**Evidencia**
+
+- Lighthouse: Accessibility 100 en todas las páginas públicas y del panel medidas, en mobile y desktop ([lighthouse.md](lighthouse.md)); contraste del texto sobre las portadas medido en 390 y 1440 px ([lighthouse.md](lighthouse.md#contraste-del-texto-sobre-las-portadas)).
+- Tests: `header.spec.ts` (contraste ≥ 4,5:1 y foco ≥ 3:1), `carrusel.spec.ts` (teclado y `aria-live`), `menu-mobile.spec.ts` (Escape devuelve el foco), `inscripcion.spec.ts` y `panel.spec.ts` (foco en el primer error), `panel-pedidos.spec.ts` (390 px, botones de 44 px).
+- Pruebas manuales de teclado, lector de pantalla y zoom: [plan de pruebas manuales](testing.md#plan-de-pruebas-manuales).
+- Errores corregidos: [los diálogos enfocaban "Borrar definitivamente"](errores.md#los-diálogos-enfocaban-borrar-definitivamente).
+- Capturas: [`docs/capturas/`](capturas); guía del panel escrita para Maggie: [guia-panel.md](guia-panel.md).
+
+## Despliegue (15%)
+
+**Nivel Excelente:** despliegue público, estable y accesible.
+
+**Qué hace el proyecto.** Publicado en Vercel con HTTPS: deploy automático de `main` a producción y preview por PR. Las páginas públicas son estáticas con ISR, así que siguen respondiendo rápido aunque la base tarde. `/api/v1/health` para el monitoreo (sin tocar la base), Vercel Analytics y Speed Insights sin cookies, logs de las funciones, rollback documentado, sitemap y robots.txt, y un checklist para pasar a producción real.
+
+**Evidencia**
+
+- Sitio: [home-bakery-brown.vercel.app](https://home-bakery-brown.vercel.app); health: [`/api/v1/health`](https://home-bakery-brown.vercel.app/api/v1/health) (`{ status, version, commit }`).
+- PR: [#29](https://github.com/trevisancata/home-bakery/pull/29) (DevOps).
+- Docs: [deploy.md](deploy.md) ([variables de entorno](deploy.md#variables-de-entorno), [migraciones](deploy.md#migraciones), [dominio, DNS y SSL](deploy.md#dominio-dns-y-ssl), [logs y monitoreo](deploy.md#logs-y-monitoreo), [rollback](deploy.md#rollback), [checklist para pasar a producción real](deploy.md#checklist-para-pasar-a-producción-real)).
+- Tests: el health en `api.spec.ts`; `seo.spec.ts` (sitemap y robots servidos por el build de producción).
+- Pruebas manuales en producción: [plan de pruebas manuales](testing.md#plan-de-pruebas-manuales) (corrida del 04/11 al 09/11/2026).
+
+## Documentación (10%)
+
+**Nivel Excelente:** documentación completa, clara y alineada al proyecto.
+
+**Qué hace el proyecto.** README con el stack, las páginas, la configuración paso a paso, la API y cómo correrlo; un documento por tema, al día con cada PR; una guía del panel escrita para Maggie; y el registro del proceso: bitácora del trabajo con IA y los errores con causa, solución y cómo evitar que se repitan.
+
+**Evidencia**
+
+- [README](../README.md): stack, páginas, sistema de diseño, Supabase y las once migraciones, Mercado Pago, API interna y de admin, panel, cómo correrlo y tests.
+- Por tema: [modelo-de-datos.md](modelo-de-datos.md), [seguridad.md](seguridad.md), [pagos.md](pagos.md), [pruebas-mercadopago.md](pruebas-mercadopago.md), [testing.md](testing.md), [lighthouse.md](lighthouse.md), [deploy.md](deploy.md), [contenido-maggie.md](contenido-maggie.md).
+- Para Maggie: [guia-panel.md](guia-panel.md).
+- Proceso: [bitacora-ia.md](bitacora-ia.md) (qué se pidió, qué se hizo y qué decisiones se tomaron en cada PR), [errores.md](errores.md).
+- Este documento, con la evidencia de cada ítem.
 
 ---
 

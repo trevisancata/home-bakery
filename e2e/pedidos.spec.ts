@@ -16,7 +16,7 @@ import {
   vencerPedido,
 } from "./support/pedidos";
 import { borrarProductoDePrueba, crearProductoDePrueba, type TestProducto } from "./support/productos";
-import { admin, expect, hasSupabase, skipReason, test } from "./support/supabase";
+import { admin, expect, hasSupabase, skipReason, test, toleranciaRelojMin } from "./support/supabase";
 import { diaDeSemana, fechaBA, sumarDias } from "../lib/pedidos/reglas";
 
 // Pedidos de la tienda contra Supabase y el mock de Mercado Pago. Cada test
@@ -90,7 +90,7 @@ conProducto.describe("Crear un pedido", () => {
     expect(pedido.medio_pago).toBe("mercadopago");
     const minutos = (new Date(pedido.vence_at!).getTime() - Date.now()) / 60_000;
     expect(minutos).toBeGreaterThan(28);
-    expect(minutos).toBeLessThanOrEqual(30);
+    expect(minutos).toBeLessThanOrEqual(30 + toleranciaRelojMin);
     expect(await itemsDe(body.data.id)).toEqual([
       expect.objectContaining({ nombre: producto.name, tamano_etiqueta: "Chico", sabor: "Limón", decoracion: "Flores", cantidad: 2 }),
     ]);

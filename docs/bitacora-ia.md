@@ -958,11 +958,20 @@ Después se sumó cancelar un pedido aceptado.
 
 **Decisiones mías (se pueden cambiar):**
 
-- **El texto de la rúbrica no está en el repo** (ni en Drive): cada sección tiene un `TODO(rúbrica)` para copiar lo que pide el nivel Excelente. El tema de E1 a E3 y los nombres de los cinco transversales se armaron a partir de los PRs y del README anterior y hay que confirmarlos.
+- **El texto de la rúbrica no estaba en el repo** (ni en Drive): la primera versión tenía un `TODO(rúbrica)` por sección y temas deducidos de los PRs. Se completó en la segunda tanda (abajo).
 - **`lastModified`:** cada producto lleva la fecha más nueva entre él, sus tamaños y sus fotos; inicio y tienda, la del último producto que cambió; workshops y Maggie no tienen fecha propia en la base y llevan la de generación. El sitemap tiene ISR de 5 minutos y `revalidarProducto` lo regenera al instante.
-- **Checklist en los PRs:** lo tienen #11 a #15, #25, #29 y #37; no lo tienen #16 a #24, #26 a #28 y #38. No se editaron.
+- **Checklist en los PRs:** lo tenían #11 a #15, #25, #29 y #37; no lo tenían #16 a #24, #26 a #28 y #38. En la primera tanda no se editaron.
 
 **Resultado:**
 
 - Lint, `tsc` y build en verde (`/sitemap.xml` con ISR de 5 minutos y `/robots.txt` estático). `npm run test:unit`: 72 pasaron.
-- Suite completa: 250 pasaron, 1 se salteó (el mismo de ajustes 2 y 3) y 1 falló dos veces seguidas: `pagos.spec.ts` "crea la preferencia con el total que calcula la base", con 30,004 minutos de vencimiento contra un tope de 30. El reloj de la Mac estaba 0,34 s atrasado (`sntp time.apple.com`) y el test compara `vence_at` de la base con `Date.now()` local; la rama no toca pagos ni inscripciones. Por esa falla el rate limit no corrió con la suite: corrido aparte, pasó. Queda como pendiente darle al test un margen de un par de segundos.
+- Suite completa: 250 pasaron, 1 se salteó (el mismo de ajustes 2 y 3) y 1 falló dos veces seguidas: `pagos.spec.ts` "crea la preferencia con el total que calcula la base", con 30,004 minutos de vencimiento contra un tope de 30. El reloj de la Mac estaba 0,34 s atrasado (`sntp time.apple.com`) y el test compara `vence_at` de la base con `Date.now()` local; la rama no toca pagos ni inscripciones. Por esa falla el rate limit no corrió con la suite: corrido aparte, pasó. Se arregló en la segunda tanda.
+
+**Segunda tanda (mismo PR):**
+
+- **Rúbrica oficial:** Catalina pasó la rúbrica (nivel Excelente y ponderación de cada ítem). `docs/entregables.md` se reorganizó con los nombres reales: E1 repo + pipeline + preview, E2 landing y vistas responsivas (absorbe lo de HTML semántico, responsive y consistencia visual que había quedado como transversal), E3 formularios con fetch y validación, E4 catálogo y API con el checklist en los PRs, E5 CRUD en Supabase y admin, E6 checkout y webhook; y los transversales Funcionalidad, Código / Estructura, Interfaz / Accesibilidad, Despliegue y Documentación. Arriba, la condición de la cátedra: Excelente en los cinco transversales y demo pública en vivo con Q&A técnico.
+- **Checklist agregado a los PRs viejos** (#16 a #24, #26 a #28 y #38): al final de la descripción, "## Checklist (agregado el 09/11/2026 en la revisión final)", con cada punto marcado solo si había evidencia en ese PR y la evidencia al lado (CI en verde, capturas mobile, tests o Lighthouse de accesibilidad, README tocado o que no hacía falta). Sin marcar quedaron: mobile y accesibilidad en #16 y #18, accesibilidad en #19, #22, #24 y #38, y mobile en #20. El resto de cada descripción no cambió (se verificó comparando antes y después). La tabla de E4 lo refleja.
+- **Test del vencimiento:** `toleranciaRelojMin` (5 s) en `e2e/support/supabase.ts`, en `pagos.spec.ts` y en la misma comparación de `pedidos.spec.ts`, que tenía el mismo problema. Registrado en `errores.md`.
+- **Ancla rota:** `#401-del-webhook-con-las-credenciales-test` no existía (el título termina en "TEST-", así que el ancla lleva un guion al final). Corregida en `errores.md`, `pagos.md`, `pruebas-mercadopago.md` y `testing.md`. Ahora todos los links locales de `README.md` y `docs/*.md` resuelven.
+
+**Resultado de la segunda tanda:** lint y `tsc` en verde. Suite completa: 252 pasaron y 1 se salteó (el de siempre en `workshops-pasados.spec.ts`), incluido rate limit; el test del vencimiento pasa con el reloj de la Mac igual de atrasado.

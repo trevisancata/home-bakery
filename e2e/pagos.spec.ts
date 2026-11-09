@@ -18,6 +18,7 @@ import {
   lugaresOcupados,
   skipReason,
   test,
+  toleranciaRelojMin,
   type TestWorkshop,
 } from "./support/supabase";
 import { authFile } from "./support/usuarios";
@@ -54,10 +55,10 @@ test.describe("Inscripción con preferencia de pago", () => {
     expect(db).toMatchObject({ estado: "pendiente_sena", mp_init_point: initPoint });
     expect(Number(db.monto_sena)).toBe(60000);
     expect(db.mp_preference_id).toMatch(/^pref-e2e-/);
-    // Vence en ~30 minutos.
+    // Vence en ~30 minutos (con margen para la diferencia de reloj con la base).
     const minutos = (new Date(db.vence_at).getTime() - Date.now()) / 60_000;
     expect(minutos).toBeGreaterThan(28);
-    expect(minutos).toBeLessThanOrEqual(30);
+    expect(minutos).toBeLessThanOrEqual(30 + toleranciaRelojMin);
 
     const pref = await preferenciaDe(request, `inscripcion:${id}`);
     expect(pref.items).toEqual([

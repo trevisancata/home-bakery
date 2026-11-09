@@ -129,7 +129,7 @@ El diagnóstico está en [errores.md](errores.md#401-del-webhook-con-los-pagos-r
 | **Ahora (pruebas)** | Las credenciales **de producción** (`APP_USR-…`) de la aplicación "Home-Bakery2", creada **dentro de la cuenta vendedora de prueba**. No cobran plata real | El webhook de esa aplicación, en **Modo productivo**, solo el evento Pagos, y su clave secreta |
 | **Al publicar** | Las credenciales de producción de la **cuenta real de Maggie**, de una aplicación creada en su cuenta | Un webhook **propio** configurado en esa aplicación, con **su propia clave secreta**. La de la vendedora de prueba deja de servir |
 
-**No se usan las credenciales de prueba (`TEST-…`):** con ellas, la firma de los avisos de los pagos del sandbox no validaba (401 SignatureMismatch). Ver [errores.md](errores.md#401-del-webhook-con-las-credenciales-test).
+**No se usan las credenciales de prueba (`TEST-…`):** con ellas, la firma de los avisos de los pagos del sandbox no validaba (401 SignatureMismatch). Ver [errores.md](errores.md#401-del-webhook-con-las-credenciales-test-).
 
 Al pasar a la cuenta de Maggie hay que cambiar **las dos** variables en Vercel a la vez: un token de una aplicación con la clave del webhook de otra da 401. Los pasos de prueba están en [pruebas-mercadopago.md](pruebas-mercadopago.md#configuración-que-funciona).
 
